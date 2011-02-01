@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dmz>
+<plugin-list>
+   <plugin name="dmzQtModuleMainWindowBasic" scope="main-window"/>
+   <plugin name="dmzQtModuleCanvasBasic" unique="canvas"/>
+   <plugin name="dmzQtPluginCanvasObject" unique="canvas-object"/>
+   <plugin name="dmzQtPluginCanvasLink" unique="canvas-link"/>
+   <plugin name="dmzQtPluginVersion"/>
+</plugin-list>
+<main-window>
+<!--   <fixed-size x="600" y="622"/> -->
+   <corners>
+      <top right="true" left="true"/>
+      <bottom right="true" left="true"/>
+   </corners>
+   <window title="DMZ: Little Sims"/>
+   <central-widget name="canvas"/>
+   <menu-bar>
+      <menu text="&amp;File"/>
+<!--
+      <menu text="&amp;Edit"/>
+-->
+      <menu text="&amp;Window"/>
+      <menu text="&amp;Help"/>
+   </menu-bar>
+</main-window>
+<canvas>
+<!--
+   <frame>
+      <widget>
+         <minimum-size width="600" height="600"/>
+      </widget>
+   </frame>
+   -->
+   <canvas opengl="true" antialiasing="true" textantialiasing="true">
+      <zoom default="1.0"/>
+   </canvas>
+   <scene>
+      <background grid="false"/>
+      <min x="-300" y="-300"/>
+      <max x="300" y="300"/>
+   </scene>
+   <scrollbars value="false"/>
+</canvas>
+<canvas-object>
+   <plugin-list>
+      <plugin name="dmzQtPluginCanvasObjectBasic" unique="canvas-object-basic"/>
+   </plugin-list>
+   <canvas-object-basic>
+      <defaults zValue="1" itemIgnoresTransformations="false"/>
+      <template name="node">
+         <items>
+            <group name="base node">
+               <image name="small" resource="sm_node">
+                  <translate x="-9" y="-9"/>
+               </image>
+               <image name="medium" resource="med_node">
+                  <translate x="-10" y="-10"/>
+               </image>
+               <image name="large" resource="lg_node">
+                  <translate x="-16" y="-16"/>
+               </image>
+            </group>
+         </items>
+         <switch>
+            <state group="base node">
+               <item name="small"/>
+            </state>
+            <state name="LS_Medium" group="base node">
+               <item name="medium"/>
+            </state>
+            <state name="LS_Large" group="base node">
+               <item name="large"/>
+            </state>
+         </switch>
+      </template>
+   </canvas-object-basic>
+</canvas-object>
+<canvas-link>
+   <pen-width value="1"/>
+</canvas-link>
+</dmz>

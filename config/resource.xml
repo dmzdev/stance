@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<runtime>
+<resource-map>
+   <search>
+      <path value="./assets/"/>
+   </search>
+   <resource name="small node" file="circle.png"/>
+   <resource name="medium node" file="square.png"/>
+   <resource name="large node" file="star.png"/>
+   <resource name="mite" file="mite-small.png"/>
+   <resource name="chip" file="chip-small.png"/>
+</resource-map>
+</runtime>
+</dmz>
