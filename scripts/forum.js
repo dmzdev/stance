@@ -23,6 +23,13 @@ var dmz =
   , replyTitleText = form.lookup("titleEdit")
   , postText = form.lookup("postTextEdit")
   , submitPostButton = form.lookup("submitButton")
+  , forumDock = dmz.ui.mainWindow.createDock
+    ( "Forum"
+    , { area: dmz.ui.consts.LeftDockWidgetArea
+      , floating: false
+      }
+    , form
+    )
 
   // Handles
   , PostTextHandle = dmz.defs.createNamedHandle("Post_Text")

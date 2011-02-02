@@ -6,51 +6,5 @@
    </time>
    <object-type name="forum_type"/>
    <object-type name="forum_post"/>
-   <message name="Activate_Simulation_Message" monostate="true"/>
-   <message name="Update_Node_Count_Message" monostate="true"/>
-   <message name="Update_Link_Count_Message" monostate="true"/>
-   <state name="LS_Small"/>
-   <state name="LS_Medium"/>
-   <state name="LS_Large"/>
-   <object-type name="ls_link">
-      <canvas-object/>
-   </object-type>
-   <object-type name="ls_node">
-      <canvas-object/>
-      <canvas-object-basic>
-         <template name="node">
-            <var name="sm_node" value="small node"/>
-            <var name="med_node" value="medium node"/>
-            <var name="lg_node" value="large node"/>
-         </template>
-      </canvas-object-basic>
-   </object-type>
-   <object-type name="mite_arena"/>
-   <object-type name="mite">
-      <canvas-object/>
-      <canvas-object-basic>
-         <items>
-            <image name="mite" resource="mite"/>
-         </items>
-         <switch>
-            <state>
-               <item name="mite"/>
-            </state>
-         </switch>
-      </canvas-object-basic>
-   </object-type>
-   <object-type name="chip">
-      <canvas-object/>
-      <canvas-object-basic>
-         <items>
-            <image name="chip" resource="chip"/>
-         </items>
-         <switch>
-            <state>
-               <item name="chip"/>
-            </state>
-         </switch>
-      </canvas-object-basic>
-   </object-type>
 </runtime>
 </dmz>
