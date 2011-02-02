@@ -2,18 +2,11 @@ var dmz =
        { object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
        , defs: require("dmz/runtime/definitions")
-       , message: require("dmz/runtime/messaging")
        , ui:
           { consts: require('dmz/ui/consts')
-          , file: require("dmz/ui/fileDialog")
           , loader: require('dmz/ui/uiLoader')
           , mainWindow: require('dmz/ui/mainWindow')
-          , widget: require("dmz/ui/widget")
-          , layout: require("dmz/ui/layout")
-          , button: require("dmz/ui/button")
-          , lineEdit: require("dmz/ui/lineEdit")
           }
-       , timer: require('dmz/runtime/time')
        }
 
   // UI elements
@@ -36,7 +29,6 @@ var dmz =
   , PostTitleHandle = dmz.defs.createNamedHandle("Post_Title")
   , PostAuthorHandle = dmz.defs.createNamedHandle("Post_Author")
   , PostParentLinkHandle = dmz.defs.createNamedHandle("Post_Parent")
-//  , PostForumLinkHandle = dmz.defs.createNamedHandle("Post_Forum")
   , PostDateHandle = dmz.defs.createNamedHandle("Post_Date")
 
   , ForumNameHandle = dmz.defs.createNamedHandle("Forum_Name")
@@ -49,13 +41,12 @@ var dmz =
   , ForumList = {}
   , PostList = {}
 
-  // Function decls
-  , forumRoot
-  , convertNewPost
-  , testMessages
-  , newPost
+  // Variables
+
+  , CurrentAuthor = "Tester" // Convert to dmz.object call later.
+
+  // Test Function decls
   , newForum
-  , collapseAll
   ;
 
 dmz.object.create.observe(self, function (handle, objType) {
@@ -142,7 +133,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
 
       var text = postText.text()
         , title = replyTitleText.text()
-        , author = "Tester"
+        , author = CurrentAuthor
         , post
         , forum
         ;
@@ -165,6 +156,12 @@ tree.observe (self, "currentItemChanged", function (curr) {
    });
 });
 
+tree.observe (self, "itemExpanded", function () {
+
+   tree.resizeColumnToContents(0);
+   tree.resizeColumnToContents(1);
+})
+
 newForum = function (title) {
 
    var forum
@@ -179,3 +176,7 @@ newForum = function (title) {
 }
 
 form.show();
+
+newForum ("Congress");
+newForum ("White House");
+newForum ("Drug Cartel");
