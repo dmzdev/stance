@@ -116,7 +116,9 @@ dmz.object.create.observe(self, function (handle, objType) {
 
 tree.observe (self, "currentItemChanged", function (curr) {
 
-   var parentHandle = curr.data(0)
+   var currHandle = curr.data(0)
+     , type = dmz.object.type(currHandle)
+     , parentHandle
      ;
    textBox.text (curr.text(3));
    if (submitPostButton.enabled()) {
@@ -129,6 +131,21 @@ tree.observe (self, "currentItemChanged", function (curr) {
    replyTitleText.enabled(true);
    postText.enabled(true);
    submitPostButton.enabled(true);
+   if (type.isOfType(ForumType)) {
+
+      submitPostButton.text("Add Topic");
+      parentHandle = currHandle;
+   }
+   else if (type.isOfType(PostType)) {
+
+      submitPostButton.text("Add Reply");
+      parentHandle = dmz.object.superLinks(currHandle, PostParentLinkHandle)[0];
+      if (dmz.object.type(parentHandle).isOfType(ForumType)) {
+
+         parentHandle = currHandle;
+      }
+   }
+
    submitPostButton.observe(self, "clicked", function () {
 
       var text = postText.text()
