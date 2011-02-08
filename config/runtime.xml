@@ -6,5 +6,10 @@
    </time>
    <object-type name="forum_type"/>
    <object-type name="forum_post"/>
+   <object-type name="game_type"/>
+   <object-type name="vote"/>
+   <object-type name="user"/>
+   <object-type name="group"/>
+   <object-type name="intel"/>
 </runtime>
 </dmz>

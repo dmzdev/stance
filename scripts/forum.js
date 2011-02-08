@@ -6,6 +6,7 @@ var dmz =
           { consts: require('dmz/ui/consts')
           , loader: require('dmz/ui/uiLoader')
           , mainWindow: require('dmz/ui/mainWindow')
+          , messageBox: require("dmz/ui/messageBox")
           }
        }
 
@@ -16,6 +17,7 @@ var dmz =
   , replyTitleText = form.lookup("titleEdit")
   , postText = form.lookup("postTextEdit")
   , submitPostButton = form.lookup("submitButton")
+  , messageLengthRem = form.lookup("charRemAmt")
   , forumDock = dmz.ui.mainWindow.createDock
     ( "Forum"
     , { area: dmz.ui.consts.LeftDockWidgetArea
@@ -119,6 +121,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
    var currHandle = curr.data(0)
      , type = dmz.object.type(currHandle)
      , parentHandle
+     , maxPostLength
      ;
    textBox.text (curr.text(3));
    if (submitPostButton.enabled()) {
@@ -126,6 +129,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
       submitPostButton.enabled(false);
       replyTitleText.enabled(false);
       postText.enabled(false);
+      messageLengthRem.text("0");
    }
 
    replyTitleText.enabled(true);
@@ -135,10 +139,12 @@ tree.observe (self, "currentItemChanged", function (curr) {
 
       submitPostButton.text("Add Topic");
       parentHandle = currHandle;
+      maxPostLength = 1000;
    }
    else if (type.isOfType(PostType)) {
 
       submitPostButton.text("Add Reply");
+      maxPostLength = 400;
       parentHandle = dmz.object.superLinks(currHandle, PostParentLinkHandle)[0];
       if (dmz.object.type(parentHandle).isOfType(ForumType)) {
 
@@ -146,31 +152,65 @@ tree.observe (self, "currentItemChanged", function (curr) {
       }
    }
 
+   messageLengthRem.text(maxPostLength);
+
+   postText.observe(self, "textChanged", function () {
+
+      var length = postText.text().length
+        , diff = maxPostLength - length
+        , color = "black"
+        ;
+
+      if (length > maxPostLength) { color = "red"; }
+      else if (length > (maxPostLength / 2)) { color = "blue"; }
+      else if (length > (maxPostLength / 4)) { color = "green"; }
+      messageLengthRem.text("<font color="+color+">"+diff+"</font>");
+   });
+
    submitPostButton.observe(self, "clicked", function () {
 
       var text = postText.text()
         , title = replyTitleText.text()
         , author = CurrentAuthor
         , post
-        , forum
+        , mb
         ;
-      replyTitleText.clear();
-      postText.clear();
-      replyTitleText.enabled(false);
-      postText.enabled(false);
-      submitPostButton.enabled(false);
 
-      if (parentHandle) {
+      if (text.length <= maxPostLength) {
 
-         post = dmz.object.create(PostType);
-         dmz.object.text(post, PostTextHandle, text);
-         dmz.object.text(post, PostAuthorHandle, author);
-         dmz.object.text(post, PostTitleHandle, title);
-         dmz.object.text(post, PostDateHandle, new Date());
-         dmz.object.link(PostParentLinkHandle, parentHandle, post);
-         dmz.object.activate(post);
+         replyTitleText.clear();
+         postText.clear();
+         replyTitleText.enabled(false);
+         postText.enabled(false);
+         submitPostButton.enabled(false);
+
+         if (parentHandle) {
+
+            post = dmz.object.create(PostType);
+            dmz.object.text(post, PostTextHandle, text);
+            dmz.object.text(post, PostAuthorHandle, author);
+            dmz.object.text(post, PostTitleHandle, title);
+            dmz.object.text(post, PostDateHandle, new Date());
+            dmz.object.link(PostParentLinkHandle, parentHandle, post);
+            dmz.object.activate(post);
+         }
+      }
+      else {
+
+         mb = dmz.ui.messageBox.create (
+            { type: dmz.ui.messageBox.Critical
+            , text: "Maximum Message Length Exceeded"
+            , informativeText: "Maximum: " + maxPostLength + ", Current: " + text.length
+            , defaultButton: dmz.ui.messageBox.Ok
+            , standardButtons: [dmz.ui.messageBox.Ok]
+            }
+            , postText);
+
+         if (mb) { mb.open(self, function () {}); }
       }
    });
+
+
 });
 
 tree.observe (self, "itemExpanded", function () {
@@ -197,3 +237,5 @@ form.show();
 newForum ("Congress");
 newForum ("White House");
 newForum ("Drug Cartel");
+
+
