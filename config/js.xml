@@ -17,6 +17,7 @@
    <path value="../js/scripts"/>
    <path value="./ui"/>
    <instance name="forum"/>
+   <instance name="main"/>
 </javascript>
 </dmz>
 

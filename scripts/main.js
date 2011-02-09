@@ -1,101 +1,249 @@
-var dmz = 
-       { module: require('dmz/runtime/module')
-       , ui:
-          { consts: require('dmz/ui/consts')
-          , layout: require("dmz/ui/layout")
-          , loader: require('dmz/ui/uiLoader')
-          , mainWindow: require('dmz/ui/mainWindow')
-          , messageBox: require('dmz/ui/messageBox')
-          , widget: require("dmz/ui/widget")
-          }
-       }
-   , _log = require('sys').puts
-   , _print
-   , _exports = {}
-   , _table = {}
-   , _form = dmz.ui.loader.load('main')
-   , _list = _form.lookup('listWidget')
-   , _stack = _form.lookup('stackedWidget')
-   , _index = 0
-   , _widget
-   , _layout
+var dmz =
+   { ui:
+      { consts: require('dmz/ui/consts')
+      , layout: require("dmz/ui/layout")
+      , loader: require('dmz/ui/uiLoader')
+      , mainWindow: require('dmz/ui/mainWindow')
+      , messageBox: require('dmz/ui/messageBox')
+      , widget: require("dmz/ui/widget")
+      }
+   , defs: require("dmz/runtime/definitions")
+   , object: require("dmz/components/object")
+   , objectType: require("dmz/runtime/objectType")
+   }
+
+   // UI Elements
+   , setGroupsForm = dmz.ui.loader.load("SetGroupsForm.ui")
+   , doneButton = setGroupsForm.lookup("doneButton")
+   , addStudentButton = setGroupsForm.lookup("addStudentButton")
+   , removeStudentButton = setGroupsForm.lookup("removeStudentButton")
+   , groupStudentList = setGroupsForm.lookup("groupStudentList")
+   , ungroupedStudentList = setGroupsForm.lookup("ungroupedStudentList")
+   , removeGroupButton = setGroupsForm.lookup("removeGroupButton")
+   , resetButton = setGroupsForm.lookup("resetButton")
+   , addGroupButton = setGroupsForm.lookup("addGroupButton")
+   , groupComboBox = setGroupsForm.lookup("groupComboBox")
+
+   , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
+
+   // Handles
+   , UserRealNameHandle = dmz.defs.createNamedHandle("user_real_name")
+   , UserEmailHandle = dmz.defs.createNamedHandle("user_email")
+   , UserGroupHandle = dmz.defs.createNamedHandle("user_group")
+   , UserGameNameHandle = dmz.defs.createNamedHandle("user_game_name")
+   , UserPasswordHandle = dmz.defs.createNamedHandle("user_password")
+
+   , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
+   , GroupPermissionsHandle = dmz.defs.createNamedHandle("group_permissions")
+   , GroupMembersHandle = dmz.defs.createNamedHandle("group_members")
+
+   , GameGroupHandle = dmz.defs.createNamedHandle("game_group")
+
+   // Object Types
+   , UserType = dmz.objectType.lookup("user")
+   , GameType = dmz.objectType.lookup("game_type")
+   , GroupType = dmz.objectType.lookup("group")
+
+   // Variables
+   , groupList = []
+
+   // Function decls
+   , createNewGame
+   , createNewUser
+   , readUserConfig
+   , createGroup
+   , getNewRandomName
+   , removeCurrentGroup
+   , arrayContains
+
    ;
 
-_list.observe(self, 'currentRowChanged', function (row) {
-   _index = row;
-   _stack.currentIndex(_index);
-   _print(self.name, 'currentRowChanged', _index)
-   var label = _form.lookup('infoLabel');
-   label.text(_index);
+readUserConfig = function () {
+
+   var studentList = self.config.get("student-list.student")
+     ;
+
+   studentList.forEach(function (student) {
+
+      var name
+        , email
+        ;
+
+      name = student.string("name", "NAME FAIL");
+      email = student.string("email", "EMAIL FAIL");
+      createNewUser(name, email);
+   });
+};
+
+createNewUser = function (name, email) {
+
+   var user
+     ;
+
+   if (name && email) {
+
+      user = dmz.object.create(UserType);
+      dmz.object.text(user, UserRealNameHandle, name);
+      dmz.object.text(user, UserEmailHandle, email);
+      dmz.object.text(user, UserGameNameHandle, getNewRandomName());
+      dmz.object.activate(user);
+   }
+};
+
+// Placeholder for later function to generate names
+getNewRandomName = function () {
+
+   return "Bert";
+}
+
+dmz.object.create.observe(self, function (objHandle, objType) {
+
+   if (objType) {
+
+      if (objType.isOfType(UserType)) {
+
+//         self.log.warn (
+//            "Got user:"
+//            , dmz.object.text(objHandle, UserRealNameHandle)
+//            , dmz.object.text(objHandle, UserEmailHandle)
+//            , dmz.object.text(objHandle, UserGameNameHandle)
+//            );
+
+         ungroupedStudentList.addItem(dmz.object.text(objHandle, UserRealNameHandle), objHandle);
+      }
+      else if (objType.isOfType(GameType)) {
+
+
+      }
+      else if (objType.isOfType(GroupType)) {
+
+
+      }
+   }
 });
 
-_form.observe(self, 'doneButton', 'clicked', function (button) {
-   
-   var mb = dmz.ui.messageBox.create(
-      { type: dmz.ui.messageBox.Information
-      , text: "Are you done?"
-      , informativeText: "Click <b>Ok</b> to quit!"
-      , standardButtons: [dmz.ui.messageBox.Ok, dmz.ui.messageBox.Cancel]
-      , defaultButton: dmz.ui.messageBox.Ok
-      }
-      , _form
-   );
+doneButton.observe(self, "clicked", function () {
 
-   mb.open(self, function (val) {
-      if (val === dmz.ui.messageBox.Ok) {
+   self.log.warn ("Done!");
+});
 
-         dmz.ui.mainWindow.close();
-      }
-      else if (val === dmz.ui.messageBox.Cancel) {
+addStudentButton.observe(self, "clicked", function () {
 
-         _print("dmz.ui.messageBox.Cancel");
+   var curr = ungroupedStudentList.currentItem();
+   if (curr) {
+
+      // add student to group
+
+      groupStudentList.addItem(curr);
+   }
+});
+
+removeStudentButton.observe(self, "clicked", function () {
+
+   var curr = groupStudentList.currentItem();
+   if (curr) {
+
+      //remove student from group
+
+      ungroupedStudentList.addItem(curr);
+   }
+});
+
+groupStudentList.observe(self, "itemActivated", function (item) {
+
+   if (item) {
+
+      // remove student from group
+
+      ungroupedStudentList.addItem(item);
+   }
+});
+
+ungroupedStudentList.observe(self, "itemActivated", function (item) {
+
+   if (item) {
+
+      // add student to group
+
+      groupStudentList.addItem(item);
+   }
+});
+
+addGroupButton.observe(self, "clicked", function () {
+
+   createGroupDialog.open(self, function (value, dialog) {
+
+      var groupName = dialog.lookup("groupName")
+        , permissionType = dialog.lookup("permissionType")
+        , group
+        ;
+
+      if (value) {
+
+         group = dmz.object.create(GroupType);
+         dmz.object.text(group, GroupNameHandle, groupName.text());
+         // Link group to "Game" object
+         // Add line to convert permission type into bitmask
+         dmz.object.activate(group);
+         groupList.push(group);
+         groupComboBox.addItem(groupName.text());
       }
    });
 });
 
-_stack.currentIndex(0);
+removeCurrentGroup = function () {
 
-dmz.ui.mainWindow.centralWidget (_form);
+   var index = groupComboBox.currentIndex()
+     , groupHandle = groupList[index]
+     , groupMembers
+     , count
+     , idx
+     ;
 
-dmz.module.subscribe(self, 'log', function (Mode, module) {
+   groupList.splice (index, 1);
+   groupComboBox.removeIndex(index);
+   dmz.object.unlinkSubObjects(groupHandle, GroupMembersHandle);
+   dmz.object.unlinkSuperObjects(groupHandle, GameGroupHandle);
 
-   if (Mode === dmz.module.Activate) {
-      
-      _log = module.print;
+   count = groupStudentList.count();
+   for (idx = count - 1; idx >= 0; idx -= 1) {
+
+      ungroupedStudentList.addItem(groupStudentList.takeItemAt(idx));
    }
+
+   dmz.object.destroy(groupHandle);
+};
+
+
+removeGroupButton.observe(self, "clicked", removeCurrentGroup);
+
+resetButton.observe(self, "clicked", function () {
+
+   var count = groupComboBox.count();
+   while (count--) { removeCurrentGroup(); }
 });
 
 
-_exports.addPage = function (name, widget) {
-   
-   if (name && widget) {
-      
-      _table[name] = 
-         { name: name
-         , widget: widget
-         , index: _stack.add(widget)
-         };
+groupComboBox.observe(self, "currentIndexChanged", function (index) {
 
-      _list.addItem(name);
-      
-      _print(self.name, 'addPage', name, widget);
-   }
-};
-
-_print = function () {
-   
-   var message = ''
-     , separator = ' '
+   var groupHandle = groupList[index]
+     , members
+     , item
+     , idx
+     , count
      ;
-   
-   for(var ix = 0; ix < arguments.length; ix++) {
-      
-      message += arguments[ix] + separator;
-   } 
-   
-   _log(message);
-}
 
-_exports.print = _print;
+   if (groupHandle) {
 
-dmz.module.publish(self, _exports);
+      members = dmz.object.subLinks(groupHandle, GroupMembersHandle);
+      count = groupStudentList.count();
+      for (idx = 0; idx < count; idx += 1) {
+
+         item = groupStudentList.item(idx);
+         item.hidden((members.indexOf(item.data()) !== -1));
+      }
+   }
+});
+
+readUserConfig();
+setGroupsForm.show();

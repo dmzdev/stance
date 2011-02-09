@@ -10,46 +10,46 @@ var dmz =
           }
        }
 
-  // UI elements
-  , form = dmz.ui.loader.load("ForumTreeForm.ui")
-  , tree = form.lookup ("treeWidget")
-  , textBox = form.lookup ("textEdit")
-  , replyTitleText = form.lookup("titleEdit")
-  , postText = form.lookup("postTextEdit")
-  , submitPostButton = form.lookup("submitButton")
-  , messageLengthRem = form.lookup("charRemAmt")
-  , forumDock = dmz.ui.mainWindow.createDock
-    ( "Forum"
-    , { area: dmz.ui.consts.LeftDockWidgetArea
-      , floating: false
-      }
-    , form
-    )
+   // UI elements
+   , form = dmz.ui.loader.load("ForumTreeForm.ui")
+   , tree = form.lookup ("treeWidget")
+   , textBox = form.lookup ("textEdit")
+   , replyTitleText = form.lookup("titleEdit")
+   , postText = form.lookup("postTextEdit")
+   , submitPostButton = form.lookup("submitButton")
+   , messageLengthRem = form.lookup("charRemAmt")
+   , forumDock = dmz.ui.mainWindow.createDock
+     ( "Forum"
+     , { area: dmz.ui.consts.LeftDockWidgetArea
+       , floating: false
+       }
+     , form
+     )
 
-  // Handles
-  , PostTextHandle = dmz.defs.createNamedHandle("Post_Text")
-  , PostTitleHandle = dmz.defs.createNamedHandle("Post_Title")
-  , PostAuthorHandle = dmz.defs.createNamedHandle("Post_Author")
-  , PostParentLinkHandle = dmz.defs.createNamedHandle("Post_Parent")
-  , PostDateHandle = dmz.defs.createNamedHandle("Post_Date")
+   // Handles
+   , PostTextHandle = dmz.defs.createNamedHandle("Post_Text")
+   , PostTitleHandle = dmz.defs.createNamedHandle("Post_Title")
+   , PostAuthorHandle = dmz.defs.createNamedHandle("Post_Author")
+   , PostParentLinkHandle = dmz.defs.createNamedHandle("Post_Parent")
+   , PostDateHandle = dmz.defs.createNamedHandle("Post_Date")
 
-  , ForumNameHandle = dmz.defs.createNamedHandle("Forum_Name")
+   , ForumNameHandle = dmz.defs.createNamedHandle("Forum_Name")
 
-  // Object Types
-  , PostType = dmz.objectType.lookup("forum_post")
-  , ForumType = dmz.objectType.lookup("forum_type")
+   // Object Types
+   , PostType = dmz.objectType.lookup("forum_post")
+   , ForumType = dmz.objectType.lookup("forum_type")
 
-  // Object Lists
-  , ForumList = {}
-  , PostList = {}
+   // Object Lists
+   , ForumList = {}
+   , PostList = {}
 
-  // Variables
+   // Variables
 
-  , CurrentAuthor = "Tester" // Convert to dmz.object call later.
+   , CurrentAuthor = "Tester" // Convert to dmz.object call later.
 
-  // Test Function decls
-  , newForum
-  ;
+   // Test Function decls
+   , newForum
+   ;
 
 dmz.object.create.observe(self, function (handle, objType) {
 
@@ -197,16 +197,15 @@ tree.observe (self, "currentItemChanged", function (curr) {
       }
       else {
 
-         mb = dmz.ui.messageBox.create (
+         dmz.ui.messageBox.create (
             { type: dmz.ui.messageBox.Critical
             , text: "Maximum Message Length Exceeded"
             , informativeText: "Maximum: " + maxPostLength + ", Current: " + text.length
             , defaultButton: dmz.ui.messageBox.Ok
             , standardButtons: [dmz.ui.messageBox.Ok]
             }
-            , postText);
+            , postText).open(self, function () {});
 
-         if (mb) { mb.open(self, function () {}); }
       }
    });
 
