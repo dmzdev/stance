@@ -5,245 +5,201 @@ var dmz =
       , loader: require('dmz/ui/uiLoader')
       , mainWindow: require('dmz/ui/mainWindow')
       , messageBox: require('dmz/ui/messageBox')
+      , stackedWidget: require("dmz/ui/stackedWidget")
+      , graph: require("dmz/ui/graph")
       , widget: require("dmz/ui/widget")
+      , event: require("dmz/ui/event")
+      , label: require("dmz/ui/label")
+      , webview: require("dmz/ui/webView")
       }
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
+   , module: require("dmz/runtime/module")
    }
 
    // UI Elements
-   , setGroupsForm = dmz.ui.loader.load("SetGroupsForm.ui")
-   , doneButton = setGroupsForm.lookup("doneButton")
-   , addStudentButton = setGroupsForm.lookup("addStudentButton")
-   , removeStudentButton = setGroupsForm.lookup("removeStudentButton")
-   , groupStudentList = setGroupsForm.lookup("groupStudentList")
-   , ungroupedStudentList = setGroupsForm.lookup("ungroupedStudentList")
-   , removeGroupButton = setGroupsForm.lookup("removeGroupButton")
-   , resetButton = setGroupsForm.lookup("resetButton")
-   , addGroupButton = setGroupsForm.lookup("addGroupButton")
-   , groupComboBox = setGroupsForm.lookup("groupComboBox")
+//   , setGroupsForm = dmz.ui.loader.load("SetGroupsForm.ui")
+//   , doneButton = setGroupsForm.lookup("doneButton")
+//   , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
 
-   , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
+   , main = dmz.ui.loader.load("main")
+   , stackedWidget = main.lookup("stackedWidget")
+   , mainGView = main.lookup("graphicsView")
+   , gscene
+   , homeButton = main.lookup("homeButton")
 
    // Handles
-   , UserRealNameHandle = dmz.defs.createNamedHandle("user_real_name")
-   , UserEmailHandle = dmz.defs.createNamedHandle("user_email")
-   , UserGroupHandle = dmz.defs.createNamedHandle("user_group")
-   , UserGameNameHandle = dmz.defs.createNamedHandle("user_game_name")
-   , UserPasswordHandle = dmz.defs.createNamedHandle("user_password")
-
-   , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
-   , GroupPermissionsHandle = dmz.defs.createNamedHandle("group_permissions")
-   , GroupMembersHandle = dmz.defs.createNamedHandle("group_members")
-
-   , GameGroupHandle = dmz.defs.createNamedHandle("game_group")
 
    // Object Types
-   , UserType = dmz.objectType.lookup("user")
-   , GameType = dmz.objectType.lookup("game_type")
-   , GroupType = dmz.objectType.lookup("group")
 
    // Variables
-   , groupList = []
+   , AdvisorCount = 6
+   , sceneWidth = self.config.number("scene.width", 800)
+   , sceneHeight = self.config.number("scene.height", 400)
+
+   , advisors = []
+   , map
+   , newspaper
+   , inbox
+   , desk
+   , tv
+   , computer
+   , PageLink = { Map: false, Forum: false, Media: false, Advisor: false }
 
    // Function decls
-   , createNewGame
-   , createNewUser
-   , readUserConfig
-   , createGroup
-   , getNewRandomName
-   , removeCurrentGroup
-   , arrayContains
+   , setupMainWindow
+   , mouseEvent
+   , shiftToIndex
 
+   // API
+   , _exports = {}
    ;
 
-readUserConfig = function () {
+shiftToIndex = function (name) {
 
-   var studentList = self.config.get("student-list.student")
-     ;
+   if (stackedWidget) {
 
-   studentList.forEach(function (student) {
-
-      var name
-        , email
-        ;
-
-      name = student.string("name", "NAME FAIL");
-      email = student.string("email", "EMAIL FAIL");
-      createNewUser(name, email);
-   });
-};
-
-createNewUser = function (name, email) {
-
-   var user
-     ;
-
-   if (name && email) {
-
-      user = dmz.object.create(UserType);
-      dmz.object.text(user, UserRealNameHandle, name);
-      dmz.object.text(user, UserEmailHandle, email);
-      dmz.object.text(user, UserGameNameHandle, getNewRandomName());
-      dmz.object.activate(user);
+      self.log.warn ("Shifting current index to:", PageIndex[name]);
+      stackedWidget.currentIndex (PageIndex[name]);
    }
-};
-
-// Placeholder for later function to generate names
-getNewRandomName = function () {
-
-   return "Bert";
 }
 
-dmz.object.create.observe(self, function (objHandle, objType) {
+mouseEvent = function (object, event) {
 
-   if (objType) {
-
-      if (objType.isOfType(UserType)) {
-
-//         self.log.warn (
-//            "Got user:"
-//            , dmz.object.text(objHandle, UserRealNameHandle)
-//            , dmz.object.text(objHandle, UserEmailHandle)
-//            , dmz.object.text(objHandle, UserGameNameHandle)
-//            );
-
-         ungroupedStudentList.addItem(dmz.object.text(objHandle, UserRealNameHandle), objHandle);
-      }
-      else if (objType.isOfType(GameType)) {
-
-
-      }
-      else if (objType.isOfType(GroupType)) {
-
-
-      }
-   }
-});
-
-doneButton.observe(self, "clicked", function () {
-
-   self.log.warn ("Done!");
-});
-
-addStudentButton.observe(self, "clicked", function () {
-
-   var curr = ungroupedStudentList.currentItem();
-   if (curr) {
-
-      // add student to group
-
-      groupStudentList.addItem(curr);
-   }
-});
-
-removeStudentButton.observe(self, "clicked", function () {
-
-   var curr = groupStudentList.currentItem();
-   if (curr) {
-
-      //remove student from group
-
-      ungroupedStudentList.addItem(curr);
-   }
-});
-
-groupStudentList.observe(self, "itemActivated", function (item) {
-
-   if (item) {
-
-      // remove student from group
-
-      ungroupedStudentList.addItem(item);
-   }
-});
-
-ungroupedStudentList.observe(self, "itemActivated", function (item) {
-
-   if (item) {
-
-      // add student to group
-
-      groupStudentList.addItem(item);
-   }
-});
-
-addGroupButton.observe(self, "clicked", function () {
-
-   createGroupDialog.open(self, function (value, dialog) {
-
-      var groupName = dialog.lookup("groupName")
-        , permissionType = dialog.lookup("permissionType")
-        , group
-        ;
-
-      if (value) {
-
-         group = dmz.object.create(GroupType);
-         dmz.object.text(group, GroupNameHandle, groupName.text());
-         // Link group to "Game" object
-         // Add line to convert permission type into bitmask
-         dmz.object.activate(group);
-         groupList.push(group);
-         groupComboBox.addItem(groupName.text());
-      }
-   });
-});
-
-removeCurrentGroup = function () {
-
-   var index = groupComboBox.currentIndex()
-     , groupHandle = groupList[index]
-     , groupMembers
-     , count
-     , idx
+   var type = event.type()
+     , pos
+     , items
      ;
 
-   groupList.splice (index, 1);
-   groupComboBox.removeIndex(index);
-   dmz.object.unlinkSubObjects(groupHandle, GroupMembersHandle);
-   dmz.object.unlinkSuperObjects(groupHandle, GameGroupHandle);
+   if (object == gscene) {
 
-   count = groupStudentList.count();
-   for (idx = count - 1; idx >= 0; idx -= 1) {
+      if (type == dmz.ui.event.GraphicsSceneMouseDoubleClick) {
 
-      ungroupedStudentList.addItem(groupStudentList.takeItemAt(idx));
-   }
+         self.log.warn ("Double click");
+      }
+      else if (type == dmz.ui.event.GraphicsSceneMousePress) {
 
-   dmz.object.destroy(groupHandle);
-};
+         self.log.warn ("Mouse click");
+         pos = event.scenePos();
+         items =
+            object.items(pos, dmz.ui.consts.IntersectsItemShape, dmz.ui.consts.DescendingOrder);
+         items.forEach(function (item) {
+
+            var widget = item.data(0);
+
+            if (stackedWidget && widget) { stackedWidget.currentWidget(widget); }
+         });
+
+      }
+      else if (type == dmz.ui.event.GraphicsSceneMouseRelease) {
 
 
-removeGroupButton.observe(self, "clicked", removeCurrentGroup);
-
-resetButton.observe(self, "clicked", function () {
-
-   var count = groupComboBox.count();
-   while (count--) { removeCurrentGroup(); }
-});
+      }
+      else if (type == dmz.ui.event.GraphicsSceneMouseMove) {
 
 
-groupComboBox.observe(self, "currentIndexChanged", function (index) {
-
-   var groupHandle = groupList[index]
-     , members
-     , item
-     , idx
-     , count
-     ;
-
-   if (groupHandle) {
-
-      members = dmz.object.subLinks(groupHandle, GroupMembersHandle);
-      count = groupStudentList.count();
-      for (idx = 0; idx < count; idx += 1) {
-
-         item = groupStudentList.item(idx);
-         item.hidden((members.indexOf(item.data()) !== -1));
       }
    }
-});
+   return false;
 
-readUserConfig();
-setGroupsForm.show();
+}
+
+setupMainWindow = function () {
+
+   var layout
+     , gview
+     , idx
+     , length
+     , box
+     , widget
+     ;
+
+   if (main && stackedWidget && mainGView) {
+
+      gscene = dmz.ui.graph.createScene(0, 0, sceneHeight, sceneWidth);
+      mainGView.scene(gscene);
+      stackedWidget.remove(1); // Get rid of Qt Designer-forced second page
+
+      for (idx = 0; idx < AdvisorCount; idx += 1) {
+
+         box = gscene.addRect(0, 0, 100, 100);
+         box.pos (2 * idx * 100, 0);
+         dmz.ui.graph.createTextItem("Advisor #" + (idx + 1), box);
+         advisors.push(box);
+      }
+
+      map = dmz.ui.graph.createRectItem(0, 0, 60, 60, advisors[0]);
+      map.pos(0, 150);
+      dmz.ui.graph.createTextItem("Map", map);
+
+      tv = dmz.ui.graph.createRectItem(0, 0, 60, 60, advisors[AdvisorCount - 1]);
+      tv.pos (40, 150);
+      dmz.ui.graph.createTextItem("TV", tv);
+
+      desk = gscene.addRect(0, 0, 400, 100);
+      desk.pos(200, 300);
+
+      newspaper = dmz.ui.graph.createRectItem(0, 0, 100, 25, desk);
+      newspaper.pos(100, 50);
+      dmz.ui.graph.createTextItem("Newspaper", newspaper);
+
+      inbox = dmz.ui.graph.createRectItem(0, 0, 50, 50, desk);
+      inbox.pos(10, 10);
+      dmz.ui.graph.createTextItem("Inbox", inbox);
+
+      computer = dmz.ui.graph.createRectItem(0, 0, 100, 90, desk);
+      computer.pos(300, 10);
+      dmz.ui.graph.createTextItem("Computer", computer);
+
+      PageLink.Map = [map];
+      PageLink.Advisor = advisors;
+      PageLink.Forum = [computer];
+      PageLink.Media = [newspaper, inbox, tv];
+
+      box = dmz.ui.webview.create();
+      box.url ("http://dev.chds.us/?dystopia:map2");
+      box.contextMenuPolicy (dmz.ui.consts.NoContextMenu);
+      map.data(0, box);
+      stackedWidget.add(box);
+
+      widget = dmz.ui.label.create("Forum screen");
+      computer.data(0, widget);
+      stackedWidget.add(widget);
+
+      widget = dmz.ui.label.create("Advisor screen");
+      advisors.forEach(function (item) { item.data(0, widget); });
+      stackedWidget.add(widget);
+
+      widget = dmz.ui.label.create("Media screen");
+      PageLink.Media.forEach(function (item) { item.data(0, widget); });
+      stackedWidget.add(widget);
+
+      homeButton.observe(self, "clicked", function () { stackedWidget.currentIndex (0); });
+
+      stackedWidget.currentIndex(0);
+      gscene.eventFilter(self, mouseEvent);
+      dmz.ui.mainWindow.centralWidget(main);
+   }
+}
+
+_exports.addPage = function (name, widget) {
+
+   var widget;
+   if (name && widget && stackedWidget && PageLink[name] && PageLink[name][0]) {
+
+      self.log.warn("Add page!");
+      stackedWidget.remove(PageLink[name][0]);
+      stackedWidget.add(widget);
+      PageLink[name].forEach(function (item) { item.data(0, widget); });
+   }
+   // Add some sort of queue to grab things that are loaded before main?
+   else { self.log.warn (name, widget, stackedWidget, PageLink[name]); }
+}
+
+setupMainWindow();
+
+dmz.module.publish(self, _exports);
+
+
+// Use DMZ.MODULE to discover new UI windows and add them to the stack

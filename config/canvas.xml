@@ -8,13 +8,12 @@
    <plugin name="dmzQtPluginVersion"/>
 </plugin-list>
 <main-window>
-<!--   <fixed-size x="600" y="622"/> -->
    <corners>
       <top right="true" left="true"/>
       <bottom right="true" left="true"/>
    </corners>
    <window title="DMZ: Border Patrol Simulation"/>
-   <central-widget name="canvas"/>
+   <!-- <central-widget name="canvas"/> -->
    <menu-bar>
       <menu text="&amp;File"/>
 <!--
@@ -24,14 +23,16 @@
       <menu text="&amp;Help"/>
    </menu-bar>
 </main-window>
+<main>
+   <scene height="800" width="400"/>
+</main>
 <canvas>
-<!--
    <frame>
       <widget>
-         <minimum-size width="600" height="600"/>
+         <minimum-size height="800" width="400"/>
       </widget>
    </frame>
-   -->
+   <!--
    <canvas opengl="true" antialiasing="true" textantialiasing="true">
       <zoom default="1.0"/>
    </canvas>
@@ -40,7 +41,7 @@
       <min x="-300" y="-300"/>
       <max x="300" y="300"/>
    </scene>
-   <scrollbars value="false"/>
+   <scrollbars value="false"/> -->
 </canvas>
 <canvas-object>
    <plugin-list>

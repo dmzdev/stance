@@ -16,8 +16,9 @@
    <path value="./scripts"/>
    <path value="../js/scripts"/>
    <path value="./ui"/>
-   <instance name="forum"/>
    <instance name="main"/>
+   <instance name="forum"/>
+   <instance name="gameCreation"/>
 </javascript>
 </dmz>
 

@@ -2,6 +2,7 @@ var dmz =
        { object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
        , defs: require("dmz/runtime/definitions")
+       , module: require("dmz/runtime/module")
        , ui:
           { consts: require('dmz/ui/consts')
           , loader: require('dmz/ui/uiLoader')
@@ -18,13 +19,13 @@ var dmz =
    , postText = form.lookup("postTextEdit")
    , submitPostButton = form.lookup("submitButton")
    , messageLengthRem = form.lookup("charRemAmt")
-   , forumDock = dmz.ui.mainWindow.createDock
-     ( "Forum"
-     , { area: dmz.ui.consts.LeftDockWidgetArea
-       , floating: false
-       }
-     , form
-     )
+//   , forumDock = dmz.ui.mainWindow.createDock
+//     ( "Forum"
+//     , { area: dmz.ui.consts.LeftDockWidgetArea
+//       , floating: false
+//       }
+//     , form
+//     )
 
    // Handles
    , PostTextHandle = dmz.defs.createNamedHandle("Post_Text")
@@ -35,9 +36,12 @@ var dmz =
 
    , ForumNameHandle = dmz.defs.createNamedHandle("Forum_Name")
 
+   , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
+
    // Object Types
    , PostType = dmz.objectType.lookup("forum_post")
    , ForumType = dmz.objectType.lookup("forum_type")
+   , GroupType = dmz.objectType.lookup("group")
 
    // Object Lists
    , ForumList = {}
@@ -57,6 +61,7 @@ dmz.object.create.observe(self, function (handle, objType) {
      , parentLinks
      , parent
      , child
+     , text
      ;
 
    if (objType) {
@@ -112,6 +117,13 @@ dmz.object.create.observe(self, function (handle, objType) {
             };
 
          ForumList[handle].widget.data(0, handle);
+      }
+      else if (objType.isOfType(GroupType)) {
+
+         child = dmz.object.create(ForumType);
+         text = dmz.object.text(handle, GroupNameHandle);
+         dmz.object.text(child, ForumNameHandle, text);
+         dmz.object.activate(child);
       }
    }
 });
@@ -218,23 +230,10 @@ tree.observe (self, "itemExpanded", function () {
    tree.resizeColumnToContents(1);
 })
 
-newForum = function (title) {
+dmz.module.subscribe(self, "main", function (Mode, module) {
 
-   var forum
-     ;
+   if (Mode === dmz.module.Activate) {
 
-   if (title) {
-
-      forum = dmz.object.create(ForumType);
-      dmz.object.text(forum, ForumNameHandle, title);
-      dmz.object.activate(forum);
+      module.addPage ("Forum", form);
    }
-}
-
-form.show();
-
-newForum ("Congress");
-newForum ("White House");
-newForum ("Drug Cartel");
-
-
+});
