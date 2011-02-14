@@ -11,5 +11,6 @@
    <object-type name="user"/>
    <object-type name="group"/>
    <object-type name="intel"/>
+   <object-type name="current_user"/>
 </runtime>
 </dmz>

@@ -8,6 +8,7 @@ var dmz =
           , loader: require('dmz/ui/uiLoader')
           , mainWindow: require('dmz/ui/mainWindow')
           , messageBox: require("dmz/ui/messageBox")
+          , graph: require("dmz/ui/graph")
           }
        }
 
@@ -38,10 +39,19 @@ var dmz =
 
    , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
 
+   , UserRealNameHandle = dmz.defs.createNamedHandle("user_real_name")
+   , UserAuthoredPostLinkHandle = dmz.defs.createNamedHandle("user_authored_post_link")
+   , UserReadPostLinkHandle = dmz.defs.createNamedHandle("user_read_post_link")
+
+   // Devtools type, handle
+   , CurrentUserHandle = dmz.defs.createNamedHandle("current_user")
+   , CurrentUserType = dmz.objectType.lookup("current_user")
+
    // Object Types
    , PostType = dmz.objectType.lookup("forum_post")
    , ForumType = dmz.objectType.lookup("forum_type")
    , GroupType = dmz.objectType.lookup("group")
+   , UserType = dmz.objectType.lookup("user")
 
    // Object Lists
    , ForumList = {}
@@ -49,7 +59,10 @@ var dmz =
 
    // Variables
 
-   , CurrentAuthor = "Tester" // Convert to dmz.object call later.
+//   , CurrentAuthor = "Tester" // Convert to dmz.object call later.
+   , CurrentUser = false
+   , UnreadPostBrush = dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
+   , ReadPostBrush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: 1 })
 
    // Test Function decls
    , newForum
@@ -106,7 +119,15 @@ dmz.object.create.observe(self, function (handle, objType) {
 
                child.widget = parent.widget.add ([child.title, child.author, child.date, child.text]);
                child.widget.data(0, handle);
+               if (dmz.object.link(UserReadPostLinkHandle, CurrentUser, handle)) {
+
+                  child.widget.background(0, UnreadPostBrush);
+               }
+               else { child.widget.background(0, ReadPostBrush); }
+
                tree.currentItem(child.widget);
+               tree.resizeColumnToContents(0);
+               tree.resizeColumnToContents(1);
             }
          }
       }
@@ -117,6 +138,7 @@ dmz.object.create.observe(self, function (handle, objType) {
             };
 
          ForumList[handle].widget.data(0, handle);
+         tree.resizeColumnToContents(0);
       }
       else if (objType.isOfType(GroupType)) {
 
@@ -127,6 +149,53 @@ dmz.object.create.observe(self, function (handle, objType) {
       }
    }
 });
+
+
+// Devtools
+dmz.object.link.observe(self, CurrentUserHandle, function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   var type = dmz.object.type(subHandle)
+     , postsRead
+     , currHandle
+     ;
+   if (type && type.isOfType(UserType)) {
+
+      CurrentUser = subHandle;
+      postsRead = dmz.object.subLinks(CurrentUser, UserReadPostLinkHandle);
+      self.log.warn ("Posts read:", postsRead);
+      Object.keys(PostList).forEach(function (item) {
+
+         var post = PostList[item]
+           , data = post.widget.data(0)
+           , index = -1
+           ;
+
+         if (postsRead) { index = postsRead.indexOf(data); }
+         if (index >= 0) {
+
+            post.widget.background(0, ReadPostBrush);
+            if (postsRead) { postsRead.splice(index, 1); }
+         }
+         else { post.widget.background(0, UnreadPostBrush); }
+      });
+
+      currHandle = tree.currentItem().data(0);
+      if (!dmz.object.linkHandle(UserReadPostLinkHandle, CurrentUser, currHandle)) {
+
+         dmz.object.link(UserReadPostLinkHandle, CurrentUser, currHandle);
+      }
+   }
+});
+
+dmz.object.link.observe(self, UserReadPostLinkHandle, function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   if (PostList[subHandle]) {
+
+//      self.log.warn ("This is where the linking would happen...");
+      PostList[subHandle].widget.background(0, ReadPostBrush);
+   }
+});
+
 
 tree.observe (self, "currentItemChanged", function (curr) {
 
@@ -142,6 +211,11 @@ tree.observe (self, "currentItemChanged", function (curr) {
       replyTitleText.enabled(false);
       postText.enabled(false);
       messageLengthRem.text("0");
+   }
+
+   if (!dmz.object.linkHandle(UserReadPostLinkHandle, CurrentUser, currHandle)) {
+
+      dmz.object.link(UserReadPostLinkHandle, CurrentUser, currHandle);
    }
 
    replyTitleText.enabled(true);
@@ -183,7 +257,8 @@ tree.observe (self, "currentItemChanged", function (curr) {
 
       var text = postText.text()
         , title = replyTitleText.text()
-        , author = CurrentAuthor
+        , author = CurrentUser
+        , authorName
         , post
         , mb
         ;
@@ -200,10 +275,12 @@ tree.observe (self, "currentItemChanged", function (curr) {
 
             post = dmz.object.create(PostType);
             dmz.object.text(post, PostTextHandle, text);
-            dmz.object.text(post, PostAuthorHandle, author);
+            authorName = dmz.object.text(author, UserRealNameHandle);
+            dmz.object.text(post, PostAuthorHandle, authorName);
             dmz.object.text(post, PostTitleHandle, title);
             dmz.object.text(post, PostDateHandle, new Date());
             dmz.object.link(PostParentLinkHandle, parentHandle, post);
+            dmz.object.link(UserAuthoredPostLinkHandle, author, post);
             dmz.object.activate(post);
          }
       }
@@ -223,12 +300,6 @@ tree.observe (self, "currentItemChanged", function (curr) {
 
 
 });
-
-tree.observe (self, "itemExpanded", function () {
-
-   tree.resizeColumnToContents(0);
-   tree.resizeColumnToContents(1);
-})
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
