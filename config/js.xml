@@ -20,7 +20,7 @@
    <instance name="devtools"/>
    <instance name="forum"/>
    <instance name="gameCreation"/>
-
+   <instance name="webMap"/>
 </javascript>
 </dmz>
 

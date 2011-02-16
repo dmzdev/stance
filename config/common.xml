@@ -2,14 +2,33 @@
 <dmz>
 <plugin-list>
    <plugin name="dmzObjectModuleBasic"/>
-<!--   <plugin name="dmzPluginSaveMessageMonostate" scope="save-preferences"/> -->
-   <plugin name="dmzObjectModuleBasic"/>
+<!--   <plugin name="dmzObjectModuleBasic"/> -->
    <plugin name="dmzQtPluginObjectInspector"/>
+   <plugin name="dmzBorderWebInterface" scope="webMap"/>
 </plugin-list>
-<!--
-<save-preferences>
-   <message name="Update_Node_Count_Message"/>
-   <message name="Update_Link_Count_Message"/>
-</save-preferences>
--->
+<webMap>
+   <url name="http://dev.chds.us/?dystopia:map2"/>
+   <module>
+      <js>
+         <windowObject name="dmz"/>
+      </js>
+      <main-window name="dmzQtModuleMainWindowBasic"/>
+   </module>
+   <webframe name="DystopiaWebFrame"/>
+   <message-names>
+      <add name="AddPinMessage"/>
+      <add-confirm name="PinAddedMessage"/>
+      <remove name="RemovePinMessage"/>
+      <remove-confirm name="PinRemovedMessage"/>
+      <moved name="PinMovedMessage"/>
+      <set-interface name="SetInterfaceWebFrameMessage"/>
+   </message-names>
+   <pin-handles>
+      <id name="pinID"/>
+      <position name="pinPosition"/>
+      <title name="pinTitle"/>
+      <description name="pinDescription"/>
+   </pin-handles>
+   <pin type="map_push_pin"/>
+</webMap>
 </dmz>
