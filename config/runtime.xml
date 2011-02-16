@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<runtime>
+   <time>
+      <frequency value="120.0"/>
+   </time>
+   <object-type name="forum_type"/>
+   <object-type name="forum_post"/>
+   <object-type name="game_type"/>
+   <object-type name="vote"/>
+   <object-type name="user"/>
+   <object-type name="group"/>
+   <object-type name="intel"/>
+   <object-type name="current_user"/>
+   <object-type name="map_push_pin"/>
+   <message name="AddPinMessage"/>
+   <message name="PinAddedMessage"/>
+   <message name="RemovePinMessage"/>
+   <message name="PinRemovedMessage"/>
+   <message name="PinMovedMessage"/>
+   <message name="SetInterfaceWebFrameMessage"/>
+</runtime>
+</dmz>
