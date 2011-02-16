@@ -18,6 +18,6 @@
    <message name="RemovePinMessage"/>
    <message name="PinRemovedMessage"/>
    <message name="PinMovedMessage"/>
-   <message name="SetInterfaceWebFrameMessage"/>
+   <message name="SetInterfaceWebViewMessage"/>
 </runtime>
 </dmz>

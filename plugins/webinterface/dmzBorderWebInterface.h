@@ -59,7 +59,7 @@ namespace dmz {
          Message _pinRemovedMessage;
          Message _pinMovedMessage;
          Message _removePinMessage;
-         Message _setFrameMessage;
+         Message _setWebViewMessage;
 
          Handle _pinIDHandle;
          Handle _pinPositionHandle;
@@ -71,7 +71,7 @@ namespace dmz {
          String _mainWindowName;
          QtModuleMainWindow *_mainWindow;
 
-         String _frameName;
+         String _webviewName;
 
       private:
          BorderWebInterface ();

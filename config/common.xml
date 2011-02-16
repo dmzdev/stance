@@ -4,6 +4,7 @@
    <plugin name="dmzObjectModuleBasic"/>
 <!--   <plugin name="dmzObjectModuleBasic"/> -->
    <plugin name="dmzQtPluginObjectInspector"/>
+   <plugin name="dmzQtPluginMessageInspector"/>
    <plugin name="dmzBorderWebInterface" scope="webMap"/>
 </plugin-list>
 <webMap>
@@ -14,14 +15,14 @@
       </js>
       <main-window name="dmzQtModuleMainWindowBasic"/>
    </module>
-   <webframe name="DystopiaWebFrame"/>
+   <webview name="WebView"/>
    <message-names>
       <add name="AddPinMessage"/>
       <add-confirm name="PinAddedMessage"/>
       <remove name="RemovePinMessage"/>
       <remove-confirm name="PinRemovedMessage"/>
       <moved name="PinMovedMessage"/>
-      <set-interface name="SetInterfaceWebFrameMessage"/>
+      <set-interface name="SetInterfaceWebViewMessage"/>
    </message-names>
    <pin-handles>
       <id name="pinID"/>

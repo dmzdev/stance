@@ -46,7 +46,7 @@ var dmz =
    , removePinMessage = dmz.message.create(self.config.string("message-names.remove.name"))
    , pinRemovedMessage = dmz.message.create(self.config.string("message-names.remove-confirm.name"))
    , pinMovedMessage = dmz.message.create(self.config.string("message-names.moved.name"))
-   , setFrameMessage = dmz.message.create(self.config.string("message-names.set-interface.name"))
+   , setWebViewMessage = dmz.message.create(self.config.string("message-names.set-interface.name"))
 
    // Variables
    , CurrentUser = false
@@ -58,7 +58,6 @@ var dmz =
    , onPinRemoved
    , onPinMoved
    ;
-
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
@@ -109,8 +108,8 @@ onPinAdded = function (data) {
       PinHandleList[pinHandle] = PinIDList[id];
       dmz.object.scalar(pinHandle, pinIDHandle, id);
       dmz.object.position(pinHandle, pinPositionHandle, [x, y, 0]);
-      dmz.object.string(pinHandle, pinTitleHandle, title);
-      dmz.object.string(pinHandle, pinDescHandle, description);
+      dmz.object.text(pinHandle, pinTitleHandle, title);
+      dmz.object.text(pinHandle, pinDescHandle, description);
       dmz.object.flag(pinHandle, pinActiveHandle, true);
       dmz.object.activate(pinHandle);
    }
@@ -140,14 +139,17 @@ onPinMoved = function (data) {
      , x
      ;
 
-   if (dmz.data.isOfType(data)) {
+   self.log.warn ("onPinMoved");
+   if (dmz.data.isTypeOf(data)) {
 
      id = data.number(pinIDHandle, 0);
      x = data.number(pinPositionHandle, 0);
      y = data.number(pinPositionHandle, 1);
 
+     self.log.warn ("onPinMoved:", id, x, y);
      if (PinIDList[id]) {
 
+        self.log.warn ("onPinMoved:", PinIDList[id].handle);
         dmz.object.position(PinIDList[id].handle, pinPositionHandle, [x, y, 0]);
      }
    }
@@ -156,8 +158,8 @@ onPinMoved = function (data) {
 
 (function () {
 
-   map.url(self.config.string("url.name"));
    map.contextMenuPolicy(dmz.ui.consts.NoContextMenu);
+   map.name(self.config.string("webview.name"));
    map.eventFilter(self, function (object, event) {
 
       var type = event.type()
@@ -165,11 +167,13 @@ onPinMoved = function (data) {
         ;
       if (type == dmz.ui.event.MouseButtonPress) {
 
+         self.log.warn ("Mouse press");
          if (event.button() === dmz.ui.consts.RightButton) {
 
             // Replace this section with code that opens a dialog window which
             // contains a drop-down menu, title, and description area.
             // When that closes, it should send this message out with the modified data
+            self.log.warn ("Right mouse click!");
             data = dmz.data.create();
             data.number(pinPositionHandle, 0, event.x());
             data.number(pinPositionHandle, 1, event.y());
@@ -181,14 +185,42 @@ onPinMoved = function (data) {
    });
    pinAddedMessage.subscribe(self, onPinAdded);
    pinRemovedMessage.subscribe(self, onPinRemoved);
-   pinMovedMessage.subscribe(self, onPinMoved);
-   setFrameMessage.send();
-});
+//   pinMovedMessage.subscribe(self, onPinMoved);
+   pinMovedMessage.subscribe(self, function (data) {
+
+      var id
+        , x
+        , y
+        ;
+
+      self.log.warn ("onPinMoved");
+      if (dmz.data.isTypeOf(data)) {
+
+        id = data.number(pinIDHandle, 0);
+        x = data.number(pinPositionHandle, 0);
+        y = data.number(pinPositionHandle, 1);
+
+        self.log.warn ("onPinMoved:", id, x, y);
+        if (PinIDList[id]) {
+
+           self.log.warn ("onPinMoved:", PinIDList[id].handle);
+           dmz.object.position(PinIDList[id].handle, pinPositionHandle, [x, y, 0]);
+        }
+      }
+
+   });
+
+//   setWebViewMessage.send();
+//   map.show();
+}());
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
       module.addPage ("Map", map);
+      setWebViewMessage.send();
+      map.page().mainFrame().load(self.config.string("url.name"));
+//      map.url(self.config.string("url.name"));
    }
 });

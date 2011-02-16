@@ -50,20 +50,11 @@ var dmz =
    // Function decls
    , setupMainWindow
    , mouseEvent
-   , shiftToIndex
 
    // API
    , _exports = {}
    ;
 
-shiftToIndex = function (name) {
-
-   if (stackedWidget) {
-
-      self.log.warn ("Shifting current index to:", PageIndex[name]);
-      stackedWidget.currentIndex (PageIndex[name]);
-   }
-}
 
 mouseEvent = function (object, event) {
 
@@ -76,11 +67,11 @@ mouseEvent = function (object, event) {
 
       if (type == dmz.ui.event.GraphicsSceneMouseDoubleClick) {
 
-         self.log.warn ("Double click");
+//         self.log.warn ("Double click");
       }
       else if (type == dmz.ui.event.GraphicsSceneMousePress) {
 
-         self.log.warn ("Mouse click");
+//         self.log.warn ("Mouse click");
          pos = event.scenePos();
          items =
             object.items(pos, dmz.ui.consts.IntersectsItemShape, dmz.ui.consts.DescendingOrder);
@@ -188,13 +179,13 @@ _exports.addPage = function (name, widget) {
    var widget;
    if (name && widget && stackedWidget && PageLink[name] && PageLink[name][0]) {
 
-      self.log.warn("Add page!");
-      stackedWidget.remove(PageLink[name][0]);
+//      self.log.warn("Add page!");
+      stackedWidget.remove(PageLink[name][0].data(0));
       stackedWidget.add(widget);
       PageLink[name].forEach(function (item) { item.data(0, widget); });
    }
    // Add some sort of queue to grab things that are loaded before main?
-   else { self.log.warn (name, widget, stackedWidget, PageLink[name]); }
+   else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
 }
 
 setupMainWindow();

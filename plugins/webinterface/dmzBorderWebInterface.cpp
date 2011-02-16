@@ -7,6 +7,7 @@
 #include <dmzRuntimePluginFactoryLinkSymbol.h>
 #include <dmzRuntimePluginInfo.h>
 #include <QtGui/QMainWindow>
+#include <QtWebKit/QWebView>
 #include <QtWebKit/QWebFrame>
 
 dmz::BorderWebInterface::BorderWebInterface (const PluginInfo &Info, Config &local) :
@@ -77,8 +78,9 @@ dmz::BorderWebInterface::receive_message (
 
    if (Type == _addPinMessage) {
 
-      int x, y;
+      int x = -1, y = -1;
       String title, description;
+
 
       if (InData->lookup_int32 (_pinPositionHandle, 0, x) &&
          InData->lookup_int32 (_pinPositionHandle, 1, y) &&
@@ -87,24 +89,29 @@ dmz::BorderWebInterface::receive_message (
 
          emit (addPin (x, y, title.get_buffer (), description.get_buffer ()));
       }
+
+      _log.warn << "X: " << x << " Y: " << y << " title: " << title << " desc: " << description << endl;
    }
    else if (Type == _removePinMessage) {
 
       int id;
       if (InData->lookup_int32 (_pinIDHandle, 0, id)) { emit (removePin (id)); }
    }
-   else if (Type == _setFrameMessage) {
+   else if (Type == _setWebViewMessage) {
 
-      QWebFrame *frame;
+      QWebView *webview (0);
       if (_mainWindow) {
 
-         frame = _mainWindow->get_qt_main_window ()->findChild<QWebFrame *>(_frameName.get_buffer ());
+         webview = _mainWindow->get_qt_main_window ()->findChild<QWebView *>(_webviewName.get_buffer ());
       }
 
-      if (frame) {
+      if (webview) {
 
-         frame->addToJavaScriptWindowObject (_jsWindowObjectName.get_buffer (), this);
+         webview->page ()->mainFrame ()->addToJavaScriptWindowObject (
+            _jsWindowObjectName.get_buffer (),
+            this);
       }
+      _log.warn << "setwebview: " << _mainWindow << " " << webview << " " << _webviewName << " " << _jsWindowObjectName << endl;
    }
 }
 
@@ -135,6 +142,7 @@ dmz::BorderWebInterface::pinWasMoved (const int id, const int x, const int y) {
    data.store_int32 (_pinIDHandle, 0, id);
    data.store_int32 (_pinPositionHandle, 0, x);
    data.store_int32 (_pinPositionHandle, 1, y);
+   _log.warn << "Sending: " << _pinMovedMessage.get_name () << endl;
    _pinMovedMessage.send (&data);
 }
 
@@ -156,12 +164,28 @@ dmz::BorderWebInterface::_init (Config &local) {
    _uiV8Name = config_to_string ("module.js.name", local, "dmzJsModuleUiV8QtBasic");
    _jsWindowObjectName = config_to_string ("module.js.windowObject.name", local, "dmz");
    _mainWindowName = config_to_string ("module.main-window.name", local, "dmzQtModuleMainWindowBasic");
-   _frameName = config_to_string ("webframe.name", local, "DystopiaWebFrame");
+   _webviewName = config_to_string ("webview.name", local, "WebView");
 
-   _pinIDHandle = config_to_string ("pin-handles.id.name", local);
-   _pinPositionHandle = config_to_string ("pin-handles.position.name", local);
-   _pinTitleHandle = config_to_string ("pin-handles.title.name", local);
-   _pinDescHandle = config_to_string ("pin-handles.description.name", local);
+   _pinIDHandle = config_to_named_handle (
+      "pin-handles.id.name",
+      local,
+      "pinID",
+      context);
+   _pinPositionHandle = config_to_named_handle (
+      "pin-handles.position.name",
+      local,
+      "pinPosition",
+      context);
+   _pinTitleHandle = config_to_named_handle (
+      "pin-handles.title.name",
+      local,
+      "pinTitle",
+      context);
+   _pinDescHandle = config_to_named_handle (
+      "pin-handles.description.name",
+      local,
+      "pinDescription",
+      context);
 
    _addPinMessage = config_create_message (
       "message-names.add",
@@ -198,12 +222,16 @@ dmz::BorderWebInterface::_init (Config &local) {
       context,
       &_log);
 
-   _setFrameMessage = config_create_message (
+   _setWebViewMessage = config_create_message (
       "message-names.set-interface",
       local,
-      "SetInterfaceWebFrameMessage",
+      "SetInterfaceWebViewMessage",
       context,
       &_log);
+
+   subscribe_to_message (_setWebViewMessage);
+   subscribe_to_message (_addPinMessage);
+   subscribe_to_message (_removePinMessage);
 }
 
 
