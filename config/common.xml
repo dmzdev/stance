@@ -4,7 +4,7 @@
    <plugin name="dmzObjectModuleBasic"/>
 <!--   <plugin name="dmzObjectModuleBasic"/> -->
    <plugin name="dmzQtPluginObjectInspector"/>
-   <plugin name="dmzQtPluginMessageInspector"/>
+<!--   <plugin name="dmzQtPluginMessageInspector"/> -->
    <plugin name="dmzBorderWebInterface" scope="webMap"/>
 </plugin-list>
 <webMap>
@@ -23,6 +23,7 @@
       <remove-confirm name="PinRemovedMessage"/>
       <moved name="PinMovedMessage"/>
       <set-interface name="SetInterfaceWebViewMessage"/>
+      <selected name="PinSelectedMessage"/>
    </message-names>
    <pin-handles>
       <id name="pinID"/>

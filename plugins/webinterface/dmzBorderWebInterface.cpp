@@ -90,7 +90,6 @@ dmz::BorderWebInterface::receive_message (
          emit (addPin (x, y, title.get_buffer (), description.get_buffer ()));
       }
 
-      _log.warn << "X: " << x << " Y: " << y << " title: " << title << " desc: " << description << endl;
    }
    else if (Type == _removePinMessage) {
 
@@ -111,7 +110,6 @@ dmz::BorderWebInterface::receive_message (
             _jsWindowObjectName.get_buffer (),
             this);
       }
-      _log.warn << "setwebview: " << _mainWindow << " " << webview << " " << _webviewName << " " << _jsWindowObjectName << endl;
    }
 }
 
@@ -142,7 +140,6 @@ dmz::BorderWebInterface::pinWasMoved (const int id, const int x, const int y) {
    data.store_int32 (_pinIDHandle, 0, id);
    data.store_int32 (_pinPositionHandle, 0, x);
    data.store_int32 (_pinPositionHandle, 1, y);
-   _log.warn << "Sending: " << _pinMovedMessage.get_name () << endl;
    _pinMovedMessage.send (&data);
 }
 
@@ -153,6 +150,15 @@ dmz::BorderWebInterface::pinWasRemoved (const int id) {
    Data data;
    data.store_int32 (_pinIDHandle, 0, id);
    _pinRemovedMessage.send (&data);
+}
+
+
+void
+dmz::BorderWebInterface::pinSelected (const int id) {
+
+   Data data;
+   data.store_int32 (_pinIDHandle, 0, id);
+   _pinSelectedMessage.send (&data);
 }
 
 
@@ -226,6 +232,13 @@ dmz::BorderWebInterface::_init (Config &local) {
       "message-names.set-interface",
       local,
       "SetInterfaceWebViewMessage",
+      context,
+      &_log);
+
+   _pinSelectedMessage = config_create_message (
+      "message-names.selected",
+      local,
+      "PinSelectedMessage",
       context,
       &_log);
 

@@ -47,6 +47,7 @@ namespace dmz {
          void pinWasMoved (const int id, const int x, const int y);
          void pinWasAdded (const int id, const int x, const int y, const QString title, const QString description);
          void pinWasRemoved (const int id);
+         void pinSelected (const int id);
 
       protected:
          // BorderWebInterface Interface
@@ -56,8 +57,9 @@ namespace dmz {
 
          Message _addPinMessage;
          Message _pinAddedMessage;
-         Message _pinRemovedMessage;
          Message _pinMovedMessage;
+         Message _pinRemovedMessage;
+         Message _pinSelectedMessage;
          Message _removePinMessage;
          Message _setWebViewMessage;
 

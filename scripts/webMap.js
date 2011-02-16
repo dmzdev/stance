@@ -47,16 +47,17 @@ var dmz =
    , pinRemovedMessage = dmz.message.create(self.config.string("message-names.remove-confirm.name"))
    , pinMovedMessage = dmz.message.create(self.config.string("message-names.moved.name"))
    , setWebViewMessage = dmz.message.create(self.config.string("message-names.set-interface.name"))
+   , pinSelectedMessage = dmz.message.create(self.config.string("message-names.selected.name"))
 
    // Variables
    , CurrentUser = false
    , PinIDList = {}
    , PinHandleList = {}
+   , CurrentPinID = -1
 
    // Function decls
    , onPinAdded
    , onPinRemoved
-   , onPinMoved
    ;
 
 dmz.object.create.observe(self, function (objHandle, objType) {
@@ -133,29 +134,6 @@ onPinRemoved = function (data) {
    }
 }
 
-onPinMoved = function (data) {
-
-   var id
-     , x
-     ;
-
-   self.log.warn ("onPinMoved");
-   if (dmz.data.isTypeOf(data)) {
-
-     id = data.number(pinIDHandle, 0);
-     x = data.number(pinPositionHandle, 0);
-     y = data.number(pinPositionHandle, 1);
-
-     self.log.warn ("onPinMoved:", id, x, y);
-     if (PinIDList[id]) {
-
-        self.log.warn ("onPinMoved:", PinIDList[id].handle);
-        dmz.object.position(PinIDList[id].handle, pinPositionHandle, [x, y, 0]);
-     }
-   }
-
-}
-
 (function () {
 
    map.contextMenuPolicy(dmz.ui.consts.NoContextMenu);
@@ -167,7 +145,6 @@ onPinMoved = function (data) {
         ;
       if (type == dmz.ui.event.MouseButtonPress) {
 
-         self.log.warn ("Mouse press");
          if (event.button() === dmz.ui.consts.RightButton) {
 
             // Replace this section with code that opens a dialog window which
@@ -185,7 +162,6 @@ onPinMoved = function (data) {
    });
    pinAddedMessage.subscribe(self, onPinAdded);
    pinRemovedMessage.subscribe(self, onPinRemoved);
-//   pinMovedMessage.subscribe(self, onPinMoved);
    pinMovedMessage.subscribe(self, function (data) {
 
       var id
@@ -193,25 +169,38 @@ onPinMoved = function (data) {
         , y
         ;
 
-      self.log.warn ("onPinMoved");
       if (dmz.data.isTypeOf(data)) {
 
         id = data.number(pinIDHandle, 0);
         x = data.number(pinPositionHandle, 0);
         y = data.number(pinPositionHandle, 1);
 
-        self.log.warn ("onPinMoved:", id, x, y);
         if (PinIDList[id]) {
 
-           self.log.warn ("onPinMoved:", PinIDList[id].handle);
            dmz.object.position(PinIDList[id].handle, pinPositionHandle, [x, y, 0]);
         }
       }
 
    });
+   pinSelectedMessage.subscribe(self, function (data) {
 
-//   setWebViewMessage.send();
-//   map.show();
+      var id
+        , x
+        , y
+        ;
+
+      if (dmz.data.isTypeOf(data)) {
+
+        id = data.number(pinIDHandle, 0);
+
+        if (PinIDList[id]) {
+
+           CurrentPinID = id;
+           self.log.warn ("Selected:", id, PinIDList[id].handle);
+        }
+      }
+   });
+
 }());
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
@@ -221,6 +210,5 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       module.addPage ("Map", map);
       setWebViewMessage.send();
       map.page().mainFrame().load(self.config.string("url.name"));
-//      map.url(self.config.string("url.name"));
    }
 });
