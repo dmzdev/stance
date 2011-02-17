@@ -16,10 +16,11 @@ var dmz =
    , form = dmz.ui.loader.load("ForumTreeForm.ui")
    , tree = form.lookup ("treeWidget")
    , textBox = form.lookup ("textEdit")
-   , replyTitleText = form.lookup("titleEdit")
-   , postText = form.lookup("postTextEdit")
-   , submitPostButton = form.lookup("submitButton")
-   , messageLengthRem = form.lookup("charRemAmt")
+   , replyButton = form.lookup ("replyButton")
+   , dialog = dmz.ui.loader.load("NewForumPostDialog.ui")
+   , replyTitleText = dialog.lookup("titleEdit")
+   , postText = dialog.lookup("postTextEdit")
+   , messageLengthRem = dialog.lookup("charRemAmt")
 //   , forumDock = dmz.ui.mainWindow.createDock
 //     ( "Forum"
 //     , { area: dmz.ui.consts.LeftDockWidgetArea
@@ -206,31 +207,32 @@ tree.observe (self, "currentItemChanged", function (curr) {
      , maxPostLength
      ;
    textBox.text (curr.text(3));
-   if (submitPostButton.enabled()) {
+//   if (submitPostButton.enabled()) {
 
-      submitPostButton.enabled(false);
-      replyTitleText.enabled(false);
-      postText.enabled(false);
-      messageLengthRem.text("0");
-   }
+//      submitPostButton.enabled(false);
+//      replyTitleText.enabled(false);
+//      postText.enabled(false);
+//      messageLengthRem.text("0");
+//   }
 
-   if (!dmz.object.linkHandle(UserReadPostLinkHandle, CurrentUser, currHandle)) {
+   if (!dmz.object.linkHandle(UserReadPostLinkHandle, CurrentUser, currHandle) &&
+      type.isOfType(PostType)) {
 
       dmz.object.link(UserReadPostLinkHandle, CurrentUser, currHandle);
    }
 
-   replyTitleText.enabled(true);
-   postText.enabled(true);
-   submitPostButton.enabled(true);
+//   replyTitleText.enabled(true);
+//   postText.enabled(true);
+//   submitPostButton.enabled(true);
    if (type.isOfType(ForumType)) {
 
-      submitPostButton.text("Add Topic");
+      replyButton.text("New Thread");
       parentHandle = currHandle;
       maxPostLength = 1000;
    }
    else if (type.isOfType(PostType)) {
 
-      submitPostButton.text("Add Reply");
+      submitPostButton.text("New Reply");
       maxPostLength = 400;
       parentHandle = dmz.object.superLinks(currHandle, PostParentLinkHandle)[0];
       if (dmz.object.type(parentHandle).isOfType(ForumType)) {
@@ -254,7 +256,9 @@ tree.observe (self, "currentItemChanged", function (curr) {
       messageLengthRem.text("<font color="+color+">"+diff+"</font>");
    });
 
-   submitPostButton.observe(self, "clicked", function () {
+   replyButton.observe(self, "clicked", );
+
+   function () {
 
       var text = postText.text()
         , title = replyTitleText.text()
@@ -297,7 +301,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
             , postText).open(self, function () {});
 
       }
-   });
+   };
 
 
 });
