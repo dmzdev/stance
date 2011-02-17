@@ -46,6 +46,7 @@ var dmz =
 
    // Variables
    , groupList = []
+   , userList = {}
 
    // Function decls
    , createNewGame
@@ -57,24 +58,56 @@ var dmz =
    , arrayContains
    , userToGroup
    , userFromGroup
+   , configToStudent
 
    ;
+
+
+configToStudent = function (student) {
+
+   var name
+     , email
+     ;
+
+   name = student.string("name", "NAME FAIL");
+   email = student.string("email", "EMAIL FAIL");
+   return createNewUser(name, email);
+};
 
 readUserConfig = function () {
 
    var studentList = self.config.get("student-list.student")
+     , groupConfigList = self.config.get("group-list.group")
      ;
 
-   studentList.forEach(function (student) {
+   if (studentList) { studentList.forEach(configToStudent); }
 
-      var name
-        , email
-        ;
+   if (groupConfigList) {
 
-      name = student.string("name", "NAME FAIL");
-      email = student.string("email", "EMAIL FAIL");
-      createNewUser(name, email);
-   });
+      groupConfigList.forEach(function (group) {
+
+         var studentList = group.get("student")
+           , name = group.string("name", "No Name Group")
+           , groupHandle
+           , idx
+           , user
+           ;
+
+         groupHandle = dmz.object.create(GroupType);
+         dmz.object.text(groupHandle, GroupNameHandle, name);
+         dmz.object.activate(groupHandle);
+         groupList.push(groupHandle);
+         groupComboBox.addItem(name);
+         for (idx = 0; idx < studentList.length; idx += 1) {
+
+            user = configToStudent(studentList[idx])
+            if (user) {
+
+               dmz.object.link(GroupMembersHandle, groupHandle, user);
+            }
+         }
+      });
+   }
 };
 
 createNewUser = function (name, email) {
@@ -90,6 +123,7 @@ createNewUser = function (name, email) {
       dmz.object.text(user, UserGameNameHandle, getNewRandomName());
       dmz.object.activate(user);
    }
+   return user;
 };
 
 // Placeholder for later function to generate names
@@ -104,7 +138,9 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
       if (objType.isOfType(UserType)) {
 
-         ungroupedStudentList.addItem(dmz.object.text(objHandle, UserRealNameHandle), objHandle);
+         userList[objHandle] =
+            ungroupedStudentList.addItem(dmz.object.text(objHandle, UserRealNameHandle), objHandle);
+
       }
       else if (objType.isOfType(GameType)) {
 
@@ -116,6 +152,50 @@ dmz.object.create.observe(self, function (objHandle, objType) {
       }
    }
 });
+
+dmz.object.link.observe(self, GroupMembersHandle,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   var subType = dmz.object.type(subHandle)
+     , superType = dmz.object.type(superHandle)
+     , item
+     , members
+     ;
+
+   if (subType.isOfType(UserType) && superType.isOfType(GroupType)) {
+
+      if (groupList.indexOf(superHandle) !== -1) {
+
+         item = userList[subHandle];
+         ungroupedStudentList.removeItem(item);
+         groupStudentList.addItem(item);
+         item.hidden(groupList[groupComboBox.currentIndex()] !== superHandle);
+      }
+   }
+});
+
+dmz.object.unlink.observe(self, GroupMembersHandle,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   var subType = dmz.object.type(subHandle)
+     , superType = dmz.object.type(superHandle)
+     , item
+     , members
+     ;
+
+
+   if (subType.isOfType(UserType) && superType.isOfType(GroupType)) {
+
+      if (groupList.indexOf(superHandle) !== -1) {
+
+         item = userList[subHandle];
+         groupStudentList.removeItem(item);
+         ungroupedStudentList.addItem(item);
+         item.hidden(false);
+      }
+   }
+});
+
 
 doneButton.observe(self, "clicked", function () {
 
@@ -148,10 +228,6 @@ userToGroup = function (item) {
 
          dmz.object.link(GroupMembersHandle, groupList[currentIndex], objHandle);
       }
-
-      ungroupedStudentList.removeItem(item);
-      groupStudentList.addItem(item);
-//      self.log.warn ("groupStudentList:", groupStudentList.count());
    }
 };
 
@@ -172,9 +248,6 @@ userFromGroup = function (item) {
          linkHandle = dmz.object.linkHandle(GroupMembersHandle, groupList[currentIndex], objHandle);
          dmz.object.unlink(linkHandle);
       }
-
-      groupStudentList.removeItem(item);
-      ungroupedStudentList.addItem(item);
    }
 };
 
@@ -213,17 +286,12 @@ removeCurrentGroup = function () {
      , item
      ;
 
-   self.log.warn ("index:", index, "handle:" , groupHandle, "groupList:", groupList);
    groupList.splice (index, 1);
-   self.log.warn ("groupList:", groupList);
    groupComboBox.removeIndex(index);
-//   dmz.object.unlinkSubObjects(groupHandle, GroupMembersHandle);
-//   dmz.object.unlinkSuperObjects(groupHandle, GameGroupHandle);
 
    count = groupStudentList.count();
    for (idx = count - 1; idx >= 0; idx -= 1) {
 
-//      ungroupedStudentList.addItem(groupStudentList.takeItem(idx));
       item = groupStudentList.item(idx);
       if (!item.hidden()) { userFromGroup(item); }
    }
@@ -253,7 +321,6 @@ groupComboBox.observe(self, "currentIndexChanged", function (index) {
    if (groupHandle) {
 
       members = dmz.object.subLinks(groupHandle, GroupMembersHandle);
-      self.log.warn ("groupHandle:", groupHandle, members);
       count = groupStudentList.count();
       if (members) {
 

@@ -152,7 +152,8 @@ dmz.object.create.observe(self, function (handle, objType) {
 
 
 // Devtools
-dmz.object.link.observe(self, CurrentUserHandle, function (linkObjHandle, attrHandle, superHandle, subHandle) {
+dmz.object.link.observe(self, CurrentUserHandle,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    var type = dmz.object.type(subHandle)
      , postsRead

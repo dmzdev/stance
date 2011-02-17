@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dmz>
 <gameCreation>
-   <student-list>
-      <student name="Joe Bob" email="jbob@email.com"/>
-      <student name="Jill Sue" email="jsue@email.com"/>
-      <student name="Alex Dillbert" email="adillbert@email.com"/>
-      <student name="Chris Six" email="csix@email.com"/>
-      <student name="Jon Stewart" email="jstewart@email.com"/>
-      <student name="Nick Brick" email="nbrick@email.com"/>
-   </student-list>
+   <group-list>
+      <group name="Congress">
+         <student name="Joe Bob" email="jbob@email.com"/>
+         <student name="Jill Sue" email="jsue@email.com"/>
+      </group>
+      <group name="Drug Cartel">
+         <student name="Alex Dillbert" email="adillbert@email.com"/>
+         <student name="Chris Six" email="csix@email.com"/>
+      </group>
+      <group name="White House">
+         <student name="Jon Stewart" email="jstewart@email.com"/>
+         <student name="Nick Brick" email="nbrick@email.com"/>      
+      </group>
+   </group-list>
 </gameCreation>
 </dmz>
