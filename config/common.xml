@@ -6,6 +6,7 @@
 <!--   <plugin name="dmzQtPluginObjectInspector"/> -->
 <!--   <plugin name="dmzQtPluginMessageInspector"/> -->
    <plugin name="dmzBorderWebInterface" scope="webMap"/>
+   <plugin name="dmzQtPluginAppUpdater" scope="updater"/>
 </plugin-list>
 <webMap>
    <url name="http://dev.chds.us/?dystopia:map2"/>
@@ -46,4 +47,13 @@
    </icon-type>
    <pin type="map_push_pin"/>
 </webMap>
+<updater>
+   <force-update value="true"/>
+   <!-- <download-to-temp value="false"/> -->
+   <release channel="devel"/>
+   <update
+      host="http://update.dmzdev.org"
+      path="/latest/{system_name}-{release_channel}/{app_name}"/>
+   <download path="/downloads/{app_name}-{major}-{minor}-{bug}-{build_number}"/>
+   </updater>
 </dmz>

@@ -19,5 +19,7 @@
    <message name="PinRemovedMessage"/>
    <message name="PinMovedMessage"/>
    <message name="SetInterfaceWebViewMessage"/>
+   <message name="AppUpdaterUpdateMessage"/>
+   <message name="AppUpdaterChannelMessage"/>
 </runtime>
 </dmz>
