@@ -21,6 +21,7 @@ var dmz =
    , replyTitleText = dialog.lookup("titleEdit")
    , postText = dialog.lookup("postTextEdit")
    , messageLengthRem = dialog.lookup("charRemAmt")
+   , buttonBox = dialog.lookup("buttonBox")
 //   , forumDock = dmz.ui.mainWindow.createDock
 //     ( "Forum"
 //     , { area: dmz.ui.consts.LeftDockWidgetArea
@@ -181,10 +182,14 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
          else { post.widget.background(0, UnreadPostBrush); }
       });
 
-      currHandle = tree.currentItem().data(0);
-      if (!dmz.object.linkHandle(UserReadPostLinkHandle, CurrentUser, currHandle)) {
+      currHandle = tree.currentItem();
+      if (currHandle) {
 
-         dmz.object.link(UserReadPostLinkHandle, CurrentUser, currHandle);
+         currHandle = currHandle.data(0);
+         if (!dmz.object.linkHandle(UserReadPostLinkHandle, CurrentUser, currHandle)) {
+
+            dmz.object.link(UserReadPostLinkHandle, CurrentUser, currHandle);
+         }
       }
    }
 });
@@ -207,13 +212,6 @@ tree.observe (self, "currentItemChanged", function (curr) {
      , maxPostLength
      ;
    textBox.text (curr.text(3));
-//   if (submitPostButton.enabled()) {
-
-//      submitPostButton.enabled(false);
-//      replyTitleText.enabled(false);
-//      postText.enabled(false);
-//      messageLengthRem.text("0");
-//   }
 
    if (!dmz.object.linkHandle(UserReadPostLinkHandle, CurrentUser, currHandle) &&
       type.isOfType(PostType)) {
@@ -221,9 +219,6 @@ tree.observe (self, "currentItemChanged", function (curr) {
       dmz.object.link(UserReadPostLinkHandle, CurrentUser, currHandle);
    }
 
-//   replyTitleText.enabled(true);
-//   postText.enabled(true);
-//   submitPostButton.enabled(true);
    if (type.isOfType(ForumType)) {
 
       replyButton.text("New Thread");
@@ -232,7 +227,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
    }
    else if (type.isOfType(PostType)) {
 
-      submitPostButton.text("New Reply");
+      replyButton.text("New Reply");
       maxPostLength = 400;
       parentHandle = dmz.object.superLinks(currHandle, PostParentLinkHandle)[0];
       if (dmz.object.type(parentHandle).isOfType(ForumType)) {
@@ -250,60 +245,49 @@ tree.observe (self, "currentItemChanged", function (curr) {
         , color = "black"
         ;
 
+      buttonBox.enabled(length < maxPostLength);
       if (length > maxPostLength) { color = "red"; }
       else if (length > (maxPostLength / 2)) { color = "blue"; }
       else if (length > (maxPostLength / 4)) { color = "green"; }
       messageLengthRem.text("<font color="+color+">"+diff+"</font>");
    });
 
-   replyButton.observe(self, "clicked", );
+   replyButton.observe(self, "clicked", function () {
 
-   function () {
+      dialog.open(self, function (value, dialog) {
 
-      var text = postText.text()
-        , title = replyTitleText.text()
-        , author = CurrentUser
-        , authorName
-        , post
-        , mb
-        ;
+         var text
+           , title
+           , author
+           , authorName
+           , post
+           , mb
+           ;
 
-      if (text.length <= maxPostLength) {
+         if (value) {
+
+            text = postText.text();
+            title = replyTitleText.text();
+            author = CurrentUser;
+
+            if ((text.length <= maxPostLength) && parentHandle) {
+
+               post = dmz.object.create(PostType);
+               dmz.object.text(post, PostTextHandle, text);
+               authorName = dmz.object.text(author, UserRealNameHandle);
+               dmz.object.text(post, PostAuthorHandle, authorName);
+               dmz.object.text(post, PostTitleHandle, title);
+               dmz.object.text(post, PostDateHandle, new Date());
+               dmz.object.link(PostParentLinkHandle, parentHandle, post);
+               dmz.object.link(UserAuthoredPostLinkHandle, author, post);
+               dmz.object.activate(post);
+            }
+         }
 
          replyTitleText.clear();
          postText.clear();
-         replyTitleText.enabled(false);
-         postText.enabled(false);
-         submitPostButton.enabled(false);
-
-         if (parentHandle) {
-
-            post = dmz.object.create(PostType);
-            dmz.object.text(post, PostTextHandle, text);
-            authorName = dmz.object.text(author, UserRealNameHandle);
-            dmz.object.text(post, PostAuthorHandle, authorName);
-            dmz.object.text(post, PostTitleHandle, title);
-            dmz.object.text(post, PostDateHandle, new Date());
-            dmz.object.link(PostParentLinkHandle, parentHandle, post);
-            dmz.object.link(UserAuthoredPostLinkHandle, author, post);
-            dmz.object.activate(post);
-         }
-      }
-      else {
-
-         dmz.ui.messageBox.create (
-            { type: dmz.ui.messageBox.Critical
-            , text: "Maximum Message Length Exceeded"
-            , informativeText: "Maximum: " + maxPostLength + ", Current: " + text.length
-            , defaultButton: dmz.ui.messageBox.Ok
-            , standardButtons: [dmz.ui.messageBox.Ok]
-            }
-            , postText).open(self, function () {});
-
-      }
-   };
-
-
+      });
+   });
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
