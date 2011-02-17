@@ -338,4 +338,4 @@ groupComboBox.observe(self, "currentIndexChanged", function (index) {
 });
 
 readUserConfig();
-setGroupsForm.show();
+//setGroupsForm.show();

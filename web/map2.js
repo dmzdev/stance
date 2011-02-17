@@ -365,6 +365,7 @@
          pointList[pointID] = feature;
          pointID += 1;
       }
+//      else { alert ("No DMZ object"); }
    }
 
    appRemovePoint = function (id) {

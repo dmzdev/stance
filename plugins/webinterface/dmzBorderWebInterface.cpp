@@ -113,10 +113,13 @@ dmz::BorderWebInterface::receive_message (
 
       if (webview) {
 
+//         _log.warn << "Added JS object to window:" << _jsWindowObjectName << endl;
          webview->page ()->mainFrame ()->addToJavaScriptWindowObject (
             _jsWindowObjectName.get_buffer (),
             this);
       }
+
+//      _log.warn << "_mainWindow:" << _mainWindow << " webview: " << webview << endl;
    }
 }
 
