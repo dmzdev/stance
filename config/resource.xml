@@ -6,6 +6,16 @@
       <path value="./assets/"/>
    </search>
 <!--   <resource name="small node" file="circle.png"/> -->
+<!--   <resource name="security" file="AddSecurity-sm.png"/>
+   <resource name="bomb" file="Bomb-sm.png"/>
+   <resource name="disaster" file="Disasters-sm.png"/>
+   <resource name="event" file="Event-sm.png"/>
+   <resource name="generic" file="GenericMarker-sm.png"/>
+   <resource name="info" file="Information-sm.png"/>
+   <resource name="meeting" file="MeetingPlace-sm.png"/>
+   <resource name="note" file="Note-sm.png"/>
+   <resource name="placeholder" file="Placeholder-sm.png"/>
+   <resource name="target" file="Target-sm.png"/> -->
 </resource-map>
 </runtime>
 </dmz>

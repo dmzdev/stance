@@ -79,15 +79,22 @@ dmz::BorderWebInterface::receive_message (
    if (Type == _addPinMessage) {
 
       int x = -1, y = -1;
-      String title, description;
+      String title, description, filename;
 
 
       if (InData->lookup_int32 (_pinPositionHandle, 0, x) &&
          InData->lookup_int32 (_pinPositionHandle, 1, y) &&
          InData->lookup_string (_pinTitleHandle, 0, title) &&
-         InData->lookup_string (_pinDescHandle, 0, description)) {
+         InData->lookup_string (_pinDescHandle, 0, description) &&
+         InData->lookup_string (_pinFileHandle, 0, filename)) {
 
-         emit (addPin (x, y, title.get_buffer (), description.get_buffer ()));
+         emit (
+            addPin (
+               x,
+               y,
+               title.get_buffer (),
+               description.get_buffer (),
+               filename.get_buffer ()));
       }
 
    }
@@ -121,7 +128,8 @@ dmz::BorderWebInterface::pinWasAdded (
       const int x,
       const int y,
       const QString title,
-      const QString description) {
+      const QString description,
+      const QString filename) {
 
    Data data;
    data.store_int32 (_pinIDHandle, 0, id);
@@ -129,6 +137,7 @@ dmz::BorderWebInterface::pinWasAdded (
    data.store_int32 (_pinPositionHandle, 1, y);
    data.store_string (_pinTitleHandle, 0, qPrintable (title));
    data.store_string (_pinDescHandle, 0, qPrintable (description));
+   data.store_string (_pinFileHandle, 0, qPrintable (filename));
    _pinAddedMessage.send (&data);
 }
 
@@ -191,6 +200,12 @@ dmz::BorderWebInterface::_init (Config &local) {
       "pin-handles.description.name",
       local,
       "pinDescription",
+      context);
+
+   _pinFileHandle = config_to_named_handle (
+      "pin-handles.file.name",
+      local,
+      "pinFileHandle",
       context);
 
    _addPinMessage = config_create_message (

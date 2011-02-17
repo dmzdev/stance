@@ -40,12 +40,12 @@ namespace dmz {
             Data *outData);
 
       signals:
-         void addPin (const int x, const int y, const QString title, const QString description);
+         void addPin (const int x, const int y, const QString title, const QString description, const QString filename);
          void removePin (const int id);
 
       public slots:
          void pinWasMoved (const int id, const int x, const int y);
-         void pinWasAdded (const int id, const int x, const int y, const QString title, const QString description);
+         void pinWasAdded (const int id, const int x, const int y, const QString title, const QString description, const QString filename);
          void pinWasRemoved (const int id);
          void pinSelected (const int id);
 
@@ -67,6 +67,7 @@ namespace dmz {
          Handle _pinPositionHandle;
          Handle _pinTitleHandle;
          Handle _pinDescHandle;
+         Handle _pinFileHandle;
 
          String _uiV8Name;
          String _jsWindowObjectName;

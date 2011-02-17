@@ -30,7 +30,20 @@
       <position name="pinPosition"/>
       <title name="pinTitle"/>
       <description name="pinDescription"/>
+      <file name="pinFile"/>
    </pin-handles>
+   <icon-type path="./assets/">
+      <icon name="Generic" file="GenericMarker-sm.png" webfile="GenericMarker.png"/>
+      <icon name="Security" file="AddSecurity-sm.png" webfile="AddSecurity.png"/>
+      <icon name="Bomb" file="Bomb-sm.png" webfile="Bomb.png"/>
+      <icon name="Disaster" file="Disasters-sm.png" webfile="Disasters-sm.png"/>
+      <icon name="Event" file="Event-sm.png" webfile="Event.png"/>
+      <icon name="Info" file="Information-sm.png" webfile="Information.png"/>
+      <icon name="Meeting" file="MeetingPlace-sm.png" webfile="MeetingPlace.png"/>
+      <icon name="Note" file="Note-sm.png" webfile="Note.png"/>
+      <icon name="Question" file="Placeholder-sm.png" webfile="Placeholder.png"/>
+      <icon name="Target" file="Target-sm.png" webfile="Target.png"/>
+   </icon-type>
    <pin type="map_push_pin"/>
 </webMap>
 </dmz>

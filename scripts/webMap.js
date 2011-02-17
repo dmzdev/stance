@@ -12,11 +12,17 @@ var dmz =
           , mainWindow: require('dmz/ui/mainWindow')
           , messageBox: require("dmz/ui/messageBox")
           , webview: require("dmz/ui/webView")
+          , graph: require("dmz/ui/graph")
           }
        }
 
    // UI elements
    , map = dmz.ui.webview.create()
+   , newPinDialog = dmz.ui.loader.load("MapAddPinDialog.ui")
+   , typeList = newPinDialog.lookup("typeList")
+   , descEdit = newPinDialog.lookup("descEdit")
+   , titleEdit = newPinDialog.lookup("titleEdit")
+   , picture = newPinDialog.lookup("picture")
 
    // Handles
    , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
@@ -29,7 +35,9 @@ var dmz =
    , pinPositionHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.position.name"))
    , pinTitleHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.title.name"))
    , pinDescHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.description.name"))
+   , pinFileHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.file.name"))
    , pinActiveHandle = dmz.defs.createNamedHandle("Pin_Active")
+
 
    // Devtools type
    , CurrentUserHandle = dmz.defs.createNamedHandle("current_user")
@@ -54,6 +62,7 @@ var dmz =
    , PinIDList = {}
    , PinHandleList = {}
    , CurrentPinID = -1
+   , PinIconList = []
 
    // Function decls
    , onPinAdded
@@ -75,12 +84,14 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          pos = dmz.object.position(pinHandle, pinPositionHandle);
          title = dmz.object.string(pinHandle, pinTitleHandle);
          description = dmz.object.string(pinHandle, pinDescHandle);
+         file = dmz.object.string(pinHandle, pinFileHandle);
 
          data = dmz.data.create();
          data.number(pinPositionHandle, 0, pos.x);
          data.number(pinPositionHandle, 1, pos.y);
          data.string(pinTitleHandle, 0, title);
          data.string(pinDescHandle, 0, description);
+         data.string(pinFileHandle, 0, file);
          addPinMessage.send(data);
       }
    }
@@ -93,6 +104,7 @@ onPinAdded = function (data) {
      , y
      , title
      , description
+     , file
      , pinHandle
      ;
 
@@ -103,6 +115,7 @@ onPinAdded = function (data) {
       y = data.number(pinPositionHandle, 1);
       title = data.string(pinTitleHandle, 0);
       description = data.string(pinDescHandle, 0);
+      file = data.string(pinFileHandle, 0);
 
       pinHandle = dmz.object.create(PinType);
       PinIDList[id] = { id: id, handle: pinHandle };
@@ -111,6 +124,7 @@ onPinAdded = function (data) {
       dmz.object.position(pinHandle, pinPositionHandle, [x, y, 0]);
       dmz.object.text(pinHandle, pinTitleHandle, title);
       dmz.object.text(pinHandle, pinDescHandle, description);
+      dmz.object.text(pinHandle, pinFileHandle, file);
       dmz.object.flag(pinHandle, pinActiveHandle, true);
       dmz.object.activate(pinHandle);
    }
@@ -134,6 +148,50 @@ onPinRemoved = function (data) {
    }
 }
 
+typeList.observe (self, "currentIndexChanged", function (index) {
+
+   if (PinIconList[index]) {
+
+      picture.pixmap(PinIconList[index].pixmap);
+   }
+});
+
+
+// Dialog setup
+(function () {
+
+   var iconList = self.config.get("icon-type.icon")
+     , directory = self.config.string("icon-type.path")
+     ;
+
+   if (iconList) {
+
+      iconList.forEach(function (icon) {
+
+         var name = icon.string("name")
+           , file = icon.string("file")
+           , webfile = icon.string("webfile")
+           , data
+           ;
+
+         if (!file) {
+
+            file = "jake-sm.png";
+         }
+
+         file = directory + file;
+         file = dmz.ui.graph.createPixmap(file);
+         data = { name: name, pixmap: file, webfile: webfile };
+         PinIconList.push(data);
+         typeList.addItem (name);
+      });
+
+      typeList.currentIndex(0);
+   }
+}());
+
+
+// Map setup
 (function () {
 
    map.contextMenuPolicy(dmz.ui.consts.NoContextMenu);
@@ -141,8 +199,10 @@ onPinRemoved = function (data) {
    map.eventFilter(self, function (object, event) {
 
       var type = event.type()
-        , data
+        , x
+        , y
         ;
+
       if (type == dmz.ui.event.MouseButtonPress) {
 
          if (event.button() === dmz.ui.consts.RightButton) {
@@ -150,13 +210,27 @@ onPinRemoved = function (data) {
             // Replace this section with code that opens a dialog window which
             // contains a drop-down menu, title, and description area.
             // When that closes, it should send this message out with the modified data
-            self.log.warn ("Right mouse click!");
-            data = dmz.data.create();
-            data.number(pinPositionHandle, 0, event.x());
-            data.number(pinPositionHandle, 1, event.y());
-            data.string(pinTitleHandle, 0, "Some title");
-            data.string(pinDescHandle, 0, "Some description.");
-            addPinMessage.send(data);
+//            self.log.warn ("Right mouse click!");
+
+            x = event.x();
+            y = event.y();
+            newPinDialog.open(self, function (value, dialog) {
+
+               var data;
+
+               if (value) {
+
+                  data = dmz.data.create();
+                  data.number(pinPositionHandle, 0, x);
+                  data.number(pinPositionHandle, 1, y);
+                  data.string(pinTitleHandle, 0, titleEdit.text());
+                  data.string(pinDescHandle, 0, descEdit.text());
+                  data.string(pinFileHandle, 0, PinIconList[typeList.currentIndex()].webfile);
+                  addPinMessage.send(data);
+                  titleEdit.clear();
+                  descEdit.clear();
+               }
+            });
          }
       }
    });

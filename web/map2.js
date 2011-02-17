@@ -86,9 +86,9 @@
 
 
       //////////////////////////////////////////
-      appAddPoint(200, 200, 'Title Goes Here', 'This is a description for testing purproses');
-      appAddPoint(200, 300, 'Title Goes Here', 'This is a description for testing purproses');
-      appAddPoint(200, 400, 'Title Goes Here', 'This is a description for testing purproses');
+      appAddPoint(200, 200, 'Title Goes Here', 'This is a description for testing purproses', "GenericMarker.png");
+      appAddPoint(200, 300, 'Title Goes Here', 'This is a description for testing purproses', "GenericMarker.png");
+      appAddPoint(200, 400, 'Title Goes Here', 'This is a description for testing purproses', "GenericMarker.png");
    }
 
 
@@ -326,15 +326,20 @@
    }
 
    // App layer add marker
-   appAddPoint = function (x, y, title, content) {
+   appAddPoint = function (x, y, title, content, file) {
 
       var lonlat
         , feature
+        , style
+        , layer
         ;
 
       if (window.dmz) {
 
 //         alert ("appAddPoint");
+         layer = MapDystopia.getLayersByName('AppLayer')[0];
+         style = layer.style;
+         style.externalGraphic = "dystopia/pages/MapIcons/" + file;
          lonlat = MapDystopia.getLonLatFromViewPortPx(new OpenLayers.Pixel(x, y));
          feature = new OpenLayers.Feature.Vector
             ( new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat) // Should this be lon/lat?
@@ -342,9 +347,11 @@
                { name: title
                , description: content
                , id: pointID
+               , file: file
+               , style: style
                }
             );
-         MapDystopia.getLayersByName('AppLayer')[0].addFeatures(feature);
+         layer.addFeatures(feature);
 
          window.dmz.pinWasAdded
             ( feature.attributes.id
@@ -352,6 +359,7 @@
             , y
             , title
             , content
+            , file
             );
 
          pointList[pointID] = feature;
