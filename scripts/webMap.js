@@ -3,6 +3,7 @@ var dmz =
        , objectType: require("dmz/runtime/objectType")
        , data: require("dmz/runtime/data")
        , defs: require("dmz/runtime/definitions")
+       , input: require("dmz/components/input")
        , module: require("dmz/runtime/module")
        , message: require("dmz/runtime/messaging")
        , ui:
@@ -37,7 +38,9 @@ var dmz =
    , pinDescHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.description.name"))
    , pinFileHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.file.name"))
    , pinActiveHandle = dmz.defs.createNamedHandle("Pin_Active")
+   , pinObjectHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.object-handle.name"))
 
+   , mapChannelHandle = dmz.defs.createNamedHandle(self.config.string("channel.name"))
 
    // Devtools type
    , CurrentUserHandle = dmz.defs.createNamedHandle("current_user")
@@ -63,6 +66,9 @@ var dmz =
    , PinHandleList = {}
    , CurrentPinID = -1
    , PinIconList = []
+   , PinQueue = []
+   , HaveActivatedMap = false
+   , MapChannel = false
 
    // Function decls
    , onPinAdded
@@ -75,16 +81,17 @@ dmz.object.create.observe(self, function (objHandle, objType) {
      , pos
      , title
      , description
+     , file
+     , data
      ;
    if (objType && objType.isOfType(PinType)) {
 
       if (!PinHandleList[objHandle] && dmz.object.flag(objHandle, pinActiveHandle)) {
 
-         id = dmz.object.scalar(pinHandle, pinIDHandle);
-         pos = dmz.object.position(pinHandle, pinPositionHandle);
-         title = dmz.object.string(pinHandle, pinTitleHandle);
-         description = dmz.object.string(pinHandle, pinDescHandle);
-         file = dmz.object.string(pinHandle, pinFileHandle);
+         pos = dmz.object.position(objHandle, pinPositionHandle);
+         title = dmz.object.text(objHandle, pinTitleHandle);
+         description = dmz.object.text(objHandle, pinDescHandle);
+         file = dmz.object.text(objHandle, pinFileHandle);
 
          data = dmz.data.create();
          data.number(pinPositionHandle, 0, pos.x);
@@ -92,7 +99,9 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          data.string(pinTitleHandle, 0, title);
          data.string(pinDescHandle, 0, description);
          data.string(pinFileHandle, 0, file);
-         addPinMessage.send(data);
+         data.number(pinObjectHandle, 0, objHandle);
+         if (!HaveActivatedMap) { PinQueue.push(data); }
+         else { addPinMessage.send(data); }
       }
    }
 });
@@ -108,6 +117,7 @@ onPinAdded = function (data) {
      , pinHandle
      ;
 
+   self.log.warn ("onPinAdded");
    if (dmz.data.isTypeOf(data)) {
 
       id = data.number(pinIDHandle, 0);
@@ -116,17 +126,25 @@ onPinAdded = function (data) {
       title = data.string(pinTitleHandle, 0);
       description = data.string(pinDescHandle, 0);
       file = data.string(pinFileHandle, 0);
+      pinHandle = data.number(pinObjectHandle, 0);
 
-      pinHandle = dmz.object.create(PinType);
-      PinIDList[id] = { id: id, handle: pinHandle };
-      PinHandleList[pinHandle] = PinIDList[id];
-      dmz.object.scalar(pinHandle, pinIDHandle, id);
-      dmz.object.position(pinHandle, pinPositionHandle, [x, y, 0]);
-      dmz.object.text(pinHandle, pinTitleHandle, title);
-      dmz.object.text(pinHandle, pinDescHandle, description);
-      dmz.object.text(pinHandle, pinFileHandle, file);
-      dmz.object.flag(pinHandle, pinActiveHandle, true);
-      dmz.object.activate(pinHandle);
+      if (!pinHandle) {
+
+         pinHandle = dmz.object.create(PinType);
+         PinIDList[id] = { id: id, handle: pinHandle };
+         PinHandleList[pinHandle] = PinIDList[id];
+         dmz.object.position(pinHandle, pinPositionHandle, [x, y, 0]);
+         dmz.object.text(pinHandle, pinTitleHandle, title);
+         dmz.object.text(pinHandle, pinDescHandle, description);
+         dmz.object.text(pinHandle, pinFileHandle, file);
+         dmz.object.flag(pinHandle, pinActiveHandle, true);
+         dmz.object.activate(pinHandle);
+      }
+      else {
+
+         PinIDList[id] = { id: id, handle: pinHandle };
+         PinHandleList[pinHandle] = PinIDList[id];
+      }
    }
 }
 
@@ -150,10 +168,7 @@ onPinRemoved = function (data) {
 
 typeList.observe (self, "currentIndexChanged", function (index) {
 
-   if (PinIconList[index]) {
-
-      picture.pixmap(PinIconList[index].pixmap);
-   }
+   if (PinIconList[index]) { picture.pixmap(PinIconList[index].pixmap); }
 });
 
 
@@ -194,6 +209,8 @@ typeList.observe (self, "currentIndexChanged", function (index) {
 // Map setup
 (function () {
 
+   MapChannel = dmz.input.channel.create(mapChannelHandle);
+   dmz.input.channel(MapChannel, false);
    map.contextMenuPolicy(dmz.ui.consts.NoContextMenu);
    map.name(self.config.string("webview.name"));
    map.eventFilter(self, function (object, event) {
@@ -216,20 +233,28 @@ typeList.observe (self, "currentIndexChanged", function (index) {
             y = event.y();
             newPinDialog.open(self, function (value, dialog) {
 
-               var data;
+               var data
+                 , title
+                 , desc
+                 ;
 
                if (value) {
+
+                  title = titleEdit.text();
+                  desc = descEdit.text();
 
                   data = dmz.data.create();
                   data.number(pinPositionHandle, 0, x);
                   data.number(pinPositionHandle, 1, y);
-                  data.string(pinTitleHandle, 0, titleEdit.text());
-                  data.string(pinDescHandle, 0, descEdit.text());
+                  data.string(pinTitleHandle, 0, title ? title : "");
+                  data.string(pinDescHandle, 0, desc ? desc : "");
                   data.string(pinFileHandle, 0, PinIconList[typeList.currentIndex()].webfile);
+                  data.number(pinObjectHandle, 0, 0);
                   addPinMessage.send(data);
-                  titleEdit.clear();
-                  descEdit.clear();
                }
+
+               titleEdit.clear();
+               descEdit.clear();
             });
          }
       }
@@ -281,8 +306,36 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
-      module.addPage ("Map", map);
+      self.log.warn ("MapChannel:", MapChannel, mapChannelHandle);
+//      module.addPage ("Map", map, MapChannel);
+      module.addPage ("Map", map, mapChannelHandle);
       setWebViewMessage.send();
       map.page().mainFrame().load(self.config.string("url.name"));
+      (function () {
+
+         var pinHandle = dmz.object.create(PinType);
+         if (pinHandle) {
+
+            dmz.object.position(pinHandle, pinPositionHandle, [.13, .2, 0]);
+            dmz.object.text(pinHandle, pinTitleHandle, "title");
+            dmz.object.text(pinHandle, pinDescHandle, "description");
+            dmz.object.text(pinHandle, pinFileHandle, "Biohazard.png");
+            dmz.object.flag(pinHandle, pinActiveHandle, true);
+            dmz.object.activate(pinHandle);
+         }
+      }());
+   }
+});
+
+dmz.input.channel.observe(self, mapChannelHandle, function (channel, state) {
+
+   self.log.warn (channel, state, MapChannel);
+   if (channel == MapChannel) {
+
+      HaveActivatedMap = state;
+      if (HaveActivatedMap) {
+
+         while (PinQueue.length) { addPinMessage.send(PinQueue.pop ()); }
+      }
    }
 });

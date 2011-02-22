@@ -19,7 +19,8 @@ dmz::BorderWebInterface::BorderWebInterface (const PluginInfo &Info, Config &loc
       _pinPositionHandle (0),
       _pinTitleHandle (0),
       _pinDescHandle (0),
-      _mainWindow (0) {
+      _mainWindow (0),
+      _haveSetJSObject (false) {
 
    _init (local);
 }
@@ -78,25 +79,8 @@ dmz::BorderWebInterface::receive_message (
 
    if (Type == _addPinMessage) {
 
-      int x = -1, y = -1;
-      String title, description, filename;
-
-
-      if (InData->lookup_int32 (_pinPositionHandle, 0, x) &&
-         InData->lookup_int32 (_pinPositionHandle, 1, y) &&
-         InData->lookup_string (_pinTitleHandle, 0, title) &&
-         InData->lookup_string (_pinDescHandle, 0, description) &&
-         InData->lookup_string (_pinFileHandle, 0, filename)) {
-
-         emit (
-            addPin (
-               x,
-               y,
-               title.get_buffer (),
-               description.get_buffer (),
-               filename.get_buffer ()));
-      }
-
+      if (_haveSetJSObject) { _addPin (InData); _log.warn << "Adding pin" << endl; }
+      else { _pinDataQueue.append (InData); _log.warn << "Q'ing pin" << endl; }
    }
    else if (Type == _removePinMessage) {
 
@@ -117,6 +101,12 @@ dmz::BorderWebInterface::receive_message (
          webview->page ()->mainFrame ()->addToJavaScriptWindowObject (
             _jsWindowObjectName.get_buffer (),
             this);
+         _haveSetJSObject = true;
+         while (_pinDataQueue.length ()) {
+
+            const Data *data = _pinDataQueue.takeFirst ();
+            if (data) { _addPin (data); }
+         }
       }
 
 //      _log.warn << "_mainWindow:" << _mainWindow << " webview: " << webview << endl;
@@ -128,30 +118,32 @@ dmz::BorderWebInterface::receive_message (
 void
 dmz::BorderWebInterface::pinWasAdded (
       const int id,
-      const int x,
-      const int y,
+      const float x,
+      const float y,
       const QString title,
       const QString description,
-      const QString filename) {
+      const QString filename,
+      const int objectHandle) {
 
    Data data;
    data.store_int32 (_pinIDHandle, 0, id);
-   data.store_int32 (_pinPositionHandle, 0, x);
-   data.store_int32 (_pinPositionHandle, 1, y);
+   data.store_float64 (_pinPositionHandle, 0, x);
+   data.store_float64 (_pinPositionHandle, 1, y);
    data.store_string (_pinTitleHandle, 0, qPrintable (title));
    data.store_string (_pinDescHandle, 0, qPrintable (description));
    data.store_string (_pinFileHandle, 0, qPrintable (filename));
+   data.store_int32 (_pinObjectHandle, 0, objectHandle);
    _pinAddedMessage.send (&data);
 }
 
 
 void
-dmz::BorderWebInterface::pinWasMoved (const int id, const int x, const int y) {
+dmz::BorderWebInterface::pinWasMoved (const int id, const float x, const float y) {
 
    Data data;
    data.store_int32 (_pinIDHandle, 0, id);
-   data.store_int32 (_pinPositionHandle, 0, x);
-   data.store_int32 (_pinPositionHandle, 1, y);
+   data.store_float64 (_pinPositionHandle, 0, x);
+   data.store_float64 (_pinPositionHandle, 1, y);
    _pinMovedMessage.send (&data);
 }
 
@@ -175,6 +167,41 @@ dmz::BorderWebInterface::pinSelected (const int id) {
 
 
 void
+dmz::BorderWebInterface::_addPin (const Data *InData) {
+
+   Float64 x = -1, y = -1;
+   int handle = -1;
+   String title, description, filename;
+
+   if (!InData->lookup_string (_pinTitleHandle, 0, title)) { _log.warn << "title fail "; }
+   if (!InData->lookup_string (_pinDescHandle, 0, description)) { _log.warn << "desc fail "; }
+   if (!InData->lookup_string (_pinFileHandle, 0, filename)) { _log.warn << "file fail "; }
+   if (!InData->lookup_float64 (_pinPositionHandle, 0, x)) { _log.warn << "posx fail "; }
+   if (!InData->lookup_float64 (_pinPositionHandle, 1, y)) { _log.warn << "posy fail "; }
+   if (!InData->lookup_int32 (_pinObjectHandle, 0, handle)) { _log.warn << "handle fail "; }
+   _log.warn << endl;
+
+   if (InData->lookup_string (_pinTitleHandle, 0, title) &&
+      InData->lookup_string (_pinDescHandle, 0, description) &&
+      InData->lookup_string (_pinFileHandle, 0, filename) &&
+      InData->lookup_float64 (_pinPositionHandle, 0, x) &&
+      InData->lookup_float64 (_pinPositionHandle, 1, y) &&
+      InData->lookup_int32 (_pinObjectHandle, 0, handle)) {
+
+      _log.warn << "Adding: " << x << " " << y << " " << title << " " << description << " " << filename << " " << handle << endl;
+      emit (
+         addPin (
+            x,
+            y,
+            title.get_buffer (),
+            description.get_buffer (),
+            filename.get_buffer (),
+            handle));
+   }
+}
+
+
+void
 dmz::BorderWebInterface::_init (Config &local) {
 
    RuntimeContext *context = get_plugin_runtime_context ();
@@ -189,16 +216,19 @@ dmz::BorderWebInterface::_init (Config &local) {
       local,
       "pinID",
       context);
+
    _pinPositionHandle = config_to_named_handle (
       "pin-handles.position.name",
       local,
       "pinPosition",
       context);
+
    _pinTitleHandle = config_to_named_handle (
       "pin-handles.title.name",
       local,
       "pinTitle",
       context);
+
    _pinDescHandle = config_to_named_handle (
       "pin-handles.description.name",
       local,
@@ -209,6 +239,12 @@ dmz::BorderWebInterface::_init (Config &local) {
       "pin-handles.file.name",
       local,
       "pinFileHandle",
+      context);
+
+   _pinObjectHandle = config_to_named_handle (
+      "pin-handles.object-handle.name",
+      local,
+      "pinObjectHandle",
       context);
 
    _addPinMessage = config_create_message (

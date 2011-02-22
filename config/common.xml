@@ -3,7 +3,7 @@
 <plugin-list>
    <plugin name="dmzObjectModuleBasic"/>
 <!--   <plugin name="dmzObjectModuleBasic"/> -->
-<!--   <plugin name="dmzQtPluginObjectInspector"/> -->
+   <plugin name="dmzQtPluginObjectInspector"/>
 <!--   <plugin name="dmzQtPluginMessageInspector"/> -->
    <plugin name="dmzBorderWebInterface" scope="webMap"/>
 </plugin-list>
@@ -31,6 +31,7 @@
       <title name="pinTitle"/>
       <description name="pinDescription"/>
       <file name="pinFile"/>
+      <object-handle name="pinObjectHandle"/>
    </pin-handles>
    <icon-type path="./assets/">
       <icon name="Generic" file="GenericMarker-sm.png" webfile="GenericMarker.png"/>
@@ -48,5 +49,6 @@
       <icon name="Riot" file="Riot-sm.png" webfile="Riot.png"/>
    </icon-type>
    <pin type="map_push_pin"/>
+   <channel name="MapChannel"/>
 </webMap>
 </dmz>

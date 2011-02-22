@@ -11,6 +11,7 @@ var dmz =
       , event: require("dmz/ui/event")
       , label: require("dmz/ui/label")
       , webview: require("dmz/ui/webView")
+      , input: require("dmz/components/input")
       }
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
@@ -46,6 +47,7 @@ var dmz =
    , tv
    , computer
    , PageLink = { Map: false, Forum: false, Media: false, Advisor: false }
+   , ChannelList = {}
 
    // Function decls
    , setupMainWindow
@@ -77,9 +79,23 @@ mouseEvent = function (object, event) {
             object.items(pos, dmz.ui.consts.IntersectsItemShape, dmz.ui.consts.DescendingOrder);
          items.forEach(function (item) {
 
-            var widget = item.data(0);
+            var widget = item.data(0)
+              , channel = item.data(1);
+              ;
 
-            if (stackedWidget && widget) { stackedWidget.currentWidget(widget); }
+            if (stackedWidget && widget) {
+
+               stackedWidget.currentWidget(widget);
+
+               self.log.warn (channel, " --> ", Object.keys(ChannelList));
+               Object.keys(ChannelList).forEach(function (chn) {
+
+                  chn = parseInt(chn);
+                  self.log.warn ("setting:", chn, channel, dmz.input.channel(chn));
+                  self.log.warn (dmz.input.channel(chn, chn === channel));
+                  self.log.warn ("done");
+               });
+            }
          });
 
       }
@@ -174,15 +190,24 @@ setupMainWindow = function () {
    }
 }
 
-_exports.addPage = function (name, widget) {
+_exports.addPage = function (name, widget, channel) {
 
-   var widget;
+   var widget
+     , chn
+     ;
    if (name && widget && stackedWidget && PageLink[name] && PageLink[name][0]) {
 
 //      self.log.warn("Add page!");
       stackedWidget.remove(PageLink[name][0].data(0));
+      chn = PageLink[name][0].data(1);
+      if (chn) { delete ChannelList[chn]; }
+      if (channel) { ChannelList[channel] = true; }
       stackedWidget.add(widget);
-      PageLink[name].forEach(function (item) { item.data(0, widget); });
+      PageLink[name].forEach(function (item) {
+
+         item.data(0, widget);
+         item.data(1, channel);
+      });
    }
    // Add some sort of queue to grab things that are loaded before main?
    else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
