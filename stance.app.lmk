@@ -40,8 +40,7 @@ lmk.add_vars ({
       {"QtWebKit.framework/Versions/4/QtWebKit",
        "@executable_path/../Frameworks/Qt/QtWebKit"},
       {"phonon.framework/Versions/4/phonon", "@executable_path/../Frameworks/Qt/phonon"},
-      {"QtNetwork.framework/Versions/4/QtWebKit",
-       "@executable_path/../Frameworks/Qt/QtNetwork"},
+      {"QtNetwork.framework/Versions/4/QtWebKit", "@executable_path/../Frameworks/Qt/QtNetwork"},
       {"libv8.dylib", "@executable_path/../Frameworks/v8/libv8.dylib"},
    },
 }
