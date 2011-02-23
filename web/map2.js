@@ -330,7 +330,6 @@
         , layer
         ;
 
-      alert ("appAddPoint");
       if (window.dmz) {
 
          layer = MapDystopia.getLayersByName('AppLayer')[0];
@@ -341,15 +340,6 @@
 
             lonlat = MapDystopia.getLonLatFromViewPortPx(new OpenLayers.Pixel(x, y));
          }
-         if (lonlat) {
-
-            alert ("appAddPoint: " + lonlat.lon + " " + lonlat.lat);
-         }
-         else {
-
-            alert ("!lonlat");
-         }
-
          feature = new OpenLayers.Feature.Vector
             ( new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat) // Should this be lon/lat?
             ,
@@ -375,7 +365,6 @@
          pointList[pointID] = feature;
          pointID += 1;
       }
-      else { alert ("No DMZ object"); }
    }
 
    appRemovePoint = function (id) {

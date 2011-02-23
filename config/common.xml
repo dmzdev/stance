@@ -49,6 +49,5 @@
       <icon name="Riot" file="Riot-sm.png" webfile="Riot.png"/>
    </icon-type>
    <pin type="map_push_pin"/>
-   <channel name="MapChannel"/>
 </webMap>
 </dmz>

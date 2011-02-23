@@ -18,9 +18,9 @@
    <path value="./ui"/>
    <instance name="main"/>
    <instance name="devtools"/>
-   <instance name="forum"/>
    <instance name="gameCreation"/>
    <instance name="webMap"/>
+   <instance name="forum"/>
 </javascript>
 </dmz>
 
