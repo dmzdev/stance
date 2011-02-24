@@ -15,6 +15,7 @@ var dmz =
 
    // UI Elements
    , editScenarioDialog = dmz.ui.loader.load("EditScenarioDialog.ui")
+   , deleteGameButton = editScenarioDialog.lookup("deleteGameButton")
    , addStudentButton = editScenarioDialog.lookup("addStudentButton")
    , removeStudentButton = editScenarioDialog.lookup("removeStudentButton")
    , groupStudentList = editScenarioDialog.lookup("groupStudentList")
@@ -50,6 +51,8 @@ var dmz =
    , GameGroupHandle = dmz.defs.createNamedHandle("game_group")
    , GameNameHandle = dmz.defs.createNamedHandle("game_name")
    , GameUngroupedUsersHandle = dmz.defs.createNamedHandle("game_ungrouped_users")
+
+   , ActiveHandle = dmz.defs.createNamedHandle("Active")
 
    // Object Types
    , UserType = dmz.objectType.lookup("user")
@@ -110,6 +113,10 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
      , type = dmz.object.type(currentGameHandle)
      , groups
      , ungrouped
+     , members
+     , idx
+     , item
+     , count
      ;
 
    if (type && type.isOfType(GameType)) {
@@ -134,14 +141,21 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
             groupComboBox.addItem(groupName);
             if (students) {
 
-               studentList.forEach(function (student) {
+               students.forEach(function (student) {
 
                   userList[student] = groupStudentList.addItem(
                      dmz.object.text(student, UserRealNameHandle), student);
                });
             }
-
          });
+
+         members = dmz.object.subLinks(groupList[0], GroupMembersHandle);
+         count = groupStudentList.count();
+         for (idx = 0; idx < count; idx += 1) {
+
+            item = groupStudentList.item(idx);
+            item.hidden(!members || (members.indexOf(item.data()) === -1));
+         }
       }
 
       ungrouped = dmz.object.subLinks(currentGameHandle, GameUngroupedUsersHandle);
@@ -250,6 +264,95 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
          });
       });
 
+      deleteGameButton.observe(self, "clicked", function () {
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Warning
+            , text: "Are you sure you want to delete this game?"
+            , informativeText: "Clicking <b>Ok</b> will cause all game data to be permanently erased!"
+            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Cancel
+            }
+            , editScenarioDialog
+         ).open(self,
+            function (value) {
+
+               if (value) {
+
+                  dmz.ui.messageBox.create(
+                     { type: dmz.ui.messageBox.Critical
+                     , text: "This action will result in the permanent loss of all game data!"
+                     , informativeText: "Clicking <b>Ok</b> will cause all game data to be permanently erased!"
+                     , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+                     , defaultButton: dmz.ui.messageBox.Cancel
+                     }
+                     , editScenarioDialog
+                  ).open(self, function (value) {
+
+                     if (value) { dmz.object.destroy(currentGameHandle); }
+                  });
+               }
+            }
+         );
+      });
+
+      gameStateButton.text(
+         dmz.object.flag(currentGameHandle, ActiveHandle) ?
+         "End Game" :
+         "Start Game");
+
+      gameStateButton.observe(self, "clicked", function () {
+
+         var active = dmz.object.flag(currentGameHandle, ActiveHandle)
+           ;
+
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Warning
+            , text: "Are you sure that you'd like to " + (active ? "end " : "start ") + "the game?"
+            , informativeText: "If you click <b>Ok</b>, all users will be sent an email notification."
+            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Cancel
+            }
+            , editScenarioDialog
+            ).open(self, function (value) {
+
+               if (value) {
+
+                  active = !active;
+                  dmz.object.flag(currentGameHandle, ActiveHandle, active);
+                  gameStateButton.text(active ? "End Game" : "Start Game");
+               }
+            });
+      });
+
+      removeGroupButton.observe(self, "clicked", function () {
+
+         var index = groupComboBox.currentIndex()
+           , groupHandle = groupList[index]
+           , groupMembers
+           , count
+           , idx
+           , item
+           ;
+
+         self.log.warn (groupList);
+         self.log.warn (index);
+
+         groupMembers = dmz.object.subLinks(groupHandle, GroupMembersHandle);
+         self.log.warn (groupMembers);
+
+         groupMembers.forEach(function (user) {
+
+            var item = userList[user];
+            if (item) { userFromGroup(item); }
+         });
+
+         groupList.splice (index, 1);
+         groupComboBox.removeIndex(index);
+         dmz.object.destroy(groupHandle);
+      });
+
       editScenarioDialog.open(self, function (result, dialog) {});
    }
 });
@@ -333,29 +436,6 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          scenarioList.addItem(dmz.object.text(objHandle, GameNameHandle));
       }
    }
-});
-
-removeGroupButton.observe(self, "clicked", removeCurrentGroup = function () {
-
-   var index = groupComboBox.currentIndex()
-     , groupHandle = groupList[index]
-     , groupMembers
-     , count
-     , idx
-     , item
-     ;
-
-   groupList.splice (index, 1);
-   groupComboBox.removeIndex(index);
-
-   count = groupStudentList.count();
-   for (idx = count - 1; idx >= 0; idx -= 1) {
-
-      item = groupStudentList.item(idx);
-      if (!item.hidden()) { userFromGroup(item); }
-   }
-
-   dmz.object.destroy(groupHandle);
 });
 
 

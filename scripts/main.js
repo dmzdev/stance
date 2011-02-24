@@ -11,6 +11,7 @@ var dmz =
       , event: require("dmz/ui/event")
       , label: require("dmz/ui/label")
       , webview: require("dmz/ui/webView")
+      , inputDialog: require("dmz/ui/inputDialog")
       }
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
@@ -54,7 +55,6 @@ var dmz =
    // API
    , _exports = {}
    ;
-
 
 mouseEvent = function (object, event) {
 

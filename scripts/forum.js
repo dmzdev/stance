@@ -7,7 +7,6 @@ var dmz =
           { consts: require('dmz/ui/consts')
           , loader: require('dmz/ui/uiLoader')
           , mainWindow: require('dmz/ui/mainWindow')
-          , messageBox: require("dmz/ui/messageBox")
           , graph: require("dmz/ui/graph")
           }
        }
@@ -142,7 +141,7 @@ dmz.object.create.observe(self, function (handle, objType) {
          text = dmz.object.text(handle, GroupNameHandle);
          dmz.object.text(child, ForumNameHandle, text);
          dmz.object.activate(child);
-         dmz.object.link(GroupForumHandle, objHandle, child);
+         dmz.object.link(GroupForumHandle, handle, child);
       }
    }
 });
