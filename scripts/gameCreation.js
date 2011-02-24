@@ -6,6 +6,7 @@ var dmz =
       , mainWindow: require('dmz/ui/mainWindow')
       , messageBox: require('dmz/ui/messageBox')
       , widget: require("dmz/ui/widget")
+      , inputDialog: require("dmz/ui/inputDialog")
       }
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
@@ -13,18 +14,27 @@ var dmz =
    }
 
    // UI Elements
-   , setGroupsForm = dmz.ui.loader.load("SetGroupsForm.ui")
-   , doneButton = setGroupsForm.lookup("doneButton")
-   , addStudentButton = setGroupsForm.lookup("addStudentButton")
-   , removeStudentButton = setGroupsForm.lookup("removeStudentButton")
-   , groupStudentList = setGroupsForm.lookup("groupStudentList")
-   , ungroupedStudentList = setGroupsForm.lookup("ungroupedStudentList")
-   , removeGroupButton = setGroupsForm.lookup("removeGroupButton")
-   , resetButton = setGroupsForm.lookup("resetButton")
-   , addGroupButton = setGroupsForm.lookup("addGroupButton")
-   , groupComboBox = setGroupsForm.lookup("groupComboBox")
+   , editScenarioDialog = dmz.ui.loader.load("EditScenarioDialog.ui")
+   , addStudentButton = editScenarioDialog.lookup("addStudentButton")
+   , removeStudentButton = editScenarioDialog.lookup("removeStudentButton")
+   , groupStudentList = editScenarioDialog.lookup("groupStudentList")
+   , ungroupedStudentList = editScenarioDialog.lookup("ungroupedStudentList")
+   , removeGroupButton = editScenarioDialog.lookup("removeGroupButton")
+   , addGroupButton = editScenarioDialog.lookup("addGroupButton")
+   , groupComboBox = editScenarioDialog.lookup("groupComboBox")
+   , createPlayerButton = editScenarioDialog.lookup("createPlayerButton")
+   , removePlayerButton = editScenarioDialog.lookup("removePlayerButton")
+   , importStudentListButton = editScenarioDialog.lookup("importStudentListButton")
+   , gameStateButton = editScenarioDialog.lookup("gameStateButton")
+   , generateReportButton = editScenarioDialog.lookup("generateReportButton")
+   , gameStatsButton = editScenarioDialog.lookup("gameStatsButton")
 
    , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
+
+   , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
+
+   , instructorDialog = dmz.ui.loader.load("InstructorWindowDialog")
+   , scenarioList = instructorDialog.lookup("scenarioList")
 
    // Handles
    , UserRealNameHandle = dmz.defs.createNamedHandle("user_real_name")
@@ -38,6 +48,8 @@ var dmz =
    , GroupMembersHandle = dmz.defs.createNamedHandle("group_members")
 
    , GameGroupHandle = dmz.defs.createNamedHandle("game_group")
+   , GameNameHandle = dmz.defs.createNamedHandle("game_name")
+   , GameUngroupedUsersHandle = dmz.defs.createNamedHandle("game_ungrouped_users")
 
    // Object Types
    , UserType = dmz.objectType.lookup("user")
@@ -47,6 +59,7 @@ var dmz =
    // Variables
    , groupList = []
    , userList = {}
+   , gameList = []
 
    // Function decls
    , createNewGame
@@ -62,6 +75,184 @@ var dmz =
 
    ;
 
+
+instructorDialog.observe(self, "addButton", "clicked", function (btn) {
+
+   var nameDialog
+     ;
+
+   nameDialog = dmz.ui.inputDialog.create(
+      { title: "Create New Scenario"
+      , label: "Scenario Name"
+      , text: ""
+      }
+      , btn);
+
+   if (nameDialog) {
+
+      nameDialog.open (self, function (result, name) {
+
+         var game;
+
+         if (result) {
+
+            game = dmz.object.create(GameType);
+            dmz.object.text(game, GameNameHandle, name);
+            dmz.object.activate(game);
+         }
+      });
+   }
+});
+
+instructorDialog.observe(self, "editButton", "clicked", function () {
+
+   var currentGameHandle = gameList[scenarioList.currentIndex()]
+     , type = dmz.object.type(currentGameHandle)
+     , groups
+     , ungrouped
+     ;
+
+   if (type && type.isOfType(GameType)) {
+
+      groupList = [];
+      groupComboBox.clear();
+      ungroupedStudentList.clear();
+      groupStudentList.clear();
+      userList = [];
+      // Iterate over groups linked to game and create them in UI
+      groups = dmz.object.subLinks(currentGameHandle, GameGroupHandle);
+      if (groups) {
+
+         groups.forEach(function (group) {
+            // For each group, iterate over linked students
+
+            var students = dmz.object.subLinks(group, GroupMembersHandle)
+              , groupName = dmz.object.text(group, GroupNameHandle)
+              ;
+
+            groupList.push(group);
+            groupComboBox.addItem(groupName);
+            if (students) {
+
+               studentList.forEach(function (student) {
+
+                  userList[student] = groupStudentList.addItem(
+                     dmz.object.text(student, UserRealNameHandle), student);
+               });
+            }
+
+         });
+      }
+
+      ungrouped = dmz.object.subLinks(currentGameHandle, GameUngroupedUsersHandle);
+      if (ungrouped) {
+
+         ungrouped.forEach(function (student) {
+
+            userList[student] = ungroupedStudentList.addItem(
+               dmz.object.text(student, UserRealNameHandle), student);
+         });
+      }
+
+
+      userToGroup = function (item) {
+
+         var objHandle
+           , currentIndex
+           , count = groupComboBox.count()
+           , linkHandle
+           ;
+
+         if (item && count) {
+
+            objHandle = item.data();
+            currentIndex = groupComboBox.currentIndex();
+            if (objHandle && (currentIndex < groupList.length)) {
+
+               dmz.object.unlink(dmz.object.linkHandle(GameUngroupedUsersHandle, currentGameHandle, objHandle));
+               dmz.object.link(GroupMembersHandle, groupList[currentIndex], objHandle);
+               ungroupedStudentList.removeItem(item);
+               groupStudentList.addItem(item);
+            }
+         }
+      };
+
+      userFromGroup = function (item) {
+
+         var objHandle
+           , currentIndex
+           , count = groupComboBox.count()
+           , linkHandle
+           ;
+
+         if (item && count) {
+
+            objHandle = item.data();
+            currentIndex = groupComboBox.currentIndex();
+            if (objHandle && (currentIndex < groupList.length)) {
+
+               dmz.object.unlink(dmz.object.linkHandle(GroupMembersHandle, groupList[currentIndex], objHandle));
+               dmz.object.link(GameUngroupedUsersHandle, currentGameHandle, objHandle);
+               groupStudentList.removeItem(item);
+               ungroupedStudentList.addItem(item);
+            }
+         }
+      };
+
+      addStudentButton.observe(self, "clicked", function () { userToGroup(ungroupedStudentList.currentItem()); });
+      removeStudentButton.observe(self, "clicked", function () { userFromGroup(groupStudentList.currentItem()); });
+      groupStudentList.observe(self, "itemActivated", userFromGroup);
+      ungroupedStudentList.observe(self, "itemActivated", userToGroup);
+
+      addGroupButton.observe(self, "clicked", function () {
+
+         createGroupDialog.open(self, function (value, dialog) {
+
+            var groupName = dialog.lookup("groupName")
+              , permissionType = dialog.lookup("permissionType")
+              , group
+              ;
+
+            if (value) {
+
+               group = dmz.object.create(GroupType);
+               dmz.object.text(group, GroupNameHandle, groupName.text());
+               // Link group to "Game" object
+               // Add line to convert permission type into bitmask
+               dmz.object.activate(group);
+               groupList.push(group);
+               groupComboBox.addItem(groupName.text());
+               dmz.object.link(GameGroupHandle, currentGameHandle, group);
+            }
+         });
+      });
+
+      createPlayerButton.observe(self, "clicked", function () {
+
+         createStudentDialog.open(self, function (value, dialog) {
+
+            var name = dialog.lookup("name")
+              , email = dialog.lookup("email")
+              , student
+              ;
+
+            if (value && name && email) {
+
+               student = createNewUser(name.text(), email.text());
+               if (student) {
+
+                  dmz.object.link(GameUngroupedUsersHandle, currentGameHandle, student);
+                  userList[student] = ungroupedStudentList.addItem(
+                     dmz.object.text(student, UserRealNameHandle), student);
+
+               }
+            }
+         });
+      });
+
+      editScenarioDialog.open(self, function (result, dialog) {});
+   }
+});
 
 configToStudent = function (student) {
 
@@ -86,7 +277,7 @@ readUserConfig = function () {
 
       groupConfigList.forEach(function (group) {
 
-         var studentList = group.get("student")
+         var studentList = group.get("student-list.student")
            , name = group.string("name", "No Name Group")
            , groupHandle
            , idx
@@ -136,147 +327,15 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
    if (objType) {
 
-      if (objType.isOfType(UserType)) {
+      if (objType.isOfType(GameType)) {
 
-         userList[objHandle] =
-            ungroupedStudentList.addItem(dmz.object.text(objHandle, UserRealNameHandle), objHandle);
-
-      }
-      else if (objType.isOfType(GameType)) {
-
-
-      }
-      else if (objType.isOfType(GroupType)) {
-
-
+         gameList.push(objHandle);
+         scenarioList.addItem(dmz.object.text(objHandle, GameNameHandle));
       }
    }
 });
 
-dmz.object.link.observe(self, GroupMembersHandle,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-   var subType = dmz.object.type(subHandle)
-     , superType = dmz.object.type(superHandle)
-     , item
-     , members
-     ;
-
-   if (subType.isOfType(UserType) && superType.isOfType(GroupType)) {
-
-      if (groupList.indexOf(superHandle) !== -1) {
-
-         item = userList[subHandle];
-         ungroupedStudentList.removeItem(item);
-         groupStudentList.addItem(item);
-         item.hidden(groupList[groupComboBox.currentIndex()] !== superHandle);
-      }
-   }
-});
-
-dmz.object.unlink.observe(self, GroupMembersHandle,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-   var subType = dmz.object.type(subHandle)
-     , superType = dmz.object.type(superHandle)
-     , item
-     , members
-     ;
-
-
-   if (subType.isOfType(UserType) && superType.isOfType(GroupType)) {
-
-      if (groupList.indexOf(superHandle) !== -1) {
-
-         item = userList[subHandle];
-         groupStudentList.removeItem(item);
-         ungroupedStudentList.addItem(item);
-         item.hidden(false);
-      }
-   }
-});
-
-
-doneButton.observe(self, "clicked", function () {
-
-   self.log.warn ("Done!");
-});
-
-addStudentButton.observe(self, "clicked", function () {
-
-   userToGroup(ungroupedStudentList.currentItem());
-});
-
-removeStudentButton.observe(self, "clicked", function () {
-
-   userFromGroup(groupStudentList.currentItem());
-});
-
-userToGroup = function (item) {
-
-   var objHandle
-     , currentIndex
-     , count = groupComboBox.count()
-     ;
-
-   if (item && count) {
-
-      // add student to group
-      objHandle = item.data();
-      currentIndex = groupComboBox.currentIndex();
-      if (objHandle && (currentIndex < groupList.length)) {
-
-         dmz.object.link(GroupMembersHandle, groupList[currentIndex], objHandle);
-      }
-   }
-};
-
-userFromGroup = function (item) {
-
-   var objHandle
-     , currentIndex
-     , count = groupComboBox.count()
-     , linkHandle
-     ;
-
-   if (item && count) {
-
-      objHandle = item.data();
-      currentIndex = groupComboBox.currentIndex();
-      if (objHandle && (currentIndex < groupList.length)) {
-
-         linkHandle = dmz.object.linkHandle(GroupMembersHandle, groupList[currentIndex], objHandle);
-         dmz.object.unlink(linkHandle);
-      }
-   }
-};
-
-groupStudentList.observe(self, "itemActivated", userFromGroup);
-ungroupedStudentList.observe(self, "itemActivated", userToGroup);
-
-addGroupButton.observe(self, "clicked", function () {
-
-   createGroupDialog.open(self, function (value, dialog) {
-
-      var groupName = dialog.lookup("groupName")
-        , permissionType = dialog.lookup("permissionType")
-        , group
-        ;
-
-      if (value) {
-
-         group = dmz.object.create(GroupType);
-         dmz.object.text(group, GroupNameHandle, groupName.text());
-         // Link group to "Game" object
-         // Add line to convert permission type into bitmask
-         dmz.object.activate(group);
-         groupList.push(group);
-         groupComboBox.addItem(groupName.text());
-      }
-   });
-});
-
-removeCurrentGroup = function () {
+removeGroupButton.observe(self, "clicked", removeCurrentGroup = function () {
 
    var index = groupComboBox.currentIndex()
      , groupHandle = groupList[index]
@@ -297,15 +356,6 @@ removeCurrentGroup = function () {
    }
 
    dmz.object.destroy(groupHandle);
-};
-
-
-removeGroupButton.observe(self, "clicked", removeCurrentGroup);
-
-resetButton.observe(self, "clicked", function () {
-
-   var count = groupComboBox.count();
-   while (count--) { removeCurrentGroup(); }
 });
 
 
@@ -322,20 +372,13 @@ groupComboBox.observe(self, "currentIndexChanged", function (index) {
 
       members = dmz.object.subLinks(groupHandle, GroupMembersHandle);
       count = groupStudentList.count();
-      if (members) {
+      for (idx = 0; idx < count; idx += 1) {
 
-         for (idx = 0; idx < count; idx += 1) {
-
-            item = groupStudentList.item(idx);
-            item.hidden(members.indexOf(item.data()) === -1);
-         }
-      }
-      else {
-
-         for(idx = 0; idx < count; idx += 1) { groupStudentList.item(idx).hidden(true); }
+         item = groupStudentList.item(idx);
+         item.hidden(!members || (members.indexOf(item.data()) === -1));
       }
    }
 });
 
 readUserConfig();
-//setGroupsForm.show();
+instructorDialog.open(self, function () {});
