@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<plugin-list>
+   <plugin name="dmzWebServicesModuleQt" scope="web-services"/>
+   <plugin name="dmzWebServicesPluginObject" scope="web-services-object"/>
+   <plugin name="dmzQtPluginLoginDialog" scope="login-dialog"/>
+</plugin-list>
+<web-services>
+  <server db="stance">
+  <!-- <server host="dmz.couchone.com" db="test"> -->
+  <!-- <server host="games.chds.us" port="443" path="/db/" db="test"> -->
+    <!-- <proxy host="localhost" port="8888"/> -->
+  </server>
+  <login-target name="dmzQtPluginLoginDialog"/>
+</web-services>
+<web-services-object>
+   <filter>
+      <object-type-set>
+         <object-type name="forum_type"/>
+         <object-type name="forum_post"/>
+         <object-type name="game_type"/>
+         <object-type name="vote"/>
+         <object-type name="intel"/>
+         <object-type name="current_user"/>
+         <object-type name="map_push_pin"/>
+         </object-type-set>
+      <!-- <attribute name="Object_Select_Attribute">
+         <mask name="flag"/>
+      </attribute> -->
+      <!-- <state name="Selected"/> -->
+      <!-- <state name="Highlight"/> -->
+   </filter>
+   <message
+      login-success="WebServices_Login_Success"
+      login-failed="WebServices_Login_Failed"
+      logout="WebServices_Logout">
+   </message>
+</web-services-object>
+<login-dialog>
+   <username name="WebServices_Username"/>
+   <password name="WebServices_Password"/>
+   <message
+      login-required="WebServices_Login_Required"
+      login="WebServices_Login"
+      login-success="WebServices_Login_Success"
+      login-failed="WebServices_Login_Failed"
+      logout="WebServices_Logout">
+   </message>
+   <login-target name="dmzWebServicesModuleQt"/>
+<!--   <auto-login value="true"/>-->
+</login-dialog>
+<!-- <runtime>
+   <object-type name="Player"/>
+ </runtime> -->
+<!-- <archive>
+   <object name="hil" type="Player">
+      <attributes name="Object_Human_In_The_Loop">
+         <flag value="true"/>
+      </attributes>
+   </object>
+</archive> -->
+</dmz>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<plugin-list>
+   <plugin name="dmzQtPluginAppUpdater" scope="updater"/>
+</plugin-list>
+<updater>
+   <force-update value="true"/>
+   <!-- <download-to-temp value="false"/> -->
+   <release channel="devel"/>
+   <update
+      host="http://update.dmzdev.org"
+      path="/latest/{system_name}-{release_channel}/{app_name}"/>
+   <download path="/downloads/{app_name}-{major}-{minor}-{bug}-{build_number}"/>
+   <!-- <proxy host="localhost" port="8888"/> -->
+</updater>
+</dmz>

@@ -11,4 +11,6 @@
    <config file="config/js.xml"/>
    <config file="config/version.xml"/>
    <config file="config/students.xml"/>
+   <config file="config/updater.xml"/>
+   <config file="config/webservices.xml"/>
 </manifest>

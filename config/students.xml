@@ -12,7 +12,7 @@
       </group>
       <group name="White House">
          <student name="Jon Stewart" email="jstewart@email.com"/>
-         <student name="Nick Brick" email="nbrick@email.com"/>      
+         <student name="Nick Brick" email="nbrick@email.com"/>
       </group>
    </group-list>
 </gameCreation>

@@ -1,13 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dmz>
 <plugin-list>
+   <plugin name="dmzArchiveModuleBasic" scope="archive-module"/>
+   <plugin name="dmzArchivePluginAutoLoad"/>
+<!--   <plugin name="dmzArchivePluginAutoSave"/>-->
+   <plugin name="dmzArchivePluginQuickSave"/>
+   <plugin name="dmzArchivePluginObject" scope="archive-object"/>
+   <plugin name="dmzArchivePluginUndo"/>
    <plugin name="dmzObjectModuleBasic"/>
+<!--   <plugin name="dmzObjectPluginCleanup" scope="cleanup"/>-->
 <!--   <plugin name="dmzObjectModuleBasic"/> -->
-<!--   <plugin name="dmzQtPluginObjectInspector"/> -->
+   <plugin name="dmzQtPluginObjectInspector"/>
 <!--   <plugin name="dmzQtPluginMessageInspector"/> -->
-   <plugin name="dmzBorderWebInterface" scope="webMap"/>
-   <plugin name="dmzQtPluginAppUpdater" scope="updater"/>
+<!--   <plugin name="dmzBorderWebInterface" scope="webMap"/>-->
 </plugin-list>
+<archive-module>
+   <archive version="0"/>
+</archive-module>
+<archive-object>
+   <archive-scope>
+      <string value="archive"/>
+   </archive-scope>
+   <filter>
+      <object-type-set>
+         <object-type name="forum_type"/>
+         <object-type name="forum_post"/>
+         <object-type name="game_type"/>
+         <object-type name="vote"/>
+         <object-type name="intel"/>
+         <object-type name="current_user"/>
+         <object-type name="map_push_pin"/>
+      </object-type-set>
+   </filter>
+</archive-object>
+<cleanup>
+   <cleanup>
+      <type name="current_user"/>
+   </cleanup>
+</cleanup>
 <webMap>
    <url name="http://dev.chds.us/?dystopia:map2"/>
    <module>
@@ -47,13 +77,8 @@
    </icon-type>
    <pin type="map_push_pin"/>
 </webMap>
-<updater>
-   <force-update value="true"/>
-   <!-- <download-to-temp value="false"/> -->
-   <release channel="devel"/>
-   <update
-      host="http://update.dmzdev.org"
-      path="/latest/{system_name}-{release_channel}/{app_name}"/>
-   <download path="/downloads/{app_name}-{major}-{minor}-{bug}-{build_number}"/>
-   </updater>
+<dmzArchivePluginAutoSave>
+   <save file="./stance-auto-save.xml"/>
+   <delete-on-exit value="false"/>
+</dmzArchivePluginAutoSave>
 </dmz>

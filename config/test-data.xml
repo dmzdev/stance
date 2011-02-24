@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+   <archive-version version="0"/>
+   <archive>
+      <object type="group" uuid="5c83e0a6-76a3-4be9-8a25-d456aa7c044b">
+         <attributes name="Display_Name">
+            <text value="Group-1"/>
+         </attributes>
+      </object>
+      <object type="user" uuid="fc5a8986-571f-4a27-9dcf-0ce99ae9b964">
+         <attributes name="name">
+            <text value="chds"/>
+         </attributes>
+         <attributes name="display_name">
+            <text value="CHDS USer"/>
+         </attributes>
+         <attributes name="group_link">
+            <links>
+               <object name="5c83e0a6-76a3-4be9-8a25-d456aa7c044b"/>
+            </links>
+         </attributes>
+      </object>
+   </archive>
+</dmz>
