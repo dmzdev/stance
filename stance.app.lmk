@@ -10,16 +10,12 @@ lmk.add_vars {
 }
 lmk.add_files ({"version.xml",}, {src="version"})
 lmk.add_files {"STANCE.app"}
-lmk.add_preqs {"stance", }
+lmk.add_preqs {"stance", "stanceInit",}
 
 app.build_preqs {"config",}
-
 app.set_app ("stance")
-
 app.set_plist ("Info.plist")
-
 app.add_icons {"AppIcon.icns", "DocIcon.icns"}
-
 app.add_config {"config/",}
 app.copy_config {"$(localTmpDir)/version.xml",}
 

@@ -21,6 +21,7 @@
    <instance name="forum"/>
    <instance name="gameCreation"/>
    <instance name="webMap"/>
+   <instance name="login-required"/>
 </javascript>
 </dmz>
 
