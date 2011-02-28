@@ -26,7 +26,6 @@ var dmz =
    , typeList = newPinDialog.lookup("typeList")
    , descEdit = newPinDialog.lookup("descEdit")
    , titleEdit = newPinDialog.lookup("titleEdit")
-   , picture = newPinDialog.lookup("picture")
    , groupFLayout = newPinDialog.lookup("groupFLayout")
 
    // Handles
@@ -185,12 +184,6 @@ onPinRemoved = function (data) {
    }
 }
 
-typeList.observe (self, "currentIndexChanged", function (index) {
-
-   if (PinIconList[index]) { picture.pixmap(PinIconList[index].pixmap); }
-});
-
-
 // Dialog setup
 (function () {
 
@@ -214,7 +207,7 @@ typeList.observe (self, "currentIndexChanged", function (index) {
          file = dmz.ui.graph.createPixmap(file);
          data = { name: name, pixmap: file, webfile: webfile };
          PinIconList.push(data);
-         typeList.addItem (name);
+         typeList.addItem (file, name);
       });
 
       typeList.currentIndex(0);

@@ -39,13 +39,6 @@
      <item>
       <widget class="QComboBox" name="typeList"/>
      </item>
-     <item>
-      <widget class="QLabel" name="picture">
-       <property name="text">
-        <string>Pic</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item row="2" column="1">
