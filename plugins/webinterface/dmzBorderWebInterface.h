@@ -10,6 +10,7 @@
 namespace dmz {
 
    class QtModuleMainWindow;
+   class Data;
 
    class BorderWebInterface :
          public QObject,
@@ -40,17 +41,18 @@ namespace dmz {
             Data *outData);
 
       signals:
-         void addPin (const int x, const int y, const QString title, const QString description, const QString filename);
+         void addPin (const float x, const float y, const QString title, const QString description, const QString filename, int objectHandle);
          void removePin (const int id);
 
       public slots:
-         void pinWasMoved (const int id, const int x, const int y);
-         void pinWasAdded (const int id, const int x, const int y, const QString title, const QString description, const QString filename);
+         void pinWasMoved (const int id, const float worldX, const float worldY);
+         void pinWasAdded (const int id, const float worldX, const float worldY, const QString title, const QString description, const QString filename, int objectHandle);
          void pinWasRemoved (const int id);
          void pinSelected (const int id);
 
       protected:
          // BorderWebInterface Interface
+         void _addPin (const Data *InData);
          void _init (Config &local);
 
          Log _log;
@@ -68,6 +70,7 @@ namespace dmz {
          Handle _pinTitleHandle;
          Handle _pinDescHandle;
          Handle _pinFileHandle;
+         Handle _pinObjectHandle;
 
          String _uiV8Name;
          String _jsWindowObjectName;
@@ -75,6 +78,9 @@ namespace dmz {
          QtModuleMainWindow *_mainWindow;
 
          String _webviewName;
+
+         Boolean _haveSetJSObject;
+         QList<const Data *> _pinDataQueue;
 
       private:
          BorderWebInterface ();

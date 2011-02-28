@@ -77,9 +77,15 @@ mouseEvent = function (object, event) {
             object.items(pos, dmz.ui.consts.IntersectsItemShape, dmz.ui.consts.DescendingOrder);
          items.forEach(function (item) {
 
-            var widget = item.data(0);
+            var widget = item.data(0)
+              , onChangeFunction = item.data(1);
+              ;
 
-            if (stackedWidget && widget) { stackedWidget.currentWidget(widget); }
+            if (stackedWidget && widget) {
+
+               stackedWidget.currentWidget(widget);
+               if (onChangeFunction) { onChangeFunction(); }
+            }
          });
 
       }
@@ -174,17 +180,22 @@ setupMainWindow = function () {
    }
 }
 
-_exports.addPage = function (name, widget) {
+_exports.addPage = function (name, widget, func) {
 
-   var widget;
+   var widget
+     , chn
+     ;
    if (name && widget && stackedWidget && PageLink[name] && PageLink[name][0]) {
 
-//      self.log.warn("Add page!");
       stackedWidget.remove(PageLink[name][0].data(0));
+      chn = PageLink[name][0].data(1);
       stackedWidget.add(widget);
-      PageLink[name].forEach(function (item) { item.data(0, widget); });
+      PageLink[name].forEach(function (item) {
+
+         item.data(0, widget);
+         item.data(1, func);
+      });
    }
-   // Add some sort of queue to grab things that are loaded before main?
    else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
 }
 

@@ -82,13 +82,6 @@
       MapDystopia.setCenter (lonLat, zoom);
       aLayerCustom();
       appLayer();
-
-
-
-      //////////////////////////////////////////
-      appAddPoint(200, 200, 'Title Goes Here', 'This is a description for testing purproses', "GenericMarker.png");
-      appAddPoint(200, 300, 'Title Goes Here', 'This is a description for testing purproses', "GenericMarker.png");
-      appAddPoint(200, 400, 'Title Goes Here', 'This is a description for testing purproses', "GenericMarker.png");
    }
 
 
@@ -319,14 +312,17 @@
 
    appMoveComplete = function (evt, pixel) {
 
+      var lonlat;
+
       if (!evt.feature && window.dmz) { // Drag event
 
-         window.dmz.pinWasMoved (evt.attributes.id, pixel.x, pixel.y);
+         lonlat = MapDystopia.getLonLatFromViewPortPx(pixel);
+         window.dmz.pinWasMoved (evt.attributes.id, lonlat.lon, lonlat.lat);
       }
    }
 
    // App layer add marker
-   appAddPoint = function (x, y, title, content, file) {
+   appAddPoint = function (x, y, title, content, file, objectHandle) {
 
       var lonlat
         , feature
@@ -336,11 +332,14 @@
 
       if (window.dmz) {
 
-//         alert ("appAddPoint");
          layer = MapDystopia.getLayersByName('AppLayer')[0];
          style = layer.style;
          style.externalGraphic = "dystopia/pages/MapIcons/" + file;
-         lonlat = MapDystopia.getLonLatFromViewPortPx(new OpenLayers.Pixel(x, y));
+         if (objectHandle) { lonlat = new OpenLayers.LonLat(x, y); }
+         else {
+
+            lonlat = MapDystopia.getLonLatFromViewPortPx(new OpenLayers.Pixel(x, y));
+         }
          feature = new OpenLayers.Feature.Vector
             ( new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat) // Should this be lon/lat?
             ,
@@ -355,17 +354,17 @@
 
          window.dmz.pinWasAdded
             ( feature.attributes.id
-            , x
-            , y
+            , lonlat.lon
+            , lonlat.lat
             , title
             , content
             , file
+            , objectHandle
             );
 
          pointList[pointID] = feature;
          pointID += 1;
       }
-//      else { alert ("No DMZ object"); }
    }
 
    appRemovePoint = function (id) {
