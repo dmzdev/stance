@@ -1,12 +1,14 @@
 var dmz =
    { ui:
       { consts: require('dmz/ui/consts')
+      , label: require("dmz/ui/label")
       , layout: require("dmz/ui/layout")
       , loader: require('dmz/ui/uiLoader')
       , mainWindow: require('dmz/ui/mainWindow')
       , messageBox: require('dmz/ui/messageBox')
       , widget: require("dmz/ui/widget")
       , inputDialog: require("dmz/ui/inputDialog")
+      , groupBox: require("dmz/ui/groupBox")
       }
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
@@ -29,10 +31,14 @@ var dmz =
    , gameStateButton = editScenarioDialog.lookup("gameStateButton")
    , generateReportButton = editScenarioDialog.lookup("generateReportButton")
    , gameStatsButton = editScenarioDialog.lookup("gameStatsButton")
+   , allGroupButton = editScenarioDialog.lookup("allGroupButton")
 
    , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
 
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
+
+   , groupListDialog = dmz.ui.loader.load("GroupListDialog.ui")
+   , listLayout = groupListDialog.lookup("vLayout")
 
    , instructorDialog = dmz.ui.loader.load("InstructorWindowDialog")
    , scenarioList = instructorDialog.lookup("scenarioList")
@@ -351,6 +357,57 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
          groupList.splice (index, 1);
          groupComboBox.removeIndex(index);
          dmz.object.destroy(groupHandle);
+      });
+
+      allGroupButton.observe(self, "clicked", function () {
+
+         var groups
+           , studentList
+           , vLayout
+           , groupBox
+           ;
+
+         groups = dmz.object.subLinks(currentGameHandle, GameGroupHandle);
+         groups.forEach(function (groupHandle) {
+
+            groupBox = dmz.ui.groupBox.create(dmz.object.text(groupHandle, GroupNameHandle))
+            vLayout = dmz.ui.layout.createVBoxLayout();
+            studentList = dmz.object.subLinks(groupHandle, GroupMembersHandle);
+            if (studentList) {
+
+               studentList.forEach(function (student) {
+
+                  vLayout.addWidget(dmz.ui.label.create(dmz.object.text(student, UserRealNameHandle)));
+               });
+            }
+            groupBox.layout(vLayout);
+            listLayout.addWidget(groupBox);
+         });
+
+         studentList = dmz.object.subLinks(currentGameHandle, GameUngroupedUsersHandle);
+         if (studentList) {
+
+            groupBox = dmz.ui.groupBox.create("Ungrouped Students")
+            vLayout = dmz.ui.layout.createVBoxLayout();
+            studentList.forEach(function (student) {
+
+               vLayout.addWidget(dmz.ui.label.create(dmz.object.text(student, UserRealNameHandle)));
+            });
+            groupBox.layout(vLayout);
+            listLayout.addWidget(groupBox);
+         }
+
+         groupListDialog.open(self, function (result) {
+
+            var widget;
+
+            while (listLayout.count()) {
+
+               widget = listLayout.at(0);
+               listLayout.removeWidget(widget);
+               widget.close();
+            }
+         });
       });
 
       editScenarioDialog.open(self, function (result, dialog) {});
