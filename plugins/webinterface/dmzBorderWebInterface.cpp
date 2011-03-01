@@ -79,8 +79,8 @@ dmz::BorderWebInterface::receive_message (
 
    if (Type == _addPinMessage) {
 
-      if (_haveSetJSObject) { _addPin (InData); _log.warn << "Adding pin" << endl; }
-      else { _pinDataQueue.append (InData); _log.warn << "Q'ing pin" << endl; }
+      if (_haveSetJSObject) { _addPin (InData); }
+      else { _pinDataQueue.append (InData); }
    }
    else if (Type == _removePinMessage) {
 
@@ -97,7 +97,6 @@ dmz::BorderWebInterface::receive_message (
 
       if (webview) {
 
-//         _log.warn << "Added JS object to window:" << _jsWindowObjectName << endl;
          webview->page ()->mainFrame ()->addToJavaScriptWindowObject (
             _jsWindowObjectName.get_buffer (),
             this);
@@ -108,8 +107,6 @@ dmz::BorderWebInterface::receive_message (
             if (data) { _addPin (data); }
          }
       }
-
-//      _log.warn << "_mainWindow:" << _mainWindow << " webview: " << webview << endl;
    }
 }
 
@@ -123,7 +120,8 @@ dmz::BorderWebInterface::pinWasAdded (
       const QString title,
       const QString description,
       const QString filename,
-      const int objectHandle) {
+      const int objectHandle,
+      const QVariantList list) {
 
    Data data;
    data.store_int32 (_pinIDHandle, 0, id);
@@ -133,6 +131,23 @@ dmz::BorderWebInterface::pinWasAdded (
    data.store_string (_pinDescHandle, 0, qPrintable (description));
    data.store_string (_pinFileHandle, 0, qPrintable (filename));
    data.store_int32 (_pinObjectHandle, 0, objectHandle);
+
+   int idx = 0;
+   int count = list.count ();
+   bool cont = true;
+   while ((idx < count) && cont) {
+
+      QVariant var = list.at (idx);
+      if (var.canConvert (QVariant::Int)) {
+
+         data.store_int32 (_groupPinHandle, idx, var.toInt ());
+      }
+      else { cont = false; }
+      ++idx;
+   }
+
+   data.store_int32 (_pinGroupCountHandle, 0, idx);
+
    _pinAddedMessage.send (&data);
 }
 
@@ -172,14 +187,7 @@ dmz::BorderWebInterface::_addPin (const Data *InData) {
    Float64 x = -1, y = -1;
    int handle = -1;
    String title, description, filename;
-
-   if (!InData->lookup_string (_pinTitleHandle, 0, title)) { _log.warn << "title fail "; }
-   if (!InData->lookup_string (_pinDescHandle, 0, description)) { _log.warn << "desc fail "; }
-   if (!InData->lookup_string (_pinFileHandle, 0, filename)) { _log.warn << "file fail "; }
-   if (!InData->lookup_float64 (_pinPositionHandle, 0, x)) { _log.warn << "posx fail "; }
-   if (!InData->lookup_float64 (_pinPositionHandle, 1, y)) { _log.warn << "posy fail "; }
-   if (!InData->lookup_int32 (_pinObjectHandle, 0, handle)) { _log.warn << "handle fail "; }
-   _log.warn << endl;
+   QVariantList list;
 
    if (InData->lookup_string (_pinTitleHandle, 0, title) &&
       InData->lookup_string (_pinDescHandle, 0, description) &&
@@ -188,7 +196,9 @@ dmz::BorderWebInterface::_addPin (const Data *InData) {
       InData->lookup_float64 (_pinPositionHandle, 1, y) &&
       InData->lookup_int32 (_pinObjectHandle, 0, handle)) {
 
-      _log.warn << "Adding: " << x << " " << y << " " << title << " " << description << " " << filename << " " << handle << endl;
+      int value, idx = 0;
+      while (InData->lookup_int32 (_groupPinHandle, idx++, value)) { list.append (value); }
+
       emit (
          addPin (
             x,
@@ -196,7 +206,8 @@ dmz::BorderWebInterface::_addPin (const Data *InData) {
             title.get_buffer (),
             description.get_buffer (),
             filename.get_buffer (),
-            handle));
+            handle,
+            list));
    }
 }
 
@@ -245,6 +256,18 @@ dmz::BorderWebInterface::_init (Config &local) {
       "pin-handles.object-handle.name",
       local,
       "pinObjectHandle",
+      context);
+
+   _groupPinHandle = config_to_named_handle (
+      "pin-handles.group-handle.name",
+      local,
+      "groupPinHandle",
+      context);
+
+   _pinGroupCountHandle = config_to_named_handle (
+      "pin-handles.pin-group-count.name",
+      local,
+      "pinGroupCountHandle",
       context);
 
    _addPinMessage = config_create_message (
