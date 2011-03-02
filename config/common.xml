@@ -23,13 +23,13 @@
    </archive-scope>
    <filter>
       <object-type-set>
-         <object-type name="forum_type"/>
-         <object-type name="forum_post"/>
-         <object-type name="game_type"/>
-         <object-type name="vote"/>
-         <object-type name="intel"/>
-         <object-type name="current_user"/>
-         <object-type name="map_push_pin"/>
+<!--         <object-type name="forum_type"/>-->
+<!--         <object-type name="forum_post"/>-->
+<!--         <object-type name="game_type"/>-->
+<!--         <object-type name="vote"/>-->
+<!--         <object-type name="intel"/>-->
+<!--         <object-type name="current_user"/>-->
+<!--         <object-type name="map_push_pin"/>-->
       </object-type-set>
    </filter>
 </archive-object>

@@ -6,12 +6,12 @@
    <plugin name="dmzQtPluginLoginDialog" scope="login-dialog"/>
 </plugin-list>
 <web-services>
-  <server db="stance">
-  <!-- <server host="dmz.couchone.com" db="test"> -->
-  <!-- <server host="games.chds.us" port="443" path="/db/" db="test"> -->
-    <!-- <proxy host="localhost" port="8888"/> -->
-  </server>
-  <login-target name="dmzQtPluginLoginDialog"/>
+   <server host="localhost" port="5984">
+<!--   <server host="dmz.couchone.com" port="80">-->
+<!--   <server host="games.chds.us" port="443" path="/db/"> -->
+<!--      <proxy host="localhost" port="8888"/>-->
+   </server>
+   <login-target name="dmzQtPluginLoginDialog"/>
 </web-services>
 <web-services-object>
    <filter>
@@ -24,28 +24,14 @@
          <object-type name="current_user"/>
          <object-type name="map_push_pin"/>
       </object-type-set>
-      <!-- <attribute name="Object_Select_Attribute">
+      <attribute name="Object_Human_In_The_Loop">
          <mask name="flag"/>
-      </attribute> -->
+      </attribute>
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-   <message
-      login-success="LoginSuccessMessage"
-      login-failed="LoginFailedMessage"
-      logout="LogoutMessage">
-   </message>
 </web-services-object>
 <login-dialog>
-   <username name="username"/>
-   <password name="password"/>
-   <message
-      login-required="LoginRequiredMessage"
-      login="LoginMessage"
-      login-success="LoginSuccessMessage"
-      login-failed="LoginFailedMessage"
-      logout="LogoutMessage">
-   </message>
    <login-target name="dmzWebServicesModuleQt"/>
 <!--   <auto-login value="true"/>-->
 </login-dialog>

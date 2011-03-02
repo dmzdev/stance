@@ -2,21 +2,98 @@
 <dmz>
    <archive-version version="0"/>
    <archive>
-      <object type="group" uuid="5c83e0a6-76a3-4be9-8a25-d456aa7c044b">
-         <attributes name="Display_Name">
+      <object type="game" uuid="07d820ac-3f43-7a8a-d73b-5364d57536b2">
+         <attributes name="time">
+            <text value="2010/01/01 06:10:40 +0000"/>
+         </attributes>
+         <attributes name="start_time">
+            <text value="2010/01/01 06:10:40 +0000"/>
+         </attributes>
+         <attributes name="end_time">
+            <text value="2010/01/01 06:10:40 +0000"/>
+         </attributes>
+      </object>
+      <object type="group" uuid="234ac554-9319-d17a-0457-b220b7bd26c3">
+         <attributes name="name">
             <text value="Group-1"/>
          </attributes>
       </object>
-      <object type="user" uuid="fc5a8986-571f-4a27-9dcf-0ce99ae9b964">
+      <object type="user" uuid="77c13ea8-9fba-57a7-5773-762f5b38d435">
          <attributes name="name">
-            <text value="chds"/>
+            <text value="scott@shillcock.net"/>
          </attributes>
          <attributes name="display_name">
-            <text value="CHDS USer"/>
+            <text value="Scott S."/>
          </attributes>
-         <attributes name="group_link">
+         <attributes name="Object_Human_In_The_Loop">
+            <flag value="false"/>
+         </attributes>
+         <attributes name="group">
             <links>
-               <object name="5c83e0a6-76a3-4be9-8a25-d456aa7c044b"/>
+               <object name="234ac554-9319-d17a-0457-b220b7bd26c3"/>
+            </links>
+         </attributes>
+      </object>
+      <object type="user" uuid="b384d268-0c39-18fe-f8b3-5bb236aaf8c6">
+         <attributes name="name">
+            <text value="benjamin.e.sangster@gmail.com"/>
+         </attributes>
+         <attributes name="display_name">
+            <text value="Ben S."/>
+         </attributes>
+         <attributes name="Object_Human_In_The_Loop">
+            <flag value="false"/>
+         </attributes>
+         <attributes name="group">
+            <links>
+               <object name="234ac554-9319-d17a-0457-b220b7bd26c3"/>
+            </links>
+         </attributes>
+      </object>
+      <object type="forum" uuid="fd337b87-259d-d5d0-4898-e0bd904b4c70">
+         <attributes name="name">
+            <text value="Forum-1"/>
+         </attributes>
+         <attributes name="visible">
+            <flag value="true"/>
+         </attributes>
+         <attributes name="group">
+            <links>
+               <object name="234ac554-9319-d17a-0457-b220b7bd26c3"/>
+            </links>
+         </attributes>
+      </object>
+      <object type="forum" uuid="2b10ee21-bcf1-aaab-5149-43655344560e">
+         <attributes name="name">
+            <text value="Forum-2"/>
+         </attributes>
+         <attributes name="visible">
+            <flag value="true"/>
+         </attributes>
+         <attributes name="group">
+            <links>
+               <object name="234ac554-9319-d17a-0457-b220b7bd26c3"/>
+            </links>
+         </attributes>
+      </object>
+      <object type="post" uuid="d6150926-041c-4518-8bad-b3eead2b3362">
+         <attributes name="title">
+            <text value="First Post"/>
+         </attributes>
+         <attributes name="text">
+            <text value="Auto loaded first post."/>
+         </attributes>
+         <attributes name="created_at">
+            <text value="Wed Mar 02 2011 14:58:37 GMT-0800 (PST)"/>
+         </attributes>
+         <attributes name="parent">
+            <links>
+               <object name="fd337b87-259d-d5d0-4898-e0bd904b4c70"/>
+            </links>
+         </attributes>
+         <attributes name="created_by">
+            <links>
+               <object name="77c13ea8-9fba-57a7-5773-762f5b38d435"/>
             </links>
          </attributes>
       </object>
