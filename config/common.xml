@@ -63,6 +63,8 @@
       <description name="pinDescription"/>
       <file name="pinFile"/>
       <object-handle name="pinObjectHandle"/>
+      <group-handle name="groupPinHandle"/>
+      <pin-group-count name="pinGroupCountHandle"/>
    </pin-handles>
    <icon-type path="./assets/">
       <icon name="Generic" file="GenericMarker-sm.png" webfile="GenericMarker.png"/>

@@ -6,6 +6,7 @@
 #include <dmzRuntimePlugin.h>
 #include <QtCore/QObject>
 #include <QtCore/QMap>
+#include <QtCore/QVariant>
 
 namespace dmz {
 
@@ -41,12 +42,12 @@ namespace dmz {
             Data *outData);
 
       signals:
-         void addPin (const float x, const float y, const QString title, const QString description, const QString filename, int objectHandle);
+         void addPin (const float x, const float y, const QString title, const QString description, const QString filename, int objectHandle, QVariantList groupHandles);
          void removePin (const int id);
 
       public slots:
          void pinWasMoved (const int id, const float worldX, const float worldY);
-         void pinWasAdded (const int id, const float worldX, const float worldY, const QString title, const QString description, const QString filename, int objectHandle);
+         void pinWasAdded (const int id, const float worldX, const float worldY, const QString title, const QString description, const QString filename, int objectHandle, QVariantList groupHandles);
          void pinWasRemoved (const int id);
          void pinSelected (const int id);
 
@@ -71,6 +72,8 @@ namespace dmz {
          Handle _pinDescHandle;
          Handle _pinFileHandle;
          Handle _pinObjectHandle;
+         Handle _groupPinHandle;
+         Handle _pinGroupCountHandle;
 
          String _uiV8Name;
          String _jsWindowObjectName;

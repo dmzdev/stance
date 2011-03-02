@@ -13,6 +13,10 @@ var dmz =
           , messageBox: require("dmz/ui/messageBox")
           , webview: require("dmz/ui/webView")
           , graph: require("dmz/ui/graph")
+          , layout: require("dmz/ui/layout")
+          , label: require("dmz/ui/label")
+          , button: require("dmz/ui/button")
+          , widget: require("dmz/ui/widget")
           }
        }
 
@@ -22,7 +26,7 @@ var dmz =
    , typeList = newPinDialog.lookup("typeList")
    , descEdit = newPinDialog.lookup("descEdit")
    , titleEdit = newPinDialog.lookup("titleEdit")
-   , picture = newPinDialog.lookup("picture")
+   , groupFLayout = newPinDialog.lookup("groupFLayout")
 
    // Handles
    , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
@@ -38,6 +42,10 @@ var dmz =
    , pinFileHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.file.name"))
    , pinActiveHandle = dmz.defs.createNamedHandle("Pin_Active")
    , pinObjectHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.object-handle.name"))
+   , pinGroupCountHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.pin-group-count.name"))
+
+   , groupPinHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.group-handle.name"))
+
 
    // Devtools type
    , CurrentUserHandle = dmz.defs.createNamedHandle("current_user")
@@ -65,6 +73,8 @@ var dmz =
    , PinIconList = []
    , PinQueue = []
    , HaveActivatedMap = false
+   , GroupHandleList = []
+   , PinGroupList = {}
 
    // Function decls
    , onPinAdded
@@ -79,26 +89,39 @@ dmz.object.create.observe(self, function (objHandle, objType) {
      , description
      , file
      , data
+     , layout
+     , widget
+     , button
+     , label
      ;
-   if (objType && objType.isOfType(PinType)) {
 
-      if (!PinHandleList[objHandle] && dmz.object.flag(objHandle, pinActiveHandle)) {
+   if (objType) {
 
-         pos = dmz.object.position(objHandle, pinPositionHandle);
-         title = dmz.object.text(objHandle, pinTitleHandle);
-         description = dmz.object.text(objHandle, pinDescHandle);
-         file = dmz.object.text(objHandle, pinFileHandle);
-         self.log.warn (pos, title, description, file, objHandle);
+      if (objType.isOfType(PinType)) {
 
-         data = dmz.data.create();
-         data.number(pinPositionHandle, 0, pos.x);
-         data.number(pinPositionHandle, 1, pos.y);
-         data.string(pinTitleHandle, 0, title);
-         data.string(pinDescHandle, 0, description);
-         data.string(pinFileHandle, 0, file);
-         data.number(pinObjectHandle, 0, objHandle);
-         if (!HaveActivatedMap) { PinQueue.push(data); }
-         else { addPinMessage.send(data); }
+         if (!PinHandleList[objHandle] && dmz.object.flag(objHandle, pinActiveHandle)) {
+
+            pos = dmz.object.position(objHandle, pinPositionHandle);
+            title = dmz.object.text(objHandle, pinTitleHandle);
+            description = dmz.object.text(objHandle, pinDescHandle);
+            file = dmz.object.text(objHandle, pinFileHandle);
+
+            data = dmz.data.create();
+            data.number(pinPositionHandle, 0, pos.x);
+            data.number(pinPositionHandle, 1, pos.y);
+            data.string(pinTitleHandle, 0, title);
+            data.string(pinDescHandle, 0, description);
+            data.string(pinFileHandle, 0, file);
+            data.number(pinObjectHandle, 0, objHandle);
+            if (!HaveActivatedMap) { PinQueue.push(data); }
+            else { addPinMessage.send(data); }
+         }
+      }
+      else if (objType.isOfType(GroupType)) {
+
+         button = dmz.ui.button.createCheckBox();
+         GroupHandleList.push(objHandle);
+         groupFLayout.addRow(dmz.object.text(objHandle, GroupNameHandle), button);
       }
    }
 });
@@ -112,6 +135,9 @@ onPinAdded = function (data) {
      , description
      , file
      , pinHandle
+     , idx
+     , count
+     , list
      ;
 
    if (dmz.data.isTypeOf(data)) {
@@ -123,10 +149,15 @@ onPinAdded = function (data) {
       description = data.string(pinDescHandle, 0);
       file = data.string(pinFileHandle, 0);
       pinHandle = data.number(pinObjectHandle, 0);
+      count = data.number(pinGroupCountHandle, 0);
+      list = [];
+      for (idx = 0; idx < count; idx += 1) {
+
+         list.push(data.number(groupPinHandle, idx));
+      }
 
       if (!pinHandle) {
 
-         self.log.warn ("Create object");
          pinHandle = dmz.object.create(PinType);
          PinIDList[id] = { id: id, handle: pinHandle };
          PinHandleList[pinHandle] = PinIDList[id];
@@ -135,6 +166,21 @@ onPinAdded = function (data) {
          dmz.object.text(pinHandle, pinDescHandle, description);
          dmz.object.text(pinHandle, pinFileHandle, file);
          dmz.object.flag(pinHandle, pinActiveHandle, true);
+         list.forEach(function (handle) {
+
+            var type
+              ;
+
+            if (handle && dmz.object.isObject(handle)) {
+
+               type = dmz.object.type(handle);
+               if (type && type.isOfType(GroupType) &&
+                  !dmz.object.linkHandle(groupPinHandle, handle, pinHandle)) {
+
+                  dmz.object.link(groupPinHandle, handle, pinHandle);
+               }
+            }
+         });
          dmz.object.activate(pinHandle);
       }
       else {
@@ -163,12 +209,6 @@ onPinRemoved = function (data) {
    }
 }
 
-typeList.observe (self, "currentIndexChanged", function (index) {
-
-   if (PinIconList[index]) { picture.pixmap(PinIconList[index].pixmap); }
-});
-
-
 // Dialog setup
 (function () {
 
@@ -192,7 +232,7 @@ typeList.observe (self, "currentIndexChanged", function (index) {
          file = dmz.ui.graph.createPixmap(file);
          data = { name: name, pixmap: file, webfile: webfile };
          PinIconList.push(data);
-         typeList.addItem (name);
+         typeList.addItem (file, name);
       });
 
       typeList.currentIndex(0);
@@ -222,6 +262,10 @@ typeList.observe (self, "currentIndexChanged", function (index) {
                var data
                  , title
                  , desc
+                 , count = groupFLayout.rowCount()
+                 , widget
+                 , idx
+                 , indexCounter
                  ;
 
                if (value) {
@@ -236,11 +280,25 @@ typeList.observe (self, "currentIndexChanged", function (index) {
                   data.string(pinDescHandle, 0, desc ? desc : "");
                   data.string(pinFileHandle, 0, PinIconList[typeList.currentIndex()].webfile);
                   data.number(pinObjectHandle, 0, 0);
+
+                  for (idx = 0, indexCounter = 0; idx < count; idx += 1) {
+
+                     if (groupFLayout.at(idx, 1).isChecked()) {
+
+                        data.number(groupPinHandle, indexCounter++, GroupHandleList[idx]);
+                     }
+                  }
+
+
                   addPinMessage.send(data);
                }
 
                titleEdit.clear();
                descEdit.clear();
+               for (idx = 0; idx < count; idx += 1) {
+
+                  groupFLayout.at(idx, 1).setChecked(false);
+               }
             });
          }
       }
@@ -285,7 +343,6 @@ typeList.observe (self, "currentIndexChanged", function (index) {
         }
       }
    });
-
 }());
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
@@ -299,9 +356,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             HaveActivatedMap = true;
             while (PinQueue.length) {
                var data = PinQueue.pop();
-               self.log.warn (data);
                addPinMessage.send(data);
-//               addPinMessage.send(PinQueue.pop ());
             }
          }
       });

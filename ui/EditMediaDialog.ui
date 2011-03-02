@@ -6,55 +6,70 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>364</height>
+    <width>353</width>
+    <height>148</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QFormLayout" name="formLayout">
-   <property name="fieldGrowthPolicy">
-    <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-   </property>
    <item row="0" column="0">
-    <widget class="QLabel" name="titleLabel">
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>Title</string>
+      <string>Headline:</string>
      </property>
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QLineEdit" name="titleEdit"/>
+    <widget class="QLineEdit" name="headlineEdit">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="typeLabel">
+    <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Type</string>
+      <string>Type:</string>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <widget class="QComboBox" name="typeComboBox">
      <item>
-      <widget class="QComboBox" name="typeList"/>
+      <property name="text">
+       <string>Print (Newspaper)</string>
+      </property>
      </item>
-    </layout>
+     <item>
+      <property name="text">
+       <string>Media (Audio, Video)</string>
+      </property>
+     </item>
+    </widget>
    </item>
-   <item row="2" column="1">
-    <layout class="QFormLayout" name="groupFLayout"/>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="descLabel">
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Description</string>
+      <string>Link:</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QTextEdit" name="descEdit"/>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="linkEdit">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
-   <item row="4" column="0" colspan="2">
+   <item row="3" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

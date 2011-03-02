@@ -7,7 +7,6 @@ var dmz =
           { consts: require('dmz/ui/consts')
           , loader: require('dmz/ui/uiLoader')
           , mainWindow: require('dmz/ui/mainWindow')
-          , messageBox: require("dmz/ui/messageBox")
           , graph: require("dmz/ui/graph")
           }
        }
@@ -22,13 +21,6 @@ var dmz =
    , postText = dialog.lookup("postTextEdit")
    , messageLengthRem = dialog.lookup("charRemAmt")
    , buttonBox = dialog.lookup("buttonBox")
-//   , forumDock = dmz.ui.mainWindow.createDock
-//     ( "Forum"
-//     , { area: dmz.ui.consts.LeftDockWidgetArea
-//       , floating: false
-//       }
-//     , form
-//     )
 
    // Handles
    , PostTextHandle = dmz.defs.createNamedHandle("Post_Text")
@@ -40,6 +32,7 @@ var dmz =
    , ForumNameHandle = dmz.defs.createNamedHandle("Forum_Name")
 
    , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
+   , GroupForumHandle = dmz.defs.createNamedHandle("group_forum")
 
    , UserRealNameHandle = dmz.defs.createNamedHandle("user_real_name")
    , UserAuthoredPostLinkHandle = dmz.defs.createNamedHandle("user_authored_post_link")
@@ -148,6 +141,7 @@ dmz.object.create.observe(self, function (handle, objType) {
          text = dmz.object.text(handle, GroupNameHandle);
          dmz.object.text(child, ForumNameHandle, text);
          dmz.object.activate(child);
+         dmz.object.link(GroupForumHandle, handle, child);
       }
    }
 });

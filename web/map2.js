@@ -322,7 +322,7 @@
    }
 
    // App layer add marker
-   appAddPoint = function (x, y, title, content, file, objectHandle) {
+   appAddPoint = function (x, y, title, content, file, objectHandle, groupHandles) {
 
       var lonlat
         , feature
@@ -360,6 +360,7 @@
             , content
             , file
             , objectHandle
+            , groupHandles
             );
 
          pointList[pointID] = feature;

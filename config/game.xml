@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<gameCreation>
+   <group-list>
+      <group name="Congress">
+         <student-list>
+            <student name="Joe Bob" email="jbob@email.com"/>
+            <student name="Jill Sue" email="jsue@email.com"/>
+         </student-list>
+         <advisor-list>
+            <advisor name="" info="" picfile=""/>
+         </advisor-list>
+      </group>
+      <group name="Drug Cartel">
+         <student-list>
+            <student name="Alex Dillbert" email="adillbert@email.com"/>
+            <student name="Chris Six" email="csix@email.com"/>
+         </student-list>
+         <advisor-list>
+            <advisor name="" info="" picfile=""/>
+         </advisor-list>         
+      </group>
+      <group name="White House">
+         <student-list>
+            <student name="Jon Stewart" email="jstewart@email.com"/>
+            <student name="Nick Brick" email="nbrick@email.com"/>      
+         </student-list>
+         <advisor-list>
+            <advisor name="" info="" picfile=""/>
+         </advisor-list>         
+      </group>
+   </group-list>
+   <advisor-picture-list path="./assets/" default="sad200.jpg">
+      <picture name="Sally Fice" file="silly200.png"/>
+      <picture name="Fore Fix" file="firefox200.jpg"/>
+      <picture name="H. Andy Kapt" file="handi200.jpg"/>
+   </advisor-picture-list>
+   <lobbyist-picture-list path="./assets/" default="sad200.jpg">
+      <picture name="Sally Fice" file="silly200.png"/>
+      <picture name="Fore Fix" file="firefox200.jpg"/>
+      <picture name="H. Andy Kapt" file="handi200.jpg"/>
+   </lobbyist-picture-list>   
+</gameCreation>
+</dmz>
+
+<!--
+
+      <group name="Congress">
+         <student-list>
+            <student name="First Last" email="name@place.com"/>
+         </student-list>
+         <advisor-list>
+            <advisor name="" info="" picfile=""/>
+         </advisor-list>
+      </group>
+      
+-->
