@@ -30,6 +30,16 @@
          </advisor-list>         
       </group>
    </group-list>
+   <advisor-picture-list path="./assets/" default="sad200.jpg">
+      <picture name="Sally Fice" file="silly200.png"/>
+      <picture name="Fore Fix" file="firefox200.jpg"/>
+      <picture name="H. Andy Kapt" file="handi200.jpg"/>
+   </advisor-picture-list>
+   <lobbyist-picture-list path="./assets/" default="sad200.jpg">
+      <picture name="Sally Fice" file="silly200.png"/>
+      <picture name="Fore Fix" file="firefox200.jpg"/>
+      <picture name="H. Andy Kapt" file="handi200.jpg"/>
+   </lobbyist-picture-list>   
 </gameCreation>
 </dmz>
 

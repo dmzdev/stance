@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -80,19 +80,6 @@
           </spacer>
          </item>
         </layout>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>254</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
@@ -329,26 +316,13 @@
          </item>
         </layout>
        </item>
-       <item>
-        <spacer name="horizontalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>118</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_5">
       <attribute name="title">
        <string>Intel</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_13">
+      <layout class="QVBoxLayout" name="verticalLayout_15">
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_9">
          <item>
@@ -356,30 +330,30 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_8">
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="addLobbyistButton">
                <property name="text">
-                <string>Add Intel</string>
+                <string>Add Lobbyist</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_3">
+              <widget class="QPushButton" name="editLobbyistButton">
                <property name="text">
-                <string>Edit Intel</string>
+                <string>Edit Lobbyist</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="removeLobbyistButton">
                <property name="text">
-                <string>Remove Intel</string>
+                <string>Remove Lobbyist</string>
                </property>
               </widget>
              </item>
             </layout>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox"/>
+            <widget class="QComboBox" name="lobbyistList"/>
            </item>
           </layout>
          </item>
@@ -397,19 +371,6 @@
           </spacer>
          </item>
         </layout>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>138</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>

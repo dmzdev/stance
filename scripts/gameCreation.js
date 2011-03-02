@@ -9,6 +9,7 @@ var dmz =
       , widget: require("dmz/ui/widget")
       , inputDialog: require("dmz/ui/inputDialog")
       , groupBox: require("dmz/ui/groupBox")
+      , graph: require("dmz/ui/graph")
       }
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
@@ -32,6 +33,14 @@ var dmz =
    , generateReportButton = editScenarioDialog.lookup("generateReportButton")
    , gameStatsButton = editScenarioDialog.lookup("gameStatsButton")
    , allGroupButton = editScenarioDialog.lookup("allGroupButton")
+   , editAdvisorButton = editScenarioDialog.lookup("editAdvisorButton")
+   , addAdvisorButton = editScenarioDialog.lookup("addAdvisorButton")
+   , advisorComboBox = editScenarioDialog.lookup("advisorList")
+   , removeAdvisorButton = editScenarioDialog.lookup("removeAdvisorButton")
+   , addLobbyistButton = editScenarioDialog.lookup("addLobbyistButton")
+   , editLobbyistButton = editScenarioDialog.lookup("editLobbyistButton")
+   , removeLobbyistButton = editScenarioDialog.lookup("removeLobbyistButton")
+   , lobbyistComboBox = editScenarioDialog.lookup("lobbyistList")
 
    , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
 
@@ -42,6 +51,19 @@ var dmz =
 
    , instructorDialog = dmz.ui.loader.load("InstructorWindowDialog")
    , scenarioList = instructorDialog.lookup("scenarioList")
+
+   , editAdvisorDialog = dmz.ui.loader.load("EditAdvisorDialog.ui")
+   , advisorGroupList = editAdvisorDialog.lookup("groupList")
+   , pictureList = editAdvisorDialog.lookup("pictureList")
+   , advisorBio = editAdvisorDialog.lookup("advisorBio")
+   , pictureLabel = editAdvisorDialog.lookup("pictureLabel")
+
+   , editLobbyistDialog = dmz.ui.loader.load("EditLobbyistDialog.ui")
+   , lobbyistPictureLabel = editLobbyistDialog.lookup("pictureLabel")
+   , lobbyistGroupList = editLobbyistDialog.lookup("groupList")
+   , lobbyistBio = editLobbyistDialog.lookup("lobbyistBio")
+   , lobbyistMessage = editLobbyistDialog.lookup("lobbyistMessage")
+   , lobbyistPictureList = editLobbyistDialog.lookup("pictureList")
 
    // Handles
    , UserRealNameHandle = dmz.defs.createNamedHandle("user_real_name")
@@ -57,18 +79,37 @@ var dmz =
    , GameGroupHandle = dmz.defs.createNamedHandle("game_group")
    , GameNameHandle = dmz.defs.createNamedHandle("game_name")
    , GameUngroupedUsersHandle = dmz.defs.createNamedHandle("game_ungrouped_users")
+   , GameUngroupedAdvisorsHandle = dmz.defs.createNamedHandle("game_ungrouped_advisors")
+   , GameUngroupedLobbyistsHandle = dmz.defs.createNamedHandle("game_ungrouped_lobbyists")
 
    , ActiveHandle = dmz.defs.createNamedHandle("Active")
+
+   , AdvisorNameHandle = dmz.defs.createNamedHandle("advisor_name")
+   , AdvisorPictureNameHandle = dmz.defs.createNamedHandle("advisor_pic_name")
+   , AdvisorGroupHandle = dmz.defs.createNamedHandle("advisor_group")
+   , AdvisorBioHandle = dmz.defs.createNamedHandle("advisor_bio")
+
+   , LobbyistNameHandle = dmz.defs.createNamedHandle("lobbyist_name")
+   , LobbyistPictureNameHandle = dmz.defs.createNamedHandle("lobbyist_pic_name")
+   , LobbyistGroupHandle = dmz.defs.createNamedHandle("lobbyist_group")
+   , LobbyistBioHandle = dmz.defs.createNamedHandle("lobbyist_bio")
+   , LobbyistMessageHandle = dmz.defs.createNamedHandle("lobbyist_message")
 
    // Object Types
    , UserType = dmz.objectType.lookup("user")
    , GameType = dmz.objectType.lookup("game_type")
    , GroupType = dmz.objectType.lookup("group")
+   , AdvisorType = dmz.objectType.lookup("advisor")
+   , LobbyistType = dmz.objectType.lookup("lobbyist")
 
    // Variables
    , groupList = []
    , userList = {}
    , gameList = []
+   , advisorPictureObjects = []
+   , lobbyistPictureObjects = []
+   , advisorList = []
+   , lobbyistList = []
 
    // Function decls
    , createNewGame
@@ -103,7 +144,7 @@ instructorDialog.observe(self, "addButton", "clicked", function (btn) {
 
          var game;
 
-         if (result) {
+         if (result && (name.length > 0)) {
 
             game = dmz.object.create(GameType);
             dmz.object.text(game, GameNameHandle, name);
@@ -123,15 +164,26 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
      , idx
      , item
      , count
+     , pictures
+     , directory
+     , advisors
+     , lobbyists
      ;
 
    if (type && type.isOfType(GameType)) {
 
       groupList = [];
+      userList = {};
+      advisorPictureObjects = [];
+      lobbyistPictureObjects = [];
+      advisorList = [];
+      lobbyistList = [];
       groupComboBox.clear();
       ungroupedStudentList.clear();
       groupStudentList.clear();
-      userList = [];
+      advisorComboBox.clear();
+      lobbyistGroupList.clear();
+
       // Iterate over groups linked to game and create them in UI
       groups = dmz.object.subLinks(currentGameHandle, GameGroupHandle);
       if (groups) {
@@ -140,17 +192,36 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
             // For each group, iterate over linked students
 
             var students = dmz.object.subLinks(group, GroupMembersHandle)
+              , advisors = dmz.object.subLinks(group, AdvisorGroupHandle)
+              , lobbyists = dmz.object.subLinks(group, LobbyistGroupHandle)
               , groupName = dmz.object.text(group, GroupNameHandle)
               ;
 
             groupList.push(group);
             groupComboBox.addItem(groupName);
+            advisorGroupList.addItem(groupName);
             if (students) {
 
                students.forEach(function (student) {
 
                   userList[student] = groupStudentList.addItem(
                      dmz.object.text(student, UserRealNameHandle), student);
+               });
+            }
+            if (advisors) {
+
+               advisors.forEach(function (advisor) {
+
+                  advisorComboBox.addItem(dmz.object.text(advisor, AdvisorNameHandle))
+                  advisorList.push(advisor);
+               });
+            }
+            if (lobbyists) {
+
+               lobbyists.forEach(function (lobbyist) {
+
+                  lobbyistComboBox.addItem(dmz.object.text(lobbyist, LobbyistNameHandle));
+                  lobbyistList.push(lobbyist);
                });
             }
          });
@@ -174,6 +245,25 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
          });
       }
 
+      ungrouped = dmz.object.subLinks(currentGameHandle, GameUngroupedAdvisorsHandle);
+      if (ungrouped) {
+
+         ungrouped.forEach(function (advisor) {
+
+            advisorComboBox.addItem(dmz.object.text(advisor, AdvisorNameHandle))
+            advisorList.push(advisor);
+         });
+      }
+
+      ungrouped = dmz.object.subLinks(currentGameHandle, GameUngroupedLobbyistsHandle);
+      if (ungrouped) {
+
+         ungrouped.forEach(function (lobbyist) {
+
+            lobbyistComboBox.addItem(dmz.object.text(lobbyist, LobbyistNameHandle));
+            lobbyistList.push(advisor);
+         });
+      }
 
       userToGroup = function (item) {
 
@@ -228,7 +318,7 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
 
          createGroupDialog.open(self, function (value, dialog) {
 
-            var groupName = dialog.lookup("groupName")
+            var groupName = dialog.lookup("groupName").text()
               , permissionType = dialog.lookup("permissionType")
               , group
               ;
@@ -236,12 +326,14 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
             if (value) {
 
                group = dmz.object.create(GroupType);
-               dmz.object.text(group, GroupNameHandle, groupName.text());
+               dmz.object.text(group, GroupNameHandle, groupName);
                // Link group to "Game" object
                // Add line to convert permission type into bitmask
                dmz.object.activate(group);
                groupList.push(group);
-               groupComboBox.addItem(groupName.text());
+               groupComboBox.addItem(groupName);
+               advisorGroupList.addItem(groupName);
+               lobbyistGroupList.addItem(groupName);
                dmz.object.link(GameGroupHandle, currentGameHandle, group);
             }
          });
@@ -267,6 +359,8 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
 
                }
             }
+            name.clear();
+            email.clear();
          });
       });
 
@@ -280,26 +374,24 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
             , defaultButton: dmz.ui.messageBox.Cancel
             }
             , editScenarioDialog
-         ).open(self,
-            function (value) {
+         ).open(self, function (value) {
 
-               if (value) {
+            if (value) {
 
-                  dmz.ui.messageBox.create(
-                     { type: dmz.ui.messageBox.Critical
-                     , text: "This action will result in the permanent loss of all game data!"
-                     , informativeText: "Clicking <b>Ok</b> will cause all game data to be permanently erased!"
-                     , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-                     , defaultButton: dmz.ui.messageBox.Cancel
-                     }
-                     , editScenarioDialog
-                  ).open(self, function (value) {
+               dmz.ui.messageBox.create(
+                  { type: dmz.ui.messageBox.Critical
+                  , text: "This action will result in the permanent loss of all game data!"
+                  , informativeText: "Clicking <b>Ok</b> will cause all game data to be permanently erased!"
+                  , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+                  , defaultButton: dmz.ui.messageBox.Cancel
+                  }
+                  , editScenarioDialog
+               ).open(self, function (value) {
 
-                     if (value) { dmz.object.destroy(currentGameHandle); }
-                  });
-               }
+                  if (value) { dmz.object.destroy(currentGameHandle); }
+               });
             }
-         );
+         });
       });
 
       gameStateButton.text(
@@ -409,6 +501,244 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
             }
          });
       });
+
+
+      pictures = self.config.get("advisor-picture-list.picture");
+      directory = self.config.string("advisor-picture-list.path");
+      item = self.config.string("advisor-picture-list.default");
+      advisorPictureObjects[0] = dmz.ui.graph.createPixmap(directory + item);
+      pictureLabel.pixmap(advisorPictureObjects[0]);
+      pictures.forEach(function (file) {
+
+         advisorPictureObjects.push(dmz.ui.graph.createPixmap(directory + file.string("file")));
+         pictureList.addItem(file.string("name"));
+      });
+
+      pictureList.observe(self, "currentIndexChanged", function (index) {
+
+         if (index < advisorPictureObjects.length) {
+
+            pictureLabel.pixmap(advisorPictureObjects[index]);
+         }
+      });
+
+
+      addAdvisorButton.observe(self, "clicked", function () {
+
+         dmz.ui.inputDialog.create(
+            { title: "Create New Advisor"
+            , label: "Advisor Name:"
+            , text: ""
+            }
+            , addAdvisorButton
+            ).open(self, function (value, name) {
+
+               var handle;
+
+               if (value && (name.length > 0)) {
+
+                  handle = dmz.object.create(AdvisorType);
+                  dmz.object.text(handle, AdvisorNameHandle, name);
+                  dmz.object.activate(handle);
+                  dmz.object.link(GameUngroupedAdvisorsHandle, currentGameHandle, handle);
+                  advisorComboBox.addItem(name);
+                  advisorList.push(handle);
+               }
+            });
+      });
+
+      editAdvisorButton.observe(self, "clicked", function () {
+
+         var groupIndex
+           , groupHandle
+           , pictureIndex
+           , advisorHandle
+           , links
+           , index = advisorComboBox.currentIndex()
+           , text
+           ;
+
+         if (index < advisorList.length) {
+
+            advisorHandle = advisorList[index];
+
+            links = dmz.object.superLinks(advisorHandle, AdvisorGroupHandle);
+            if (links && links[0]) {
+
+               groupIndex = advisorGroupList.findText(dmz.object.text(links[0], GroupNameHandle));
+            }
+
+            pictureIndex = pictureList.findText(dmz.object.text(advisorHandle, AdvisorPictureNameHandle));
+
+            pictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
+            advisorGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
+            text = dmz.object.text(advisorHandle, AdvisorBioHandle);
+            if (!text) { text = " "; }
+            advisorBio.text(text);
+
+            editAdvisorDialog.open(self, function (result) {
+
+               if (result) {
+
+                  dmz.object.unlinkSuperObjects(advisorHandle, AdvisorGroupHandle);
+                  dmz.object.link(
+                     advisorHandle,
+                     AdvisorGroupHandle,
+                     groupList[advisorGroupList.currentIndex()]);
+
+                  dmz.object.text(advisorHandle, AdvisorPictureNameHandle, pictureList.currentText());
+                  dmz.object.text(advisorHandle, AdvisorBioHandle, advisorBio.text());
+               }
+            });
+         }
+      });
+
+      removeAdvisorButton.observe(self, "clicked", function () {
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Warning
+            , text: "Are you sure you want to delete this advisor?"
+            , informativeText: "Clicking <b>Ok</b> will cause all data for this advisor to be permanently deleted!"
+            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Cancel
+            }
+            , removeAdvisorButton
+         ).open(self, function (value) {
+
+            var index = advisorComboBox.currentIndex()
+              , handle
+              ;
+
+            if (value && (index < advisorList.length)) {
+
+               handle = advisorList[index];
+               advisorList.splice(index, 1);
+               advisorComboBox.removeIndex(index);
+               dmz.object.destroy(handle);
+            }
+         });
+      });
+
+      pictures = self.config.get("lobbyist-picture-list.picture");
+      directory = self.config.string("lobbyist-picture-list.path");
+      item = self.config.string("lobbyist-picture-list.default");
+      lobbyistPictureObjects[0] = dmz.ui.graph.createPixmap(directory + item);
+      lobbyistPictureLabel.pixmap(lobbyistPictureObjects[0]);
+      pictures.forEach(function (file) {
+
+         lobbyistPictureObjects.push(dmz.ui.graph.createPixmap(directory + file.string("file")));
+         lobbyistPictureList.addItem(file.string("name"));
+      });
+
+      lobbyistPictureList.observe(self, "currentIndexChanged", function (index) {
+
+         if (index < lobbyistPictureObjects.length) {
+
+            lobbyistPictureLabel.pixmap(lobbyistPictureObjects[index]);
+         }
+      });
+
+      addLobbyistButton.observe(self, "clicked", function () {
+
+         dmz.ui.inputDialog.create(
+            { title: "Create New Lobbyist"
+            , label: "Lobbyist Name:"
+            , text: ""
+            }
+            , addLobbyistButton
+            ).open(self, function (value, name) {
+
+               var handle;
+
+               if (value && (name.length > 0)) {
+
+                  handle = dmz.object.create(LobbyistType);
+                  dmz.object.text(handle, LobbyistNameHandle, name);
+                  dmz.object.activate(handle);
+                  dmz.object.link(GameUngroupedLobbyistsHandle, currentGameHandle, handle);
+                  lobbyistComboBox.addItem(name);
+                  lobbyistList.push(handle);
+               }
+            });
+      });
+
+      editLobbyistButton.observe(self, "clicked", function () {
+
+         var groupIndex
+           , groupHandle
+           , pictureIndex
+           , lobbyistHandle
+           , links
+           , index = lobbyistComboBox.currentIndex()
+           , text
+           ;
+
+         if (index < lobbyistList.length) {
+
+            lobbyistHandle = lobbyistList[index];
+
+            links = dmz.object.superLinks(lobbyistHandle, LobbyistGroupHandle);
+            if (links && links[0]) {
+
+               groupIndex = lobbyistGroupList.findText(dmz.object.text(links[0], GroupNameHandle));
+            }
+
+            pictureIndex = lobbyistPictureList.findText(dmz.object.text(lobbyistHandle, LobbyistPictureNameHandle));
+
+            lobbyistPictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
+            lobbyistGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
+            text = dmz.object.text(lobbyistHandle, LobbyistBioHandle);
+            if (!text) { text = " "; }
+            lobbyistBio.text(text);
+
+            text = dmz.object.text(lobbyistHandle, LobbyistMessageHandle);
+            if (!text) { text = " "; }
+            lobbyistMessage.text(text);
+
+            editLobbyistDialog.open(self, function (result) {
+
+               if (result) {
+
+                  dmz.object.unlinkSuperObjects(lobbyistHandle, LobbyistGroupHandle);
+                  dmz.object.link(
+                     lobbyistHandle,
+                     LobbyistGroupHandle,
+                     groupList[lobbyistGroupList.currentIndex()]);
+
+                  dmz.object.text(lobbyistHandle, LobbyistPictureNameHandle, lobbyistPictureList.currentText());
+                  dmz.object.text(lobbyistHandle, LobbyistBioHandle, lobbyistBio.text());
+                  dmz.object.text(lobbyistHandle, LobbyistMessageHandle, lobbyistMessage.text());
+               }
+            });
+         }
+      });
+
+      removeLobbyistButton.observe(self, "clicked", function () {
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Warning
+            , text: "Are you sure you want to delete this lobbyist?"
+            , informativeText: "Clicking <b>Ok</b> will cause all data for this lobbyist to be permanently deleted!"
+            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Cancel
+            }
+            , removeLobbyistButton
+         ).open(self, function (value) {
+
+            var index = lobbyistComboBox.currentIndex()
+              , handle
+              ;
+
+            if (value && (index < lobbyistList.length)) {
+
+               handle = lobbyistList[index];
+               lobbyistList.splice(index, 1);
+               lobbyistComboBox.removeIndex(index);
+               dmz.object.destroy(handle);
+            }
+         });
+      });
+
 
       editScenarioDialog.open(self, function (result, dialog) {});
    }
