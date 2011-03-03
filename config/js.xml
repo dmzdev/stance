@@ -17,10 +17,11 @@
    <path value="../js/scripts"/>
    <path value="./ui"/>
    <instance name="main"/>
-   <instance name="devtools"/>
-   <instance name="gameCreation"/>
+    <instance name="devtools"/>
+    <instance name="gameCreation"/>
    <instance name="webMap"/>
    <instance name="forum"/>
+<!--   <instance name="login"/>-->
 </javascript>
 </dmz>
 

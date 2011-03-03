@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="stance" >
+    <file>Stance-Banner.png</file>
+  </qresource>
+</RCC>

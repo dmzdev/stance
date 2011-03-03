@@ -12,4 +12,5 @@
    <config file="config/version.xml"/>
    <config file="config/game.xml"/>
    <config file="updater.xml"/>
+   <config file="config/webservices.xml"/>
 </manifest>

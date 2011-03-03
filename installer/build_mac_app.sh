@@ -22,7 +22,7 @@ if [ -d $DEPTH/depend/QtGui.framework/Versions/4/Resources/qt_menu.nib ] ; then
 cp -R $DEPTH/depend/QtGui.framework/Versions/4/Resources/qt_menu.nib $DEPTH/STANCE.app/Contents/Resources
 fi
 cp $DEPTH/depend/v8/lib/libv8.dylib $DEPTH/STANCE.app/Contents/Frameworks/v8/
-TARGET=$DEPTH/stance-`cat $DEPTH/tmp/macos-opt/stanceapp/versionnumber.txt`-`cat $DEPTH/tmp/macos-opt/stanceapp/buildnumber.txt`.dmg
+TARGET=$DEPTH/STANCE-`cat $DEPTH/tmp/macos-opt/stanceapp/versionnumber.txt`-`cat $DEPTH/tmp/macos-opt/stanceapp/buildnumber.txt`.dmg
 hdiutil create -srcfolder $DEPTH/STANCE.app $TARGET
 hdiutil internet-enable -yes -verbose $TARGET
 rm -rf $DEPTH/STANCE.app/
