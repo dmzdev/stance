@@ -86,11 +86,13 @@ var dmz =
 
    , AdvisorNameHandle = dmz.defs.createNamedHandle("advisor_name")
    , AdvisorPictureNameHandle = dmz.defs.createNamedHandle("advisor_pic_name")
+   , AdvisorPictureDirectoryHandle = dmz.defs.createNamedHandle("advisor_dir")
    , AdvisorGroupHandle = dmz.defs.createNamedHandle("advisor_group")
    , AdvisorBioHandle = dmz.defs.createNamedHandle("advisor_bio")
 
    , LobbyistNameHandle = dmz.defs.createNamedHandle("lobbyist_name")
    , LobbyistPictureNameHandle = dmz.defs.createNamedHandle("lobbyist_pic_name")
+   , LobbyistPictureDirectoryHandle = dmz.defs.createNamedHandle("lobbyist_dir")
    , LobbyistGroupHandle = dmz.defs.createNamedHandle("lobbyist_group")
    , LobbyistBioHandle = dmz.defs.createNamedHandle("lobbyist_bio")
    , LobbyistMessageHandle = dmz.defs.createNamedHandle("lobbyist_message")
@@ -586,6 +588,7 @@ instructorDialog.observe(self, "editButton", "clicked", function () {
                      AdvisorGroupHandle,
                      groupList[advisorGroupList.currentIndex()]);
 
+                  dmz.object.text(advisorHandle, AdvisorPictureDirectoryHandle, directory);
                   dmz.object.text(advisorHandle, AdvisorPictureNameHandle, pictureList.currentText());
                   dmz.object.text(advisorHandle, AdvisorBioHandle, advisorBio.text());
                }
