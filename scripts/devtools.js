@@ -20,11 +20,7 @@ var dmz =
    // Handles
    , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
 
-   , UserRealNameHandle = dmz.defs.createNamedHandle("user_real_name")
-
-   // Devtools type, handle
-   , CurrentUserHandle = dmz.defs.createNamedHandle("current_user")
-   , CurrentUserType = dmz.objectType.lookup("current_user")
+   , NameHandle = dmz.defs.createNamedHandle("name")
 
    // Object Types
    , GroupType = dmz.objectType.lookup("group")
@@ -37,6 +33,7 @@ var dmz =
    // Variables
 
    , CurrentUser = false
+   , UserList = []
 
    // Test Function decls
    ;
@@ -55,7 +52,8 @@ dmz.object.create.observe(self, function (handle, objType) {
 
       if (objType.isOfType(UserType)) {
 
-         list.addItem(dmz.object.text(handle, UserRealNameHandle), handle);
+         list.addItem(dmz.object.text(handle, NameHandle), handle);
+         UserList.push(handle);
       }
    }
 });
@@ -63,19 +61,19 @@ dmz.object.create.observe(self, function (handle, objType) {
 
 (function () {
 
-   CurrentUser = dmz.object.create(CurrentUserType);
-   dmz.object.activate(CurrentUser);
-
    form.observe(self, "setUserButton", "clicked", function () {
 
       var selected = list.currentItem()
         , data
+        , hil
         ;
       if (selected) {
 
          data = selected.data();
-         dmz.object.unlinkSubObjects(CurrentUser, CurrentUserHandle);
-         self.log.warn (dmz.object.link(CurrentUserHandle, CurrentUser, data));
+         UserList.forEach(function (handle) {
+
+            dmz.object.flag(handle, dmz.object.HILAttribute, handle === data);
+         });
       }
    });
    form.show();
