@@ -153,8 +153,8 @@ StanceInit::on_buttonBox_accepted () {
       _fetch_session ();
       ui.infoLabel->setText ("Login in...");
 
-//      _start = True;
-//      close ();
+     // _start = True;
+     // close ();
    }
 
 }
@@ -361,15 +361,7 @@ dmz_init_stance (AppShellInitStruct &appInit) {
 
    local_restore_session (appInit, stanceInit);
 
-   stanceInit.show ();
-   stanceInit.raise ();
-
-   while (stanceInit.isVisible ()) {
-
-      // wait for log window to close
-      QApplication::sendPostedEvents (0, -1);
-      QApplication::processEvents (QEventLoop::WaitForMoreEvents);
-   }
+   stanceInit.exec ();
 
    if (appInit.app.is_running ()) {
 

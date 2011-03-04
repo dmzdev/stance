@@ -60,15 +60,16 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
    var target = dmz.defs.createNamedHandle("dmzQtPluginLoginDialog")
      , doLoginMessage = dmz.message.create("LoginRequiredMessage")
      , session = dmz.session.get("stance")
+     , archiveUpdatedMessage = dmz.message.create("Update_Archive_Message");
      ;
 
    if (session) {
       self.log.warn("session: " + session);
    }
-   else {
 
-      doLoginMessage.send(target);
-   }
-
+   doLoginMessage.send(target);
+   target = dmz.defs.createNamedHandle("dmzArchivePluginAutoCache");
+   self.log.warn("archive updated");
+   archiveUpdatedMessage.send (target);
 }());
 
