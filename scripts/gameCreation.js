@@ -18,28 +18,11 @@ var dmz =
 
    // UI Elements
    , editScenarioDialog = dmz.ui.loader.load("EditScenarioDialog.ui")
-   , deleteGameButton = editScenarioDialog.lookup("deleteGameButton")
-   , addStudentButton = editScenarioDialog.lookup("addStudentButton")
-   , removeStudentButton = editScenarioDialog.lookup("removeStudentButton")
    , groupStudentList = editScenarioDialog.lookup("groupStudentList")
    , ungroupedStudentList = editScenarioDialog.lookup("ungroupedStudentList")
-   , removeGroupButton = editScenarioDialog.lookup("removeGroupButton")
-   , addGroupButton = editScenarioDialog.lookup("addGroupButton")
    , groupComboBox = editScenarioDialog.lookup("groupComboBox")
-   , createPlayerButton = editScenarioDialog.lookup("createPlayerButton")
-   , removePlayerButton = editScenarioDialog.lookup("removePlayerButton")
-   , importStudentListButton = editScenarioDialog.lookup("importStudentListButton")
    , gameStateButton = editScenarioDialog.lookup("gameStateButton")
-   , generateReportButton = editScenarioDialog.lookup("generateReportButton")
-   , gameStatsButton = editScenarioDialog.lookup("gameStatsButton")
-   , allGroupButton = editScenarioDialog.lookup("allGroupButton")
-   , editAdvisorButton = editScenarioDialog.lookup("editAdvisorButton")
-   , addAdvisorButton = editScenarioDialog.lookup("addAdvisorButton")
    , advisorComboBox = editScenarioDialog.lookup("advisorList")
-   , removeAdvisorButton = editScenarioDialog.lookup("removeAdvisorButton")
-   , addLobbyistButton = editScenarioDialog.lookup("addLobbyistButton")
-   , editLobbyistButton = editScenarioDialog.lookup("editLobbyistButton")
-   , removeLobbyistButton = editScenarioDialog.lookup("removeLobbyistButton")
    , lobbyistComboBox = editScenarioDialog.lookup("lobbyistList")
 
    , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
@@ -77,24 +60,20 @@ var dmz =
    , GameUngroupedAdvisorsHandle = dmz.defs.createNamedHandle("game_ungrouped_advisors")
    , GameUngroupedLobbyistsHandle = dmz.defs.createNamedHandle("game_ungrouped_lobbyists")
 
-   , ActiveHandle = dmz.defs.createNamedHandle("Active")
-
-   , AdvisorPictureNameHandle = dmz.defs.createNamedHandle("advisor_pic_name")
-   , AdvisorPictureDirectoryHandle = dmz.defs.createNamedHandle("advisor_dir")
    , AdvisorGroupHandle = dmz.defs.createNamedHandle("advisor_group")
-   , AdvisorBioHandle = dmz.defs.createNamedHandle("advisor_bio")
 
-   , LobbyistPictureNameHandle = dmz.defs.createNamedHandle("lobbyist_pic_name")
-   , LobbyistPictureDirectoryHandle = dmz.defs.createNamedHandle("lobbyist_dir")
    , LobbyistGroupHandle = dmz.defs.createNamedHandle("lobbyist_group")
-   , LobbyistBioHandle = dmz.defs.createNamedHandle("lobbyist_bio")
    , LobbyistMessageHandle = dmz.defs.createNamedHandle("lobbyist_message")
 
+   , ActiveHandle = dmz.defs.createNamedHandle("Active")
 
    , TextHandle = dmz.defs.createNamedHandle("text")
    , NameHandle = dmz.defs.createNamedHandle("name")
    , DisplayNameHandle = dmz.defs.createNamedHandle("display_name")
    , VisibleHandle = dmz.defs.createNamedHandle("visible")
+   , PictureFileNameHandle = dmz.defs.createNamedHandle("pic_file_name")
+   , PictureDirectoryNameHandle = dmz.defs.createNamedHandle("pic_dir_name")
+   , BioHandle = dmz.defs.createNamedHandle("bio")
 
    // Object Types
    , UserType = dmz.objectType.lookup("user")
@@ -457,6 +436,53 @@ setup = function () {
       }
    });
 
+   editScenarioDialog.observe(self, "editAdvisorButton", "clicked", function () {
+
+      var groupIndex
+        , groupHandle
+        , pictureIndex
+        , advisorHandle
+        , links
+        , index = advisorComboBox.currentIndex()
+        , text
+        ;
+
+      if (index < advisorList.length) {
+
+         advisorHandle = advisorList[index];
+
+         links = dmz.object.superLinks(advisorHandle, AdvisorGroupHandle);
+         if (links && links[0]) {
+
+            groupIndex = advisorGroupList.findText(dmz.object.text(links[0], NameHandle));
+         }
+
+         pictureIndex = pictureList.findText(dmz.object.text(advisorHandle, PictureFileNameHandle));
+
+         pictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
+         advisorGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
+         text = dmz.object.text(advisorHandle, BioHandle);
+         if (!text) { text = " "; }
+         advisorBio.text(text);
+
+         editAdvisorDialog.open(self, function (result) {
+
+            if (result) {
+
+               dmz.object.unlinkSuperObjects(advisorHandle, AdvisorGroupHandle);
+               dmz.object.link(
+                  advisorHandle,
+                  AdvisorGroupHandle,
+                  groupList[advisorGroupList.currentIndex()]);
+
+               dmz.object.text(advisorHandle, PictureDirectoryNameHandle, directory);
+               dmz.object.text(advisorHandle, PictureFileNameHandle, pictureList.currentText());
+               dmz.object.text(advisorHandle, BioHandle, advisorBio.text());
+            }
+         });
+      }
+   });
+
    pictures = self.config.get("lobbyist-picture-list.picture");
    directory = self.config.string("lobbyist-picture-list.path");
    item = self.config.string("lobbyist-picture-list.default");
@@ -466,6 +492,59 @@ setup = function () {
 
       lobbyistPictureObjects.push(dmz.ui.graph.createPixmap(directory + file.string("file")));
       lobbyistPictureList.addItem(file.string("name"));
+   });
+
+   editScenarioDialog.observe(self, "editLobbyistButton", "clicked", function () {
+
+      var groupIndex
+        , groupHandle
+        , pictureIndex
+        , lobbyistHandle
+        , links
+        , index = lobbyistComboBox.currentIndex()
+        , text
+        ;
+
+      if (index < lobbyistList.length) {
+
+         lobbyistHandle = lobbyistList[index];
+
+         links = dmz.object.superLinks(lobbyistHandle, LobbyistGroupHandle);
+         if (links && links[0]) {
+
+            groupIndex = lobbyistGroupList.findText(dmz.object.text(links[0], NameHandle));
+         }
+
+         pictureIndex =
+            lobbyistPictureList.findText(dmz.object.text(lobbyistHandle, PictureFileNameHandle));
+
+         lobbyistPictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
+         lobbyistGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
+         text = dmz.object.text(lobbyistHandle, BioHandle);
+         if (!text) { text = " "; }
+         lobbyistBio.text(text);
+
+         text = dmz.object.text(lobbyistHandle, LobbyistMessageHandle);
+         if (!text) { text = " "; }
+         lobbyistMessage.text(text);
+
+         editLobbyistDialog.open(self, function (result) {
+
+            if (result) {
+
+               dmz.object.unlinkSuperObjects(lobbyistHandle, LobbyistGroupHandle);
+               dmz.object.link(
+                  lobbyistHandle,
+                  LobbyistGroupHandle,
+                  groupList[lobbyistGroupList.currentIndex()]);
+
+               dmz.object.text(lobbyistHandle, PictureFileNameHandle, lobbyistPictureList.currentText());
+               dmz.object.text(lobbyistHandle, PictureDirectoryNameHandle, directory)
+               dmz.object.text(lobbyistHandle, BioHandle, lobbyistBio.text());
+               dmz.object.text(lobbyistHandle, LobbyistMessageHandle, lobbyistMessage.text());
+            }
+         });
+      }
    });
 
    lobbyistPictureList.observe(self, "currentIndexChanged", function (index) {
@@ -479,12 +558,20 @@ setup = function () {
    editScenarioDialog.open(self, function (result, dialog) {});
 };
 
-addStudentButton.observe(self, "clicked", function () { userToGroup(ungroupedStudentList.currentItem()); });
-removeStudentButton.observe(self, "clicked", function () { userFromGroup(groupStudentList.currentItem()); });
+editScenarioDialog.observe(self, "addStudentButton", "clicked", function () {
+
+   userToGroup(ungroupedStudentList.currentItem());
+});
+
+editScenarioDialog.observe(self, "removeStudentButton", "clicked", function () {
+
+   userFromGroup(groupStudentList.currentItem());
+});
+
 groupStudentList.observe(self, "itemActivated", userFromGroup);
 ungroupedStudentList.observe(self, "itemActivated", userToGroup);
 
-addGroupButton.observe(self, "clicked", function () {
+editScenarioDialog.observe(self, "addGroupButton", "clicked", function () {
 
    createGroupDialog.open(self, function (value, dialog) {
 
@@ -509,7 +596,7 @@ addGroupButton.observe(self, "clicked", function () {
    });
 });
 
-createPlayerButton.observe(self, "clicked", function () {
+editScenarioDialog.observe(self, "createPlayerButton", "clicked", function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
@@ -534,7 +621,7 @@ createPlayerButton.observe(self, "clicked", function () {
    });
 });
 
-deleteGameButton.observe(self, "clicked", function () {
+editScenarioDialog.observe(self, "deleteGameButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Warning
@@ -564,7 +651,7 @@ deleteGameButton.observe(self, "clicked", function () {
    });
 });
 
-removeGroupButton.observe(self, "clicked", function () {
+editScenarioDialog.observe(self, "removeGroupButton", "clicked", function () {
 
    var index = groupComboBox.currentIndex()
      , groupHandle = groupList[index]
@@ -591,7 +678,7 @@ removeGroupButton.observe(self, "clicked", function () {
    dmz.object.destroy(groupHandle);
 });
 
-allGroupButton.observe(self, "clicked", function () {
+editScenarioDialog.observe(self, "allGroupButton", "clicked", function () {
 
    var groups
      , studentList
@@ -642,7 +729,7 @@ allGroupButton.observe(self, "clicked", function () {
    });
 });
 
-addLobbyistButton.observe(self, "clicked", function () {
+editScenarioDialog.observe(self, "addLobbyistButton", "clicked", function () {
 
    dmz.ui.inputDialog.create(
       { title: "Create New Lobbyist"
@@ -666,7 +753,7 @@ addLobbyistButton.observe(self, "clicked", function () {
       });
 });
 
-editLobbyistButton.observe(self, "clicked", function () {
+editScenarioDialog.observe(self, "editLobbyistButton", "clicked", function () {
 
    var groupIndex
      , groupHandle
@@ -687,11 +774,12 @@ editLobbyistButton.observe(self, "clicked", function () {
          groupIndex = lobbyistGroupList.findText(dmz.object.text(links[0], NameHandle));
       }
 
-      pictureIndex = lobbyistPictureList.findText(dmz.object.text(lobbyistHandle, LobbyistPictureNameHandle));
+      pictureIndex =
+         lobbyistPictureList.findText(dmz.object.text(lobbyistHandle, PictureFileNameHandle));
 
       lobbyistPictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
       lobbyistGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
-      text = dmz.object.text(lobbyistHandle, LobbyistBioHandle);
+      text = dmz.object.text(lobbyistHandle, BioHandle);
       if (!text) { text = " "; }
       lobbyistBio.text(text);
 
@@ -709,15 +797,16 @@ editLobbyistButton.observe(self, "clicked", function () {
                LobbyistGroupHandle,
                groupList[lobbyistGroupList.currentIndex()]);
 
-            dmz.object.text(lobbyistHandle, LobbyistPictureNameHandle, lobbyistPictureList.currentText());
-            dmz.object.text(lobbyistHandle, LobbyistBioHandle, lobbyistBio.text());
+            dmz.object.text(lobbyistHandle, PictureFileNameHandle, lobbyistPictureList.currentText());
+            dmz.object.text(lobbyistHandle, PictureDirectoryNameHandle, directory)
+            dmz.object.text(lobbyistHandle, BioHandle, lobbyistBio.text());
             dmz.object.text(lobbyistHandle, LobbyistMessageHandle, lobbyistMessage.text());
          }
       });
    }
 });
 
-removeLobbyistButton.observe(self, "clicked", function () {
+editScenarioDialog.observe(self, "removeLobbyistButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Warning
@@ -743,7 +832,7 @@ removeLobbyistButton.observe(self, "clicked", function () {
    });
 });
 
-addAdvisorButton.observe(self, "clicked", function () {
+editScenarioDialog.observe(self, "addAdvisorButton", "clicked", function () {
 
    dmz.ui.inputDialog.create(
       { title: "Create New Advisor"
@@ -758,8 +847,8 @@ addAdvisorButton.observe(self, "clicked", function () {
          if (value && (name.length > 0)) {
 
             handle = dmz.object.create(AdvisorType);
-            dmz.object.text(handle, NameHandle, name);
             dmz.object.activate(handle);
+            dmz.object.text(handle, NameHandle, name);
             dmz.object.link(GameUngroupedAdvisorsHandle, CurrentGameHandle, handle);
             advisorComboBox.addItem(name);
             advisorList.push(handle);
@@ -767,54 +856,7 @@ addAdvisorButton.observe(self, "clicked", function () {
       });
 });
 
-editAdvisorButton.observe(self, "clicked", function () {
-
-   var groupIndex
-     , groupHandle
-     , pictureIndex
-     , advisorHandle
-     , links
-     , index = advisorComboBox.currentIndex()
-     , text
-     ;
-
-   if (index < advisorList.length) {
-
-      advisorHandle = advisorList[index];
-
-      links = dmz.object.superLinks(advisorHandle, AdvisorGroupHandle);
-      if (links && links[0]) {
-
-         groupIndex = advisorGroupList.findText(dmz.object.text(links[0], NameHandle));
-      }
-
-      pictureIndex = pictureList.findText(dmz.object.text(advisorHandle, AdvisorPictureNameHandle));
-
-      pictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
-      advisorGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
-      text = dmz.object.text(advisorHandle, AdvisorBioHandle);
-      if (!text) { text = " "; }
-      advisorBio.text(text);
-
-      editAdvisorDialog.open(self, function (result) {
-
-         if (result) {
-
-            dmz.object.unlinkSuperObjects(advisorHandle, AdvisorGroupHandle);
-            dmz.object.link(
-               advisorHandle,
-               AdvisorGroupHandle,
-               groupList[advisorGroupList.currentIndex()]);
-
-            dmz.object.text(advisorHandle, AdvisorPictureDirectoryHandle, directory);
-            dmz.object.text(advisorHandle, AdvisorPictureNameHandle, pictureList.currentText());
-            dmz.object.text(advisorHandle, AdvisorBioHandle, advisorBio.text());
-         }
-      });
-   }
-});
-
-removeAdvisorButton.observe(self, "clicked", function () {
+editScenarioDialog.observe(self, "removeAdvisorButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Warning
@@ -839,6 +881,55 @@ removeAdvisorButton.observe(self, "clicked", function () {
       }
    });
 });
+
+editScenarioDialog.observe(self, "removePlayerButton", "clicked", function () {
+
+   dmz.ui.messageBox.create(
+      { type: dmz.ui.messageBox.Info
+      , text: "This feature has not yet been implemented."
+      , standardButtons: [dmz.ui.messageBox.Ok]
+      , defaultButton: dmz.ui.messageBox.Ok
+      }
+      , editScenarioDialog
+   ).open(self, function (value) {});
+});
+
+editScenarioDialog.observe(self, "importStudentListButton", "clicked", function () {
+
+   dmz.ui.messageBox.create(
+      { type: dmz.ui.messageBox.Info
+      , text: "This feature has not yet been implemented."
+      , standardButtons: [dmz.ui.messageBox.Ok]
+      , defaultButton: dmz.ui.messageBox.Ok
+      }
+      , editScenarioDialog
+   ).open(self, function (value) {});
+});
+
+editScenarioDialog.observe(self, "generateReportButton", "clicked", function () {
+
+   dmz.ui.messageBox.create(
+      { type: dmz.ui.messageBox.Info
+      , text: "This feature has not yet been implemented."
+      , standardButtons: [dmz.ui.messageBox.Ok]
+      , defaultButton: dmz.ui.messageBox.Ok
+      }
+      , editScenarioDialog
+   ).open(self, function (value) {});
+});
+
+editScenarioDialog.observe(self, "gameStatsButton", "clicked", function () {
+
+   dmz.ui.messageBox.create(
+      { type: dmz.ui.messageBox.Info
+      , text: "This feature has not yet been implemented."
+      , standardButtons: [dmz.ui.messageBox.Ok]
+      , defaultButton: dmz.ui.messageBox.Ok
+      }
+      , editScenarioDialog
+   ).open(self, function (value) {});
+});
+
 
 // Testing purposes
 var game = dmz.object.create(GameType);
