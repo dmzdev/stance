@@ -1,5 +1,5 @@
 require "lmkQt"
---lmkQt.set_name "stanceInit"
+lmkQt.set_name "stanceInit"
 lmk.set_type "plugin"
 --lmk.add_files {"stanceInit.qrc",}
 lmk.add_files {"stanceInit.ui",}

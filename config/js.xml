@@ -9,6 +9,7 @@
    <plugin name="dmzJsExtV8Input" scope="javascript"/>
    <plugin name="dmzJsExtV8Event" scope="javascript"/>
    <plugin name="dmzJsExtV8EventCommon" scope="javascript"/>
+   <plugin name="dmzJsExtV8Session" scope="javascript"/>
    <plugin name="dmzJsExtV8Object" scope="javascript"/>
    <plugin name="dmzJsExtV8Module" scope="javascript"/>
 </plugin-list>

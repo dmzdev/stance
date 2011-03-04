@@ -1,6 +1,7 @@
 var dmz =
        { object: require("dmz/components/object")
        , data: require("dmz/runtime/data")
+       , session: require("dmz/runtime/session")
        , message: require("dmz/runtime/messaging")
        , defs: require("dmz/runtime/definitions")
        , objectType: require("dmz/runtime/objectType")
@@ -58,8 +59,16 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
 (function () {
    var target = dmz.defs.createNamedHandle("dmzQtPluginLoginDialog")
      , doLoginMessage = dmz.message.create("LoginRequiredMessage")
+     , session = dmz.session.get("stance")
      ;
 
-   doLoginMessage.send(target);
+   if (session) {
+      self.log.warn("session: " + session);
+   }
+   else {
+
+      doLoginMessage.send(target);
+   }
+
 }());
 

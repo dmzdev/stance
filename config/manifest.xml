@@ -3,6 +3,7 @@
    <search>
       <path prefix="images" value="assets"/>
    </search>
+   <extension keep="true"/>
    <config file="config/runtime.xml"/>
    <config file="config/resource.xml"/>
    <config file="config/common.xml"/>
@@ -11,6 +12,6 @@
    <config file="config/js.xml"/>
    <config file="config/version.xml"/>
    <config file="config/game.xml"/>
-   <config file="updater.xml"/>
+<!--   <config file="config/updater.xml"/>-->
    <config file="config/webservices.xml"/>
 </manifest>

@@ -258,7 +258,7 @@ StanceInit::_handle_fetch_session () {
                      }
                   }
 
-//                  _start = True;
+                  _start = True;
                   close ();
                }
             }
