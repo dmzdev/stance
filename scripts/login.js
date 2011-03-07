@@ -1,7 +1,6 @@
 var dmz =
        { object: require("dmz/components/object")
        , data: require("dmz/runtime/data")
-       , session: require("dmz/runtime/session")
        , message: require("dmz/runtime/messaging")
        , defs: require("dmz/runtime/definitions")
        , objectType: require("dmz/runtime/objectType")
@@ -59,16 +58,16 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
 
 (function () {
    var target
-     , loginRequiredMessage = dmz.message.create("Login_Required_Message")
-     , archiveUpdatedMessage = dmz.message.create("Update_Archive_Message")
-     , doLogin = true
+//     , loginRequiredMessage = dmz.message.create("Login_Required_Message")
+//     , archiveUpdatedMessage = dmz.message.create("Archive_Updated_Message")
+//     , doLogin = true
      ;
 
-   if (doLogin) {
+//   if (doLogin) {
 
 //      target = dmz.defs.createNamedHandle("dmzQtPluginLoginDialog");
 //      loginRequiredMessage.send(target);
-   }
+//   }
 
 //   target = dmz.defs.createNamedHandle("dmzArchivePluginAutoCache");
 //   self.log.warn("archive updated");

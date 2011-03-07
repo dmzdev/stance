@@ -18,16 +18,16 @@
          </student-list>
          <advisor-list>
             <advisor name="" info="" picfile=""/>
-         </advisor-list>         
+         </advisor-list>
       </group>
       <group name="White House">
          <student-list>
             <student name="Jon Stewart" email="jstewart@email.com"/>
-            <student name="Nick Brick" email="nbrick@email.com"/>      
+            <student name="Nick Brick" email="nbrick@email.com"/>
          </student-list>
          <advisor-list>
             <advisor name="" info="" picfile=""/>
-         </advisor-list>         
+         </advisor-list>
       </group>
    </group-list>
    <advisor-picture-list path="./assets/" default="sad200.jpg">
@@ -39,8 +39,15 @@
       <picture name="Sally Fice" file="silly200.png"/>
       <picture name="Fore Fix" file="firefox200.jpg"/>
       <picture name="H. Andy Kapt" file="handi200.jpg"/>
-   </lobbyist-picture-list>   
+   </lobbyist-picture-list>
 </gameCreation>
+<archive>
+   <object type="game" uuid="73482562-b36f-45f1-9e1c-87a02269622a">
+      <attributes name="name">
+         <text value="Game"/>
+      </attributes>
+   </object>
+</archive>
 </dmz>
 
 <!--
@@ -53,5 +60,5 @@
             <advisor name="" info="" picfile=""/>
          </advisor-list>
       </group>
-      
+
 -->
