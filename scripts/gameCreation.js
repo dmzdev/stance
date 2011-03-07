@@ -14,6 +14,7 @@ var dmz =
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
+   , const: require("const")
    }
 
    // UI Elements
