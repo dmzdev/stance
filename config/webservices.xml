@@ -30,6 +30,7 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
+   <db app="stance"/>
 </web-services-object>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>

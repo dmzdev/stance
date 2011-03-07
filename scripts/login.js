@@ -9,8 +9,9 @@ var dmz =
     // Constants
     , UserType = dmz.objectType.lookup("user")
     , NameAttr = dmz.defs.createNamedHandle("name")
+    , CookieAttr = dmz.defs.createNamedHandle("cookie")
     , HILAttr = dmz.object.HILAttribute
-    , LoginSuccessMessage = dmz.message.create("LoginSuccessMessage")
+    , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
     // Variables
     , _userName
     , _userHandle
@@ -57,19 +58,20 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
 
 
 (function () {
-   var target = dmz.defs.createNamedHandle("dmzQtPluginLoginDialog")
-     , doLoginMessage = dmz.message.create("LoginRequiredMessage")
-     , session = dmz.session.get("stance")
-     , archiveUpdatedMessage = dmz.message.create("Update_Archive_Message");
+   var target
+     , loginRequiredMessage = dmz.message.create("Login_Required_Message")
+     , archiveUpdatedMessage = dmz.message.create("Update_Archive_Message")
+     , doLogin = true
      ;
 
-   if (session) {
-      self.log.warn("session: " + session);
+   if (doLogin) {
+
+//      target = dmz.defs.createNamedHandle("dmzQtPluginLoginDialog");
+//      loginRequiredMessage.send(target);
    }
 
-   doLoginMessage.send(target);
-   target = dmz.defs.createNamedHandle("dmzArchivePluginAutoCache");
-   self.log.warn("archive updated");
-   archiveUpdatedMessage.send (target);
+//   target = dmz.defs.createNamedHandle("dmzArchivePluginAutoCache");
+//   self.log.warn("archive updated");
+//   archiveUpdatedMessage.send (target);
 }());
 
