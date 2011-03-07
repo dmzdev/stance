@@ -8,8 +8,9 @@ var dmz =
     // Constants
     , UserType = dmz.objectType.lookup("user")
     , NameAttr = dmz.defs.createNamedHandle("name")
+    , CookieAttr = dmz.defs.createNamedHandle("cookie")
     , HILAttr = dmz.object.HILAttribute
-    , LoginSuccessMessage = dmz.message.create("LoginSuccessMessage")
+    , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
     // Variables
     , _userName
     , _userHandle
@@ -56,10 +57,20 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
 
 
 (function () {
-   var target = dmz.defs.createNamedHandle("dmzQtPluginLoginDialog")
-     , doLoginMessage = dmz.message.create("LoginRequiredMessage")
+   var target
+//     , loginRequiredMessage = dmz.message.create("Login_Required_Message")
+//     , archiveUpdatedMessage = dmz.message.create("Archive_Updated_Message")
+//     , doLogin = true
      ;
 
-   doLoginMessage.send(target);
+//   if (doLogin) {
+
+//      target = dmz.defs.createNamedHandle("dmzQtPluginLoginDialog");
+//      loginRequiredMessage.send(target);
+//   }
+
+//   target = dmz.defs.createNamedHandle("dmzArchivePluginAutoCache");
+//   self.log.warn("archive updated");
+//   archiveUpdatedMessage.send (target);
 }());
 

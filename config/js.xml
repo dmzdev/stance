@@ -21,7 +21,10 @@
     <instance name="gameCreation"/>
    <instance name="webMap"/>
    <instance name="forum2"/>
-<!--   <instance name="login"/>-->
+   <instance name="login"/>
 </javascript>
+<main>
+   <scene height="800" width="400"/>
+</main>
 </dmz>
 

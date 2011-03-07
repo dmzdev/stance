@@ -19,10 +19,12 @@ class StanceInit : public QDialog {
       ~StanceInit ();
 
       AppShellInitStruct &init;
-      Ui::StanceInitForm ui;
 
-      QString user ();
-      QString password ();
+      String get_user () const;
+      void set_user (const String &Value);
+
+      String get_password () const;
+      void set_password (const String  &Value);
 
    protected Q_SLOTS:
       void on_buttonBox_accepted ();
@@ -33,7 +35,9 @@ class StanceInit : public QDialog {
       void _fetch_session ();
       virtual void closeEvent (QCloseEvent * event);
       void _save_session ();
+      void _load_session ();
 
+      Ui::StanceInitForm _ui;
       QNetworkAccessManager *_netManager;
       Float64 _frameTime;
       String _cookieValue;

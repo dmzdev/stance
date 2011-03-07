@@ -933,8 +933,8 @@ editScenarioDialog.observe(self, "gameStatsButton", "clicked", function () {
 
 
 // Testing purposes
-var game = dmz.object.create(GameType);
-dmz.object.activate(game);
-dmz.object.text(game, NameHandle, "Game");
+//var game = dmz.object.create(GameType);
+//dmz.object.activate(game);
+//dmz.object.text(game, NameHandle, "Game");
 
-readUserConfig();
+//readUserConfig();

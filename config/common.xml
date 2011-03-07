@@ -1,26 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dmz>
 <plugin-list>
+   <plugin name="dmzQtModuleMainWindowBasic" scope="main-window"/>
+   <plugin name="dmzQtPluginVersion"/>
    <plugin name="dmzArchiveModuleBasic" scope="archive-module"/>
    <plugin name="dmzArchivePluginAutoLoad"/>
-<!--   <plugin name="dmzArchivePluginAutoSave"/>-->
-   <plugin name="dmzArchivePluginQuickSave"/>
+   <plugin name="dmzArchivePluginAutoCache" scope="archive-auto-cache"/>
    <plugin name="dmzArchivePluginObject" scope="archive-object"/>
-   <plugin name="dmzArchivePluginUndo"/>
+<!--   <plugin name="dmzArchivePluginUndo"/>-->
    <plugin name="dmzObjectModuleBasic"/>
 <!--   <plugin name="dmzObjectPluginCleanup" scope="cleanup"/>-->
-<!--   <plugin name="dmzObjectModuleBasic"/> -->
    <plugin name="dmzQtPluginObjectInspector"/>
-<!--   <plugin name="dmzQtPluginMessageInspector"/> -->
+<!--   <plugin name="dmzQtPluginMessageInspector"/>-->
    <plugin name="dmzBorderWebInterface" scope="webMap"/>
 </plugin-list>
+<main-window>
+   <corners>
+      <top right="true" left="true"/>
+      <bottom right="true" left="true"/>
+   </corners>
+   <window title="DMZ: Border Patrol Simulation"/>
+   <!-- <central-widget name="canvas"/> -->
+   <menu-bar>
+      <menu text="&amp;File"/>
+<!--
+      <menu text="&amp;Edit"/>
+-->
+      <menu text="&amp;Window"/>
+      <menu text="&amp;Help"/>
+   </menu-bar>
+</main-window>
 <archive-module>
    <archive version="0"/>
 </archive-module>
 <archive-object>
-   <archive-scope>
-      <string value="archive"/>
-   </archive-scope>
    <filter>
       <object-type-set>
 <!--         <object-type name="forum_type"/>-->
@@ -31,8 +44,19 @@
 <!--         <object-type name="current_user"/>-->
 <!--         <object-type name="map_push_pin"/>-->
       </object-type-set>
+      <attribute name="_publish">
+         <mask name="flag"/>
+      </attribute>
+      <attribute name="_fetch">
+         <mask name="flag"/>
+      </attribute>
    </filter>
 </archive-object>
+<archive-auto-cache>
+<!--   <auto-restore value="false"/>-->
+<!--   <save file="cache.xml"/>-->
+<!--   <archive-updated-message name="Archive_Updated_Message"/>-->
+</archive-auto-cache>
 <cleanup>
    <cleanup>
       <type name="current_user"/>

@@ -361,7 +361,9 @@ tree.observe (self, "currentItemChanged", function (curr) {
 
 dmz.object.destroy.observe(self, function (objHandle) {
 
-   var members;
+   var members
+     , parent
+     ;
    if (ForumList[objHandle]) {
 
       members = dmz.object.subLinks(objHandle, dmz.const.ParentHandle);
@@ -369,11 +371,14 @@ dmz.object.destroy.observe(self, function (objHandle) {
 
          members.forEach(function (handle) { dmz.object.destroy(handle); });
       }
-      ForumList[objHandle].widget.parent().takeChild(ForumList[objHandle].widget);
+
+      parent = ForumList[objHandle].widget.parent();
+      if (parent) { parent.takeChild(ForumList[objHandle].widget); }
    }
    else if (PostList[objHandle]) {
 
-      PostList[objHandle].widget.parent().takeChild(PostList[objHandle].widget);
+      parent = PostList[objHandle].widget.parent();
+      if (parent) { parent.takeChild(PostList[objHandle].widget); }
    }
    else if (GroupList[objHandle] && (GroupList[objHandle] !== -1)) {
 

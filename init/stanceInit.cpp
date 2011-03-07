@@ -2,6 +2,7 @@
 #include <dmzApplication.h>
 #include <dmzAppShellExt.h>
 #include <dmzFoundationCommandLine.h>
+#include <dmzFoundationBase64.h>
 #include <dmzFoundationJSONUtil.h>
 #include <dmzFoundationXMLUtil.h>
 #include <dmzQtConfigRead.h>
@@ -23,7 +24,6 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkCookie>
 
 
 using namespace dmz;
@@ -57,42 +57,11 @@ local_calc_xor (const QByteArray &Data, const QByteArray &Key) {
 
 
 static void
-local_restore_session (AppShellInitStruct &appInit, StanceInit &stanceInit) {
-
-   Config session = get_session_config (StanceInitName, appInit.app.get_context ());
-
-   if (config_to_boolean ("remember.me", session)) {
-
-      stanceInit.ui.rememberMe->setChecked (True);
-
-      String username = config_to_string ("user.name", session);
-      stanceInit.ui.usernameLineEdit->setText (username.get_buffer ());
-
-      QByteArray ba (config_to_qbytearray ("password", session));
-      QByteArray password = local_calc_xor (ba, StanceKey.toBase64 ());
-
-      stanceInit.ui.passwordLineEdit->setText (password);
-   }
-
-   Config geometry;
-   if (session.lookup_config (GeometryName, geometry)) {
-
-      stanceInit.restoreGeometry (config_to_qbytearray (geometry));
-   }
-   else {
-
-      QRect rect = QApplication::desktop ()->availableGeometry (&stanceInit);
-      stanceInit.move(rect.center () - stanceInit.rect ().center ());
-   }
-}
-
-
-static void
-local_add_config (const String &Scope, AppShellInitStruct &init) {
+local_add_config (const String &Scope, AppShellInitStruct &appInit) {
 
    Config configList;
 
-   if (init.manifest.lookup_all_config (Scope, configList)) {
+   if (appInit.manifest.lookup_all_config (Scope, configList)) {
 
       ConfigIterator it;
       Config config;
@@ -101,9 +70,23 @@ local_add_config (const String &Scope, AppShellInitStruct &init) {
 
          const String Value = config_to_string ("file", config);
 
-         if (Value) { init.files.append_arg (Value); }
+         if (Value) { appInit.files.append_arg (Value); }
       }
    }
+}
+
+
+static void
+local_set_login (AppShellInitStruct &appInit, StanceInit &stanceInit) {
+
+   Config global;
+   appInit.app.get_global_config (global);
+
+   Config login ("login");
+   login.store_attribute ("user", stanceInit.get_user ());
+   login.store_attribute ("password", encode_base64 (stanceInit.get_password ()));
+
+   global.add_config (login);
 }
 
 };
@@ -115,48 +98,54 @@ StanceInit::StanceInit (AppShellInitStruct &theInit) :
       _start (False) {
 
    setObjectName (StanceInitName.get_buffer ());
-
    _netManager = new QNetworkAccessManager (this);
+   _ui.setupUi (this);
 
-   ui.setupUi (this);
+   _load_session ();
 }
 
 
 StanceInit::~StanceInit () {
 
-   if (_netManager) {
-
-      _netManager->deleteLater ();
-//      delete _netManager;
-      _netManager = 0;
-   }
+   if (_netManager) { delete _netManager; _netManager = 0; }
 }
 
 
-QString
-StanceInit::user () { return ui.usernameLineEdit->text (); }
+dmz::String
+StanceInit::get_user () const {
+
+   String user = qPrintable (_ui.userNameLineEdit->text ());
+   return user;
+}
 
 
-QString
-StanceInit::password () { return ui.passwordLineEdit->text (); }
+void
+StanceInit::set_user (const String &Value) {
+
+   _ui.userNameLineEdit->setText (Value.get_buffer ());
+}
+
+
+dmz::String
+StanceInit::get_password () const {
+
+   String password = qPrintable (_ui.passwordLineEdit->text ());
+   return password;
+}
+
+
+void
+StanceInit::set_password (const String &Value) {
+
+   _ui.passwordLineEdit->setText (Value.get_buffer ());
+}
 
 
 void
 StanceInit::on_buttonBox_accepted () {
 
-   if (user ().isEmpty () || password ().isEmpty ()) {
-
-      ui.infoLabel->setText ("User name and password required.");
-   }
-   else {
-
-      _fetch_session ();
-      ui.infoLabel->setText ("Login in...");
-
-//      _start = True;
-//      close ();
-   }
-
+   _fetch_session ();
+   _ui.infoLabel->setText ("Logging in...");
 }
 
 
@@ -172,28 +161,25 @@ StanceInit::_fetch_session () {
 
    if (_netManager) {
 
-      if (!user ().isEmpty () && !password ().isEmpty ()) {
+      QString server = "http://localhost:5984/_session";
+      QUrl url (server);
 
-         QString server = "http://localhost:5984/_session";
-         QUrl url (server);
+      QUrl params;
+      params.addQueryItem ("name", get_user ().get_buffer ());
+      params.addQueryItem ("password", get_password ().get_buffer ());
 
-         QUrl params;
-         params.addQueryItem ("name", user ());
-         params.addQueryItem ("password", password ());
+      QNetworkRequest request (url);
 
-         QNetworkRequest request (url);
+      request.setHeader (
+         QNetworkRequest::ContentTypeHeader,
+         "application/x-www-form-urlencoded");
 
-         request.setHeader (
-            QNetworkRequest::ContentTypeHeader,
-            "application/x-www-form-urlencoded");
+      init.app.log.info << "Post: " << qPrintable (url.toString ()) << endl;
 
-         init.app.log.info << "Post: " << qPrintable (url.toString ()) << endl;
+      QNetworkReply *reply (_netManager->post (request, params.encodedQuery ()));
+      if (reply) {
 
-         QNetworkReply *reply (_netManager->post (request, params.encodedQuery ()));
-         if (reply) {
-
-            connect (reply, SIGNAL (finished ()), this, SLOT (_handle_fetch_session ()));
-         }
+         connect (reply, SIGNAL (finished ()), this, SLOT (_handle_fetch_session ()));
       }
    }
 }
@@ -223,7 +209,7 @@ StanceInit::_handle_fetch_session () {
          QByteArray data (reply->readAll ());
          const String JsonData (data.constData ());
 
-         ui.infoLabel->setText (data);
+         _ui.infoLabel->setText (data);
 
          if (JsonData) {
 
@@ -231,17 +217,6 @@ StanceInit::_handle_fetch_session () {
             if (json_string_to_config (JsonData, global)) {
 
                if (config_to_boolean ("ok", global)) {
-
-                  QVariant var = reply->header(QNetworkRequest::SetCookieHeader);
-                  QList<QNetworkCookie> cookies = qvariant_cast<QList<QNetworkCookie> >(var);
-
-                  if (cookies.count() != 0){
-
-                     QNetworkCookie cookie = cookies.first ();
-                     _cookieValue = cookie.value ().constData ();
-                  }
-
-                  init.app.log.error << "cookie: " << _cookieValue << endl;
 
                   _authenticatedAs = config_to_string ("name", global);
 
@@ -258,7 +233,7 @@ StanceInit::_handle_fetch_session () {
                      }
                   }
 
-//                  _start = True;
+                  _start = True;
                   close ();
                }
             }
@@ -269,10 +244,10 @@ StanceInit::_handle_fetch_session () {
       }
       else {
 
-         ui.infoLabel->setText (reply->errorString ());
+         _ui.infoLabel->setText (reply->errorString ());
       }
 
-      reply->deleteLater ();
+      delete reply;
       reply = 0;
    }
 }
@@ -284,7 +259,6 @@ StanceInit::closeEvent (QCloseEvent * event) {
    if (!_start) {
 
       init.app.quit ("Cancel Button Pressed");
-      _save_session ();
    }
    else {
 
@@ -300,38 +274,58 @@ StanceInit::_save_session () {
 
    Config session (StanceName);
 
-   if (_cookieValue) {
-
-      session.add_config (string_to_config ("coockie", "value", _cookieValue));
-   }
-
-   if (_authenticatedAs) {
-
-      session.add_config (string_to_config ("authenticated", "as", _authenticatedAs));
-   }
-
    session.add_config (float64_to_config ("frame", "time", _frameTime));
    set_session_config (init.app.get_context (), session);
 
    session = Config (StanceInitName);
 
-   Boolean rememberMe (ui.rememberMe->isChecked ());
+   Boolean rememberMe (_ui.rememberMe->isChecked ());
    if (rememberMe) {
 
-      String username = qPrintable (ui.usernameLineEdit->text ());
-      session.add_config (string_to_config ("user", "name", username));
+      session.add_config (string_to_config ("user", "value", get_user ()));
 
-      QByteArray passwd (qPrintable (ui.passwordLineEdit->text ()));
+      QByteArray passwd (get_password ().get_buffer ());
 
       QByteArray ba = local_calc_xor (passwd, StanceKey.toBase64 ());
       session.add_config (qbytearray_to_config ("password", ba));
    }
 
-   session.add_config (boolean_to_config ("remember", "me", rememberMe));
+   session.add_config (boolean_to_config ("remember-me", "value", rememberMe));
 
    session.add_config (qbytearray_to_config ("geometry", saveGeometry ()));
 
    set_session_config (init.app.get_context (), session);
+}
+
+
+void
+StanceInit::_load_session () {
+
+   Config session = get_session_config (StanceInitName, init.app.get_context ());
+
+   if (config_to_boolean ("remember-me.value", session)) {
+
+      _ui.rememberMe->setChecked (True);
+
+      String user = config_to_string ("user.value", session);
+      set_user (user.get_buffer ());
+
+      QByteArray ba (config_to_qbytearray ("password", session));
+      QByteArray password = local_calc_xor (ba, StanceKey.toBase64 ());
+
+      set_password (password.constData ());
+   }
+
+   Config geometry;
+   if (session.lookup_config (GeometryName, geometry)) {
+
+      restoreGeometry (config_to_qbytearray (geometry));
+   }
+   else {
+
+      QRect drect = QApplication::desktop ()->availableGeometry (this);
+      move(drect.center () - rect ().center ());
+   }
 }
 
 
@@ -359,8 +353,6 @@ dmz_init_stance (AppShellInitStruct &appInit) {
       }
    }
 
-   local_restore_session (appInit, stanceInit);
-
    stanceInit.show ();
    stanceInit.raise ();
 
@@ -381,6 +373,7 @@ dmz_init_stance (AppShellInitStruct &appInit) {
 
       if (!appInit.app.is_error ()) {
 
+         local_set_login (appInit, stanceInit);
       }
    }
 }
