@@ -9,7 +9,6 @@
    <plugin name="dmzJsExtV8Input" scope="javascript"/>
    <plugin name="dmzJsExtV8Event" scope="javascript"/>
    <plugin name="dmzJsExtV8EventCommon" scope="javascript"/>
-   <plugin name="dmzJsExtV8Session" scope="javascript"/>
    <plugin name="dmzJsExtV8Object" scope="javascript"/>
    <plugin name="dmzJsExtV8Module" scope="javascript"/>
 </plugin-list>
@@ -21,8 +20,8 @@
     <instance name="devtools"/>
     <instance name="gameCreation"/>
    <instance name="webMap"/>
-   <instance name="forum"/>
-   <instance name="login"/>
+   <instance name="forum2"/>
+<!--   <instance name="login"/>-->
 </javascript>
 <main>
    <scene height="800" width="400"/>

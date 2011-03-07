@@ -22,13 +22,6 @@ var dmz =
    , postText = dialog.lookup("postTextEdit")
    , messageLengthRem = dialog.lookup("charRemAmt")
    , buttonBox = dialog.lookup("buttonBox")
-//   , forumDock = dmz.ui.mainWindow.createDock
-//     ( "Forum"
-//     , { area: dmz.ui.consts.LeftDockWidgetArea
-//       , floating: false
-//       }
-//     , form
-//     )
 
    // Handles
    , TextHandle = dmz.defs.createNamedHandle("text")
@@ -40,6 +33,8 @@ var dmz =
    , DisplayNameHandle = dmz.defs.createNamedHandle("display_name")
    , PostVisitedHandle = dmz.defs.createNamedHandle("post_visited")
    , VisibleHandle = dmz.defs.createNamedHandle("visible")
+   , ForumLink = dmz.defs.createNamedHandle("group_forum_link")
+   , GroupMembersHandle = dmz.defs.createNamedHandle("group_members")
 
    // Object Types
    , PostType = dmz.objectType.lookup("post")
@@ -50,6 +45,7 @@ var dmz =
    // Object Lists
    , ForumList = {}
    , PostList = {}
+   , GroupList = {}
 
    // Variables
    , UnreadPostBrush = dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
@@ -90,6 +86,8 @@ _getAuthorHandle = function (handle) {
 
 dmz.object.create.observe(self, function (handle, objType) {
 
+   var child;
+
    if (objType) {
 
       if (objType.isOfType(PostType)) {
@@ -105,6 +103,27 @@ dmz.object.create.observe(self, function (handle, objType) {
          ForumList[handle].widget.data(0, handle);
          tree.resizeColumnToContents(0);
       }
+      else if (objType.isOfType(GroupType)) { GroupList[handle] = -1; }
+   }
+});
+
+
+dmz.object.text.observe(self, NameHandle, function (handle, attr, value) {
+
+   var child;
+   if (GroupList[handle] === -1) {
+
+      child = dmz.object.create(ForumType);
+      dmz.object.activate(child);
+      dmz.object.text(child, NameHandle, value);
+      dmz.object.link(ForumLink, handle, child);
+      GroupList[handle] = child;
+   }
+   else if (GroupList[handle]) { dmz.object.text(GroupList[handle], NameHandle, value); }
+   else if (ForumList[handle] && ForumList[handle].widget) {
+
+      ForumList[handle].widget.text(0, value);
+      tree.resizeColumnToContents(0);
    }
 });
 
@@ -161,42 +180,63 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
 // Devtools
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
-function (ObjHandle, attrHandle, value) {
+function (objHandle, attrHandle, value) {
 
-   var type = dmz.object.type(ObjHandle)
+   var type = dmz.object.type(objHandle)
      , postsRead
      , currHandle
+     , currGroup
+     , forum
      ;
 
    if (value && type && type.isOfType(UserType)) {
 
-//      postsRead = dmz.object.subLinks(ObjHandle, PostVisitedHandle);
-//      self.log.warn ("Posts read:", postsRead);
-//      Object.keys(PostList).forEach(function (item) {
+      postsRead = dmz.object.subLinks(objHandle, PostVisitedHandle);
 
-//         var post = PostList[item]
-//           , data = post.widget.data(0)
-//           , index = -1
-//           ;
+      currGroup = dmz.object.superLinks(objHandle, GroupMembersHandle);
 
-//         if (postsRead) { index = postsRead.indexOf(data); }
-//         if (index >= 0) {
+      if (currGroup && currGroup[0]) {
 
-//            post.widget.background(0, ReadPostBrush);
-//            if (postsRead) { postsRead.splice(index, 1); }
-//         }
-//         else { post.widget.background(0, UnreadPostBrush); }
-//      });
+         Object.keys(GroupList).forEach(function (groupHandle) {
 
-//      currHandle = tree.currentItem();
-//      if (currHandle) {
+            dmz.object.flag(
+               GroupList[groupHandle],
+               VisibleHandle,
+               parseInt(groupHandle) === currGroup[0]);
+         });
 
-//         currHandle = currHandle.data(0);
-//         if (!dmz.object.linkHandle(PostVisitedHandle, ObjHandle, currHandle)) {
+         forum = ForumList[currGroup[0]];
+         if (forum && forum.widget) { tree.currentItem(forum.widget); }
+      }
 
-//            dmz.object.link(PostVisistedHandle, ObjHandle, currHandle);
-//         }
-//      }
+
+      Object.keys(PostList).forEach(function (item) {
+
+         var post = PostList[item]
+           , data = post.widget.data(0)
+           , index = -1
+           ;
+
+
+
+         if (postsRead) { index = postsRead.indexOf(data); }
+         if (index >= 0) {
+
+            post.widget.background(0, ReadPostBrush);
+            if (postsRead) { postsRead.splice(index, 1); }
+         }
+         else { post.widget.background(0, UnreadPostBrush); }
+      });
+
+      currHandle = tree.currentItem();
+      if (currHandle) {
+
+         currHandle = currHandle.data(0);
+         if (!dmz.object.linkHandle(PostVisitedHandle, objHandle, currHandle)) {
+
+            dmz.object.link(PostVisitedHandle, objHandle, currHandle);
+         }
+      }
    }
 });
 
@@ -217,12 +257,7 @@ dmz.object.link.observe(self, PostVisitedHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    var post = PostList[subHandle];
-
-   if (post && post.widget) {
-
-//      self.log.warn ("This is where the linking would happen...");
-      post.widget.background(0, ReadPostBrush);
-   }
+   if (post && post.widget) { post.widget.background(0, ReadPostBrush); }
 });
 
 
@@ -233,9 +268,13 @@ tree.observe (self, "currentItemChanged", function (curr) {
      , parentHandle
      , maxPostLength
      , hil = dmz.object.hil()
+     , text
      ;
 
-   textBox.text (curr.text(3));
+
+   replyButton.enabled(true);
+   text = curr.text(3);
+   textBox.text (text ? text : " ");
 
    if (hil && !dmz.object.linkHandle(PostVisitedHandle, hil, currHandle) &&
       type.isOfType(PostType)) {
@@ -278,10 +317,17 @@ tree.observe (self, "currentItemChanged", function (curr) {
 
    replyButton.observe(self, "clicked", function () {
 
+      if (type.isOfType(PostType)) {
+
+         text = "Re: " + curr.text(0);
+         replyTitleText.text(text);
+      }
+
       dialog.open(self, function (value, dialog) {
 
          var author = dmz.object.hil()
            , title
+           , parentTitle
            , text
            , post
            , mb
@@ -290,7 +336,9 @@ tree.observe (self, "currentItemChanged", function (curr) {
          if (value && author) {
 
             text = postText.text();
+            text = text ? text : "No Text Entered.";
             title = replyTitleText.text();
+            title = title ? title : "Untitled";
 
             if ((text.length <= maxPostLength) && parentHandle) {
 
@@ -308,6 +356,28 @@ tree.observe (self, "currentItemChanged", function (curr) {
          postText.clear();
       });
    });
+});
+
+dmz.object.destroy.observe(self, function (objHandle) {
+
+   var members;
+   if (ForumList[objHandle]) {
+
+      members = dmz.object.subLinks(objHandle, ParentHandle);
+      if (members) {
+
+         members.forEach(function (handle) { dmz.object.destroy(handle); });
+      }
+      ForumList[objHandle].widget.parent().takeChild(ForumList[objHandle].widget);
+   }
+   else if (PostList[objHandle]) {
+
+      PostList[objHandle].widget.parent().takeChild(PostList[objHandle].widget);
+   }
+   else if (GroupList[objHandle] && (GroupList[objHandle] !== -1)) {
+
+      dmz.object.destroy(GroupList[objHandle]);
+   }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
