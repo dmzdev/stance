@@ -59,6 +59,7 @@ LoginSuccessMessage.subscribe(self, function (data) {
       if (timeStamp) { _serverTime = new Date(timeStamp * 1000); }
 
       _userName = data.string(dmz.const.NameHandle);
+
       _activateUser(_userName);
    }
 });
