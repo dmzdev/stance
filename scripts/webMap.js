@@ -1,6 +1,7 @@
 var dmz =
        { object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
+       , const: require("const")
        , data: require("dmz/runtime/data")
        , defs: require("dmz/runtime/definitions")
        , module: require("dmz/runtime/module")
@@ -75,6 +76,7 @@ var dmz =
    , HaveActivatedMap = false
    , GroupHandleList = []
    , PinGroupList = {}
+   , GroupQueue = {}
 
    // Function decls
    , onPinAdded
@@ -117,12 +119,23 @@ dmz.object.create.observe(self, function (objHandle, objType) {
             else { addPinMessage.send(data); }
          }
       }
-      else if (objType.isOfType(GroupType)) {
+      else if (objType.isOfType(GroupType)) { GroupQueue[objHandle] = true; }
+   }
+});
 
-         button = dmz.ui.button.createCheckBox();
-         GroupHandleList.push(objHandle);
-         groupFLayout.addRow(dmz.object.text(objHandle, GroupNameHandle), button);
-      }
+dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
+
+   var index;
+   if (GroupQueue[handle]) {
+
+     GroupHandleList.push(handle);
+     groupFLayout.addRow(value, dmz.ui.button.createCheckBox());
+     delete GroupQueue[handle];
+   }
+   else {
+
+      index = GroupHandleList.indexOf(handle);
+      if (index !== -1) { groupFLayout.at(index, 0).text(value); }
    }
 });
 
