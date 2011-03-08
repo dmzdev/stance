@@ -29,12 +29,7 @@ var dmz =
    , forumAssocList = editScenarioDialog.lookup("forumAssocList")
    , forumGroupList = editScenarioDialog.lookup("forumGroupList")
 
-   , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
-
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
-
-   , groupListDialog = dmz.ui.loader.load("GroupListDialog.ui")
-   , listLayout = groupListDialog.lookup("vLayout")
 
    , instructorDialog = dmz.ui.loader.load("InstructorWindowDialog")
    , scenarioList = instructorDialog.lookup("scenarioList")
@@ -249,9 +244,37 @@ function (linkObjHandle, attrHandle, groupHandle, studentHandle) {
 
       userList[studentHandle].hidden(groupList[0] && (groupHandle !== groupList[0]));
    }
-
 });
 
+dmz.object.link.observe(self, dmz.const.GameUngroupedUsersHandle,
+function (linkObjHandle, attrHandle, gameHandle, userHandle) {
+
+   if (!userList[userHandle]) {
+
+      userList[userHandle] = ungroupedStudentList.addItem(
+         dmz.const._getDisplayName(userHandle), userHandle);
+   }
+});
+
+dmz.object.link.observe(self, dmz.const.GameUngroupedAdvisorsHandle,
+function (linkObjHandle, attrHandle, gameHandle, advisorHandle) {
+
+   if (advisorList.indexOf(advisorHandle) === -1) {
+
+      advisorComboBox.addItem(dmz.const._getDisplayName(advisorHandle));
+      advisorList.push(advisorHandle);
+   }
+});
+
+dmz.object.link.observe(self, dmz.const.GameUngroupedLobbyistsHandle,
+function (linkObjHandle, attrHandle, gameHandle, lobbyistHandle) {
+
+   if (lobbyistList.indexOf(lobbyistHandle) === -1) {
+
+      lobbyistComboBox.addItem(dmz.const._getDisplayName(lobbyistHandle));
+      lobbyistList.push(lobbyistHandle);
+   }
+});
 
 groupComboBox.observe(self, "currentIndexChanged", function (index) {
 
@@ -329,7 +352,6 @@ groupToForum = function (item) {
      , linkHandle
      ;
 
-   self.log.warn (count, item);
    if (item && count) {
 
       groupHandle = item.data();
@@ -337,7 +359,6 @@ groupToForum = function (item) {
       if (currentIndex < forumList.length) { forumHandle = forumList[currentIndex]; }
       else { forumHandle = false; }
 
-      self.log.warn (forumList.length, currentIndex, groupHandle, forumHandle);
       if (groupHandle && forumHandle) {
 
          dmz.object.link(dmz.const.ForumLink, groupHandle, forumHandle);
@@ -390,7 +411,6 @@ forumComboBox.observe(self, "currentIndexChanged", function (index) {
    if (listHandle) {
 
       forumGroups = dmz.object.superLinks(listHandle, dmz.const.ForumLink);
-      self.log.warn (listHandle, ":", forumGroups);
       Object.keys(forumGroupWidgets).forEach(function (groupHandle) {
 
          var hide;
@@ -466,99 +486,6 @@ setup = function () {
      , forums
      ;
 
-
-
-//      groupList = [];
-//      userList = {};
-//      advisorPictureObjects = [];
-//      lobbyistPictureObjects = [];
-//      advisorList = [];
-//      lobbyistList = [];
-//      groupComboBox.clear();
-//      ungroupedStudentList.clear();
-//      groupStudentList.clear();
-//      advisorComboBox.clear();
-//      lobbyistGroupList.clear();
-
-      // Iterate over groups linked to game and create them in UI
-   groups = dmz.object.subLinks(CurrentGameHandle, dmz.const.GameGroupHandle);
-   if (groups) {
-
-      groups.forEach(function (group) {
-         // For each group, iterate over linked students
-
-         var students = dmz.object.subLinks(group, dmz.const.GroupMembersHandle)
-           , advisors = dmz.object.subLinks(group, dmz.const.AdvisorGroupHandle)
-           , lobbyists = dmz.object.subLinks(group, dmz.const.LobbyistGroupHandle)
-           , groupName = dmz.const._getDisplayName(group)
-           ;
-
-         if (students) {
-
-            students.forEach(function (student) {
-
-               userList[student] = groupStudentList.addItem(
-                  dmz.const._getDisplayName(student), student);
-            });
-         }
-         if (advisors) {
-
-            advisors.forEach(function (advisor) {
-
-               advisorComboBox.addItem(dmz.const._getDisplayName(advisor));
-               advisorList.push(advisor);
-            });
-         }
-         if (lobbyists) {
-
-            lobbyists.forEach(function (lobbyist) {
-
-               lobbyistComboBox.addItem(dmz.const._getDisplayName(lobbyist));
-               lobbyistList.push(lobbyist);
-            });
-         }
-      });
-
-      members = dmz.object.subLinks(groupList[0], dmz.const.GroupMembersHandle);
-      count = groupStudentList.count();
-      for (idx = 0; idx < count; idx += 1) {
-
-         item = groupStudentList.item(idx);
-         item.hidden(!members || (members.indexOf(item.data()) === -1));
-      }
-   }
-
-   ungrouped = dmz.object.subLinks(CurrentGameHandle, dmz.const.GameUngroupedUsersHandle);
-   self.log.warn ("ungrouped:", ungrouped);
-   if (ungrouped) {
-
-      ungrouped.forEach(function (student) {
-
-         userList[student] = ungroupedStudentList.addItem(
-            dmz.const._getDisplayName(student), student);
-      });
-   }
-
-   ungrouped = dmz.object.subLinks(CurrentGameHandle, dmz.const.GameUngroupedAdvisorsHandle);
-   if (ungrouped) {
-
-      ungrouped.forEach(function (advisor) {
-
-         advisorComboBox.addItem(dmz.const._getDisplayName(advisor))
-         advisorList.push(advisor);
-      });
-   }
-
-   ungrouped = dmz.object.subLinks(CurrentGameHandle, dmz.const.GameUngroupedLobbyistsHandle);
-   if (ungrouped) {
-
-      ungrouped.forEach(function (lobbyist) {
-
-         lobbyistComboBox.addItem(dmz.const._getDisplayName(lobbyist));
-         lobbyistList.push(advisor);
-      });
-   }
-
    gameStateButton.text(
       dmz.object.flag(CurrentGameHandle, dmz.const.ActiveHandle) ?
       "End Game" :
@@ -633,7 +560,7 @@ setup = function () {
          pictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
          advisorGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
          text = dmz.object.text(advisorHandle, dmz.const.BioHandle);
-         if (!text) { text = " "; }
+         if (!text) { text = ""; }
          advisorBio.text(text);
 
          editAdvisorDialog.open(self, function (result) {
@@ -642,9 +569,9 @@ setup = function () {
 
                dmz.object.unlinkSuperObjects(advisorHandle, dmz.const.AdvisorGroupHandle);
                dmz.object.link(
-                  advisorHandle,
                   dmz.const.AdvisorGroupHandle,
-                  groupList[advisorGroupList.currentIndex()]);
+                  groupList[advisorGroupList.currentIndex()],
+                  advisorHandle);
 
                dmz.object.text(advisorHandle, dmz.const.PictureDirectoryNameHandle, directory);
                dmz.object.text(advisorHandle, dmz.const.PictureFileNameHandle, pictureList.currentText());
@@ -679,7 +606,6 @@ setup = function () {
       if (index < lobbyistList.length) {
 
          lobbyistHandle = lobbyistList[index];
-
          links = dmz.object.superLinks(lobbyistHandle, dmz.const.LobbyistGroupHandle);
          if (links && links[0]) {
 
@@ -692,11 +618,11 @@ setup = function () {
          lobbyistPictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
          lobbyistGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
          text = dmz.object.text(lobbyistHandle, dmz.const.BioHandle);
-         if (!text) { text = " "; }
+         if (!text) { text = ""; }
          lobbyistBio.text(text);
 
          text = dmz.object.text(lobbyistHandle, dmz.const.LobbyistMessageHandle);
-         if (!text) { text = " "; }
+         if (!text) { text = ""; }
          lobbyistMessage.text(text);
 
          editLobbyistDialog.open(self, function (result) {
@@ -705,9 +631,9 @@ setup = function () {
 
                dmz.object.unlinkSuperObjects(lobbyistHandle, dmz.const.LobbyistGroupHandle);
                dmz.object.link(
-                  lobbyistHandle,
                   dmz.const.LobbyistGroupHandle,
-                  groupList[lobbyistGroupList.currentIndex()]);
+                  groupList[lobbyistGroupList.currentIndex()],
+                  lobbyistHandle);
 
                dmz.object.text(lobbyistHandle, dmz.const.PictureFileNameHandle, lobbyistPictureList.currentText());
                dmz.object.text(lobbyistHandle, dmz.const.PictureDirectoryNameHandle, directory)
@@ -744,13 +670,15 @@ ungroupedStudentList.observe(self, "itemActivated", userToGroup);
 
 editScenarioDialog.observe(self, "addGroupButton", "clicked", function () {
 
-   createGroupDialog.open(self, function (value, dialog) {
+   dmz.ui.inputDialog.create(
+      { title: "Create New Group"
+      , label: "Group Name:"
+      , text: ""
+      }
+      , editScenarioDialog
+   ).open(self, function (value, groupName) {
 
-      var groupName = dialog.lookup("groupName").text()
-        , permissionType = dialog.lookup("permissionType")
-        , group
-        ;
-
+      var group;
       if (value) {
 
          group = dmz.object.create(dmz.const.GroupType);
@@ -776,9 +704,6 @@ editScenarioDialog.observe(self, "createPlayerButton", "clicked", function () {
          if (student) {
 
             dmz.object.link(dmz.const.GameUngroupedUsersHandle, CurrentGameHandle, student);
-            userList[student] = ungroupedStudentList.addItem(
-               dmz.const._getDisplayName(student), student);
-
          }
       }
       displayName.clear();
@@ -826,12 +751,7 @@ editScenarioDialog.observe(self, "removeGroupButton", "clicked", function () {
      , item
      ;
 
-   self.log.warn (groupList);
-   self.log.warn (index);
-
    groupMembers = dmz.object.subLinks(groupHandle, dmz.const.GroupMembersHandle);
-   self.log.warn (groupMembers);
-
    groupMembers.forEach(function (user) {
 
       var item = userList[user];
@@ -845,7 +765,9 @@ editScenarioDialog.observe(self, "removeGroupButton", "clicked", function () {
 
 editScenarioDialog.observe(self, "allGroupButton", "clicked", function () {
 
-   var groups
+   var groupListDialog = dmz.ui.loader.load("GroupListDialog.ui")
+     , listLayout = groupListDialog.lookup("vLayout")
+     , groups
      , studentList
      , vLayout
      , groupBox
@@ -901,7 +823,7 @@ editScenarioDialog.observe(self, "addLobbyistButton", "clicked", function () {
       , label: "Lobbyist Name:"
       , text: ""
       }
-      , addLobbyistButton
+      , editScenarioDialog
       ).open(self, function (value, name) {
 
          var handle;
@@ -911,63 +833,8 @@ editScenarioDialog.observe(self, "addLobbyistButton", "clicked", function () {
             dmz.object.text(handle, dmz.const.NameHandle, name);
             dmz.object.activate(handle);
             dmz.object.link(dmz.const.GameUngroupedLobbyistsHandle, CurrentGameHandle, handle);
-            lobbyistComboBox.addItem(name);
-            lobbyistList.push(handle);
          }
       });
-});
-
-editScenarioDialog.observe(self, "editLobbyistButton", "clicked", function () {
-
-   var groupIndex
-     , groupHandle
-     , pictureIndex
-     , lobbyistHandle
-     , links
-     , index = lobbyistComboBox.currentIndex()
-     , text
-     ;
-
-   if (index < lobbyistList.length) {
-
-      lobbyistHandle = lobbyistList[index];
-
-      links = dmz.object.superLinks(lobbyistHandle, dmz.const.LobbyistGroupHandle);
-      if (links && links[0]) {
-
-         groupIndex = lobbyistGroupList.findText(dmz.const._getDisplayName(links[0]));
-      }
-
-      pictureIndex =
-         lobbyistPictureList.findText(dmz.object.text(lobbyistHandle, dmz.const.PictureFileNameHandle));
-
-      lobbyistPictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
-      lobbyistGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
-      text = dmz.object.text(lobbyistHandle, dmz.const.BioHandle);
-      if (!text) { text = " "; }
-      lobbyistBio.text(text);
-
-      text = dmz.object.text(lobbyistHandle, dmz.const.LobbyistMessageHandle);
-      if (!text) { text = " "; }
-      lobbyistMessage.text(text);
-
-      editLobbyistDialog.open(self, function (result) {
-
-         if (result) {
-
-            dmz.object.unlinkSuperObjects(lobbyistHandle, dmz.const.LobbyistGroupHandle);
-            dmz.object.link(
-               lobbyistHandle,
-               dmz.const.LobbyistGroupHandle,
-               groupList[lobbyistGroupList.currentIndex()]);
-
-            dmz.object.text(lobbyistHandle, dmz.const.PictureFileNameHandle, lobbyistPictureList.currentText());
-            dmz.object.text(lobbyistHandle, dmz.const.PictureDirectoryNameHandle, directory)
-            dmz.object.text(lobbyistHandle, dmz.const.BioHandle, lobbyistBio.text());
-            dmz.object.text(lobbyistHandle, dmz.const.LobbyistMessageHandle, lobbyistMessage.text());
-         }
-      });
-   }
 });
 
 editScenarioDialog.observe(self, "removeLobbyistButton", "clicked", function () {
@@ -979,7 +846,7 @@ editScenarioDialog.observe(self, "removeLobbyistButton", "clicked", function () 
       , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
       , defaultButton: dmz.ui.messageBox.Cancel
       }
-      , removeLobbyistButton
+      , editScenarioDialog
    ).open(self, function (value) {
 
       var index = lobbyistComboBox.currentIndex()
@@ -1003,7 +870,7 @@ editScenarioDialog.observe(self, "addAdvisorButton", "clicked", function () {
       , label: "Advisor Name:"
       , text: ""
       }
-      , addAdvisorButton
+      , editScenarioDialog
       ).open(self, function (value, name) {
 
          var handle;
@@ -1014,8 +881,6 @@ editScenarioDialog.observe(self, "addAdvisorButton", "clicked", function () {
             dmz.object.activate(handle);
             dmz.object.text(handle, dmz.const.NameHandle, name);
             dmz.object.link(dmz.const.GameUngroupedAdvisorsHandle, CurrentGameHandle, handle);
-            advisorComboBox.addItem(name);
-            advisorList.push(handle);
          }
       });
 });
@@ -1029,7 +894,7 @@ editScenarioDialog.observe(self, "removeAdvisorButton", "clicked", function () {
       , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
       , defaultButton: dmz.ui.messageBox.Cancel
       }
-      , removeAdvisorButton
+      , editScenarioDialog
    ).open(self, function (value) {
 
       var index = advisorComboBox.currentIndex()
