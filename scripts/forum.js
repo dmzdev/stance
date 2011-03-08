@@ -130,7 +130,6 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
          }
       }
       child.widget.background(0, backgroundBrush);
-      self.log.warn (title);
       tree.resizeColumnToContents(0);
       tree.resizeColumnToContents(1);
    }
@@ -149,9 +148,7 @@ function (objHandle, attrHandle, value) {
    if (value && type && type.isOfType(dmz.const.UserType)) {
 
       postsRead = dmz.object.subLinks(objHandle, dmz.const.PostVisitedHandle);
-
       currGroup = dmz.object.superLinks(objHandle, dmz.const.GroupMembersHandle);
-
       if (currGroup && currGroup[0]) {
 
          Object.keys(ForumList).forEach(function (forumHandle) {
@@ -167,15 +164,12 @@ function (objHandle, attrHandle, value) {
          });
       }
 
-
       Object.keys(PostList).forEach(function (item) {
 
          var post = PostList[item]
            , data = post.widget.data(0)
            , index = -1
            ;
-
-
 
          if (postsRead) { index = postsRead.indexOf(data); }
          if (index >= 0) {
@@ -190,6 +184,7 @@ function (objHandle, attrHandle, value) {
       if (currHandle) {
 
          currHandle = currHandle.data(0);
+         tree.currentItem().background(ReadPostBrush);
          if (!dmz.object.linkHandle(dmz.const.PostVisitedHandle, objHandle, currHandle)) {
 
             dmz.object.link(dmz.const.PostVisitedHandle, objHandle, currHandle);
@@ -208,15 +203,6 @@ dmz.object.flag.observe(self, dmz.const.VisibleHandle, function (handle, attr, v
 
       ForumList[handle].widget.hidden(!value);
    }
-});
-
-
-dmz.object.link.observe(self, dmz.const.PostVisitedHandle,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-   self.log.warn ("PostVisitedHandle:", subHandle, PostList[subHandle]);
-   var post = PostList[subHandle];
-   if (post && post.widget) { post.widget.background(0, ReadPostBrush); }
 });
 
 tree.observe(self, "itemActivated", function (item) {
@@ -241,91 +227,94 @@ tree.observe (self, "currentItemChanged", function (curr) {
      , text
      ;
 
+   if (currHandle && type) {
 
-   replyButton.enabled(true);
-   text = curr.text(3);
-   textBox.text (text ? text : " ");
+      replyButton.enabled(true);
+      text = curr.text(3);
+      textBox.text (text ? text : " ");
 
-   if (hil && !dmz.object.linkHandle(dmz.const.PostVisitedHandle, hil, currHandle) &&
-      type.isOfType(dmz.const.PostType)) {
+      if (hil && !dmz.object.linkHandle(dmz.const.PostVisitedHandle, hil, currHandle) &&
+         type.isOfType(dmz.const.PostType)) {
 
-      dmz.object.link(dmz.const.PostVisitedHandle, hil, currHandle);
-   }
+         dmz.object.link(dmz.const.PostVisitedHandle, hil, currHandle);
+         curr.background(0, ReadPostBrush);
+      }
 
-   if (type.isOfType(dmz.const.ForumType)) {
+      if (type.isOfType(dmz.const.ForumType)) {
 
-      replyButton.text("New Thread");
-      parentHandle = currHandle;
-      maxPostLength = 1000;
-   }
-   else if (type.isOfType(dmz.const.PostType)) {
-
-      replyButton.text("New Reply");
-      maxPostLength = 400;
-      parentHandle = dmz.object.subLinks(currHandle, dmz.const.ParentHandle)[0];
-      if (dmz.object.type(parentHandle).isOfType(dmz.const.ForumType)) {
-
+         replyButton.text("New Thread");
          parentHandle = currHandle;
+         maxPostLength = 1000;
       }
-   }
+      else if (type.isOfType(dmz.const.PostType)) {
 
-   messageLengthRem.text(maxPostLength);
+         replyButton.text("New Reply");
+         maxPostLength = 400;
+         parentHandle = dmz.object.subLinks(currHandle, dmz.const.ParentHandle)[0];
+         if (dmz.object.type(parentHandle).isOfType(dmz.const.ForumType)) {
 
-   postText.observe(self, "textChanged", function () {
-
-      var length = postText.text().length
-        , diff = maxPostLength - length
-        , color = "black"
-        ;
-
-      buttonBox.enabled(length < maxPostLength);
-      if (length > maxPostLength) { color = "red"; }
-      else if (length > (maxPostLength / 2)) { color = "blue"; }
-      else if (length > (maxPostLength / 4)) { color = "green"; }
-      messageLengthRem.text("<font color="+color+">"+diff+"</font>");
-   });
-
-   replyButton.observe(self, "clicked", function () {
-
-      if (type.isOfType(dmz.const.PostType)) {
-
-         text = "Re: " + curr.text(0);
-         replyTitleText.text(text);
+            parentHandle = currHandle;
+         }
       }
 
-      dialog.open(self, function (value, dialog) {
+      messageLengthRem.text(maxPostLength);
 
-         var author = dmz.object.hil()
-           , title
-           , parentTitle
-           , text
-           , post
-           , mb
+      postText.observe(self, "textChanged", function () {
+
+         var length = postText.text().length
+           , diff = maxPostLength - length
+           , color = "black"
            ;
 
-         if (value && author) {
+         buttonBox.enabled(length < maxPostLength);
+         if (length > maxPostLength) { color = "red"; }
+         else if (length > (maxPostLength / 2)) { color = "blue"; }
+         else if (length > (maxPostLength / 4)) { color = "green"; }
+         messageLengthRem.text("<font color="+color+">"+diff+"</font>");
+      });
 
-            text = postText.text();
-            text = text ? text : "No Text Entered.";
-            title = replyTitleText.text();
-            title = title ? title : "Untitled";
+      replyButton.observe(self, "clicked", function () {
 
-            if ((text.length <= maxPostLength) && parentHandle) {
+         if (type.isOfType(dmz.const.PostType)) {
 
-               post = dmz.object.create(dmz.const.PostType);
-               dmz.object.text(post, dmz.const.TitleHandle, title);
-               dmz.object.text(post, dmz.const.TextHandle, text);
-               dmz.object.text(post, dmz.const.CreatedAtHandle, new Date());
-               dmz.object.link(dmz.const.ParentHandle, post, parentHandle);
-               dmz.object.link(dmz.const.CreatedByHandle, post, author);
-               dmz.object.activate(post);
-            }
+            text = "Re: " + curr.text(0);
+            replyTitleText.text(text);
          }
 
-         replyTitleText.clear();
-         postText.clear();
+         dialog.open(self, function (value, dialog) {
+
+            var author = dmz.object.hil()
+              , title
+              , parentTitle
+              , text
+              , post
+              , mb
+              ;
+
+            if (value && author) {
+
+               text = postText.text();
+               text = text ? text : "No Text Entered.";
+               title = replyTitleText.text();
+               title = title ? title : "Untitled";
+
+               if ((text.length <= maxPostLength) && parentHandle) {
+
+                  post = dmz.object.create(dmz.const.PostType);
+                  dmz.object.text(post, dmz.const.TitleHandle, title);
+                  dmz.object.text(post, dmz.const.TextHandle, text);
+                  dmz.object.text(post, dmz.const.CreatedAtHandle, new Date());
+                  dmz.object.link(dmz.const.ParentHandle, post, parentHandle);
+                  dmz.object.link(dmz.const.CreatedByHandle, post, author);
+                  dmz.object.activate(post);
+               }
+            }
+
+            replyTitleText.clear();
+            postText.clear();
+         });
       });
-   });
+   }
 });
 
 dmz.object.destroy.observe(self, function (objHandle) {
