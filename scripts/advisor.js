@@ -121,5 +121,10 @@ tabFromAdvisor = function (advisorHandle, index) {
    directory = dmz.object.text(advisorHandle, AdvisorPictureDirectoryHandle);
    text = dmz.object.text(advisorHandle, AdvisorPictureNameHandle);
 
+   if (directory && text) {
+
+
+   }
+
    return tab;
 };

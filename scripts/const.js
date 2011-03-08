@@ -3,7 +3,7 @@ var dmz =
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
    , module: require("dmz/runtime/module")
-   , util: require("dmz/runtime/util")
+   , util: require("dmz/types/util")
    }
    , _exports = {}
 
@@ -26,6 +26,7 @@ var dmz =
       , DisplayNameHandle: dmz.defs.createNamedHandle("display_name")
       , ForumLink: dmz.defs.createNamedHandle("group_forum_link")
       , GameGroupHandle: dmz.defs.createNamedHandle("game_group")
+      , GameForumsHandle: dmz.defs.createNamedHandle("game_forums")
       , GameUngroupedUsersHandle: dmz.defs.createNamedHandle("game_ungrouped_users")
       , GameUngroupedAdvisorsHandle: dmz.defs.createNamedHandle("game_ungrouped_advisors")
       , GameUngroupedLobbyistsHandle: dmz.defs.createNamedHandle("game_ungrouped_lobbyists")
@@ -56,8 +57,8 @@ var dmz =
 
 Functions._getDisplayName = function (handle) {
 
-   var name = dmz.object.text (handle, DisplayNameHandle);
-   if (!name || (name === undefined)) { name = dmz.object.text (handle, NameHandle); }
+   var name = dmz.object.text (handle, Handles.DisplayNameHandle);
+   if (!name || (name === undefined)) { name = dmz.object.text (handle, Handles.NameHandle); }
    return name;
 }
 
@@ -70,11 +71,11 @@ Functions._getAuthorName = function (handle) {
 
 Functions._getAuthorHandle = function (handle) {
 
-   var parentLinks = dmz.object.subLinks (handle, CreatedByHandle)
+   var parentLinks = dmz.object.subLinks (handle, Handles.CreatedByHandle)
      , parent
      ;
 
-   parentLinks = dmz.object.subLinks (handle, CreatedByHandle);
+   parentLinks = dmz.object.subLinks (handle, Handles.CreatedByHandle);
    if (parentLinks) { parent = parentLinks[0]; }
 
    return parent;

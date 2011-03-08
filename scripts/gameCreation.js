@@ -25,6 +25,9 @@ var dmz =
    , gameStateButton = editScenarioDialog.lookup("gameStateButton")
    , advisorComboBox = editScenarioDialog.lookup("advisorList")
    , lobbyistComboBox = editScenarioDialog.lookup("lobbyistList")
+   , forumComboBox = editScenarioDialog.lookup("forumList")
+   , forumAssocList = editScenarioDialog.lookup("forumAssocList")
+   , forumGroupList = editScenarioDialog.lookup("forumGroupList")
 
    , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
 
@@ -57,6 +60,7 @@ var dmz =
    , GroupMembersHandle = dmz.defs.createNamedHandle("group_members")
 
    , GameGroupHandle = dmz.defs.createNamedHandle("game_group")
+   , GameForumsHandle = dmz.defs.createNamedHandle("game_forums")
    , GameUngroupedUsersHandle = dmz.defs.createNamedHandle("game_ungrouped_users")
    , GameUngroupedAdvisorsHandle = dmz.defs.createNamedHandle("game_ungrouped_advisors")
    , GameUngroupedLobbyistsHandle = dmz.defs.createNamedHandle("game_ungrouped_lobbyists")
@@ -76,12 +80,15 @@ var dmz =
    , PictureDirectoryNameHandle = dmz.defs.createNamedHandle("pic_dir_name")
    , BioHandle = dmz.defs.createNamedHandle("bio")
 
+   , ForumLink = dmz.defs.createNamedHandle("group_forum_link")
+
    // Object Types
    , UserType = dmz.objectType.lookup("user")
    , GameType = dmz.objectType.lookup("game")
    , GroupType = dmz.objectType.lookup("group")
    , AdvisorType = dmz.objectType.lookup("advisor")
    , LobbyistType = dmz.objectType.lookup("lobbyist")
+   , ForumType = dmz.objectType.lookup("forum")
 
    // Variables
    , groupList = []
@@ -91,6 +98,8 @@ var dmz =
    , lobbyistPictureObjects = []
    , advisorList = []
    , lobbyistList = []
+   , forumList = []
+   , forumGroupWidgets = {}
    , CurrentGameHandle = false
 
    // Function decls
@@ -98,25 +107,26 @@ var dmz =
    , createNewUser
    , readUserConfig
    , createGroup
-   , getNewRandomName
    , removeCurrentGroup
    , arrayContains
    , userToGroup
    , userFromGroup
    , configToStudent
    , setup
+   , groupToForum
+   , groupFromForum
 
    ;
 
 configToStudent = function (student) {
 
-   var name
-     , email
+   var userName
+     , displayName
      ;
 
-   name = student.string("name", "NAME FAIL");
-   email = student.string("email", "EMAIL FAIL");
-   return createNewUser(name, email);
+   userName = student.string("userName", "UNAME FAIL");
+   displayName = student.string("displayName", "DNAME FAIL");
+   return createNewUser(userName, displayName);
 };
 
 readUserConfig = function () {
@@ -154,28 +164,20 @@ readUserConfig = function () {
    }
 };
 
-createNewUser = function (name, email) {
+createNewUser = function (userName, displayName) {
 
    var user
      ;
 
-   if (name && email) {
+   if (userName && displayName) {
 
       user = dmz.object.create(UserType);
-      dmz.object.text(user, NameHandle, name);
-      dmz.object.text(user, UserEmailHandle, email);
-//      dmz.object.text(user, DisplayNameHandle, getNewRandomName());
-      dmz.object.text(user, DisplayNameHandle, name);
+      dmz.object.text(user, NameHandle, userName);
+      dmz.object.text(user, DisplayNameHandle, displayName);
       dmz.object.activate(user);
    }
    return user;
 };
-
-// Placeholder for later function to generate names
-getNewRandomName = function () {
-
-   return "Bert";
-}
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
@@ -197,6 +199,82 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    groupComboBox.addItem(name);
    advisorGroupList.addItem(name);
    lobbyistGroupList.addItem(name);
+
+   forumGroupWidgets[subHandle] =
+      { assoc: forumAssocList.addItem(name, subHandle)
+      , unassoc: forumGroupList.addItem(name, subHandle)
+      };
+   forumGroupWidgets[subHandle].assoc.hidden(true);
+});
+
+dmz.object.unlink.observe(self, GameGroupHandle,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   var name = dmz.object.text(subHandle, NameHandle)
+     , index
+     ;
+
+   index = groupList.indexOf(subHandle);
+   if (index !== -1) { groupList.splice(index, 1); }
+
+   index = groupComboBox.findText(name);
+   if (index !== -1) { groupComboBox.removeIndex(index); }
+   index = advisorGroupList.findText(name);
+   if (index !== -1) { advisorGroupList.removeIndex(index); }
+   index = lobbyistGroupList.findText(name);
+   if (index !== -1) { lobbyistGroupList.removeIndex(index); }
+
+   index = forumGroupWidgets[subHandle];
+   if (index && index.assoc && index.unassoc) {
+
+      forumAssocList.removeItem(index.assoc);
+      forumGroupList.removeItem(index.unassoc);
+      delete forumGroupWidgets[subHandle];
+   }
+});
+
+dmz.object.link.observe(self, GameForumsHandle,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   var name = dmz.object.text(subHandle, NameHandle);
+
+   forumComboBox.addItem(name);
+   forumList.push(subHandle);
+});
+
+dmz.object.unlink.observe(self, GameGroupHandle,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   var name = dmz.object.text(subHandle, NameHandle)
+     , index
+     ;
+
+   index = forumComboBox.findText(name);
+   if (index !== -1) {
+
+      forumComboBox.removeIndex(index);
+      forumList.splice(index, 1);
+   }
+});
+
+dmz.object.link.observe(self, ForumLink,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   if (forumGroupWidgets[superHandle]) {
+
+      forumGroupWidgets[superHandle].unassoc.hidden(true);
+      forumGroupWidgets[superHandle].assoc.hidden(false);
+   }
+});
+
+dmz.object.unlink.observe(self, ForumLink,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   if (forumGroupWidgets[superHandle]) {
+
+      forumGroupWidgets[superHandle].unassoc.hidden(false);
+      forumGroupWidgets[superHandle].assoc.hidden(true);
+   }
 });
 
 dmz.object.link.observe(self, GroupMembersHandle,
@@ -280,6 +358,137 @@ userFromGroup = function (item) {
    }
 };
 
+groupToForum = function (item) {
+
+   var groupHandle
+     , forumHandle
+     , currentIndex
+     , count = forumComboBox.count()
+     , linkHandle
+     ;
+
+   self.log.warn (count, item);
+   if (item && count) {
+
+      groupHandle = item.data();
+      currentIndex = forumComboBox.currentIndex();
+      if (currentIndex < forumList.length) { forumHandle = forumList[currentIndex]; }
+      else { forumHandle = false; }
+
+      self.log.warn (forumList.length, currentIndex, groupHandle, forumHandle);
+      if (groupHandle && forumHandle) {
+
+         dmz.object.link(ForumLink, groupHandle, forumHandle);
+      }
+   }
+};
+
+
+groupFromForum = function (item) {
+
+   var groupHandle
+     , forumHandle
+     , currentIndex
+     , count = forumComboBox.count()
+     , linkHandle
+     ;
+
+   if (item && count) {
+
+      groupHandle = item.data();
+      currentIndex = forumComboBox.currentIndex();
+      if (currentIndex < forumList.length) { forumHandle = forumList[currentIndex]; }
+      else { forumHandle = false; }
+
+      if (groupHandle && forumHandle) {
+
+         dmz.object.unlink(
+            dmz.object.linkHandle(ForumLink, groupHandle, forumHandle));
+
+      }
+   }
+};
+
+editScenarioDialog.observe(self, "addForumGroupButton", "clicked", function () {
+
+   groupToForum(forumGroupList.currentItem());
+});
+
+editScenarioDialog.observe(self, "removeForumGroupButton", "clicked", function () {
+
+   groupFromForum(forumAssocList.currentItem());
+});
+
+forumComboBox.observe(self, "currentIndexChanged", function (index) {
+
+   var listHandle = forumList[index]
+     , forumGroups
+     ;
+
+   if (listHandle) {
+
+      forumGroups = dmz.object.superLinks(listHandle, ForumLink);
+      self.log.warn (listHandle, ":", forumGroups);
+      Object.keys(forumGroupWidgets).forEach(function (groupHandle) {
+
+         var hide;
+         groupHandle = parseInt(groupHandle);
+         hide = forumGroups && (forumGroups.indexOf(groupHandle) !== -1);
+         forumGroupWidgets[groupHandle].unassoc.hidden(hide);
+         forumGroupWidgets[groupHandle].assoc.hidden(!hide);
+      });
+   }
+
+});
+
+forumAssocList.observe(self, "itemActivated", groupFromForum);
+forumGroupList.observe(self, "itemActivated", groupToForum);
+
+editScenarioDialog.observe(self, "createForumButton", "clicked", function () {
+
+   dmz.ui.inputDialog.create(
+      { title: "Create Forum"
+      , label: "Forum Name:"
+      , text: ""
+      }
+      , editScenarioDialog
+      ).open(self, function (value, name) {
+
+         var handle;
+         if (value && (name.length > 0)) {
+
+            handle = dmz.object.create(ForumType);
+            dmz.object.activate(handle);
+            dmz.object.text(handle, NameHandle, name);
+            dmz.object.link(GameForumsHandle, CurrentGameHandle, handle);
+         }
+      });
+});
+
+editScenarioDialog.observe(self, "deleteForumButton", "clicked", function () {
+
+   dmz.ui.messageBox.create(
+      { type: dmz.ui.messageBox.Warning
+      , text: "Are you sure you want to delete this forum?"
+      , informativeText: "Clicking <b>Ok</b> will cause all forum data to be permanently erased!"
+      , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+      , defaultButton: dmz.ui.messageBox.Cancel
+      }
+      , editScenarioDialog
+   ).open(self, function (value) {
+
+      var handle
+        , index
+        ;
+      if (value) {
+
+         index = forumComboBox.currentIndex();
+         handle = forumList[index];
+         if (handle) { dmz.object.destroy(handle); }
+      }
+   });
+});
+
 setup = function () {
 
    var groups
@@ -292,6 +501,7 @@ setup = function () {
      , directory
      , advisors
      , lobbyists
+     , forums
      ;
 
 
@@ -321,9 +531,6 @@ setup = function () {
            , groupName = dmz.object.text(group, NameHandle)
            ;
 
-         groupList.push(group);
-         groupComboBox.addItem(groupName);
-         advisorGroupList.addItem(groupName);
          if (students) {
 
             students.forEach(function (student) {
@@ -360,6 +567,7 @@ setup = function () {
    }
 
    ungrouped = dmz.object.subLinks(CurrentGameHandle, GameUngroupedUsersHandle);
+   self.log.warn ("ungrouped:", ungrouped);
    if (ungrouped) {
 
       ungrouped.forEach(function (student) {
@@ -588,10 +796,10 @@ editScenarioDialog.observe(self, "addGroupButton", "clicked", function () {
          dmz.object.text(group, NameHandle, groupName);
          // Link group to "Game" object
          // Add line to convert permission type into bitmask
-         groupList.push(group);
-         groupComboBox.addItem(groupName);
-         advisorGroupList.addItem(groupName);
-         lobbyistGroupList.addItem(groupName);
+//         groupList.push(group);
+//         groupComboBox.addItem(groupName);
+//         advisorGroupList.addItem(groupName);
+//         lobbyistGroupList.addItem(groupName);
          dmz.object.link(GameGroupHandle, CurrentGameHandle, group);
       }
    });
@@ -601,14 +809,14 @@ editScenarioDialog.observe(self, "createPlayerButton", "clicked", function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
-      var name = dialog.lookup("name")
-        , email = dialog.lookup("email")
+      var displayName = dialog.lookup("displayName")
+        , userName = dialog.lookup("userName")
         , student
         ;
 
-      if (value && name && email) {
+      if (value && displayName && userName) {
 
-         student = createNewUser(name.text(), email.text());
+         student = createNewUser(displayName.text(), userName.text());
          if (student) {
 
             dmz.object.link(GameUngroupedUsersHandle, CurrentGameHandle, student);
@@ -617,8 +825,8 @@ editScenarioDialog.observe(self, "createPlayerButton", "clicked", function () {
 
          }
       }
-      name.clear();
-      email.clear();
+      displayName.clear();
+      userName.clear();
    });
 });
 
@@ -741,7 +949,6 @@ editScenarioDialog.observe(self, "addLobbyistButton", "clicked", function () {
       ).open(self, function (value, name) {
 
          var handle;
-
          if (value && (name.length > 0)) {
 
             handle = dmz.object.create(LobbyistType);

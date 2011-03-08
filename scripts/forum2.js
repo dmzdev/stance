@@ -104,28 +104,38 @@ dmz.object.create.observe(self, function (handle, objType) {
          ForumList[handle].widget.data(0, handle);
          tree.resizeColumnToContents(0);
       }
-      else if (objType.isOfType(dmz.const.GroupType)) { GroupList[handle] = -1; }
+      else if (objType.isOfType(dmz.const.GroupType)) { GroupList[handle] = []; }
    }
 });
 
-
 dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
 
-   var child;
-   if (GroupList[handle] === -1) {
+   if (ForumList[handle]) { ForumList[handle].widget.text(0, value); }
+});
 
-      child = dmz.object.create(dmz.const.ForumType);
-      dmz.object.activate(child);
-      dmz.object.text(child, dmz.const.NameHandle, value);
-      dmz.object.link(dmz.const.ForumLink, handle, child);
-      GroupList[handle] = child;
-   }
-   else if (GroupList[handle]) { dmz.object.text(GroupList[handle], dmz.const.NameHandle, value); }
-   else if (ForumList[handle] && ForumList[handle].widget) {
+//dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
 
-      ForumList[handle].widget.text(0, value);
-      tree.resizeColumnToContents(0);
-   }
+//   var child;
+//   if (GroupList[handle] === -1) {
+
+//      child = dmz.object.create(dmz.const.ForumType);
+//      dmz.object.activate(child);
+//      dmz.object.text(child, dmz.const.NameHandle, value);
+//      dmz.object.link(dmz.const.ForumLink, handle, child);
+//      GroupList[handle] = child;
+//   }
+//   else if (GroupList[handle]) { dmz.object.text(GroupList[handle], dmz.const.NameHandle, value); }
+//   else if (ForumList[handle] && ForumList[handle].widget) {
+
+//      ForumList[handle].widget.text(0, value);
+//      tree.resizeColumnToContents(0);
+//   }
+//});
+
+dmz.object.link.observe(self, dmz.const.ForumLink,
+function (linkObjHandle, attrHandle, groupHandle, forumHandle) {
+
+   GroupList[groupHandle].push(forumHandle);
 });
 
 dmz.object.text.observe(self, dmz.const.TitleHandle, function (handle, attr, value) {
@@ -179,7 +189,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    }
 });
 
-// Devtools
+
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
@@ -198,16 +208,28 @@ function (objHandle, attrHandle, value) {
 
       if (currGroup && currGroup[0]) {
 
-         Object.keys(GroupList).forEach(function (groupHandle) {
+         self.log.warn ("hide:", GroupList[currGroup[0]]);
+         Object.keys(ForumList).forEach(function (forumHandle) {
 
+            var linkedGroups
+              ;
+
+            forumHandle = parseInt(forumHandle);
             dmz.object.flag(
-               GroupList[groupHandle],
-               VisibleHandle,
-               parseInt(groupHandle) === currGroup[0]);
+               forumHandle,
+               dmz.const.VisibleHandle,
+               GroupList[currGroup[0]].indexOf(forumHandle) !== -1);
          });
 
-         forum = ForumList[currGroup[0]];
-         if (forum && forum.widget) { tree.currentItem(forum.widget); }
+//         Object.keys(GroupList).forEach(function (groupForumHandleList) {
+
+
+//            dmz.object.flag(
+//               GroupList[groupHandle],
+//               dmz.const.VisibleHandle,
+//               currGroup.indexOf(parseInt(groupHandle)) !== -1);
+//         });
+
       }
 
 
@@ -242,7 +264,7 @@ function (objHandle, attrHandle, value) {
 });
 
 
-dmz.object.flag.observe(self, VisibleHandle, function (handle, attr, value) {
+dmz.object.flag.observe(self, dmz.const.VisibleHandle, function (handle, attr, value) {
 
    var type = dmz.object.type(handle)
      ;
