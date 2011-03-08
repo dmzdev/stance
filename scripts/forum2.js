@@ -60,7 +60,11 @@ dmz.object.create.observe(self, function (handle, objType) {
 
 dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
 
-   if (ForumList[handle]) { ForumList[handle].widget.text(0, value); }
+   if (ForumList[handle]) {
+
+      ForumList[handle].widget.text(0, value);
+      tree.resizeColumnToContents(0);
+   }
 });
 
 dmz.object.link.observe(self, dmz.const.ForumLink,
@@ -107,19 +111,30 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
      , title = dmz.object.text(superHandle, dmz.const.TitleHandle)
      , text = dmz.object.text(superHandle, dmz.const.TextHandle)
      , createdAt = dmz.object.text(superHandle, dmz.const.CreatedAtHandle)
+     , hil
+     , backgroundBrush = UnreadPostBrush
+     , postsRead
      ;
 
    if (child && parent && parent.widget) {
 
       child.widget = parent.widget.add ([title, author, createdAt, text]);
       child.widget.data(0, superHandle);
-      child.widget.background(0, UnreadPostBrush);
-      tree.currentItem (child.widget);
+      hil = dmz.object.hil();
+      if (hil) {
+
+         postsRead = dmz.object.subLinks(hil, dmz.const.PostVisitedHandled);
+         if (postsRead && (postsRead.indexOf(child) !== -1)) {
+
+            backgroundBrush = ReadPostBrush;
+         }
+      }
+      child.widget.background(0, backgroundBrush);
+      self.log.warn (title);
       tree.resizeColumnToContents(0);
       tree.resizeColumnToContents(1);
    }
 });
-
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
@@ -199,10 +214,22 @@ dmz.object.flag.observe(self, dmz.const.VisibleHandle, function (handle, attr, v
 dmz.object.link.observe(self, dmz.const.PostVisitedHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
+   self.log.warn ("PostVisitedHandle:", subHandle, PostList[subHandle]);
    var post = PostList[subHandle];
    if (post && post.widget) { post.widget.background(0, ReadPostBrush); }
 });
 
+tree.observe(self, "itemActivated", function (item) {
+
+   tree.resizeColumnToContents(0);
+   tree.resizeColumnToContents(1);
+});
+
+tree.observe(self, "itemExpanded", function (item) {
+
+   tree.resizeColumnToContents(0);
+   tree.resizeColumnToContents(1);
+});
 
 tree.observe (self, "currentItemChanged", function (curr) {
 
@@ -290,7 +317,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
                dmz.object.text(post, dmz.const.TextHandle, text);
                dmz.object.text(post, dmz.const.CreatedAtHandle, new Date());
                dmz.object.link(dmz.const.ParentHandle, post, parentHandle);
-               dmz.object.link(dmz.const.dmz.const.CreatedByHandle, post, author);
+               dmz.object.link(dmz.const.CreatedByHandle, post, author);
                dmz.object.activate(post);
             }
          }
@@ -332,6 +359,13 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
-      module.addPage ("Forum", form);
+      module.addPage ("Forum", form, function () {
+
+         Object.keys(PostList).forEach(function (post) {
+
+            if (post.widget) { post.widget.collapse(); }
+         });
+         tree.resizeColumnToContents(0);
+      });
    }
 });

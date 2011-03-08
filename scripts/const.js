@@ -51,24 +51,20 @@ var dmz =
       , _getAuthorHandle: false
       }
 
+   , getDisplayName
+   , getAuthorHandle
+   , getAuthorName
    ;
 
 
-Functions._getDisplayName = function (handle) {
+getDisplayName = function (handle) {
 
    var name = dmz.object.text (handle, Handles.DisplayNameHandle);
    if (!name || (name === undefined)) { name = dmz.object.text (handle, Handles.NameHandle); }
    return name;
 }
 
-
-Functions._getAuthorName = function (handle) {
-
-   return _getDisplayName(_getAuthorHandle(handle));
-}
-
-
-Functions._getAuthorHandle = function (handle) {
+getAuthorHandle = function (handle) {
 
    var parentLinks = dmz.object.subLinks (handle, Handles.CreatedByHandle)
      , parent
@@ -80,6 +76,11 @@ Functions._getAuthorHandle = function (handle) {
    return parent;
 }
 
+getAuthorName = function (handle) { return getDisplayName(getAuthorHandle(handle)); }
+
+Functions._getDisplayName = getDisplayName;
+Functions._getAuthorHandle = getAuthorHandle;
+Functions._getAuthorName = getAuthorName;
 
 (function () {
 
