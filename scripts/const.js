@@ -41,7 +41,6 @@ var dmz =
       , PostVisitedHandle: dmz.defs.createNamedHandle("post_visited")
       , TextHandle: dmz.defs.createNamedHandle("text")
       , TitleHandle: dmz.defs.createNamedHandle("title")
-      , UserEmailHandle: dmz.defs.createNamedHandle("user_email")
       , UserGroupHandle: dmz.defs.createNamedHandle("user_group")
       , VisibleHandle: dmz.defs.createNamedHandle("visible")
       }
