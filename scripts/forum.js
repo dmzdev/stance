@@ -167,17 +167,22 @@ function (objHandle, attrHandle, value) {
       Object.keys(PostList).forEach(function (item) {
 
          var post = PostList[item]
-           , data = post.widget.data(0)
+           , data
            , index = -1
            ;
 
-         if (postsRead) { index = postsRead.indexOf(data); }
-         if (index >= 0) {
+         if (post.widget) {
 
-            post.widget.background(0, ReadPostBrush);
-            if (postsRead) { postsRead.splice(index, 1); }
+            data = post.widget.data(0);
+            if (postsRead) { index = postsRead.indexOf(data); }
+            if (index >= 0) {
+
+               post.widget.background(0, ReadPostBrush);
+               if (postsRead) { postsRead.splice(index, 1); }
+            }
+            else { post.widget.background(0, UnreadPostBrush); }
          }
-         else { post.widget.background(0, UnreadPostBrush); }
+
       });
 
       currHandle = tree.currentItem();
