@@ -24,25 +24,6 @@ var dmz =
    , messageLengthRem = dialog.lookup("charRemAmt")
    , buttonBox = dialog.lookup("buttonBox")
 
-   // Handles
-//   , TextHandle = dmz.defs.createNamedHandle("text")
-//   , TitleHandle = dmz.defs.createNamedHandle("title")
-//   , CreatedByHandle = dmz.defs.createNamedHandle("created_by")
-//   , ParentHandle = dmz.defs.createNamedHandle("parent")
-//   , CreatedAtHandle = dmz.defs.createNamedHandle("created_at")
-//   , NameHandle = dmz.defs.createNamedHandle("name")
-//   , DisplayNameHandle = dmz.defs.createNamedHandle("display_name")
-//   , PostVisitedHandle = dmz.defs.createNamedHandle("post_visited")
-//   , VisibleHandle = dmz.defs.createNamedHandle("visible")
-//   , ForumLink = dmz.defs.createNamedHandle("group_forum_link")
-//   , GroupMembersHandle = dmz.defs.createNamedHandle("group_members")
-
-   // Object Types
-//   , PostType = dmz.objectType.lookup("post")
-//   , ForumType = dmz.objectType.lookup("forum")
-//   , GroupType = dmz.objectType.lookup("group")
-//   , UserType = dmz.objectType.lookup("user")
-
    // Object Lists
    , ForumList = {}
    , PostList = {}
@@ -52,38 +33,7 @@ var dmz =
    , UnreadPostBrush = dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
    , ReadPostBrush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: 1 })
 
-   // Function decls
-//   , _getDisplayName
-//   , _getAuthorName
-//   , _getAuthorHandle
    ;
-
-//_getDisplayName = function (handle) {
-
-//   var name = dmz.object.text (handle, DisplayNameHandle);
-//   if (!name || (name === undefined)) { name = dmz.object.text (handle, NameHandle); }
-//   return name;
-//}
-
-
-//_getAuthorName = function (handle) {
-
-//   return _getDisplayName(_getAuthorHandle(handle));
-//}
-
-
-//_getAuthorHandle = function (handle) {
-
-//   var parentLinks = dmz.object.subLinks (handle, CreatedByHandle)
-//     , parent
-//     ;
-
-//   parentLinks = dmz.object.subLinks (handle, CreatedByHandle);
-//   if (parentLinks) { parent = parentLinks[0]; }
-
-//   return parent;
-//}
-
 
 dmz.object.create.observe(self, function (handle, objType) {
 
@@ -112,25 +62,6 @@ dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, valu
 
    if (ForumList[handle]) { ForumList[handle].widget.text(0, value); }
 });
-
-//dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
-
-//   var child;
-//   if (GroupList[handle] === -1) {
-
-//      child = dmz.object.create(dmz.const.ForumType);
-//      dmz.object.activate(child);
-//      dmz.object.text(child, dmz.const.NameHandle, value);
-//      dmz.object.link(dmz.const.ForumLink, handle, child);
-//      GroupList[handle] = child;
-//   }
-//   else if (GroupList[handle]) { dmz.object.text(GroupList[handle], dmz.const.NameHandle, value); }
-//   else if (ForumList[handle] && ForumList[handle].widget) {
-
-//      ForumList[handle].widget.text(0, value);
-//      tree.resizeColumnToContents(0);
-//   }
-//});
 
 dmz.object.link.observe(self, dmz.const.ForumLink,
 function (linkObjHandle, attrHandle, groupHandle, forumHandle) {
@@ -208,7 +139,6 @@ function (objHandle, attrHandle, value) {
 
       if (currGroup && currGroup[0]) {
 
-         self.log.warn ("hide:", GroupList[currGroup[0]]);
          Object.keys(ForumList).forEach(function (forumHandle) {
 
             var linkedGroups
@@ -220,16 +150,6 @@ function (objHandle, attrHandle, value) {
                dmz.const.VisibleHandle,
                GroupList[currGroup[0]].indexOf(forumHandle) !== -1);
          });
-
-//         Object.keys(GroupList).forEach(function (groupForumHandleList) {
-
-
-//            dmz.object.flag(
-//               GroupList[groupHandle],
-//               dmz.const.VisibleHandle,
-//               currGroup.indexOf(parseInt(groupHandle)) !== -1);
-//         });
-
       }
 
 
