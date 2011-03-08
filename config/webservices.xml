@@ -3,15 +3,17 @@
 <plugin-list>
    <plugin name="dmzWebServicesModuleQt" scope="web-services"/>
    <plugin name="dmzWebServicesPluginObject" scope="web-services-object"/>
-   <plugin name="dmzQtPluginLoginDialog" scope="login-dialog"/>
+<!--   <plugin name="dmzQtPluginLoginDialog" scope="login-dialog"/>-->
+   <plugin name="dmzQtPluginLoginChds" scope="chds-login"/>
 </plugin-list>
 <web-services>
-   <server host="localhost" port="5984">
+<!--   <server host="localhost" port="5984">-->
 <!--   <server host="dmz.couchone.com" port="80">-->
-<!--   <server host="games.chds.us" port="443" path="/db/"> -->
+   <server host="games.chds.us" port="443" path="/db/">
 <!--      <proxy host="localhost" port="8888"/>-->
    </server>
-   <login-target name="dmzQtPluginLoginDialog"/>
+<!--   <login-target name="dmzQtPluginLoginDialog"/>-->
+   <login-target name="dmzQtPluginLoginChds"/>
 </web-services>
 <web-services-object>
    <filter>
@@ -36,6 +38,55 @@
    <login-target name="dmzWebServicesModuleQt"/>
 <!--   <auto-login value="true"/>-->
 </login-dialog>
+<chds-login>
+   <login-target name="dmzWebServicesModuleQt"/>
+   <picture-grid>
+      <row>
+         <col value="Bell"/>
+         <col value="Box"/>
+         <col value="Burn"/>
+         <col value="Camera"/>
+      </row>
+      <row>
+         <col value="Chip"/>
+         <col value="Coffee"/>
+         <col value="Film"/>
+         <col value="House"/>
+      </row>
+      <row>
+         <col value="Microphone"/>
+         <col value="MusicalNote"/>
+         <col value="Phone"/>
+         <col value="ShoppingBag"/>
+      </row>
+      <row>
+         <col value="Smile"/>
+         <col value="Stoplight"/>
+         <col value="Suit"/>
+         <col value="Trees"/>
+      </row>
+      <row>
+         <col value="WallClock"/>
+         <col value="Wallet"/>
+         <col value="Water"/>
+         <col value="Yield"/>
+      </row>
+   </picture-grid>
+   <color-grid>
+      <row>
+         <col value="Red"/>
+         <col value="Green"/>
+         <col value="Blue"/>
+         <col value="Yellow"/>
+      </row>
+      <row>
+         <col value="Pink"/>
+         <col value="Black"/>
+         <col value="Purple"/>
+         <col value="Orange"/>
+      </row>
+   </color-grid>
+</chds-login>
 <!-- <runtime>
    <object-type name="Player"/>
  </runtime> -->
