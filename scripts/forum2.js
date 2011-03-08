@@ -290,7 +290,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
                dmz.object.text(post, dmz.const.TextHandle, text);
                dmz.object.text(post, dmz.const.CreatedAtHandle, new Date());
                dmz.object.link(dmz.const.ParentHandle, post, parentHandle);
-               dmz.object.link(dmz.const.dmz.const.CreatedByHandle, post, author);
+               dmz.object.link(dmz.const.CreatedByHandle, post, author);
                dmz.object.activate(post);
             }
          }

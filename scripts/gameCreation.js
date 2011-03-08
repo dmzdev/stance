@@ -772,13 +772,12 @@ editScenarioDialog.observe(self, "createPlayerButton", "clicked", function () {
 
       if (value && displayName && userName) {
 
-         student = createNewUser(displayName.text(), userName.text());
+         student = createNewUser(userName.text(), displayName.text());
          if (student) {
 
             dmz.object.link(dmz.const.GameUngroupedUsersHandle, CurrentGameHandle, student);
             userList[student] = ungroupedStudentList.addItem(
                dmz.const._getDisplayName(student), student);
-
          }
       }
       displayName.clear();
