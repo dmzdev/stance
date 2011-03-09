@@ -44,6 +44,7 @@ namespace dmz {
       signals:
          void addPin (const float x, const float y, const QString title, const QString description, const QString filename, int objectHandle, QVariantList groupHandles);
          void removePin (const int id);
+         void movePin (const int id, const float x, const float y);
 
       public slots:
          void pinWasMoved (const int id, const float worldX, const float worldY);
@@ -60,6 +61,7 @@ namespace dmz {
 
          Message _addPinMessage;
          Message _pinAddedMessage;
+         Message _movePinMessage;
          Message _pinMovedMessage;
          Message _pinRemovedMessage;
          Message _pinSelectedMessage;

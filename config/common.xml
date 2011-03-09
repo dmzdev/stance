@@ -76,6 +76,7 @@
       <add-confirm name="PinAddedMessage"/>
       <remove name="RemovePinMessage"/>
       <remove-confirm name="PinRemovedMessage"/>
+      <move name="MovePinMessage"/>
       <moved name="PinMovedMessage"/>
       <set-interface name="SetInterfaceWebViewMessage"/>
       <selected name="PinSelectedMessage"/>

@@ -30,11 +30,6 @@ var dmz =
    , groupFLayout = newPinDialog.lookup("groupFLayout")
 
    // Handles
-   , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
-
-   , UserRealNameHandle = dmz.defs.createNamedHandle("user_real_name")
-   , UserAuthoredPostLinkHandle = dmz.defs.createNamedHandle("user_authored_post_link")
-   , UserReadPostLinkHandle = dmz.defs.createNamedHandle("user_read_post_link")
 
    , pinIDHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.id.name"))
    , pinPositionHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.position.name"))
@@ -47,21 +42,12 @@ var dmz =
 
    , groupPinHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.group-handle.name"))
 
-
-   // Devtools type
-   , CurrentUserHandle = dmz.defs.createNamedHandle("current_user")
-   , CurrentUserType = dmz.objectType.lookup("current_user")
-
-   // Object Types
-   , GroupType = dmz.objectType.lookup("group")
-   , UserType = dmz.objectType.lookup("user")
-   , PinType = dmz.objectType.lookup("map_push_pin")
-
    // Messages
    , addPinMessage = dmz.message.create(self.config.string("message-names.add.name"))
    , pinAddedMessage = dmz.message.create(self.config.string("message-names.add-confirm.name"))
    , removePinMessage = dmz.message.create(self.config.string("message-names.remove.name"))
    , pinRemovedMessage = dmz.message.create(self.config.string("message-names.remove-confirm.name"))
+   , movePinMessage = dmz.message.create(self.config.string("message-names.move.name"))
    , pinMovedMessage = dmz.message.create(self.config.string("message-names.moved.name"))
    , setWebViewMessage = dmz.message.create(self.config.string("message-names.set-interface.name"))
    , pinSelectedMessage = dmz.message.create(self.config.string("message-names.selected.name"))
@@ -99,7 +85,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
    if (objType) {
 
-      if (objType.isOfType(PinType)) {
+      if (objType.isOfType(dmz.const.PinType)) {
 
          if (!PinHandleList[objHandle] && dmz.object.flag(objHandle, pinActiveHandle)) {
 
@@ -119,7 +105,19 @@ dmz.object.create.observe(self, function (objHandle, objType) {
             else { addPinMessage.send(data); }
          }
       }
-      else if (objType.isOfType(GroupType)) { GroupQueue[objHandle] = true; }
+      else if (objType.isOfType(dmz.const.GroupType)) { GroupQueue[objHandle] = true; }
+   }
+});
+
+dmz.object.position.observe(self, pinPositionHandle, function (handle, attr, value, prev) {
+
+   if (!prev || ((value.x !== prev.x) && (value.y !== prev.y))) {
+
+      self.log.warn ("pos.observe", handle, PinHandleList[handle]);
+      if (PinHandleList[handle]) {
+
+         movePinMessage.send(PinHandleList[handle].id, value.x, value.y);
+      }
    }
 });
 
@@ -171,7 +169,7 @@ onPinAdded = function (data) {
 
       if (!pinHandle) {
 
-         pinHandle = dmz.object.create(PinType);
+         pinHandle = dmz.object.create(dmz.const.PinType);
          PinIDList[id] = { id: id, handle: pinHandle };
          PinHandleList[pinHandle] = PinIDList[id];
          dmz.object.position(pinHandle, pinPositionHandle, [x, y, 0]);
@@ -187,7 +185,7 @@ onPinAdded = function (data) {
             if (handle && dmz.object.isObject(handle)) {
 
                type = dmz.object.type(handle);
-               if (type && type.isOfType(GroupType) &&
+               if (type && type.isOfType(dmz.const.GroupType) &&
                   !dmz.object.linkHandle(groupPinHandle, handle, pinHandle)) {
 
                   dmz.object.link(groupPinHandle, handle, pinHandle);
@@ -336,7 +334,6 @@ onPinRemoved = function (data) {
            dmz.object.position(PinIDList[id].handle, pinPositionHandle, [x, y, 0]);
         }
       }
-
    });
    pinSelectedMessage.subscribe(self, function (data) {
 
