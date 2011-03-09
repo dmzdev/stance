@@ -111,12 +111,16 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
 dmz.object.position.observe(self, pinPositionHandle, function (handle, attr, value, prev) {
 
+   var data;
    if (!prev || ((value.x !== prev.x) && (value.y !== prev.y))) {
 
-      self.log.warn ("pos.observe", handle, PinHandleList[handle]);
       if (PinHandleList[handle]) {
 
-         movePinMessage.send(PinHandleList[handle].id, value.x, value.y);
+         data = dmz.data.create();
+         data.number(pinIDHandle, 0, PinHandleList[handle].id);
+         data.number(pinPositionHandle, 0, value.x);
+         data.number(pinPositionHandle, 1, value.y);
+         movePinMessage.send(data);
       }
    }
 });
@@ -287,8 +291,8 @@ onPinRemoved = function (data) {
                   data = dmz.data.create();
                   data.number(pinPositionHandle, 0, x);
                   data.number(pinPositionHandle, 1, y);
-                  data.string(pinTitleHandle, 0, title ? title : "");
-                  data.string(pinDescHandle, 0, desc ? desc : "");
+                  data.string(pinTitleHandle, 0, title ? title : " ");
+                  data.string(pinDescHandle, 0, desc ? desc : " ");
                   data.string(pinFileHandle, 0, PinIconList[typeList.currentIndex()].webfile);
                   data.number(pinObjectHandle, 0, 0);
 
@@ -299,7 +303,6 @@ onPinRemoved = function (data) {
                         data.number(groupPinHandle, indexCounter++, GroupHandleList[idx]);
                      }
                   }
-
 
                   addPinMessage.send(data);
                }

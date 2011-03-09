@@ -341,6 +341,7 @@ dmz::BorderWebInterface::_init (Config &local) {
    subscribe_to_message (_setWebViewMessage);
    subscribe_to_message (_addPinMessage);
    subscribe_to_message (_removePinMessage);
+   subscribe_to_message (_movePinMessage);
 }
 
 

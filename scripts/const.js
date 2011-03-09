@@ -15,6 +15,7 @@ var dmz =
       , UserType: dmz.objectType.lookup("user")
       , GameType: dmz.objectType.lookup("game")
       , LobbyistType: dmz.objectType.lookup("lobbyist")
+      , PinType: dmz.objectType.lookup("map_push_pin")
       }
 
    , Handles =
