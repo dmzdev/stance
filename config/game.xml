@@ -47,6 +47,17 @@
          <text value="Game"/>
       </attributes>
    </object>
+   <object type="user" uuid="d0891d33-2b9c-4343-a241-891d50c38072">
+      <attributes name="name">
+         <text value="Admin"/>
+      </attributes>
+      <attributes name="display_name">
+         <text value="Admin"/>
+      </attributes>
+      <attributes name="admin_user">
+         <flag value="true"/>
+      </attributes>
+   </object>   
 </archive>
 </dmz>
 

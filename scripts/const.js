@@ -20,6 +20,7 @@ var dmz =
 
    , Handles =
       { ActiveHandle: dmz.defs.createNamedHandle("Active")
+      , AdminFlagHandle: dmz.defs.createNamedHandle("admin_user")
       , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
       , BioHandle: dmz.defs.createNamedHandle("bio")
       , CreatedByHandle: dmz.defs.createNamedHandle("created_by")

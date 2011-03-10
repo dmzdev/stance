@@ -46,7 +46,16 @@ var dmz =
    , desk
    , tv
    , computer
-   , PageLink = { Map: false, Forum: false, Media: false, Advisor: false }
+   , PageLink =
+      { Map: false
+      , Forum: false
+      , Media: false
+      , Advisor0: false
+      , Advisor1: false
+      , Advisor2: false
+      , Advisor3: false
+      , Advisor4: false
+      }
 
    // Function decls
    , setupMainWindow
@@ -150,7 +159,11 @@ setupMainWindow = function () {
       dmz.ui.graph.createTextItem("Computer", computer);
 
       PageLink.Map = [map];
-      PageLink.Advisor = advisors;
+      PageLink.Advisor0 = [advisors[0]];
+      PageLink.Advisor1 = [advisors[1]];
+      PageLink.Advisor2 = [advisors[2]];
+      PageLink.Advisor3 = [advisors[3]];
+      PageLink.Advisor4 = [advisors[4]];
       PageLink.Forum = [computer];
       PageLink.Media = [newspaper, inbox, tv];
 

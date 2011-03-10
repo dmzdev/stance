@@ -17,11 +17,12 @@
    <path value="../js/scripts"/>
    <path value="./ui"/>
    <instance name="main"/>
-    <instance name="devtools"/>
-    <instance name="gameCreation"/>
+   <instance name="devtools"/>
+   <instance name="gameCreation"/>
    <instance name="webMap"/>
    <instance name="forum"/>
    <instance name="login"/>
+   <instance name="advisor"/>
 </javascript>
 <main>
    <scene height="800" width="400"/>
