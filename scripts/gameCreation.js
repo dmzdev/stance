@@ -523,7 +523,7 @@ setup = function () {
    pictures.forEach(function (file) {
 
       advisorPictureObjects.push(dmz.ui.graph.createPixmap(directory + file.string("file")));
-      pictureList.addItem(file.string("name"));
+      pictureList.addItem(file.string("file"));
    });
 
    pictureList.observe(self, "currentIndexChanged", function (index) {
