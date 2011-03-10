@@ -10,7 +10,6 @@ var dmz =
           }
        }
     // Constants
-    , TimeStampAttr = dmz.defs.createNamedHandle("time-stamp")
     , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
     , LogoutMessage = dmz.message.create("Logout_Message")
     // Variables
@@ -19,7 +18,6 @@ var dmz =
     , _userList = []
     , _userName
     , _userHandle
-    , _serverTime
     // Fuctions
     , _activateUser
     ;
@@ -32,17 +30,17 @@ self.shutdown = function () {
 
 _activateUser = function (name) {
 
-   if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
+   var handle;
 
    if (_userName && (name === _userName)) {
 
-      var handle = _userList[_userName];
+      handle = _userList[_userName];
+
       if (handle) {
 
-         dmz.object.flag(handle, dmz.object.HILAttribute, true);
+         if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
 
-         _window.title(_title + " (" + _userName + ")");
-         self.log.info("User identified: " + _userName);
+         dmz.object.flag(handle, dmz.object.HILAttribute, true);
       }
    }
 }
@@ -50,34 +48,13 @@ _activateUser = function (name) {
 
 LoginSuccessMessage.subscribe(self, function (data) {
 
-   var timeStamp
-     ;
-
    if (data && dmz.data.isTypeOf(data)) {
 
-      timeStamp = data.number(TimeStampAttr);
-      if (timeStamp) { _serverTime = new Date(timeStamp * 1000); }
-
+      _window.title(_title);
       _userName = data.string(dmz.const.NameHandle);
-
       _activateUser(_userName);
    }
 });
-
-
-LogoutMessage.subscribe(self, function () {
-
-   _activateUser(undefined);
-});
-
-
-//dmz.object.create.observe(self, function (handle, type) {
-
-//   if (type.isOfType(dmz.const.GameType)) {
-
-//      dmz.object.timestamp(handle, "MontereyTime", _serverTime);
-//   }
-//}
 
 
 dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
@@ -93,7 +70,10 @@ dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, valu
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, value) {
 
-   var type = dmz.object.type(handle);
+   var type = dmz.object.type(handle)
+     , name
+     , unverified = "*"
+     ;
 
    if (handle === _userHandle) {
 
@@ -104,25 +84,15 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
       }
    }
 
-   if (value && type && type.isOfType(dmz.const.UserType)) { _userHandle = handle; }
+   if (value && type && type.isOfType(dmz.const.UserType)) {
+
+      _userHandle = handle;
+
+      name = dmz.object.text(_userHandle, dmz.const.NameHandle);
+      if (name === _userName) { unverified = ""; }
+
+      _window.title(_title + " (" + name + ")" + unverified);
+
+      self.log.info("User identified: " + name);
+   }
 });
-
-
-(function () {
-   var target
-//     , loginRequiredMessage = dmz.message.create("Login_Required_Message")
-//     , archiveUpdatedMessage = dmz.message.create("Archive_Updated_Message")
-//     , doLogin = true
-     ;
-
-//   if (doLogin) {
-
-//      target = dmz.defs.createNamedHandle("dmzQtPluginLoginDialog");
-//      loginRequiredMessage.send(target);
-//   }
-
-//   target = dmz.defs.createNamedHandle("dmzArchivePluginAutoCache");
-//   self.log.warn("archive updated");
-//   archiveUpdatedMessage.send (target);
-}());
-

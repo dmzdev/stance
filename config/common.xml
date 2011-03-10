@@ -3,11 +3,6 @@
 <plugin-list>
    <plugin name="dmzQtModuleMainWindowBasic" scope="main-window"/>
    <plugin name="dmzQtPluginVersion"/>
-   <plugin name="dmzArchiveModuleBasic" scope="archive-module"/>
-   <plugin name="dmzArchivePluginAutoLoad"/>
-   <plugin name="dmzArchivePluginAutoCache" scope="archive-auto-cache"/>
-   <plugin name="dmzArchivePluginObject" scope="archive-object"/>
-<!--   <plugin name="dmzArchivePluginUndo"/>-->
    <plugin name="dmzObjectModuleBasic"/>
 <!--   <plugin name="dmzObjectPluginCleanup" scope="cleanup"/>-->
    <plugin name="dmzQtPluginObjectInspector"/>
@@ -30,33 +25,6 @@
       <menu text="&amp;Help"/>
    </menu-bar>
 </main-window>
-<archive-module>
-   <archive version="0"/>
-</archive-module>
-<archive-object>
-   <filter>
-      <object-type-set>
-<!--         <object-type name="forum_type"/>-->
-<!--         <object-type name="forum_post"/>-->
-<!--         <object-type name="game_type"/>-->
-<!--         <object-type name="vote"/>-->
-<!--         <object-type name="intel"/>-->
-<!--         <object-type name="current_user"/>-->
-<!--         <object-type name="map_push_pin"/>-->
-      </object-type-set>
-      <attribute name="_publish">
-         <mask name="flag"/>
-      </attribute>
-      <attribute name="_fetch">
-         <mask name="flag"/>
-      </attribute>
-   </filter>
-</archive-object>
-<archive-auto-cache>
-<!--   <auto-restore value="false"/>-->
-<!--   <save file="cache.xml"/>-->
-<!--   <archive-updated-message name="Archive_Updated_Message"/>-->
-</archive-auto-cache>
 <cleanup>
    <cleanup>
       <type name="current_user"/>

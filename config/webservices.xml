@@ -18,14 +18,11 @@
 <web-services-object>
    <filter>
       <object-type-set>
-         <object-type name="forum_type"/>
-         <object-type name="forum_post"/>
-         <object-type name="game_type"/>
-         <object-type name="vote"/>
-         <object-type name="intel"/>
-         <object-type name="current_user"/>
-         <object-type name="map_push_pin"/>
+<!--         <object-type name="map_push_pin"/>-->
       </object-type-set>
+      <attribute name="Active">
+         <mask name="flag"/>
+      </attribute>
       <attribute name="Object_Human_In_The_Loop">
          <mask name="flag"/>
       </attribute>
@@ -43,33 +40,33 @@
    <picture-grid>
       <row>
          <col value="Bell"/>
-         <col value="Box"/>
-         <col value="Burn"/>
-         <col value="Camera"/>
-      </row>
-      <row>
-         <col value="Chip"/>
-         <col value="Coffee"/>
-         <col value="Film"/>
          <col value="House"/>
-      </row>
-      <row>
          <col value="Microphone"/>
-         <col value="MusicalNote"/>
-         <col value="Phone"/>
          <col value="ShoppingBag"/>
       </row>
       <row>
-         <col value="Smile"/>
-         <col value="Stoplight"/>
-         <col value="Suit"/>
+         <col value="Yield"/>
+         <col value="Film"/>
+         <col value="Wallet"/>
          <col value="Trees"/>
       </row>
       <row>
+         <col value="Camera"/>
+         <col value="Box"/>
+         <col value="Stoplight"/>
+         <col value="Phone"/>
+         </row>
+      <row>
+         <col value="Chip"/>
          <col value="WallClock"/>
-         <col value="Wallet"/>
+         <col value="Burn"/>
+         <col value="Smile"/>
+      </row>
+      <row>
+         <col value="Suit"/>
+         <col value="MusicalNote"/>
          <col value="Water"/>
-         <col value="Yield"/>
+         <col value="Coffee"/>
       </row>
    </picture-grid>
    <color-grid>

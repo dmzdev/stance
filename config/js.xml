@@ -11,17 +11,19 @@
    <plugin name="dmzJsExtV8EventCommon" scope="javascript"/>
    <plugin name="dmzJsExtV8Object" scope="javascript"/>
    <plugin name="dmzJsExtV8Module" scope="javascript"/>
+<!--   <plugin name="dmzJsExtV8Time" scope="javascript"/>-->
 </plugin-list>
 <javascript>
    <path value="./scripts"/>
    <path value="../js/scripts"/>
    <path value="./ui"/>
    <instance name="main"/>
-    <instance name="devtools"/>
-    <instance name="gameCreation"/>
+   <instance name="devtools"/>
+   <instance name="gameCreation"/>
    <instance name="webMap"/>
    <instance name="forum"/>
    <instance name="login"/>
+   <instance name="game-time"/>
 </javascript>
 <main>
    <scene height="800" width="400"/>
