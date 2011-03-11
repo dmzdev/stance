@@ -15,7 +15,8 @@ var dmz =
    }
 
    // UI Elements
-
+   , ApproveVoteDialog = dmz.ui.loader.load("ApproveVoteDialog.ui")
+   , VoteTextArea = ApproveVoteDialog.lookup("taskingText")
 
    // Variables
    , advisorWidgets = []
@@ -24,7 +25,10 @@ var dmz =
    , advisorCount = 5
 
    // Function decls
+   , updateAdvisor
+   , approveVote
    ;
+
 
 (function () {
 
@@ -34,6 +38,221 @@ var dmz =
       advisorWidgets[idx] = dmz.ui.loader.load("AdvisorWindow.ui");
    }
 }());
+
+approveVote = function (voteHandle) {
+
+   VoteTextArea.text(dmz.object.text(voteHandle, dmz.const.TextHandle));
+   ApproveVoteDialog.open(self, function (result) {
+
+      dmz.object.flag(voteHandle, dmz.const.VoteApprovedHandle, result);
+      dmz.object.flag(voteHandle, dmz.const.VoteSubmittedHandle, false);
+      VoteTextArea.text("");
+   });
+}
+
+updateAdvisor = function (module, idx) {
+
+   module.addPage("Advisor" + idx, advisorWidgets[idx], function () {
+
+      var handle
+        , hil = dmz.object.hil()
+        , hilGroup
+        , advisorHandle
+        , list
+        , data
+        , btn
+        , textEdit
+        ;
+
+      if (hil) {
+
+         handle = dmz.object.superLinks(hil, dmz.const.GroupMembersHandle);
+         if (handle && handle[0]) {
+
+            hilGroup = handle[0];
+            list = groupAdvisors[hilGroup];
+            if (list && list.length && (idx < list.length)) {
+
+               advisorHandle = list[idx];
+               if (handle) {
+
+                  data = advisorData[advisorHandle];
+                  if (data.name) { advisorWidgets[idx].lookup("nameLabel").text(data.name); }
+                  if (data.bio) { advisorWidgets[idx].lookup("bioText").text(data.bio); }
+                  if (data.picture) {
+
+                     advisorWidgets[idx].lookup("pictureLabel").pixmap(data.picture);
+                  }
+
+                  // Need to disable this unless online?
+                  advisorWidgets[idx].observe(self, "submitTaskButton", "clicked", function () {
+
+                     var vote
+                       , text = advisorWidgets[idx].lookup("taskingText")
+                       , list
+                       ;
+
+                     text = text ? text.text() : "";
+                     self.log.warn ("text:", text);
+                     if (text.length) {
+
+                        vote = dmz.object.create(dmz.const.VoteType);
+                        dmz.object.activate(vote);
+                        dmz.object.flag(vote, dmz.const.VoteSubmittedHandle, true);
+                        dmz.object.flag(vote, dmz.const.ActiveHandle, true);
+                        dmz.object.link(dmz.const.CreatedByHandle, vote, hil);
+                        dmz.object.text(vote, dmz.const.TextHandle, text);
+                        list = dmz.object.subLinks(hilGroup, dmz.const.GroupMembersHandle);
+                        self.log.warn (vote, "["+list+"]")
+                        if (list && list.length) {
+
+                           dmz.object.scalar(vote, dmz.const.VoteThresholdHandle, list.length / 2);
+                           self.log.warn ("Threshold:", list.length / 2);
+                           list.forEach(function (userHandle) {
+
+                              dmz.object.link(dmz.const.VoteUndecidedHandle, vote, userHandle);
+                           });
+                        }
+                        dmz.object.link(dmz.const.VoteGroupHandle, vote, hilGroup);
+                        dmz.object.link(dmz.const.VoteAdvisorHandle, vote, advisorHandle);
+                     }
+                     text.text("");
+                  });
+
+                  btn = advisorWidgets[idx].lookup("submitTaskButton");
+                  textEdit = advisorWidgets[idx].lookup("taskingText");
+
+                  // If there isn't a vote active for the hil group
+                  // Add sanity check to ensure online?
+                  if (dmz.object.superLinks(hilGroup, dmz.const.VoteGroupHandle)) {
+
+                     btn.text("Advisors Tasked");
+                     btn.enabled(false);
+                     textEdit.enabled(false);
+                     textEdit.text("");
+                  }
+                  else {
+
+                     btn.text("Submit Task");
+                     btn.enabled(true);
+                     textEdit.enabled(true);
+                  }
+               }
+            }
+         }
+      }
+   });
+};
+
+dmz.object.flag.observe(self, dmz.const.VoteApprovedHandle,
+function (objHandle, attr, value, prev) {
+
+   if (value) {
+      // Instructor approved vote.
+
+   }
+   else {
+      // Instructor denied vote.
+
+   }
+});
+
+dmz.object.flag.observe(self, dmz.const.VoteSubmitted,
+function (objHandle, attr, value, prev) {
+
+   var hil = dmz.object.hil()
+     , hilGroup
+     , vote
+     ;
+
+   if (value) {
+
+      if (dmz.object.flag(hil, dmz.const.AdminFlagHandle)) {
+
+         hilGroup = dmz.object.superLinks(hil, dmz.const.GroupMembersHandle);
+         if (hilGroup && hilGroup[0] &&
+            dmz.object.linkHandle(dmz.const.VoteGroupHandle, objHandle, hilGroup[0])) {
+
+            approveVote(vote[0]);
+         }
+      }
+   }
+});
+
+dmz.object.link.observe(self, dmz.const.VoteGroupHandle,
+function (linkObjHandle, attrHandle, voteHandle, groupHandle) {
+
+   var hilGroup = dmz.object.superLinks(dmz.object.hil(), dmz.const.GroupMembersHandle)
+     ;
+
+   if (hilGroup && hilGroup[0]) {
+
+      hilGroup = hilGroup[0];
+      if (groupHandle === hilGroup) {
+
+         advisorWidgets.forEach(function (widget) {
+
+            widget.lookup("submitTaskButton").enabled(false);
+         });
+      }
+   }
+});
+
+dmz.object.unlink.observe(self, dmz.const.VoteGroupHandle,
+function (linkObjHandle, attrHandle, voteHandle, groupHandle) {
+
+   var hilGroup = dmz.object.superLinks(dmz.object.hil(), dmz.const.GroupMembersHandle)
+     ;
+
+   if (hilGroup && hilGroup[0]) {
+
+      hilGroup = hilGroup[0];
+      if (groupHandle === hilGroup) {
+
+         advisorWidgets.forEach(function (widget) {
+
+            widget.lookup("submitTaskButton").enabled(true);
+         });
+      }
+   }
+});
+
+dmz.object.flag.observe(self, dmz.object.HILAttribute,
+function (objHandle, attrHandle, value) {
+
+   var hilGroup
+     , vote
+     ;
+   if (dmz.object.flag(objHandle, dmz.const.AdminFlagHandle)) {
+
+      hilGroup = dmz.object.superLinks(objHandle, dmz.const.GroupMembersHandle);
+      if (hilGroup && hilGroup[0]) {
+
+         hilGroup = hilGroup[0];
+         vote = dmz.object.superLinks(hilGroup, dmz.const.VoteGroupHandle);
+         if (vote && vote[0]) {
+
+            vote = vote[0];
+            if (dmz.object.flag(vote, dmz.const.VoteSubmittedHandle)) { approveVote(vote); }
+         }
+      }
+   }
+});
+
+dmz.object.link.observe(self, dmz.const.GroupMembersHandle,
+function (objHandle, attrHandle, groupHandle, userHandle) {
+
+   var vote
+   if (dmz.object.flag(userHandle, dmz.const.AdminFlagHandle)) {
+
+      vote = dmz.object.superLinks(hilGroup, dmz.const.VoteGroupHandle);
+      if (vote && vote[0]) {
+
+         vote = vote[0];
+         if (dmz.object.flag(vote, dmz.const.VoteSubmittedHandle)) { approveVote(vote); }
+      }
+   }
+});
 
 dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
 
@@ -69,11 +288,12 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 
       groupAdvisors[groupHandle].push(advisorHandle);
       if (!advisorData[advisorHandle]) {
-         advisorData[advisorHandle] = {};
-         advisorData[advisorHandle].bio =
-            dmz.object.text(advisorHandle, dmz.const.BioHandle);
-         advisorData[advisorHandle].name = dmz.const._getDisplayName(advisorHandle);
-         advisorData[advisorHandle].picture = false;
+         advisorData[advisorHandle] =
+            { bio: dmz.object.text(advisorHandle, dmz.const.BioHandle)
+            , name: dmz.const._getDisplayName(advisorHandle)
+            , picture: false
+            , taskFunction: false
+            };
 
          file = dmz.object.text(advisorHandle, dmz.const.PictureFileNameHandle);
          directory = dmz.object.text(advisorHandle, dmz.const.PictureDirectoryNameHandle);
@@ -180,43 +400,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
    var idx;
    if (Mode === dmz.module.Activate) {
 
-      for (idx = 0; idx < advisorCount; idx += 1) {
-
-         (function (idx) {
-
-            module.addPage("Advisor" + idx, advisorWidgets[idx], function () {
-
-               var handle
-                 , hil
-                 , list
-                 , data
-                 ;
-
-               hil = dmz.object.hil();
-               if (hil) {
-
-                  handle = dmz.object.superLinks(hil, dmz.const.GroupMembersHandle);
-                  if (handle && handle[0]) {
-
-                     list = groupAdvisors[handle[0]];
-                     if (list && list.length && (idx < list.length)) {
-
-                        handle = list[idx];
-                        if (handle) {
-
-                           data = advisorData[handle];
-                           if (data.name) { advisorWidgets[idx].lookup("nameLabel").text(data.name); }
-                           if (data.bio) { advisorWidgets[idx].lookup("bioText").text(data.bio); }
-                           if (data.picture) {
-
-                              advisorWidgets[idx].lookup("pictureLabel").pixmap(data.picture);
-                           }
-                        }
-                     }
-                  }
-               }
-            });
-         }(idx));
-      }
+      for (idx = 0; idx < advisorCount; idx += 1) { updateAdvisor(module, idx); }
    }
 });
