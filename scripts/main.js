@@ -215,6 +215,3 @@ _exports.addPage = function (name, widget, func) {
 setupMainWindow();
 
 dmz.module.publish(self, _exports);
-
-
-// Use DMZ.MODULE to discover new UI windows and add them to the stack
