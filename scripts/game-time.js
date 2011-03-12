@@ -11,35 +11,76 @@ var dmz =
        , const: require("const")
        }
     // Constants
-    , TimeStampAttr = dmz.defs.createNamedHandle("time-stamp")
-    , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
-    , TimeFactorMin = self.config.number("time-factor.min", 1)
-    , TimeFactorMax = self.config.number("time-factor.max", 20)
     , RealTimeStart = self.config.number("real-time.start", 18)
     , RealTimeEnd = self.config.number("real-time.end", 6)
     // Variables
-    , _gameHandle = 0
+    , _game = {}
+    , _gameActive = false
+    , _gameTimeFactor = 1
+    , _gameTime = false
     , _serverTime = new Date()
     , _gameStartTime = new Date(2000,1)
     , _gameEndTime = new Date(2019,1)
-    , _gameTimeFactor = 1.5
-    , _gameTime
     , _hyperTimeStart
     , _hyperTimeEnd
+    , _user
     // Fuctions
+    , _toTimeStamp
+    , _toDate
+    , _setServerTime
+    , _setUser
     , _updateGameActive
     , _updateGameTime
     , _playInRealTime
     ;
+
+_game.startedAt = function () {
+
+   var result;
+
+   if (this.handle) {
+
+      result = dmz.object.timeStamp (this.handle, dmz.const.GameStartTimeHandle);
+      result = new Date(result * 1000);
+   }
+
+   return result;
+}
+
+_toTimeStamp = function (date) { return (date.getTime() / 1000); }
+_toDate = function (timeStamp) { return new Date(timeStamp * 1000); }
+
+_setServerTime = function (time) {
+
+   var timeStamp = time;
+
+   if (typeof time === "object") { timeStamp = _toTimeStamp(time); }
+
+   if (_game.handle) {
+
+      dmz.object.timeStamp(_game.handle, dmz.const.ServerTimeHandle, timeStamp);
+   }
+   else  { _serverTime = _toDate(timeStamp); }
+}
+
+
+_setUser = function (name) {
+
+   if (_game.handle && name) {
+
+      dmz.object.text(_game.handle, dmz.const.UserNameHandle, name);
+   }
+   else { _user = name; }
+}
 
 
 _updateGameActive = function (time) {
 
    var active = _serverTime.between(_gameStartTime, _gameEndTime);
 
-   if (_gameHandle) {
+   if (_game.handle) {
 
-      dmz.object.flag(_gameHandle, dmz.const.ActiveHandle, active);
+//      dmz.object.flag(_game.handle, dmz.const.ActiveHandle, active);
    }
 
    return active;
@@ -91,52 +132,53 @@ _playInRealTime = function () {
 }
 
 
-LoginSuccessMessage.subscribe(self, function (data) {
-
-   if (data && dmz.data.isTypeOf(data)) {
-
-      _serverTime = new Date (data.number(TimeStampAttr) * 1000);
-self.log.debug("_serverTime: " + _serverTime);
-
-      _updateGameActive();
-      _updateGameTime();
-   }
-});
-
-
 dmz.object.create.observe(self, function (handle, type) {
 
    if (type.isOfType(dmz.const.GameType)) {
 
-      if (!_gameHandle) {
-
-         _gameHandle = handle;
-         _updateGameActive();
-      }
+      if (!_game.handle) { _game.handle = handle; }
    }
 });
 
 
-dmz.object.timeStamp.observe(self, dmz.const.GameStartTimeHandle,
+dmz.object.flag.observe(self, dmz.const.ActiveHandle, function (handle, attr, value) {
+
+   if (handle === _game.handle) { _game.active = value; }
+});
+
+
+dmz.object.timeStamp.observe(self, dmz.const.ServerTimeHandle,
 function (handle, attr, value) {
 
-   if (handle === _gameHandle) {
+   var startTime
+     , data
+     , hyperTimeStart
+     , hyperTimeEnd
+     ;
 
-      _gameStartTime = new Date(value * 1000);
-self.log.warn("Game START time: " + _gameStartTime);
-      _updateGameActive();
+   if ((handle === _game.handle) && _game.active) {
+
+      startTime = _game.startedAt();
+      data = dmz.object.data(_game.handle, dmz.const.GameTimeHandle);
+      hyperTimeStart = data.number("real-time", 1);
+      hyperTimeEnd = data.number("real-time", 0);
+
+//      _serverTime = _toDate(value);
+self.log.warn("game started at: " + _game.startedAt());
+
+//      dmz.object.timeStamp(_game.handle, dmz.const.GameTimeHandle, value);
+      self.log.error("_serverTime: " + _serverTime);
    }
 });
 
 
-dmz.object.timeStamp.observe(self, dmz.const.GameEndTimeHandle,
+dmz.object.timeStamp.observe(self, dmz.const.GameTimeHandle,
 function (handle, attr, value) {
 
-   if (handle === _gameHandle) {
+   if (handle === _game.handle) {
 
-      _gameEndTime = value = new Date(value * 1000);
-self.log.warn("Game END time: " + _gameEndTime);
-      _updateGameActive();
+      dmz.time.setFrameTime(value);
+self.log.warn("gameTime: " + _toDate(value));
    }
 });
 
@@ -144,21 +186,14 @@ self.log.warn("Game END time: " + _gameEndTime);
 dmz.object.scalar.observe(self, dmz.const.GameTimeFactorHandle,
 function (handle, attr, value) {
 
-   if (handle === _gameHandle) {
+   if (handle === _game.handle) {
 
-      _gameTimeFactor = value;
-
-      if (_gameTimeFactor < TimeFactorMin) { _gameTimeFactor = TimeFactorMin; }
-      else if (_gameTimeFactor > TimeFactorMax) { _gameTimeFactore = TimeFactorMax; }
-
-      dmz.time.setTimeFactor (_gameTimeFactor);
-
-self.log.warn("GameTimeFactor: " + _gameTimeFactor);
-      _updateGameTime();
+      dmz.time.setTimeFactor(value);
+self.log.warn("gameTimeFactor: " + value);
    }
 });
 
 
 (function () {
-   _updateGameTime();
+//   _updateGameTime();
 }());

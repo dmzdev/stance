@@ -25,6 +25,9 @@
    <instance name="login"/>
    <instance name="game-time"/>
 </javascript>
+<login>
+   <fake-login value="true" name="scott" admin="true"/>
+</login>
 <main>
    <scene height="800" width="400"/>
 </main>
