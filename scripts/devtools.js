@@ -11,20 +11,13 @@ var dmz =
           , list: require("dmz/ui/listWidget")
           , widget: require("dmz/ui/widget")
           }
+       , const: require("const")
        }
 
    // UI elements
    , form = dmz.ui.loader.load("DevTools.ui")
    , list = form.lookup("listWidget")
-
-   // Handles
-   , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
-
-   , NameHandle = dmz.defs.createNamedHandle("name")
-
-   // Object Types
-   , GroupType = dmz.objectType.lookup("group")
-   , UserType = dmz.objectType.lookup("user")
+   , groups = form.lookup("groupList")
 
    // Object Lists
    , ForumList = {}
@@ -34,6 +27,7 @@ var dmz =
 
    , CurrentUser = false
    , UserList = []
+   , GroupList = [-1]
 
    // Test Function decls
    ;
@@ -50,10 +44,15 @@ dmz.object.create.observe(self, function (handle, objType) {
 
    if (objType) {
 
-      if (objType.isOfType(UserType)) {
+      if (objType.isOfType(dmz.const.UserType)) {
 
-         list.addItem(dmz.object.text(handle, NameHandle), handle);
+         list.addItem(dmz.const._getDisplayName(handle), handle);
          UserList.push(handle);
+      }
+      else if (objType.isOfType(dmz.const.GroupType)) {
+
+         GroupList.push(handle);
+         groups.addItem(dmz.const._getDisplayName(handle));
       }
    }
 });
@@ -74,8 +73,29 @@ dmz.object.create.observe(self, function (handle, objType) {
 
             dmz.object.flag(handle, dmz.object.HILAttribute, handle === data);
          });
+         groups.currentIndex(0); // Not bothering to look up
       }
    });
+
+   groups.addItem("None");
+   groups.observe(self, "currentIndexChanged", function (index) {
+
+      var hil = dmz.object.hil();
+      self.log.warn ("currItemChanged:", hil, dmz.const.AdminFlagHandle);
+      if (hil && dmz.object.flag(hil, dmz.const.AdminFlagHandle)) {
+
+         self.log.warn ("admin", index, GroupList.length);
+         dmz.object.unlinkSuperObjects(hil, dmz.const.GroupMembersHandle);
+         if (index && (index < GroupList.length)) {
+
+            self.log.warn ("linking");
+            dmz.object.link(dmz.const.GroupMembersHandle, GroupList[index], hil);
+            dmz.object.flag(hil, dmz.object.HILAttribute, false);
+            dmz.object.flag(hil, dmz.object.HILAttribute, true);
+         }
+      }
+   });
+
    form.show();
 }());
 

@@ -33,6 +33,9 @@
       </spacer>
      </item>
      <item>
+      <widget class="QComboBox" name="groupList"/>
+     </item>
+     <item>
       <widget class="QPushButton" name="setUserButton">
        <property name="text">
         <string>Set User Current</string>
