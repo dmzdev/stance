@@ -3,17 +3,17 @@
 <plugin-list>
    <plugin name="dmzWebServicesModuleQt" scope="web-services"/>
    <plugin name="dmzWebServicesPluginObject" scope="web-services-object"/>
-   <plugin name="dmzQtPluginLoginDialog" scope="login-dialog"/>
-<!--   <plugin name="dmzQtPluginLoginChds" scope="chds-login"/>-->
+<!--   <plugin name="dmzQtPluginLoginDialog" scope="login-dialog"/>-->
+   <plugin name="dmzQtPluginLoginChds" scope="chds-login"/>
 </plugin-list>
 <web-services>
-   <server host="localhost" port="5984">
+<!--   <server host="localhost" port="5984">-->
 <!--   <server host="dmz.couchone.com" port="80">-->
-<!--   <server host="games.chds.us" port="443" path="/db/">-->
+   <server host="games.chds.us" port="443" path="/db/">
 <!--      <proxy host="localhost" port="8888"/>-->
    </server>
-   <login-target name="dmzQtPluginLoginDialog"/>
-<!--   <login-target name="dmzQtPluginLoginChds"/>-->
+<!--   <login-target name="dmzQtPluginLoginDialog"/>-->
+   <login-target name="dmzQtPluginLoginChds"/>
 </web-services>
 <web-services-object>
    <filter>

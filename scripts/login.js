@@ -23,6 +23,8 @@ var dmz =
     , _userHandle
     , _admin = false
     // Fuctions
+    , _toTimeStamp
+    , _toDate
     , _activateUser
     ;
 
@@ -31,6 +33,8 @@ self.shutdown = function () {
    _window.title(_title);
 };
 
+_toTimeStamp = function (date) { return (date.valueOf() / 1000); }
+_toDate = function (timeStamp) { return new Date(timeStamp * 1000); }
 
 _activateUser = function (name) {
 
@@ -51,7 +55,6 @@ _activateUser = function (name) {
    }
 }
 
-
 LoginSuccessMessage.subscribe(self, function (data) {
 
    if (data && dmz.data.isTypeOf(data)) {
@@ -71,15 +74,43 @@ LoginSuccessMessage.subscribe(self, function (data) {
 
          _activateUser(_userName);
 
-         var data = dmz.data.create()
-           , start = Date.now()/1000
-           , end = Date.now()/1000
-           ;
+         if (1) {
 
-         data.number("start_time", 0, start);
-         data.number("end_time", 0, end);
+            var data = dmz.data.create()
+              , realTime =
+                [ /*Date.parse("6pm 3/15/11")
+                ,*/ Date.parse("6am 3/16/11")
+                , Date.parse("6pm 3/16/11")
+//                , Date.parse("6am 3/16/11")
+//                , Date.parse("6pm 3/16/11")
+                ]
+              , gameTime =
+                [ /*Date.parse("6pm 1/1/12")
+                ,*/ Date.parse("6am 1/2/12")
+                , Date.parse("6pm 1/2/12")
+//                , Date.parse("6am 1/5/12")
+//                , Date.parse("6am 1/10/12")
+                ]
+              , ix
+              ;
 
-         dmz.object.data(_gameHandle, dmz.const.GameTimeHandle, data);
+            ix = 0;
+            realTime.forEach(function (value) {
+
+               data.string("real_time_2", ix, value.toString());
+               data.number("real_time", ix++, _toTimeStamp(value));
+            });
+
+            ix = 0;
+            gameTime.forEach(function (value) {
+
+               data.string("game_time_2", ix, value.toString());
+               data.number("game_time", ix++, _toTimeStamp(value));
+            });
+
+            data.number("index", 0, 0);
+            dmz.object.data(_gameHandle, dmz.const.GameTimeHandle, data);
+         }
       }
    }
 });
@@ -101,7 +132,6 @@ dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, valu
       _activateUser (value);
    }
 });
-
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, value) {
 

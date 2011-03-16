@@ -12,7 +12,7 @@ lmk.add_files ({"version.xml",}, {src="version"})
 lmk.add_files {"STANCE.app"}
 lmk.add_preqs {
    "stance",
-   "stanceInit",
+--   "stanceInit",
 }
 
 app.build_preqs {"config",}
