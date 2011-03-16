@@ -6,21 +6,52 @@
          <attributes name="name">
             <text value="Game"/>
          </attributes>
+         <attributes name="Active">
+            <flag value="true"/>
+         </attributes>
+         <attributes name="game_start_time">
+            <timestamp value="1299803480.325000"/>
+         </attributes>
+         <attributes name="game_group">
+            <links>
+               <object name="8af99306-0bcb-4a30-86b1-1667ffc9cb4a"/>
+            </links>
+         </attributes>
+         <attributes name="game_forums">
+            <links>
+               <object name="5063eb37-89d3-4a50-a798-f17326fd1253"/>
+            </links>
+         </attributes>
       </object>
-      <object type="user" uuid="2f9a76c7-0548-46e3-a9af-4b68f8ec3330">
+      <object type="group" uuid="8af99306-0bcb-4a30-86b1-1667ffc9cb4a">
          <attributes name="name">
-            <text value="shillcock@me.com"/>
+            <text value="Group 1"/>
+         </attributes>
+         <attributes name="group_members">
+            <links>
+               <object name="3a513eec-9b96-426d-8bcf-0a6640daa74f"/>
+            </links>
+         </attributes>
+         <attributes name="group_forum_link">
+            <links>
+               <object name="5063eb37-89d3-4a50-a798-f17326fd1253"/>
+            </links>
+         </attributes>
+      </object>
+      <object type="user" uuid="3a513eec-9b96-426d-8bcf-0a6640daa74f">
+         <attributes name="name">
+            <text value="chds"/>
          </attributes>
          <attributes name="display_name">
-            <text value="Scott"/>
+            <text value="CHDS"/>
+         </attributes>
+         <attributes name="Object_Human_In_The_Loop">
+            <flag value="true"/>
          </attributes>
       </object>
-      <object type="user" uuid="a1050f04-2385-4e5b-acbb-bf839119115e">
+      <object type="forum" uuid="5063eb37-89d3-4a50-a798-f17326fd1253">
          <attributes name="name">
-            <text value="sangster@me.com"/>
-         </attributes>
-         <attributes name="display_name">
-            <text value="Ben"/>
+            <text value="Forum 1"/>
          </attributes>
       </object>
    </archive>

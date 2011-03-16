@@ -23,6 +23,9 @@
       <attribute name="Active">
          <mask name="flag"/>
       </attribute>
+      <attribute name="server_time">
+         <mask name="timestamp"/>
+      </attribute>
       <attribute name="Object_Human_In_The_Loop">
          <mask name="flag"/>
       </attribute>

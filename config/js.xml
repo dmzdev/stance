@@ -11,7 +11,6 @@
    <plugin name="dmzJsExtV8EventCommon" scope="javascript"/>
    <plugin name="dmzJsExtV8Object" scope="javascript"/>
    <plugin name="dmzJsExtV8Module" scope="javascript"/>
-<!--   <plugin name="dmzJsExtV8Time" scope="javascript"/>-->
 </plugin-list>
 <javascript>
    <path value="./scripts"/>
@@ -26,6 +25,9 @@
    <instance name="game-time"/>
    <instance name="advisor"/>
 </javascript>
+<login>
+   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>
+</login>
 <main>
    <scene height="800" width="400"/>
 </main>
