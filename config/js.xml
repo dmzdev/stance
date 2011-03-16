@@ -24,6 +24,7 @@
    <instance name="forum"/>
    <instance name="login"/>
    <instance name="game-time"/>
+   <instance name="advisor"/>
 </javascript>
 <main>
    <scene height="800" width="400"/>

@@ -11,6 +11,7 @@ var dmz =
           , graph: require("dmz/ui/graph")
           }
        , const: require("const")
+       , time: require("dmz/runtime/time")
        }
 
    // UI elements
@@ -83,10 +84,10 @@ dmz.object.text.observe(self, dmz.const.TitleHandle, function (handle, attr, val
    }
 });
 
-dmz.object.text.observe(self, dmz.const.CreatedAtHandle, function (handle, attr, value) {
+dmz.object.timeStamp.observe(self, dmz.const.CreatedAtHandle, function (handle, attr, value) {
 
    var post = PostList[handle];
-   if (post && post.widget) { post.widget.text(2, value); }
+   if (post && post.widget) { post.widget.text(2, new Date(value * 1000)); }
 });
 
 dmz.object.text.observe(self, dmz.const.TextHandle, function (handle, attr, value) {
@@ -110,7 +111,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
      , author = dmz.const._getAuthorName(superHandle)
      , title = dmz.object.text(superHandle, dmz.const.TitleHandle)
      , text = dmz.object.text(superHandle, dmz.const.TextHandle)
-     , createdAt = dmz.object.text(superHandle, dmz.const.CreatedAtHandle)
+     , createdAt = dmz.object.timeStamp(superHandle, dmz.const.CreatedAtHandle)
      , hil
      , backgroundBrush = UnreadPostBrush
      , postsRead
@@ -167,17 +168,22 @@ function (objHandle, attrHandle, value) {
       Object.keys(PostList).forEach(function (item) {
 
          var post = PostList[item]
-           , data = post.widget.data(0)
+           , data
            , index = -1
            ;
 
-         if (postsRead) { index = postsRead.indexOf(data); }
-         if (index >= 0) {
+         if (post.widget) {
 
-            post.widget.background(0, ReadPostBrush);
-            if (postsRead) { postsRead.splice(index, 1); }
+            data = post.widget.data(0);
+            if (postsRead) { index = postsRead.indexOf(data); }
+            if (index >= 0) {
+
+               post.widget.background(0, ReadPostBrush);
+               if (postsRead) { postsRead.splice(index, 1); }
+            }
+            else { post.widget.background(0, UnreadPostBrush); }
          }
-         else { post.widget.background(0, UnreadPostBrush); }
+
       });
 
       currHandle = tree.currentItem();
@@ -303,7 +309,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
                   post = dmz.object.create(dmz.const.PostType);
                   dmz.object.text(post, dmz.const.TitleHandle, title);
                   dmz.object.text(post, dmz.const.TextHandle, text);
-                  dmz.object.text(post, dmz.const.CreatedAtHandle, new Date());
+                  dmz.object.timeStamp(post, dmz.const.CreatedAtHandle, dmz.time.getFrameTime());
                   dmz.object.link(dmz.const.ParentHandle, post, parentHandle);
                   dmz.object.link(dmz.const.CreatedByHandle, post, author);
                   dmz.object.activate(post);

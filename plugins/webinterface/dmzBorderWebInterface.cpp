@@ -87,6 +87,18 @@ dmz::BorderWebInterface::receive_message (
       int id;
       if (InData->lookup_int32 (_pinIDHandle, 0, id)) { emit (removePin (id)); }
    }
+   else if (Type == _movePinMessage) {
+
+      int id;
+      Float64 x = -1, y = -1;
+
+      if (InData->lookup_int32 (_pinIDHandle, 0, id) &&
+         InData->lookup_float64 (_pinPositionHandle, 0, x) &&
+         InData->lookup_float64 (_pinPositionHandle, 1, y)) {
+
+         emit (movePin (id, x, y));
+      }
+   }
    else if (Type == _setWebViewMessage) {
 
       QWebView *webview (0);
@@ -298,6 +310,13 @@ dmz::BorderWebInterface::_init (Config &local) {
       context,
       &_log);
 
+   _movePinMessage = config_create_message (
+      "message-names.move",
+      local,
+      "MovePinMessage",
+      context,
+      &_log);
+
    _pinMovedMessage = config_create_message (
       "message-names.moved",
       local,
@@ -322,6 +341,7 @@ dmz::BorderWebInterface::_init (Config &local) {
    subscribe_to_message (_setWebViewMessage);
    subscribe_to_message (_addPinMessage);
    subscribe_to_message (_removePinMessage);
+   subscribe_to_message (_movePinMessage);
 }
 
 

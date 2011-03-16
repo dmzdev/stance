@@ -18,7 +18,7 @@
 <web-services-object>
    <filter>
       <object-type-set>
-<!--         <object-type name="map_push_pin"/>-->
+         <!-- <object-type name="intel"/> -->
       </object-type-set>
       <attribute name="Active">
          <mask name="flag"/>

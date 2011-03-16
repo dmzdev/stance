@@ -523,7 +523,7 @@ setup = function () {
    pictures.forEach(function (file) {
 
       advisorPictureObjects.push(dmz.ui.graph.createPixmap(directory + file.string("file")));
-      pictureList.addItem(file.string("name"));
+      pictureList.addItem(file.string("file"));
    });
 
    pictureList.observe(self, "currentIndexChanged", function (index) {
@@ -568,13 +568,16 @@ setup = function () {
             if (result) {
 
                dmz.object.unlinkSuperObjects(advisorHandle, dmz.const.AdvisorGroupHandle);
+               dmz.object.unlinkSuperObjects(advisorHandle, dmz.const.GameUngroupedAdvisorsHandle);
                dmz.object.link(
                   dmz.const.AdvisorGroupHandle,
                   groupList[advisorGroupList.currentIndex()],
                   advisorHandle);
 
+               text = pictureList.currentText();
+               if (text === "--Default--") { text = self.config.string("lobbyist-picture-list.default"); }
                dmz.object.text(advisorHandle, dmz.const.PictureDirectoryNameHandle, directory);
-               dmz.object.text(advisorHandle, dmz.const.PictureFileNameHandle, pictureList.currentText());
+               dmz.object.text(advisorHandle, dmz.const.PictureFileNameHandle, text);
                dmz.object.text(advisorHandle, dmz.const.BioHandle, advisorBio.text());
             }
          });
@@ -635,7 +638,9 @@ setup = function () {
                   groupList[lobbyistGroupList.currentIndex()],
                   lobbyistHandle);
 
-               dmz.object.text(lobbyistHandle, dmz.const.PictureFileNameHandle, lobbyistPictureList.currentText());
+               text = lobbyistPictureList.currentText();
+               if (text === "--Default--") { text = self.config.string("lobbyist-picture-list.default"); }
+               dmz.object.text(lobbyistHandle, dmz.const.PictureFileNameHandle, text);
                dmz.object.text(lobbyistHandle, dmz.const.PictureDirectoryNameHandle, directory)
                dmz.object.text(lobbyistHandle, dmz.const.BioHandle, lobbyistBio.text());
                dmz.object.text(lobbyistHandle, dmz.const.LobbyistMessageHandle, lobbyistMessage.text());
@@ -752,11 +757,14 @@ editScenarioDialog.observe(self, "removeGroupButton", "clicked", function () {
      ;
 
    groupMembers = dmz.object.subLinks(groupHandle, dmz.const.GroupMembersHandle);
-   groupMembers.forEach(function (user) {
+   if (groupMembers) {
 
-      var item = userList[user];
-      if (item) { userFromGroup(item); }
-   });
+      groupMembers.forEach(function (user) {
+
+         var item = userList[user];
+         if (item) { userFromGroup(item); }
+      });
+   }
 
    groupList.splice (index, 1);
    groupComboBox.removeIndex(index);

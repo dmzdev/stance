@@ -243,6 +243,7 @@
      , appKillPopup
      , appRemovePoint
      , appMoveComplete
+     , appMovePin
      ;
 
    appLayer = function () {
@@ -256,6 +257,7 @@
          pointList = {};
          window.dmz.addPin.connect (appAddPoint);
          window.dmz.removePin.connect (appRemovePoint);
+         window.dmz.movePin.connect (appMovePin);
 
          style_mark = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
          style_mark.graphicWidth = 32;
@@ -318,6 +320,16 @@
 
          lonlat = MapDystopia.getLonLatFromViewPortPx(pixel);
          window.dmz.pinWasMoved (evt.attributes.id, lonlat.lon, lonlat.lat);
+      }
+   }
+
+   appMovePin = function (id, lon, lat) {
+
+      var feature;
+      if (window.dmz) {
+
+         feature = pointList[id];
+         if (feature) { feature.move (new OpenLayers.LonLat(lon, lat)); }
       }
    }
 
