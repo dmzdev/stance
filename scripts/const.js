@@ -35,7 +35,9 @@ var dmz =
       , GameUngroupedLobbyistsHandle: dmz.defs.createNamedHandle("game_ungrouped_lobbyists")
       , GroupMembersHandle: dmz.defs.createNamedHandle("group_members")
       , GroupPermissionsHandle: dmz.defs.createNamedHandle("group_permissions")
+      , GroupActiveVoteHandle: dmz.defs.createNamedHandle("group_active_vote")
       , GroupCompletedVotesHandle: dmz.defs.createNamedHandle("group_completed_votes")
+      , ID: dmz.defs.createNamedHandle("id")
       , LobbyistGroupHandle: dmz.defs.createNamedHandle("lobbyist_group")
       , LobbyistMessageHandle: dmz.defs.createNamedHandle("lobbyist_message")
       , NameHandle: dmz.defs.createNamedHandle("name")
@@ -51,11 +53,11 @@ var dmz =
       , VoteUndecidedHandle: dmz.defs.createNamedHandle("vote_undecided")
       , VoteYesHandle: dmz.defs.createNamedHandle("vote_yes")
       , VoteNoHandle: dmz.defs.createNamedHandle("vote_no")
-      , VoteGroupHandle: dmz.defs.createNamedHandle("vote_group")
       , VoteAdvisorHandle: dmz.defs.createNamedHandle("vote_advisor")
       , VoteSubmittedHandle: dmz.defs.createNamedHandle("vote_submitted")
       , VoteApprovedHandle: dmz.defs.createNamedHandle("vote_approved")
-      , VoteDeniedTextHandle: dmz.defs.createNamedHandle("vote_denied_text")
+      , VoteCommentHandle: dmz.defs.createNamedHandle("vote_comment")
+      , VoterTotalHandle: dmz.defs.createNamedHandle("voter_total")
       }
 
    , Functions =

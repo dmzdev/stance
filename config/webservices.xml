@@ -27,7 +27,7 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-   <db app="stance_testing"/>
+   <db app="stance_ben"/>
 </web-services-object>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>
