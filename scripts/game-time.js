@@ -7,10 +7,14 @@ var dmz =
        , data: require("dmz/runtime/data")
        , message: require("dmz/runtime/messaging")
        , objectType: require("dmz/runtime/objectType")
+       , util: require("dmz/types/util")
        , const: require("const")
        }
-    , Time = require("datejs/time")
+    , DateJs = require("datejs/time")
     // Constants
+    , OneHour = 3600000
+    , RealTimeAttr = dmz.defs.createNamedHandle("real_time")
+    , GameTimeAttr = dmz.defs.createNamedHandle("game_time")
     , RealTimeStart = self.config.number("real-time.start", 18)
     , RealTimeEnd = self.config.number("real-time.end", 6)
     // Variables
@@ -25,8 +29,6 @@ var dmz =
     , _hyperTimeEnd
     , _user
     // Fuctions
-    , _toTimeStamp
-    , _toDate
     , _setServerTime
     , _setUser
     , _updateGameActive
@@ -48,20 +50,18 @@ _game.startedAt = function () {
    return result;
 }
 
-_toTimeStamp = function (date) { return (date.valueOf() / 1000); }
-_toDate = function (timeStamp) { return new Date(timeStamp * 1000); }
 
 _setServerTime = function (time) {
 
    var timeStamp = time;
 
-   if (typeof time === "object") { timeStamp = _toTimeStamp(time); }
+   if (typeof time === "object") { timeStamp = dmz.util.dateToTimeStamp(time); }
 
    if (_game.handle) {
 
       dmz.object.timeStamp(_game.handle, dmz.const.ServerTimeHandle, timeStamp);
    }
-   else  { _serverTime = _toDate(timeStamp); }
+   else  { _serverTime = dmz.util.timeStampToDate(timeStamp); }
 }
 
 
@@ -102,7 +102,7 @@ _updateGameTime = function () {
       //_gameTime = _calcGameTime (_serverTime);
    }
 
-   dmz.time.setFrameTime(_gameTime.getTime() / 1000);
+   dmz.time.setFrameTime(dmz.util.dateToTimeStamp(_gameTime));
 
 self.log.debug("_updateGameTime: " + _gameTime);
 }
@@ -165,9 +165,9 @@ var _getRealTime = function (index) {
 
       rt.index = index || data.number("index");
       self.log.warn(  "rt.index: " + rt.index);
-      rt.current = _toDate(data.number("real_time", rt.index));
+      rt.current = dmz.util.timeStampToDate(data.number(RealTimeAttr, rt.index));
       self.log.warn("rt.current: " + rt.current);
-      rt.next = _toDate(data.number("real_time", rt.index + 1));
+      rt.next = dmz.util.timeStampToDate(data.number(RealTimeAttr, rt.index + 1));
       self.log.warn(   "rt.next: " + rt.next);
    }
 
@@ -178,6 +178,8 @@ var _getRealTime = function (index) {
 var _getCurrentAndNext = function (index, func) {
 
    var data
+     , realTime = {}
+     , gameTime = {}
      , current
      , next
      , realTime
@@ -195,32 +197,35 @@ var _getCurrentAndNext = function (index, func) {
 
       self.log.warn(  "index: " + index);
 
-      current = _toDate(data.number("real_time", index));
-      next = _toDate(data.number("real_time", index+1));
+      realTime.current = dmz.util.timeStampToDate(data.number(RealTimeAttr, index));
+      realTime.next = dmz.util.timeStampToDate(data.number(RealTimeAttr, index+1));
 
-      self.log.warn("current: " + current);
-      self.log.warn("   next: " + next);
+      gameTime.current = dmz.util.timeStampToDate(data.number(GameTimeAttr, index));
+      gameTime.next = dmz.util.timeStampToDate(data.number(GameTimeAttr, index+1));
 
-      var tp = new Time.TimePeriod (current, next);
-      self.log.warn("m: " + tp.getMonths());
-      self.log.warn("d: " + tp.getDays());
-      self.log.warn("h: " + tp.getHours());
-      self.log.warn("m: " + tp.getMinutes());
+//      self.log.warn("current: " + current);
+//      self.log.warn("   next: " + next);
+
+//      var tp = new DateJs.TimePeriod (current, next);
+//      self.log.warn("m: " + tp.getMonths());
+//      self.log.warn("d: " + tp.getDays());
+//      self.log.warn("h: " + tp.getHours());
+//      self.log.warn("m: " + tp.getMinutes());
 
       if (next == "Invalid Date") {
 
          self.log.error("No Next Date");
       }
 
-      if (_serverTime.between(current, next)) {
+      if (_serverTime.between(realTime.current, realTime.next)) {
 
          self.log.error("Between");
-         func (current, next);
+         func (realTime, gameTime);
       }
       else if (_serverTime.isBefore(current)) {
 
          self.log.error("Before");
-         func (current, next);
+         func (realTime, gameTime);
       }
       else if (_serverTime.isAfter(current)) {
 
@@ -232,19 +237,40 @@ var _getCurrentAndNext = function (index, func) {
 //   return realTime;
 }
 
-var _calculateGameTime = function (startTime, endTime) {
+var _calculateGameTime = function (realTime, gameTime) {
 
-   self.log.warn("start: " + startTime);
-   self.log.warn("  end: " + endTime);
+   self.log.warn("start: " + realTime.current);
+   self.log.warn("  end: " + realTime.next);
 
-   var span = new Time.TimePeriod (startTime, endTime);
+   var rtDelta = realTime.next - realTime.current
+     , gtDelta = gameTime.next - gameTime.current
+     , rtSpan = new DateJs.TimeSpan (rtDelta)
+     , gtSpan = new DateJs.TimeSpan (gtDelta)
+     , timeFactor
+     , startTime
+     , deltaTime
+     , theTime
+     ;
 
-   self.log.warn("m: " + span.getMonths());
-   self.log.warn("d: " + span.getDays());
-   self.log.warn("h: " + span.getHours());
-   self.log.warn("m: " + span.getMinutes());
+   self.log.info("rtDelta: " + rtDelta);
+   self.log.info("hours: " + (rtDelta / OneHour));
 
+   self.log.info("RealTime Span: " + rtSpan.getTotalMilliseconds());
+//   self.log.warn("m: " + rtSpan.getMonths());
+//   self.log.warn("d: " + rtSpan.getDays());
+//   self.log.warn("h: " + rtSpan.getHours());
+//   self.log.warn("m: " + rtSpan.getMinutes());
 
+   self.log.info("gtDelta: " + gtDelta);
+   self.log.info("hours: " + (gtDelta / OneHour));
+
+   self.log.info("GameTime Span: " + gtSpan);
+//   self.log.warn("m: " + rtSpan.getMonths());
+//   self.log.warn("d: " + rtSpan.getDays());
+//   self.log.warn("h: " + rtSpan.getHours());
+//   self.log.warn("m: " + rtSpan.getMinutes());
+
+   timeFactor = (rtDelta / OneHour)
 }
 
 
@@ -260,10 +286,10 @@ function (handle, attr, value) {
 
    if ((handle === _game.handle) && _game.active) {
 
-      _serverTime = _toDate(value);
+      _serverTime = dmz.util.timeStampToDate(value);
       self.log.warn("serverTime: " + _serverTime);
 
-      _getCurrentAndNext (_calculateGameTime);
+//      _getCurrentAndNext (_calculateGameTime);
 
 //      _getCurrentAndNext (function (current, next) {
 
@@ -278,11 +304,6 @@ function (handle, attr, value) {
 //      index = data.number("index");
 //self.log.warn("index:" + index);
 
-//      rt.current = _toDate(data.number("real_time", index));
-//      rt.next = _toDate(data.number("real_time", index + 1));
-
-//      gt.current = _toDate(data.number("game_time", index));
-//      gt.next = _toDate(data.number("game_time", index + 1));
 
 //      if (serverTime.between (rt.current, rt.next)) {
 
@@ -299,6 +320,9 @@ function (handle, attr, value) {
 
 //      dmz.object.timeStamp(_game.handle, dmz.const.GameTimeHandle, value);
 //      self.log.error("_serverTime: " + _serverTime);
+
+// for now just set game time to be server time
+dmz.time.setFrameTime(value);
    }
 });
 
@@ -309,7 +333,7 @@ function (handle, attr, value) {
    if (handle === _game.handle) {
 
       dmz.time.setFrameTime(value);
-self.log.warn("gameTime: " + _toDate(value));
+self.log.warn("gameTime: " + dmz.util.timeStampToDate(value));
    }
 });
 

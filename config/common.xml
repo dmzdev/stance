@@ -59,20 +59,20 @@
       <group-handle name="groupPinHandle"/>
       <pin-group-count name="pinGroupCountHandle"/>
    </pin-handles>
-   <icon-type path="./assets/">
-      <icon name="Generic" file="GenericMarker-sm.png" webfile="GenericMarker.png"/>
-      <icon name="Security" file="AddSecurity-sm.png" webfile="AddSecurity.png"/>
-      <icon name="Bomb" file="Bomb-sm.png" webfile="Bomb.png"/>
-      <icon name="Disaster" file="Disasters-sm.png" webfile="Disasters.png"/>
-      <icon name="Event" file="Event-sm.png" webfile="Event.png"/>
-      <icon name="Info" file="Information-sm.png" webfile="Information.png"/>
-      <icon name="Meeting" file="MeetingPlace-sm.png" webfile="MeetingPlace.png"/>
-      <icon name="Note" file="Note-sm.png" webfile="Note.png"/>
-      <icon name="Question" file="Placeholder-sm.png" webfile="Placeholder.png"/>
-      <icon name="Target" file="Target-sm.png" webfile="Target.png"/>
-      <icon name="Biohazard" file="Biohazard-sm.png" webfile="Biohazard.png"/>
-      <icon name="Quarantine" file="Quarantine-sm.png" webfile="Quarantine.png"/>
-      <icon name="Riot" file="Riot-sm.png" webfile="Riot.png"/>
+   <icon-type>
+      <icon name="Generic"/>
+      <icon name="Security"/>
+      <icon name="Bomb"/>
+      <icon name="Disaster"/>
+      <icon name="Event"/>
+      <icon name="Info"/>
+      <icon name="Meeting"/>
+      <icon name="Note"/>
+      <icon name="Question"/>
+      <icon name="Target"/>
+      <icon name="Biohazard"/>
+      <icon name="Quarantine"/>
+      <icon name="Riot"/>
    </icon-type>
    <pin type="map_push_pin"/>
 </webMap>

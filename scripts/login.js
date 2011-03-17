@@ -5,6 +5,7 @@ var dmz =
        , time: require("dmz/runtime/time")
        , defs: require("dmz/runtime/definitions")
        , objectType: require("dmz/runtime/objectType")
+       , util: require("dmz/types/util")
        , const: require("const")
        , ui:
           { mainWindow: require("dmz/ui/mainWindow")
@@ -23,8 +24,7 @@ var dmz =
     , _userHandle
     , _admin = false
     // Fuctions
-    , _toTimeStamp
-    , _toDate
+    , toTimeStamp = dmz.util.dateToTimeStamp
     , _activateUser
     ;
 
@@ -32,9 +32,6 @@ self.shutdown = function () {
 
    _window.title(_title);
 };
-
-_toTimeStamp = function (date) { return (date.valueOf() / 1000); }
-_toDate = function (timeStamp) { return new Date(timeStamp * 1000); }
 
 _activateUser = function (name) {
 
@@ -48,9 +45,8 @@ _activateUser = function (name) {
 
          if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
 
+         dmz.object.flag(handle, dmz.const.AdminFlagHandle, _admin);
          dmz.object.flag(handle, dmz.object.HILAttribute, true);
-
-         if (_admin) { dmz.object.flag(handle, dmz.const.AdminHandle, true); }
       }
    }
 }
@@ -62,7 +58,7 @@ LoginSuccessMessage.subscribe(self, function (data) {
       if (_gameHandle) {
 
          _window.title(_title);
-         _admin = data.boolean(dmz.const.AdminHandle);
+         _admin = data.boolean("admin");
          _userName = data.string(dmz.const.NameHandle);
 
          dmz.object.text(_gameHandle, dmz.const.UserNameHandle, _userName);
@@ -74,45 +70,86 @@ LoginSuccessMessage.subscribe(self, function (data) {
 
          _activateUser(_userName);
 
-         if (1) {
+         if (0) {
+
+            var timeSegment =
+                [ { serverDate: Date.parse("3/15/11")
+                  , startHour: 6
+                  , endHour: 18
+                  , startDate: Date.parse("1/1/12")
+                  , endDate: Date.parse("1/1/12")
+                  }
+                ,
+                  { serverDate: Date.parse("3/16/11")
+                  , startHour: 6
+                  , endHour: 18
+                  , startDate: Date.parse("1/2/12")
+                  , endDate: Date.parse("1/5/12")
+                  }
+                ]
+                ;
 
             var data = dmz.data.create()
-              , realTime =
-                [ /*Date.parse("6pm 3/15/11")
-                ,*/ Date.parse("6am 3/16/11")
+              , rtStart =
+                [ Date.parse("6pm 3/15/11")
                 , Date.parse("6pm 3/16/11")
-//                , Date.parse("6am 3/16/11")
-//                , Date.parse("6pm 3/16/11")
                 ]
-              , gameTime =
-                [ /*Date.parse("6pm 1/1/12")
-                ,*/ Date.parse("6am 1/2/12")
+              , rtEnd =
+                [ Date.parse("6am 3/16/11")
+                , Date.parse("6am 3/17/11")
+                ]
+              , gtStart =
+                [ Date.parse("6pm 1/1/12")
                 , Date.parse("6pm 1/2/12")
-//                , Date.parse("6am 1/5/12")
-//                , Date.parse("6am 1/10/12")
+                ]
+              , gtEnd =
+                [ Date.parse("6am 1/2/12")
+                , Date.parse("6am 1/2/12")
                 ]
               , ix
               ;
 
             ix = 0;
+            timeSegment.forEach (function (obj) {
+
+               data.number("serverDate", ix, toTimeStamp(obj.realTimeStart));
+               data.number("startHour", ix, obj.startHour);
+               data.number("endHour", ix, obj.endHour);
+               data.number("startDate", ix, obj.startDate);
+               data.number("endDate", ix, obj.endDate);
+               ix++;
+            });
+
+            for (var ix  = 0; ix < rtStart.length; ix++) {
+
+               data.number("real_time_start", ix, dmz.util.dateToTimeStamp());
+            }
+
+            ix = 0;
             realTime.forEach(function (value) {
 
                data.string("real_time_2", ix, value.toString());
-               data.number("real_time", ix++, _toTimeStamp(value));
+               data.number("real_time", ix++, dmz.util.dateToTimeStamp(value));
             });
 
             ix = 0;
             gameTime.forEach(function (value) {
 
                data.string("game_time_2", ix, value.toString());
-               data.number("game_time", ix++, _toTimeStamp(value));
+               data.number("game_time", ix++, dmz.util.dateToTimeStamp(value));
             });
 
             data.number("index", 0, 0);
+            data.number("index", 1, realTime.length);
             dmz.object.data(_gameHandle, dmz.const.GameTimeHandle, data);
          }
       }
    }
+});
+
+LogoutMessage.subscribe(self, function () {
+
+   if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
 });
 
 dmz.object.create.observe(self, function (handle, type) {
@@ -146,6 +183,7 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
 
          _userHandle = 0;
          _window.title(_title);
+         self.log.debug("User logged out");
       }
    }
 
@@ -163,9 +201,8 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
 });
 
 (function () {
-   var login = self.config.boolean("fake-login.value", false);
 
-   if (login) {
+   if (self.config.boolean("fake-login.value", false)) {
 
       dmz.time.setTimer(self, 0.5, function () {
 

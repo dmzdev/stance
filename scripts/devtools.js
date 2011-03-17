@@ -1,8 +1,12 @@
 var dmz =
        { object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
+       , data: require("dmz/runtime/data")
+       , message: require("dmz/runtime/messaging")
        , defs: require("dmz/runtime/definitions")
        , module: require("dmz/runtime/module")
+       , util: require("dmz/types/util")
+       , const: require("const")
        , ui:
           { consts: require('dmz/ui/consts')
           , loader: require('dmz/ui/uiLoader')
@@ -16,11 +20,14 @@ var dmz =
    // UI elements
    , form = dmz.ui.loader.load("DevTools.ui")
    , list = form.lookup("listWidget")
+//   , admin = form.lookup("adminCheckBox")
 
    // Handles
    , GroupNameHandle = dmz.defs.createNamedHandle("group_name")
-
    , NameHandle = dmz.defs.createNamedHandle("name")
+   , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
+   , LogoutMessage = dmz.message.create("Logout_Message")
+   , TimeStampAttr = dmz.defs.createNamedHandle("time-stamp")
 
    // Object Types
    , GroupType = dmz.objectType.lookup("group")
@@ -64,16 +71,31 @@ dmz.object.create.observe(self, function (handle, objType) {
    form.observe(self, "setUserButton", "clicked", function () {
 
       var selected = list.currentItem()
+        , handle
+        , username
         , data
-        , hil
         ;
+
       if (selected) {
 
-         data = selected.data();
-         UserList.forEach(function (handle) {
+         LogoutMessage.send();
 
-            dmz.object.flag(handle, dmz.object.HILAttribute, handle === data);
-         });
+         handle = selected.data();
+         username = selected.text();
+
+         data = dmz.data.create();
+
+         data.string(dmz.const.NameHandle, 0, username);
+//         data.boolean("admin", 0, admin.isChecked());
+         data.number(TimeStampAttr, 0, Date.now()/1000);
+
+         self.log.warn(">>> Faking login for: " + username + " <<<");
+         LoginSuccessMessage.send(data);
+
+//         UserList.forEach(function (handle) {
+
+//            dmz.object.flag(handle, dmz.object.HILAttribute, handle === data);
+//         });
       }
    });
    form.show();
