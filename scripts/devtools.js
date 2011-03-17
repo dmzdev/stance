@@ -14,12 +14,24 @@ var dmz =
           , messageBox: require("dmz/ui/messageBox")
           , list: require("dmz/ui/listWidget")
           , widget: require("dmz/ui/widget")
+          , dock: require("dmz/ui/dockWidget")
           }
        }
 
    // UI elements
+   , DockName = "Dev Tools"
    , form = dmz.ui.loader.load("DevTools.ui")
    , list = form.lookup("listWidget")
+   , dock = dmz.ui.mainWindow.createDock
+     (DockName
+     , { area: dmz.ui.consts.RightToolBarArea
+       , allowedAreas: [dmz.ui.consts.LeftToolBarArea, dmz.ui.consts.RightToolBarArea]
+       , floating: true
+       , visible: true
+       }
+     , form
+     )
+
 //   , admin = form.lookup("adminCheckBox")
 
    // Handles
@@ -44,6 +56,8 @@ var dmz =
 
    // Test Function decls
    ;
+
+self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); };
 
 
 dmz.object.create.observe(self, function (handle, objType) {
