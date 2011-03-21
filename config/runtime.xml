@@ -15,7 +15,7 @@
    <object-type name="advisor"/>
    <object-type name="media"/>
    <object-type name="lobbyist"/>
-   <object-type name="advisor_question"/>
+   <object-type name="question"/>
    <message name="AddPinMessage"/>
    <message name="PinAddedMessage"/>
    <message name="RemovePinMessage"/>

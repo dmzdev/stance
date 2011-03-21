@@ -44,7 +44,8 @@ var dmz =
    , fillList
    , getUserGroupHandle
    , getVoteGroupHandle
-   , getVoteStatusString
+   , getAdvisorGroupHandle
+   , getVoteStatus
    ;
 
 dmz.object.scalar.observe(self, dmz.const.ID, function (objHandle, attr, value) {
@@ -84,29 +85,81 @@ getVoteGroupHandle = function (voteHandle) {
    return retval;
 };
 
-getVoteStatusString = function (voteHandle) {
+getAdvisorGroupHandle = function (advisorHandle) {
 
-   var status = "E: " + voteHandle;
-   if (dmz.object.flag(voteHandle, dmz.const.VoteResultHandle) === true) { status = "PASSED"; }
-   else if (dmz.object.flag(voteHandle, dmz.const.VoteResultHandle) === false) { status = "FAILED"; }
-   else {
+   var advGroupHandle = 0
+     , retval = 0
+     ;
 
-      if (dmz.object.flag(voteHandle, dmz.const.VoteSubmitted) === true) { status = "SBMITD"; }
-      else if (dmz.object.flag(voteHandle, dmz.const.VoteSubmitted) === false) {
+   if (advisorHandle) {
 
-         if (dmz.object.flag(voteHandle, dmz.const.VoteApproved) === true) { status = "ACTIVE"; }
-         else if (dmz.object.flag(voteHandle, dmz.const.VoteApproved) === false) { status = "DENIED"; }
+      advGroupHandle = dmz.object.superLinks(advisorHandle, dmz.const.AdvisorGroupHandle);
+      if (advGroupHandle && advGroupHandle[0]) { retval = advGroupHandle[0]; }
+   }
+   return retval;
+};
+
+getVoteStatus = function (voteHandle) {
+
+   var status = "E: " + voteHandle
+     , Active = dmz.object.flag(voteHandle, dmz.const.ActiveHandle)
+     , Submitted = dmz.object.flag(voteHandle, dmz.const.VoteSubmittedHandle)
+     , Approved = dmz.object.flag(voteHandle, dmz.const.VoteApprovedHandle)
+     , Result = dmz.object.flag(voteHandle, dmz.const.VoteResultHandle)
+     , noHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteNoHandle)
+     ;
+
+   if (Active) {
+
+      if (Submitted) { status = "SBMITD"; }
+      else {
+
+         if (Approved) { status = "ACTIVE"; }
+         else { status = "DENIED"; }
       }
    }
+   else {
+
+      if (Result) { status = "PASSED"; }
+      else if (!noHandleList) { status = "DENIED"; }
+      else { status = "FAILED"; }
+   }
    return status;
-}
+};
 
 (function () {
 
-   var idx;
+   var idx, historyItemChanged;
    for (idx = 0; idx < advisorCount; idx += 1) {
 
       advisorWidgets[idx] = dmz.ui.loader.load("AdvisorWindow.ui");
+
+      (function (widget) {
+
+         historyItemChanged = function (item) {
+
+            var handle
+              , type
+              ;
+
+            if (item) {
+
+               handle = item.data(0);
+               type = dmz.object.type(handle);
+               if (type &&
+                  (type.isOfType(dmz.const.VoteType) ||
+                     type.isOfType(dmz.const.QuestionType))) {
+
+                  widget.lookup("selectedText").text(
+                     dmz.object.text(handle, dmz.const.TextHandle));
+                  widget.lookup("selectedOpinion").text(
+                     dmz.object.text(handle, dmz.const.CommentHandle));
+               }
+            }
+         }
+         widget.observe(self, "voteHistoryTree", "currentItemChanged", historyItemChanged);
+         widget.observe(self, "questionHistoryTree", "currentItemChanged", historyItemChanged);
+      }(advisorWidgets[idx]));
    }
 }());
 
@@ -116,11 +169,17 @@ approveVote = function (voteHandle) {
    ApproveVoteDialog.open(self, function (result, dialog) {
 
       var text;
-      dmz.object.flag(voteHandle, dmz.const.VoteApprovedHandle, result);
-      dmz.object.flag(voteHandle, dmz.const.VoteSubmittedHandle, false);
       text = VoteOpinionArea.text();
       if (!text || !text.length) { text = "I have no opinion on this matter."; }
-      dmz.object.text(voteHandle, dmz.const.VoteCommentHandle, text);
+      dmz.object.text(voteHandle, dmz.const.CommentHandle, text);
+      dmz.object.flag(voteHandle, dmz.const.VoteApprovedHandle, result);
+      dmz.object.flag(voteHandle, dmz.const.VoteSubmittedHandle, false);
+      if (!result) {
+
+         dmz.object.flag(voteHandle, dmz.const.ActiveHandle, false);
+         dmz.object.flag(voteHandle, dmz.const.VoteResultHandle, false);
+      }
+
       VoteOpinionArea.text("");
       VoteTextArea.text("");
    });
@@ -140,7 +199,6 @@ updateAdvisor = function (module, idx) {
         , vote
         ;
 
-      self.log.warn ("update", idx +":", hil, hilGroup);
       if (hil && hilGroup && groupAdvisors[hilGroup] && (idx < groupAdvisors[hilGroup].length)) {
 
          advisorHandle = groupAdvisors[hilGroup][idx];
@@ -171,17 +229,15 @@ updateAdvisor = function (module, idx) {
                   dmz.object.flag(vote, dmz.const.ActiveHandle, true);
                   dmz.object.flag(vote, dmz.const.VoteSubmittedHandle, true);
                   dmz.object.link(dmz.const.CreatedByHandle, vote, hil);
-                  dmz.object.timeStamp(hil, dmz.const.CreatedAtHandle, dmz.time.getFrameTime());
+                  dmz.object.timeStamp(vote, dmz.const.CreatedAtHandle, dmz.time.getFrameTime());
                   dmz.object.text(vote, dmz.const.TextHandle, text);
                   list = dmz.object.subLinks(hilGroup, dmz.const.GroupMembersHandle);
-                  self.log.warn (vote, "["+list+"]")
                   if (list && list.length) {
 
                      list.forEach(function (userHandle) {
 
                         if (!dmz.object.flag(userHandle, dmz.const.AdminFlagHandle)) {
 
-                           self.log.warn("Linking:", vote, userHandle);
                            dmz.object.link(dmz.const.VoteUndecidedHandle, vote, userHandle);
                            count += 1;
                         }
@@ -237,6 +293,103 @@ fillList = function (uiList, handleList) {
    }
 };
 
+dmz.object.text.observe(self, dmz.const.TextHandle, function (handle, attr, value) {
+
+   var type = dmz.object.type(handle)
+     , treeName
+     , index
+     ;
+
+   if (type.isOfType(dmz.const.VoteType)) {
+
+      treeName = "voteHistoryTree";
+      index = 1;
+   }
+   else if (type.isOfType(dmz.const.QuestionType)) {
+
+      treeName = "questionHistoryTree";
+      index = 0;
+   }
+
+   if (treeName && treeName.length) {
+
+      advisorWidgets.forEach(function (widget) {
+
+         var curr = widget.lookup(treeName)
+           , data
+           ;
+
+         if (curr) {
+
+            curr = curr.currentItem();
+            if (curr) { data = curr.data(0); }
+            if ((handle === data) &&
+               (widget.lookup("tabWidget").currentIndex() === index)) {
+
+               widget.lookup("selectedText").text(value);
+            }
+         }
+      });
+   }
+});
+
+dmz.object.text.observe(self, dmz.const.CommentHandle, function (handle, attr, value) {
+
+   var type = dmz.object.type(handle)
+     , treeName
+     , index
+     ;
+
+   if (type.isOfType(dmz.const.VoteType)) {
+
+      treeName = "voteHistoryTree";
+      index = 1;
+   }
+   else if (type.isOfType(dmz.const.QuestionType)) {
+
+      treeName = "questionHistoryTree";
+      index = 0;
+   }
+
+   if (treeName && treeName.length) {
+
+      advisorWidgets.forEach(function (widget) {
+
+         var curr = widget.lookup(treeName)
+           , data
+           ;
+
+         if (curr) {
+
+            curr = curr.currentItem();
+            if (curr) { data = curr.data(0); }
+            if ((handle === data) &&
+               (widget.lookup("tabWidget").currentIndex() === index)) {
+
+               widget.lookup("selectedOpinion").text(value);
+            }
+         }
+      });
+   }
+});
+
+
+dmz.object.link.observe(self, dmz.const.VoteUndecidedHandle,
+function (linkObjHandle, attrHandle, voteHandle, userHandle) {
+
+   var undecHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteUndecidedHandle)
+     , yesHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteYesHandle)
+     , noHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteNoHandle)
+     ;
+
+   if (voteHistoryWidgets[voteHandle]) {
+
+      voteHistoryWidgets[voteHandle].text(2, yesHandleList ? yesHandleList.length : 0);
+      voteHistoryWidgets[voteHandle].text(3, noHandleList ? noHandleList.length : 0);
+      voteHistoryWidgets[voteHandle].text(4, undecHandleList ? undecHandleList.length : 0);
+   }
+});
+
 dmz.object.link.observe(self, dmz.const.VoteYesHandle,
 function (linkObjHandle, attrHandle, voteHandle, userHandle) {
 
@@ -245,20 +398,20 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
      , noHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteNoHandle)
      ;
 
-   self.log.warn ("Vote Yes:", "["+undecHandleList+"]", "["+yesHandleList+"]", "["+noHandleList+"]", dmz.object.scalar(voteHandle, dmz.const.VoterTotalHandle));
+   if (voteHistoryWidgets[voteHandle]) {
+
+      voteHistoryWidgets[voteHandle].text(2, yesHandleList ? yesHandleList.length : 0);
+      voteHistoryWidgets[voteHandle].text(3, noHandleList ? noHandleList.length : 0);
+      voteHistoryWidgets[voteHandle].text(4, undecHandleList ? undecHandleList.length : 0);
+   }
+
    if (UserVoteListItems[userHandle] &&
       ((undecHandleList && (undecHandleList.indexOf(userHandle) !== -1)) ||
          (noHandleList && (noHandleList.indexOf(userHandle) !== -1)))) {
 
       YesList.addItem(UserVoteListItems[userHandle]);
    }
-   self.log.warn ("Vote Yes 2:"
-      , dmz.object.flag(voteHandle, dmz.const.ActiveHandle) && yesHandleList && (yesHandleList.length > (dmz.object.scalar(voteHandle, dmz.const.VoterTotalHandle) / 2))
-      , dmz.object.flag(voteHandle, dmz.const.ActiveHandle)
-      , yesHandleList.length
-      , dmz.object.scalar(voteHandle, dmz.const.VoterTotalHandle) / 2
-      , yesHandleList.length > (dmz.object.scalar(voteHandle, dmz.const.VoterTotalHandle) / 2)
-      );
+
    if (dmz.object.flag(voteHandle, dmz.const.ActiveHandle) && yesHandleList &&
       (yesHandleList.length >
          (dmz.object.scalar(voteHandle, dmz.const.VoterTotalHandle) / 2))) {
@@ -276,7 +429,13 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
      , noHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteNoHandle)
      ;
 
-//   self.log.warn ("Vote No:", "["+undecHandleList+"]", "["+yesHandleList+"]", "["+noHandleList+"]");
+   if (voteHistoryWidgets[voteHandle]) {
+
+      voteHistoryWidgets[voteHandle].text(2, yesHandleList ? yesHandleList.length : 0);
+      voteHistoryWidgets[voteHandle].text(3, noHandleList ? noHandleList.length : 0);
+      voteHistoryWidgets[voteHandle].text(4, undecHandleList ? undecHandleList.length : 0);
+   }
+
    if (UserVoteListItems[userHandle] &&
        ((undecHandleList && (undecHandleList.indexOf(userHandle) !== -1)) ||
           (yesHandleList && (yesHandleList.indexOf(userHandle) !== -1)))) {
@@ -285,12 +444,6 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
    }
 
    if (dmz.object.flag(voteHandle, dmz.const.ActiveHandle)) {
-
-      self.log.warn ("Vote denied:"
-         , !undecHandleList
-         , (noHandleList &&
-              (noHandleList.length >
-                 dmz.object.scalar(voteHandle, dmz.const.VoterTotalHandle))));
 
       if (!undecHandleList ||
          (noHandleList &&
@@ -310,14 +463,13 @@ function (objHandle, attr, value, prev) {
      , link
      ;
 
-   self.log.warn ("VoteResult:", "["+groupHandle+"]");
+   if (voteHistoryWidgets[objHandle]) {
+
+      voteHistoryWidgets[objHandle].text(1, getVoteStatus(objHandle));
+   }
+
    if (groupHandle) {
 
-      self.log.warn("Vote Result LinkHandle: "
-         , dmz.object.linkHandle(dmz.const.GroupActiveVoteHandle, groupHandle, objHandle)
-         , objHandle
-         , groupHandle
-         );
       dmz.object.unlink(dmz.object.linkHandle(dmz.const.GroupActiveVoteHandle, groupHandle, objHandle));
       dmz.object.link(dmz.const.GroupCompletedVotesHandle, groupHandle, objHandle);
    }
@@ -331,14 +483,13 @@ function (objHandle, attr, value, prev) {
      , undecHandleList = dmz.object.subLinks(objHandle, dmz.const.VoteUndecidedHandle);
      ;
 
-//   self.log.warn ("vote approved:",
-//      dmz.object.flag(objHandle, dmz.const.ActiveHandle),
-//      undecHandleList,
-//      undecHandleList ? (undecHandleList.indexOf(hil) !== -1) : "false");
+   if (voteHistoryWidgets[objHandle]) {
+
+      voteHistoryWidgets[objHandle].text(1, getVoteStatus(objHandle));
+   }
 
    if (hil && !dmz.object.flag(hil, dmz.const.AdminFlagHandle)) {
 
-//      self.log.warn ("Vote approved,", dmz.const._getDisplayName(hil), "is not an admin");
       if (dmz.object.flag(objHandle, dmz.const.ActiveHandle) &&
          undecHandleList && (undecHandleList.indexOf(hil) !== -1)) {
 
@@ -351,28 +502,18 @@ function (objHandle, attr, value, prev) {
 
             VoteDialog.observe(self, "yesButton", "clicked", function () {
 
-//               self.log.warn("Yes LinkHandle: "
-//                  , dmz.object.linkHandle(dmz.const.VoteUndecidedHandle, objHandle, hil)
-//                  , objHandle
-//                  , hil
-//                  );
                dmz.object.unlink(
                   dmz.object.linkHandle(dmz.const.VoteUndecidedHandle, objHandle, hil));
                dmz.object.link(dmz.const.VoteYesHandle, objHandle, hil);
             });
             VoteDialog.observe(self, "noButton", "clicked", function () {
 
-//               self.log.warn("No LinkHandle: "
-//               , dmz.object.linkHandle(dmz.const.VoteUndecidedHandle, objHandle, hil)
-//               , objHandle
-//               , hil
-//               );
                dmz.object.unlink(
                   dmz.object.linkHandle(dmz.const.VoteUndecidedHandle, objHandle, hil));
                dmz.object.link(dmz.const.VoteNoHandle, objHandle, hil);
             });
 
-            VoteOpinionArea.text(dmz.object.text(objHandle, dmz.const.VoteCommentHandle));
+            VoteOpinionArea.text(dmz.object.text(objHandle, dmz.const.CommentHandle));
             TaskText.text(dmz.object.text(objHandle, dmz.const.TextHandle));
             self.log.error("Vote approved open");
             VoteDialog.open(self, function (value) {});
@@ -388,7 +529,7 @@ function (objHandle, attr, value, prev) {
                   { type: dmz.ui.messageBox.Warning
                   , text: "The following vote was denied: " +
                        dmz.object.text(objHandle, dmz.const.TextHandle)
-                  , informativeText: dmz.object.text(objHandle, dmz.const.VoteCommentHandle)
+                  , informativeText: dmz.object.text(objHandle, dmz.const.CommentHandle)
                   , standardButtons: [dmz.ui.messageBox.Ok]
                   , defaultButton: dmz.ui.messageBox.Ok
                   }
@@ -416,16 +557,13 @@ function (objHandle, attr, value, prev) {
      , total
      ;
 
+   if (voteHistoryWidgets[objHandle]) {
+
+      voteHistoryWidgets[objHandle].text(1, getVoteStatus(objHandle));
+   }
    if (hil && type && type.isOfType(dmz.const.VoteType) &&
       (dmz.object.flag(objHandle, dmz.const.VoteApprovedHandle) ||
          dmz.object.flag(objHandle, dmz.const.VoteSubmittedHandle))) {
-
-      self.log.warn
-         ( "Active:"
-         , hilGroup
-         , dmz.object.linkHandle(dmz.const.GroupActiveVoteHandle, hilGroup, objHandle)
-         , dmz.object.linkHandle(dmz.const.GroupCompletedVotesHandle, hilGroup, objHandle)
-         );
 
       if (hilGroup &&
          (dmz.object.linkHandle(dmz.const.GroupActiveVoteHandle, hilGroup, objHandle) ||
@@ -445,12 +583,17 @@ function (objHandle, attr, value, prev) {
    }
 });
 
-dmz.object.flag.observe(self, dmz.const.VoteSubmitted,
+dmz.object.flag.observe(self, dmz.const.VoteSubmittedHandle,
 function (objHandle, attr, value, prev) {
 
    var hil = dmz.object.hil()
      , hilGroup = getUserGroupHandle(hil)
      ;
+
+   if (voteHistoryWidgets[objHandle]) {
+
+      voteHistoryWidgets[objHandle].text(1, getVoteStatus(objHandle));
+   }
 
    if (value) {
 
@@ -521,34 +664,6 @@ function (objHandle, attrHandle, value) {
 
                if (dmz.object.flag(vote, dmz.const.VoteSubmittedHandle)) { approveVote(vote); }
             }
-            else if (dmz.object.flag(vote, dmz.const.VoteApprovedHandle) === false) {
-
-               self.log.warn ("Vote not approved. Submitted:", dmz.object.flag(vote, dmz.const.VoteSubmittedHandle));
-               if (dmz.object.flag(vote, dmz.const.VoteSubmittedHandle) === false) {
-
-                  linkHandle = dmz.object.linkHandle(dmz.const.VoteUndecidedHandle, vote, objHandle);
-                  self.log.warn ("Denied Vote link handle:", linkHandle);
-                  if (linkHandle) {
-
-                     dmz.ui.messageBox.create(
-                        { type: dmz.ui.messageBox.Warning
-                        , text: "The following vote was denied: " +
-                             dmz.object.text(vote, dmz.const.TextHandle)
-                        , informativeText: dmz.object.text(vote, dmz.const.VoteCommentHandle)
-                        , standardButtons: [dmz.ui.messageBox.Ok]
-                        , defaultButton: dmz.ui.messageBox.Ok
-                        }
-                     ).open(self, function (value) {
-
-                       dmz.object.unlink(linkHandle);
-                       if (!dmz.object.subLinks(vote, dmz.const.VoteUndecidedHandle)) {
-
-                          dmz.object.flag(vote, dmz.const.VoteResultHandle, false);
-                       }
-                     });
-                  }
-               }
-            }
             else if ((dmz.object.flag(vote, dmz.const.VoteApprovedHandle) === true) &&
                     undecHandleList && (undecHandleList.indexOf(objHandle) !== -1)) {
 
@@ -569,14 +684,10 @@ function (objHandle, attrHandle, value) {
                   dmz.object.link(dmz.const.VoteNoHandle, vote, objHandle);
                });
 
-               VoteCommentText.text(dmz.object.text(vote, dmz.const.VoteCommentHandle));
+               VoteCommentText.text(dmz.object.text(vote, dmz.const.CommentHandle));
                TaskText.text(dmz.object.text(vote, dmz.const.TextHandle));
                VoteDialog.open(self, function (value) {});
             }
-         }
-         else {
-
-            self.log.error ("Vote is in active slot but is not active!");
          }
       }
    }
@@ -602,8 +713,7 @@ dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, valu
      , hilGroup = getUserGroupHandle(dmz.object.hil())
      ;
 
-   self.log.info ("NameHandle:", handle, value);
-   if (advisorData[handle]) { advisorData[handle].name = value; self.log.warn ("NameHandle:", handle, value); }
+   if (advisorData[handle]) { advisorData[handle].name = value; }
    if (hilGroup && groupAdvisors[hilGroup]) {
 
       index = groupAdvisors[hilGroup].indexOf(handle);
@@ -611,6 +721,52 @@ dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, valu
 
          advisorWidgets[index].lookup("nameLabel").text(value);
       }
+   }
+});
+
+dmz.object.link.observe(self, dmz.const.VoteAdvisorHandle,
+function (linkObjHandle, attrHandle, advisorHandle, voteHandle) {
+
+   var undecHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteUndecidedHandle)
+     , yesHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteYesHandle)
+     , noHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteNoHandle)
+     , item
+     , tree
+     , widget
+     , groupHandle = getAdvisorGroupHandle(advisorHandle)
+     ;
+
+   if (groupHandle && groupAdvisors[groupHandle] && groupAdvisors[groupHandle].length) {
+
+      widget = advisorWidgets[groupAdvisors[groupHandle].length - 1];
+      if (widget) {
+
+         tree = widget.lookup("voteHistoryTree");
+         if (tree) {
+
+            item = tree.add(
+               [ dmz.object.scalar(voteHandle, dmz.const.ID)
+               , getVoteStatus(voteHandle)
+               , yesHandleList ? yesHandleList.length : 0
+               , noHandleList ? noHandleList.length : 0
+               , undecHandleList ? undecHandleList.length : 0
+               , new Date (dmz.object.timeStamp(voteHandle, dmz.const.CreatedAtHandle) * 1000)
+               ]
+               , voteHandle
+               , 0
+               );
+         }
+         if (item) {
+
+            if (advisorData[advisorHandle]) {
+
+               advisorData[advisorHandle].voteWidgets.push(item);
+            }
+            voteHistoryWidgets[voteHandle] = item;
+         }
+         else { self.log.error ("Error creating widget from:", voteHandle); }
+      }
+
    }
 });
 
@@ -644,44 +800,7 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
          }
 
          votes = dmz.object.subLinks(advisorHandle, dmz.const.VoteAdvisorHandle);
-         if (votes) {
-
-            votes.forEach(function (voteHandle) {
-
-               var undecHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteUndecidedHandle)
-                 , yesHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteYesHandle)
-                 , noHandleList = dmz.object.subLinks(voteHandle, dmz.const.VoteNoHandle)
-                 , item
-                 ;
-
-               item = advisorWidgets[groupAdvisors[groupHandle].length - 1].add(
-                  [ dmz.object.scalar(voteHandle, dmz.const.ID)
-                  , getVoteStatusString(voteHandle)
-                  , yesHandleList ? yesHandleList.length : 0
-                  , noHandleList ? noHandleList.length : 0
-                  , undecHandleList ? undecHandleList.length : 0
-                  , new Date (dmz.object.timeStamp(voteHandle, dmz.const.CreatedAtHandle) * 1000)
-                  ]
-                  , voteHandle
-                  , 0
-                  );
-
-               if (item) {
-
-                  advisorData[advisorHandle].voteWidgets.push(item);
-                  voteHistoryWidgets[voteHandle] = item;
-               }
-               else { self.log.error ("Error creating widget from:", voteHandle); }
-
-            });
-         }
-
-         self.log.info
-            ( "AdvisorData["+advisorHandle+"]:"
-            , "name = " + advisorData[advisorHandle].name
-            , "bio = " + advisorData[advisorHandle].bio
-            , "picture = " + advisorData[advisorHandle].picture
-            );
+         if (votes) { self.log.error ("AdvisorGroupHandle:", votes); }
       }
    }
 });

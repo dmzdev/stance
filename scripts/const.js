@@ -9,13 +9,14 @@ var dmz =
 
    , ObjectTypes =
       { AdvisorType: dmz.objectType.lookup("advisor")
-      , PostType: dmz.objectType.lookup("post")
       , ForumType: dmz.objectType.lookup("forum")
-      , GroupType: dmz.objectType.lookup("group")
-      , UserType: dmz.objectType.lookup("user")
       , GameType: dmz.objectType.lookup("game")
+      , GroupType: dmz.objectType.lookup("group")
       , LobbyistType: dmz.objectType.lookup("lobbyist")
       , PinType: dmz.objectType.lookup("map_push_pin")
+      , PostType: dmz.objectType.lookup("post")
+      , QuestionType: dmz.objectType.lookup("question")
+      , UserType: dmz.objectType.lookup("user")
       , VoteType: dmz.objectType.lookup("vote")
       }
 
@@ -24,6 +25,7 @@ var dmz =
       , AdminFlagHandle: dmz.defs.createNamedHandle("admin_user")
       , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
       , BioHandle: dmz.defs.createNamedHandle("bio")
+      , CommentHandle: dmz.defs.createNamedHandle("comment")
       , CreatedByHandle: dmz.defs.createNamedHandle("created_by")
       , CreatedAtHandle: dmz.defs.createNamedHandle("created_at")
       , DisplayNameHandle: dmz.defs.createNamedHandle("display_name")
@@ -56,7 +58,6 @@ var dmz =
       , VoteAdvisorHandle: dmz.defs.createNamedHandle("vote_advisor")
       , VoteSubmittedHandle: dmz.defs.createNamedHandle("vote_submitted")
       , VoteApprovedHandle: dmz.defs.createNamedHandle("vote_approved")
-      , VoteCommentHandle: dmz.defs.createNamedHandle("vote_comment")
       , VoterTotalHandle: dmz.defs.createNamedHandle("voter_total")
       }
 
