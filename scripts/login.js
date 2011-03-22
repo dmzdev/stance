@@ -2,25 +2,29 @@ var dmz =
        { object: require("dmz/components/object")
        , data: require("dmz/runtime/data")
        , message: require("dmz/runtime/messaging")
+       , time: require("dmz/runtime/time")
        , defs: require("dmz/runtime/definitions")
        , objectType: require("dmz/runtime/objectType")
+       , util: require("dmz/types/util")
        , const: require("const")
        , ui:
           { mainWindow: require("dmz/ui/mainWindow")
           }
        }
     // Constants
-    , TimeStampAttr = dmz.defs.createNamedHandle("time-stamp")
     , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
     , LogoutMessage = dmz.message.create("Logout_Message")
+    , TimeStampAttr = dmz.defs.createNamedHandle("time-stamp")
     // Variables
     , _window = dmz.ui.mainWindow.window()
     , _title = _window.title()
+    , _gameHandle
     , _userList = []
     , _userName
     , _userHandle
-    , _serverTime
+    , _admin = false
     // Fuctions
+    , toTimeStamp = dmz.util.dateToTimeStamp
     , _activateUser
     ;
 
@@ -29,56 +33,132 @@ self.shutdown = function () {
    _window.title(_title);
 };
 
-
 _activateUser = function (name) {
 
-   if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
+   var handle;
 
    if (_userName && (name === _userName)) {
 
-      var handle = _userList[_userName];
+      handle = _userList[_userName];
+
       if (handle) {
 
-         dmz.object.flag(handle, dmz.object.HILAttribute, true);
+         if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
 
-         _window.title(_title + " (" + _userName + ")");
-         self.log.info("User identified: " + _userName);
+         dmz.object.flag(handle, dmz.const.AdminFlagHandle, _admin);
+         dmz.object.flag(handle, dmz.object.HILAttribute, true);
       }
    }
 }
 
-
 LoginSuccessMessage.subscribe(self, function (data) {
-
-   var timeStamp
-     ;
 
    if (data && dmz.data.isTypeOf(data)) {
 
-      timeStamp = data.number(TimeStampAttr);
-      if (timeStamp) { _serverTime = new Date(timeStamp * 1000); }
+      if (_gameHandle) {
 
-      _userName = data.string(dmz.const.NameHandle);
+         _window.title(_title);
+         _admin = data.boolean("admin");
+         _userName = data.string(dmz.const.NameHandle);
 
-      _activateUser(_userName);
+         dmz.object.text(_gameHandle, dmz.const.UserNameHandle, _userName);
+
+         dmz.object.timeStamp(
+            _gameHandle,
+            dmz.const.ServerTimeHandle,
+            data.number(TimeStampAttr));
+
+         _activateUser(_userName);
+
+         if (0) {
+
+            var timeSegment =
+                [ { serverDate: Date.parse("3/15/11")
+                  , startHour: 6
+                  , endHour: 18
+                  , startDate: Date.parse("1/1/12")
+                  , endDate: Date.parse("1/1/12")
+                  }
+                ,
+                  { serverDate: Date.parse("3/16/11")
+                  , startHour: 6
+                  , endHour: 18
+                  , startDate: Date.parse("1/2/12")
+                  , endDate: Date.parse("1/5/12")
+                  }
+                ]
+                ;
+
+            var data = dmz.data.create()
+              , rtStart =
+                [ Date.parse("6pm 3/15/11")
+                , Date.parse("6pm 3/16/11")
+                ]
+              , rtEnd =
+                [ Date.parse("6am 3/16/11")
+                , Date.parse("6am 3/17/11")
+                ]
+              , gtStart =
+                [ Date.parse("6pm 1/1/12")
+                , Date.parse("6pm 1/2/12")
+                ]
+              , gtEnd =
+                [ Date.parse("6am 1/2/12")
+                , Date.parse("6am 1/2/12")
+                ]
+              , ix
+              ;
+
+            ix = 0;
+            timeSegment.forEach (function (obj) {
+
+               data.number("serverDate", ix, toTimeStamp(obj.realTimeStart));
+               data.number("startHour", ix, obj.startHour);
+               data.number("endHour", ix, obj.endHour);
+               data.number("startDate", ix, obj.startDate);
+               data.number("endDate", ix, obj.endDate);
+               ix++;
+            });
+
+            for (var ix  = 0; ix < rtStart.length; ix++) {
+
+               data.number("real_time_start", ix, dmz.util.dateToTimeStamp());
+            }
+
+            ix = 0;
+            realTime.forEach(function (value) {
+
+               data.string("real_time_2", ix, value.toString());
+               data.number("real_time", ix++, dmz.util.dateToTimeStamp(value));
+            });
+
+            ix = 0;
+            gameTime.forEach(function (value) {
+
+               data.string("game_time_2", ix, value.toString());
+               data.number("game_time", ix++, dmz.util.dateToTimeStamp(value));
+            });
+
+            data.number("index", 0, 0);
+            data.number("index", 1, realTime.length);
+            dmz.object.data(_gameHandle, dmz.const.GameTimeHandle, data);
+         }
+      }
    }
 });
 
-
 LogoutMessage.subscribe(self, function () {
 
-   _activateUser(undefined);
+   if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
 });
 
+dmz.object.create.observe(self, function (handle, type) {
 
-//dmz.object.create.observe(self, function (handle, type) {
+   if (type.isOfType(dmz.const.GameType)) {
 
-//   if (type.isOfType(dmz.const.GameType)) {
-
-//      dmz.object.timestamp(handle, "MontereyTime", _serverTime);
-//   }
-//}
-
+      if (!_gameHandle) { _gameHandle = handle; }
+   }
+});
 
 dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
 
@@ -90,39 +170,50 @@ dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, valu
    }
 });
 
-
 dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, value) {
 
-   var type = dmz.object.type(handle);
+   var type = dmz.object.type(handle)
+     , name
+     , unverified = "*"
+     ;
 
    if (handle === _userHandle) {
 
       if (!value) {
 
-         _userHandle = undefined;
+         _userHandle = 0;
          _window.title(_title);
+         self.log.debug("User logged out");
       }
    }
 
-   if (value && type && type.isOfType(dmz.const.UserType)) { _userHandle = handle; }
+   if (value && type && type.isOfType(dmz.const.UserType)) {
+
+      _userHandle = handle;
+
+      name = dmz.object.text(_userHandle, dmz.const.NameHandle);
+      if (name === _userName) { unverified = ""; }
+
+      _window.title(_title + " (" + name + ")" + unverified);
+
+      self.log.info("User identified: " + name);
+   }
 });
 
-
 (function () {
-   var target
-//     , loginRequiredMessage = dmz.message.create("Login_Required_Message")
-//     , archiveUpdatedMessage = dmz.message.create("Archive_Updated_Message")
-//     , doLogin = true
-     ;
 
-//   if (doLogin) {
+   if (self.config.boolean("fake-login.value", false)) {
 
-//      target = dmz.defs.createNamedHandle("dmzQtPluginLoginDialog");
-//      loginRequiredMessage.send(target);
-//   }
+      dmz.time.setTimer(self, 0.5, function () {
 
-//   target = dmz.defs.createNamedHandle("dmzArchivePluginAutoCache");
-//   self.log.warn("archive updated");
-//   archiveUpdatedMessage.send (target);
+         var data = dmz.data.create();
+
+         data.string(dmz.const.NameHandle, 0, self.config.string("fake-login.name", "dmz"));
+         data.boolean(dmz.const.AdminHandle, 0, self.config.boolean("fake-login.admin", false));
+         data.number(TimeStampAttr, 0, Date.now()/1000);
+
+         self.log.warn(">>> Faking user login! <<<");
+         LoginSuccessMessage.send(data);
+      });
+   }
 }());
-

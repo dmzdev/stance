@@ -12,6 +12,7 @@ var dmz =
           }
        , const: require("const")
        , time: require("dmz/runtime/time")
+       , util: require("dmz/types/util")
        }
 
    // UI elements
@@ -87,7 +88,7 @@ dmz.object.text.observe(self, dmz.const.TitleHandle, function (handle, attr, val
 dmz.object.timeStamp.observe(self, dmz.const.CreatedAtHandle, function (handle, attr, value) {
 
    var post = PostList[handle];
-   if (post && post.widget) { post.widget.text(2, new Date(value * 1000)); }
+   if (post && post.widget) { post.widget.text(2, dmz.util.timeStampToDate(value)); }
 });
 
 dmz.object.text.observe(self, dmz.const.TextHandle, function (handle, attr, value) {
@@ -119,7 +120,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    if (child && parent && parent.widget) {
 
-      child.widget = parent.widget.add ([title, author, createdAt, text]);
+      child.widget = parent.widget.add ([title, author, dmz.util.timeStampToDate(createdAt), text]);
       child.widget.data(0, superHandle);
       hil = dmz.object.hil();
       if (hil) {

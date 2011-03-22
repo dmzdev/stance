@@ -3,11 +3,6 @@
 <plugin-list>
    <plugin name="dmzQtModuleMainWindowBasic" scope="main-window"/>
    <plugin name="dmzQtPluginVersion"/>
-   <plugin name="dmzArchiveModuleBasic" scope="archive-module"/>
-   <plugin name="dmzArchivePluginAutoLoad"/>
-   <plugin name="dmzArchivePluginAutoCache" scope="archive-auto-cache"/>
-   <plugin name="dmzArchivePluginObject" scope="archive-object"/>
-<!--   <plugin name="dmzArchivePluginUndo"/>-->
    <plugin name="dmzObjectModuleBasic"/>
 <!--   <plugin name="dmzObjectPluginCleanup" scope="cleanup"/>-->
    <plugin name="dmzQtPluginObjectInspector"/>
@@ -30,33 +25,6 @@
       <menu text="&amp;Help"/>
    </menu-bar>
 </main-window>
-<archive-module>
-   <archive version="0"/>
-</archive-module>
-<archive-object>
-   <filter>
-      <object-type-set>
-<!--         <object-type name="forum_type"/>-->
-<!--         <object-type name="forum_post"/>-->
-<!--         <object-type name="game_type"/>-->
-<!--         <object-type name="vote"/>-->
-<!--         <object-type name="intel"/>-->
-<!--         <object-type name="current_user"/>-->
-<!--         <object-type name="map_push_pin"/>-->
-      </object-type-set>
-      <attribute name="_publish">
-         <mask name="flag"/>
-      </attribute>
-      <attribute name="_fetch">
-         <mask name="flag"/>
-      </attribute>
-   </filter>
-</archive-object>
-<archive-auto-cache>
-<!--   <auto-restore value="false"/>-->
-<!--   <save file="cache.xml"/>-->
-<!--   <archive-updated-message name="Archive_Updated_Message"/>-->
-</archive-auto-cache>
 <cleanup>
    <cleanup>
       <type name="current_user"/>
@@ -91,20 +59,20 @@
       <group-handle name="groupPinHandle"/>
       <pin-group-count name="pinGroupCountHandle"/>
    </pin-handles>
-   <icon-type path="./assets/">
-      <icon name="Generic" file="GenericMarker-sm.png" webfile="GenericMarker.png"/>
-      <icon name="Security" file="AddSecurity-sm.png" webfile="AddSecurity.png"/>
-      <icon name="Bomb" file="Bomb-sm.png" webfile="Bomb.png"/>
-      <icon name="Disaster" file="Disasters-sm.png" webfile="Disasters.png"/>
-      <icon name="Event" file="Event-sm.png" webfile="Event.png"/>
-      <icon name="Info" file="Information-sm.png" webfile="Information.png"/>
-      <icon name="Meeting" file="MeetingPlace-sm.png" webfile="MeetingPlace.png"/>
-      <icon name="Note" file="Note-sm.png" webfile="Note.png"/>
-      <icon name="Question" file="Placeholder-sm.png" webfile="Placeholder.png"/>
-      <icon name="Target" file="Target-sm.png" webfile="Target.png"/>
-      <icon name="Biohazard" file="Biohazard-sm.png" webfile="Biohazard.png"/>
-      <icon name="Quarantine" file="Quarantine-sm.png" webfile="Quarantine.png"/>
-      <icon name="Riot" file="Riot-sm.png" webfile="Riot.png"/>
+   <icon-type>
+      <icon name="Generic"/>
+      <icon name="Security"/>
+      <icon name="Bomb"/>
+      <icon name="Disaster"/>
+      <icon name="Event"/>
+      <icon name="Info"/>
+      <icon name="Meeting"/>
+      <icon name="Note"/>
+      <icon name="Question"/>
+      <icon name="Target"/>
+      <icon name="Biohazard"/>
+      <icon name="Quarantine"/>
+      <icon name="Riot"/>
    </icon-type>
    <pin type="map_push_pin"/>
 </webMap>

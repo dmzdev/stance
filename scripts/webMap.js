@@ -6,6 +6,7 @@ var dmz =
        , defs: require("dmz/runtime/definitions")
        , module: require("dmz/runtime/module")
        , message: require("dmz/runtime/messaging")
+       , resources: require("dmz/runtime/resources")
        , ui:
           { consts: require('dmz/ui/consts')
           , event: require("dmz/ui/event")
@@ -228,7 +229,6 @@ onPinRemoved = function (data) {
 (function () {
 
    var iconList = self.config.get("icon-type.icon")
-     , directory = self.config.string("icon-type.path")
      ;
 
    if (iconList) {
@@ -236,14 +236,14 @@ onPinRemoved = function (data) {
       iconList.forEach(function (icon) {
 
          var name = icon.string("name")
-           , file = icon.string("file")
-           , webfile = icon.string("webfile")
+           , file = dmz.resources.findFile(name)
+           , config = dmz.resources.lookupConfig(name)
+           , webfile = (name + ".png")
            , data
            ;
 
-         if (!file) { file = "jake-sm.png"; }
+         if (config) { webfile = config.string("webMap.file"); }
 
-         file = directory + file;
          file = dmz.ui.graph.createPixmap(file);
          data = { name: name, pixmap: file, webfile: webfile };
          PinIconList.push(data);

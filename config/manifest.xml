@@ -4,10 +4,10 @@
       <path prefix="images" value="assets"/>
    </search>
    <extension keep="true"/>
+   <config file="config/archive.xml"/>
    <config file="config/common.xml"/>
    <config file="config/runtime.xml"/>
    <config file="config/resource.xml"/>
-<!--   <config file="config/canvas.xml"/>-->
    <config file="config/input.xml"/>
    <config file="config/js.xml"/>
    <config file="config/version.xml"/>

@@ -5,17 +5,46 @@
    <search>
       <path value="./assets/"/>
    </search>
-<!--   <resource name="small node" file="circle.png"/> -->
-<!--   <resource name="security" file="AddSecurity-sm.png"/>
-   <resource name="bomb" file="Bomb-sm.png"/>
-   <resource name="disaster" file="Disasters-sm.png"/>
-   <resource name="event" file="Event-sm.png"/>
-   <resource name="generic" file="GenericMarker-sm.png"/>
-   <resource name="info" file="Information-sm.png"/>
-   <resource name="meeting" file="MeetingPlace-sm.png"/>
-   <resource name="note" file="Note-sm.png"/>
-   <resource name="placeholder" file="Placeholder-sm.png"/>
-   <resource name="target" file="Target-sm.png"/> -->
+   <resource name="Generic" file="GenericMarker-sm.png">
+      <webMap file="GenericMarker.png"/>
+   </resource>
+   <resource name="Security" file="AddSecurity-sm.png">
+      <webMap file="AddSecurity.png"/>
+   </resource>
+   <resource name="Bomb" file="Bomb-sm.png">
+      <webMap file="Bomb.png"/>
+   </resource>
+   <resource name="Disaster" file="Disasters-sm.png">
+      <webMap file="Disasters.png"/>
+   </resource>
+   <resource name="Event" file="Event-sm.png">
+      <webMap file="Event.png"/>
+   </resource>
+   <resource name="Info" file="Information-sm.png">
+      <webMap file="Information.png"/>
+   </resource>
+   <resource name="Meeting" file="MeetingPlace-sm.png">
+      <webMap file="MeetingPlace.png"/>
+   </resource>
+   <resource name="Note" file="Note-sm.png">
+      <webMap file="Note.png"/>
+   </resource>
+   <resource name="Question" file="Placeholder-sm.png">
+      <webMap file="Placeholder.png"/>
+   </resource>
+   <resource name="Target" file="Target-sm.png">
+      <webMap file="Target.png"/>
+   </resource>
+   <resource name="Biohazard" file="Biohazard-sm.png">
+      <webMap file="Biohazard.png"/>
+   </resource>
+   <resource name="Quarantine" file="Quarantine-sm.png">
+      <webMap file="Quarantine.png"/>
+   </resource>
+   <resource name="Riot" file="Riot-sm.png">
+      <webMap file="Riot.png"/>
+   </resource>
 </resource-map>
 </runtime>
 </dmz>
+

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<plugin-list>
+   <plugin name="dmzArchiveModuleBasic" scope="archive-module"/>
+   <plugin name="dmzArchivePluginAutoLoad"/>
+   <plugin name="dmzArchivePluginAutoCache" scope="archive-auto-cache"/>
+   <plugin name="dmzArchivePluginObject" scope="archive-object"/>
+<!--   <plugin name="dmzArchivePluginUndo"/>-->
+</plugin-list>
+<archive-module>
+   <archive version="0"/>
+</archive-module>
+<archive-object>
+   <filter>
+      <object-type-set>
+<!--         <object-type name="map_push_pin"/>-->
+      </object-type-set>
+      <attribute name="server_time">
+         <mask name="timestamp"/>
+      </attribute>
+      <attribute name="_publish">
+         <mask name="flag"/>
+      </attribute>
+      <attribute name="_fetch">
+         <mask name="flag"/>
+      </attribute>
+   </filter>
+</archive-object>
+<archive-auto-cache>
+<!--   <auto-restore value="false"/>-->
+<!--   <save file="cache.xml"/>-->
+<!--   <archive-updated-message name="Archive_Updated_Message"/>-->
+</archive-auto-cache>
+</dmz>

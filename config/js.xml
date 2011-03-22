@@ -11,6 +11,7 @@
    <plugin name="dmzJsExtV8EventCommon" scope="javascript"/>
    <plugin name="dmzJsExtV8Object" scope="javascript"/>
    <plugin name="dmzJsExtV8Module" scope="javascript"/>
+   <plugin name="dmzJsExtV8Resources" scope="javascript"/>
 </plugin-list>
 <javascript>
    <path value="./scripts"/>
@@ -22,8 +23,12 @@
    <instance name="webMap"/>
    <instance name="forum"/>
    <instance name="login"/>
-   <instance name="advisor"/>
+   <instance name="game-time"/>
+<!--   <instance name="advisor"/>-->
 </javascript>
+<login>
+<!--   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>-->
+</login>
 <main>
    <scene height="800" width="400"/>
 </main>
