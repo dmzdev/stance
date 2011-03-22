@@ -412,6 +412,9 @@ p, li { white-space: pre-wrap; }
         <layout class="QVBoxLayout" name="verticalLayout_10">
          <item>
           <widget class="QTreeWidget" name="voteHistoryTree">
+           <property name="sortingEnabled">
+            <bool>true</bool>
+           </property>
            <column>
             <property name="text">
              <string>#</string>

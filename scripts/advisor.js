@@ -23,6 +23,10 @@ var dmz =
    , VoteTextArea = ApproveVoteDialog.lookup("taskingText")
    , VoteOpinionArea = ApproveVoteDialog.lookup("opinionText")
 
+   , AnswerQuestionDialog = dmz.ui.loader.load("AnswerQuestionDialog.ui")
+   , QuestionTextArea = AnswerQuestionDialog.lookup("questionText")
+   , QuestionAnswerArea = AnswerQuestionDialog.lookup("answerText")
+
    , VoteDialog = dmz.ui.loader.load("VoteDialog.ui")
    , YesList = VoteDialog.lookup("yesList")
    , NoList = VoteDialog.lookup("noList")
@@ -37,10 +41,13 @@ var dmz =
    , advisorCount = 5
    , UserVoteListItems = {}
    , voteHistoryWidgets = {}
+   , questionHistoryWidgets = {}
+   , MaxMessageLength = 144
 
    // Function decls
    , updateAdvisor
    , approveVote
+   , answerQuestion
    , fillList
    , getUserGroupHandle
    , getVoteGroupHandle
@@ -51,11 +58,13 @@ var dmz =
 dmz.object.scalar.observe(self, dmz.const.ID, function (objHandle, attr, value) {
 
    if (voteHistoryWidgets[objHandle]) { voteHistoryWidgets[objHandle].text(0, value); }
+   else if (questionHistoryWidgets[objHandle]) { questionHistoryWidgets[objHandle].text(0, value); }
 });
 
-dmz.object.timeStamp.observe(self, dmz.const.CreatedAtHandle, function (handle, attr, value) {
+dmz.object.timeStamp.observe(self, dmz.const.CreatedAtHandle, function (objHandle, attr, value) {
 
-   if (voteHistoryWidgets[handle]) { voteHistoryWidgets[handle].text(5, value * 1000); }
+   if (voteHistoryWidgets[objHandle]) { voteHistoryWidgets[objHandle].text(5, value * 1000); }
+   else if (questionHistoryWidgets[objHandle]) { questionHistoryWidgets[objHandle].text(2, value * 1000); }
 });
 
 getUserGroupHandle = function (userHandle) {
@@ -159,6 +168,38 @@ getVoteStatus = function (voteHandle) {
          }
          widget.observe(self, "voteHistoryTree", "currentItemChanged", historyItemChanged);
          widget.observe(self, "questionHistoryTree", "currentItemChanged", historyItemChanged);
+
+         widget.lookup("questionCharRemAmt").text(MaxMessageLength);
+         widget.observe(self, "questionText", "textChanged", function (textWidget) {
+
+            var length = textWidget.text().length
+              , diff = MaxMessageLength - length
+              , color = "black"
+              , button = widget.lookup("submitQuestionButton")
+              ;
+
+            button.enabled((button.text() === "Submit Question") && (length < MaxMessageLength));
+            if (length > MaxMessageLength) { color = "red"; }
+            else if (length > (MaxMessageLength / 2)) { color = "blue"; }
+            else if (length > (MaxMessageLength / 4)) { color = "green"; }
+            widget.lookup("questionCharRemAmt").text("<font color="+color+">"+diff+"</font>");
+         });
+
+         widget.lookup("taskCharRemAmt").text(MaxMessageLength);
+         widget.observe(self, "taskingText", "textChanged", function (textWidget) {
+
+            var length = textWidget.text().length
+              , diff = MaxMessageLength - length
+              , color = "black"
+              , button = widget.lookup("submitTaskButton")
+              ;
+
+            button.enabled((button.text() === "Submit Task") && (length < MaxMessageLength));
+            if (length > MaxMessageLength) { color = "red"; }
+            else if (length > (MaxMessageLength / 2)) { color = "blue"; }
+            else if (length > (MaxMessageLength / 4)) { color = "green"; }
+            widget.lookup("taskCharRemAmt").text("<font color="+color+">"+diff+"</font>");
+         });
       }(advisorWidgets[idx]));
    }
 }());
@@ -185,6 +226,22 @@ approveVote = function (voteHandle) {
    });
 }
 
+answerQuestion = function (questionHandle) {
+
+   QuestionTextArea.text(dmz.object.text(questionHandle, dmz.const.TextHandle));
+
+   AnswerQuestionDialog.open(self, function (result, dialog) {
+
+      var text;
+      text = QuestionAnswerArea.text();
+      if (!text || !text.length) { text = "I have no opinion on this matter."; }
+      dmz.object.text(questionHandle, dmz.const.CommentHandle, text);
+      dmz.object.flag(questionHandle, dmz.const.ActiveHandle, false);
+      QuestionAnswerArea.text("");
+      QuestionTextArea.text("");
+   });
+};
+
 updateAdvisor = function (module, idx) {
 
    module.addPage("Advisor" + idx, advisorWidgets[idx], function () {
@@ -197,6 +254,7 @@ updateAdvisor = function (module, idx) {
         , btn
         , textEdit
         , vote
+        , question
         ;
 
       if (hil && hilGroup && groupAdvisors[hilGroup] && (idx < groupAdvisors[hilGroup].length)) {
@@ -210,6 +268,30 @@ updateAdvisor = function (module, idx) {
             if (data.picture) { advisorWidgets[idx].lookup("pictureLabel").pixmap(data.picture); }
 
             // Need to disable this unless online?
+            advisorWidgets[idx].observe(self, "submitQuestionButton", "clicked", function () {
+
+               var textWidget = advisorWidgets[idx].lookup("questionText")
+                 , text = textWidget ? textWidget.text() : ""
+                 , question
+                 , list
+                 ;
+
+               if (text.length) {
+
+                  question = dmz.object.create(dmz.const.QuestionType);
+                  dmz.object.activate(question);
+                  dmz.object.flag(question, dmz.const.ActiveHandle, true);
+                  dmz.object.link(dmz.const.CreatedByHandle, question, hil);
+                  dmz.object.timeStamp(question, dmz.const.CreatedAtHandle, dmz.time.getFrameTime());
+                  dmz.object.text(question, dmz.const.TextHandle, text);
+                  dmz.object.link(dmz.const.AdvisorActiveQuestionHandle, advisorHandle, question);
+                  list = dmz.object.subLinks(advisorHandle, dmz.const.AdvisorActiveQuestionHandle);
+                  list = list ? list.length : -1; // Signal error -- Linking question to advisor failed
+                  dmz.object.scalar(question, dmz.const.ID, list);
+               }
+               textWidget.text("");
+            });
+
             advisorWidgets[idx].observe(self, "submitTaskButton", "clicked", function () {
 
                var vote
@@ -269,6 +351,29 @@ updateAdvisor = function (module, idx) {
             else {
 
                btn.text("Submit Task");
+               btn.enabled(true);
+               textEdit.enabled(true);
+            }
+
+            btn = advisorWidgets[idx].lookup("submitQuestionButton");
+            textEdit = advisorWidgets[idx].lookup("questionText");
+            question = dmz.object.subLinks(advisorHandle, dmz.const.AdvisorActiveQuestionHandle);
+            if (question && question[0] &&
+               dmz.object.flag(question[0], dmz.const.ActiveHandle)) {
+
+               btn.text("Advisor Queried");
+               btn.enabled(false);
+               textEdit.enabled(false);
+               textEdit.text("");
+
+               if (dmz.object.flag(hil, dmz.const.AdminFlagHandle)) {
+
+                  answerQuestion(question[0]);
+               }
+            }
+            else {
+
+               btn.text("Submit Question");
                btn.enabled(true);
                textEdit.enabled(true);
             }
@@ -515,31 +620,7 @@ function (objHandle, attr, value, prev) {
 
             VoteOpinionArea.text(dmz.object.text(objHandle, dmz.const.CommentHandle));
             TaskText.text(dmz.object.text(objHandle, dmz.const.TextHandle));
-            self.log.error("Vote approved open");
             VoteDialog.open(self, function (value) {});
-         }
-         else {
-
-            // Instructor denied vote.
-            linkHandle = dmz.object.linkHandle(dmz.const.VoteUndecidedHandle, objHandle, hil);
-            self.log.warn ("Denied Vote link handle:", linkHandle);
-            if (linkHandle) {
-
-               dmz.ui.messageBox.create(
-                  { type: dmz.ui.messageBox.Warning
-                  , text: "The following vote was denied: " +
-                       dmz.object.text(objHandle, dmz.const.TextHandle)
-                  , informativeText: dmz.object.text(objHandle, dmz.const.CommentHandle)
-                  , standardButtons: [dmz.ui.messageBox.Ok]
-                  , defaultButton: dmz.ui.messageBox.Ok
-                  }
-//                  , dmz.ui.mainWindow.centralWidget()
-               ).open(self, function (value) {
-
-                 dmz.object.unlink(linkHandle);
-                 dmz.object.link(dmz.const.VoteNoHandle, objHandle, hil);
-               });
-            }
          }
       }
    }
@@ -554,31 +635,81 @@ function (objHandle, attr, value, prev) {
      , undecHandleList = dmz.object.subLinks(objHandle, dmz.const.VoteUndecidedHandle)
      , yesHandleList = dmz.object.subLinks(objHandle, dmz.const.VoteYesHandle)
      , noHandleList = dmz.object.subLinks(objHandle, dmz.const.VoteNoHandle)
+     , advisorHandle
      , total
+     , widget
      ;
 
    if (voteHistoryWidgets[objHandle]) {
 
       voteHistoryWidgets[objHandle].text(1, getVoteStatus(objHandle));
    }
-   if (hil && type && type.isOfType(dmz.const.VoteType) &&
-      (dmz.object.flag(objHandle, dmz.const.VoteApprovedHandle) ||
-         dmz.object.flag(objHandle, dmz.const.VoteSubmittedHandle))) {
 
-      if (hilGroup &&
-         (dmz.object.linkHandle(dmz.const.GroupActiveVoteHandle, hilGroup, objHandle) ||
-            dmz.object.linkHandle(dmz.const.GroupCompletedVotesHandle, hilGroup, objHandle))) {
+   if (type && type.isOfType(dmz.const.VoteType)) {
 
-         advisorWidgets.forEach(function (widget) {
+      if (hil &&
+         (dmz.object.flag(objHandle, dmz.const.VoteApprovedHandle) ||
+            dmz.object.flag(objHandle, dmz.const.VoteSubmittedHandle))) {
 
-            var btn = widget.lookup("submitTaskButton")
-              , textEdit = widget.lookup("taskingText")
-              ;
-            btn.text(value ? "Advisors Tasked" : "Submit Task");
-            btn.enabled(!value);
-            textEdit.enabled(!value);
+         if (hilGroup &&
+            (dmz.object.linkHandle(dmz.const.GroupActiveVoteHandle, hilGroup, objHandle) ||
+               dmz.object.linkHandle(dmz.const.GroupCompletedVotesHandle, hilGroup, objHandle))) {
+
+            advisorWidgets.forEach(function (widget) {
+
+               var btn = widget.lookup("submitTaskButton")
+                 , textEdit = widget.lookup("taskingText")
+                 ;
+               btn.text(value ? "Advisors Tasked" : "Submit Task");
+               btn.enabled(!value);
+               textEdit.enabled(!value);
+               textEdit.text("");
+            });
+         }
+      }
+   }
+   else if (type && type.isOfType(dmz.const.QuestionType)) {
+
+      advisorHandle = dmz.object.superLinks(objHandle, dmz.const.AdvisorActiveQuestionHandle);
+      if (advisorHandle && advisorHandle[0]) {
+
+         if (!value && prev) {
+
+            dmz.object.unlink(
+               dmz.object.linkHandle(dmz.const.AdvisorActiveQuestionHandle, advisorHandle[0], objHandle));
+            dmz.object.link(dmz.const.AdvisorAnsweredQuestionHandle, advisorHandle[0], objHandle);
+         }
+      }
+   }
+});
+
+dmz.object.unlink.observe(self, dmz.const.AdvisorActiveQuestionHandle,
+function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
+
+   var widget
+     , groupHandle = getAdvisorGroupHandle(advisorHandle)
+     , btn
+     , textEdit
+     , index
+     ;
+
+   if (groupHandle &&
+      (groupHandle === getUserGroupHandle(dmz.object.hil())) &&
+      groupAdvisors[groupHandle] && groupAdvisors[groupHandle].length) {
+
+      index = groupAdvisors[groupHandle].indexOf(advisorHandle);
+      if (index !== -1) {
+
+         widget = advisorWidgets[index];
+         btn = widget.lookup("submitQuestionButton");
+         textEdit = widget.lookup("questionText");
+         if (btn && textEdit) {
+
+            btn.text("Submit Question");
+            btn.enabled(true);
+            textEdit.enabled(true);
             textEdit.text("");
-         });
+         }
       }
    }
 });
@@ -648,15 +779,56 @@ function (objHandle, attrHandle, value) {
      , vote
      , undecHandleList
      , linkHandle
+     , list
+     , question
+     , questionHandleList = []
      ;
 
    if (value && hilGroup) {
 
+      // Vote tree visibility
+      list = dmz.object.subLinks(hilGroup, dmz.const.GroupCompletedVotesHandle);
+      Object.keys(voteHistoryWidgets).forEach(function (voteHandle) {
+
+         voteHandle = parseInt(voteHandle);
+         dmz.object.flag(
+            voteHandle,
+            dmz.const.VisibleHandle,
+            (list && list.indexOf(voteHandle) !== -1));
+      });
+
+      // Question tree visibility
+      list = dmz.object.subLinks(hilGroup, dmz.const.AdvisorGroupHandle);
+      if (list) {
+
+         list.forEach(function (advisorHandle) {
+
+            var active = dmz.object.subLinks(advisorHandle, dmz.const.AdvisorActiveQuestionHandle)
+              , completed = dmz.object.subLinks(advisorHandle, dmz.const.AdvisorAnsweredQuestionHandle)
+              ;
+
+            if (active) { questionHandleList = questionHandleList.concat(active); }
+            if (completed) { questionHandleList = questionHandleList.concat(completed); }
+         });
+      }
+
+      Object.keys(questionHistoryWidgets).forEach(function (questionHandle) {
+
+         questionHandle = parseInt(questionHandle);
+         dmz.object.flag(
+            questionHandle,
+            dmz.const.VisibleHandle,
+            (questionHandleList && questionHandleList.indexOf(questionHandle) !== -1));
+      });
+
+      // Vote dialog
       vote = dmz.object.subLinks(hilGroup, dmz.const.GroupActiveVoteHandle);
       if (vote && vote[0]) {
 
          vote = vote[0];
          undecHandleList = dmz.object.subLinks(vote, dmz.const.VoteUndecidedHandle);
+
+         dmz.object.flag(vote, dmz.const.VisibleHandle, true);
 
          if (dmz.object.flag(vote, dmz.const.ActiveHandle)) {
 
@@ -724,6 +896,106 @@ dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, valu
    }
 });
 
+dmz.object.link.observe(self, dmz.const.CreatedByHandle,
+function (linkObjHandle, attrHandle, creationHandle, authorHandle) {
+
+   if (questionHistoryWidgets[creationHandle]) {
+
+      questionHistoryWidgets[creationHandle].text(1, dmz.const._getDisplayName(authorHandle));
+   }
+});
+
+dmz.object.link.observe(self, dmz.const.AdvisorActiveQuestionHandle,
+function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
+
+   var tree
+     , groupHandle = getAdvisorGroupHandle(advisorHandle)
+     , item
+     , widget
+     , btn
+     , textEdit
+     , isActive = (getUserGroupHandle(dmz.object.hil()) === groupHandle)
+     , index
+     ;
+
+   if (groupHandle && groupAdvisors[groupHandle] && groupAdvisors[groupHandle].length) {
+
+      index = groupAdvisors[groupHandle].indexOf(advisorHandle);
+      if (index !== -1) {
+
+         widget = advisorWidgets[index];
+         if (isActive) {
+
+            btn = widget.lookup("submitQuestionButton");
+            textEdit = widget.lookup("questionText");
+            if (btn && textEdit) {
+
+               btn.text("Advisor Queried");
+               btn.enabled(false);
+               textEdit.enabled(false);
+               textEdit.text("");
+            }
+         }
+
+         tree = widget.lookup("questionHistoryTree");
+         if (tree && !questionHistoryWidgets[questionHandle]) {
+
+            item = tree.add(
+               [ dmz.object.scalar(questionHandle, dmz.const.ID)
+               , dmz.const._getAuthorName(questionHandle)
+               , new Date (dmz.object.timeStamp(questionHandle, dmz.const.CreatedAtHandle) * 1000)
+               ]
+               , questionHandle
+               , 0
+               );
+
+            item.hidden(!dmz.object.flag(questionHandle, dmz.const.VisibleHandle));
+            questionHistoryWidgets[questionHandle] = item;
+         }
+      }
+      dmz.object.flag(questionHandle, dmz.const.VisibleHandle, isActive);
+   }
+});
+
+dmz.object.link.observe(self, dmz.const.AdvisorAnsweredQuestionHandle,
+function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
+
+   var tree
+     , groupHandle = getAdvisorGroupHandle(advisorHandle)
+     , item
+     , widget
+     , btn
+     , textEdit
+     , isActive = (getUserGroupHandle(dmz.object.hil()) === groupHandle)
+     , index
+     ;
+
+   if (groupHandle && groupAdvisors[groupHandle] && groupAdvisors[groupHandle].length) {
+
+      index = groupAdvisors[groupHandle].indexOf(advisorHandle);
+      if (index !== -1) {
+
+         widget = advisorWidgets[index];
+         tree = widget.lookup("questionHistoryTree");
+         if (tree && !questionHistoryWidgets[questionHandle]) {
+
+            item = tree.add(
+               [ dmz.object.scalar(questionHandle, dmz.const.ID)
+               , dmz.const._getAuthorName(questionHandle)
+               , new Date (dmz.object.timeStamp(questionHandle, dmz.const.CreatedAtHandle) * 1000)
+               ]
+               , questionHandle
+               , 0
+               );
+
+            item.hidden(!dmz.object.flag(questionHandle, dmz.const.VisibleHandle));
+            questionHistoryWidgets[questionHandle] = item;
+         }
+         dmz.object.flag(questionHandle, dmz.const.VisibleHandle, isActive);
+      }
+   }
+});
+
 dmz.object.link.observe(self, dmz.const.VoteAdvisorHandle,
 function (linkObjHandle, attrHandle, advisorHandle, voteHandle) {
 
@@ -742,7 +1014,7 @@ function (linkObjHandle, attrHandle, advisorHandle, voteHandle) {
       if (widget) {
 
          tree = widget.lookup("voteHistoryTree");
-         if (tree) {
+         if (tree && !voteHistoryWidgets[voteHandle]) {
 
             item = tree.add(
                [ dmz.object.scalar(voteHandle, dmz.const.ID)
@@ -755,18 +1027,29 @@ function (linkObjHandle, attrHandle, advisorHandle, voteHandle) {
                , voteHandle
                , 0
                );
-         }
-         if (item) {
 
+            item.hidden(!dmz.object.flag(voteHandle, dmz.const.VisibleHandle));
             if (advisorData[advisorHandle]) {
 
                advisorData[advisorHandle].voteWidgets.push(item);
             }
             voteHistoryWidgets[voteHandle] = item;
          }
-         else { self.log.error ("Error creating widget from:", voteHandle); }
+         dmz.object.flag(
+            voteHandle,
+            dmz.const.VisibleHandle,
+            (getUserGroupHandle(dmz.object.hil()) === groupHandle));
       }
+   }
+});
 
+dmz.object.flag.observe(self, dmz.const.VisibleHandle,
+function (objHandle, attr, value, prev) {
+
+   if (voteHistoryWidgets[objHandle]) { voteHistoryWidgets[objHandle].hidden(!value); }
+   else if (questionHistoryWidgets[objHandle]) {
+
+      questionHistoryWidgets[objHandle].hidden(!value);
    }
 });
 
@@ -798,9 +1081,6 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
             file = dmz.ui.graph.createPixmap(directory + file);
             if (file) { advisorData[advisorHandle].picture = file; }
          }
-
-         votes = dmz.object.subLinks(advisorHandle, dmz.const.VoteAdvisorHandle);
-         if (votes) { self.log.error ("AdvisorGroupHandle:", votes); }
       }
    }
 });
