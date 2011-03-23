@@ -257,6 +257,16 @@ function (linkObjHandle, attrHandle, gameHandle, userHandle) {
    }
 });
 
+dmz.object.link.observe(self, dmz.const.AdvisorGroupHandle,
+function (linkObjHandle, attrHandle, gameHandle, advisorHandle) {
+
+   if (advisorList.indexOf(advisorHandle) === -1) {
+
+      advisorComboBox.addItem(dmz.const.getDisplayName(advisorHandle));
+      advisorList.push(advisorHandle);
+   }
+});
+
 dmz.object.link.observe(self, dmz.const.GameUngroupedAdvisorsHandle,
 function (linkObjHandle, attrHandle, gameHandle, advisorHandle) {
 
@@ -264,6 +274,16 @@ function (linkObjHandle, attrHandle, gameHandle, advisorHandle) {
 
       advisorComboBox.addItem(dmz.const.getDisplayName(advisorHandle));
       advisorList.push(advisorHandle);
+   }
+});
+
+dmz.object.link.observe(self, dmz.const.LobbyistGroupHandle,
+function (linkObjHandle, attrHandle, gameHandle, lobbyistHandle) {
+
+   if (lobbyistList.indexOf(lobbyistHandle) === -1) {
+
+      lobbyistComboBox.addItem(dmz.const.getDisplayName(lobbyistHandle));
+      lobbyistList.push(lobbyistHandle);
    }
 });
 
