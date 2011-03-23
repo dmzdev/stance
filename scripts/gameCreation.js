@@ -165,7 +165,6 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 dmz.object.link.observe(self, dmz.const.GameGroupHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   self.log.warn ("GameGroupHandle link:", dmz.const.getDisplayName(subHandle));
    var name = dmz.const.getDisplayName(subHandle);
    groupList.push(subHandle);
    groupComboBox.addItem(name);
