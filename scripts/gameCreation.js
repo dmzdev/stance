@@ -19,16 +19,27 @@ var dmz =
    }
 
    // UI Elements
-   , editScenarioDialog = dmz.ui.loader.load("EditScenarioDialog.ui")
-   , groupStudentList = editScenarioDialog.lookup("groupStudentList")
-   , ungroupedStudentList = editScenarioDialog.lookup("ungroupedStudentList")
-   , groupComboBox = editScenarioDialog.lookup("groupComboBox")
-   , gameStateButton = editScenarioDialog.lookup("gameStateButton")
-   , advisorComboBox = editScenarioDialog.lookup("advisorList")
-   , lobbyistComboBox = editScenarioDialog.lookup("lobbyistList")
-   , forumComboBox = editScenarioDialog.lookup("forumList")
-   , forumAssocList = editScenarioDialog.lookup("forumAssocList")
-   , forumGroupList = editScenarioDialog.lookup("forumGroupList")
+   , editScenarioWidget = dmz.ui.loader.load("EditScenarioForm.ui")
+   , groupStudentList = editScenarioWidget.lookup("groupStudentList")
+   , ungroupedStudentList = editScenarioWidget.lookup("ungroupedStudentList")
+   , groupComboBox = editScenarioWidget.lookup("groupComboBox")
+   , gameStateButton = editScenarioWidget.lookup("gameStateButton")
+   , advisorComboBox = editScenarioWidget.lookup("advisorList")
+   , lobbyistComboBox = editScenarioWidget.lookup("lobbyistList")
+   , forumComboBox = editScenarioWidget.lookup("forumList")
+   , forumAssocList = editScenarioWidget.lookup("forumAssocList")
+   , forumGroupList = editScenarioWidget.lookup("forumGroupList")
+
+   , DockName = "Edit Scenario"
+   , dock = dmz.ui.mainWindow.createDock
+        (DockName
+         , { area: dmz.ui.consts.RightToolBarArea
+           , allowedAreas: [dmz.ui.consts.LeftToolBarArea, dmz.ui.consts.RightToolBarArea]
+           , floating: true
+           , visible: false
+           }
+        , editScenarioWidget
+        )
 
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
 
@@ -75,6 +86,8 @@ var dmz =
    , groupFromForum
 
    ;
+
+self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
 
 configToStudent = function (student) {
 
@@ -152,6 +165,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 dmz.object.link.observe(self, dmz.const.GameGroupHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
+   self.log.warn ("GameGroupHandle link:", dmz.const.getDisplayName(subHandle));
    var name = dmz.const.getDisplayName(subHandle);
    groupList.push(subHandle);
    groupComboBox.addItem(name);
@@ -413,12 +427,12 @@ groupFromForum = function (item) {
    }
 };
 
-editScenarioDialog.observe(self, "addForumGroupButton", "clicked", function () {
+editScenarioWidget.observe(self, "addForumGroupButton", "clicked", function () {
 
    groupToForum(forumGroupList.currentItem());
 });
 
-editScenarioDialog.observe(self, "removeForumGroupButton", "clicked", function () {
+editScenarioWidget.observe(self, "removeForumGroupButton", "clicked", function () {
 
    groupFromForum(forumAssocList.currentItem());
 });
@@ -447,14 +461,14 @@ forumComboBox.observe(self, "currentIndexChanged", function (index) {
 forumAssocList.observe(self, "itemActivated", groupFromForum);
 forumGroupList.observe(self, "itemActivated", groupToForum);
 
-editScenarioDialog.observe(self, "createForumButton", "clicked", function () {
+editScenarioWidget.observe(self, "createForumButton", "clicked", function () {
 
    dmz.ui.inputDialog.create(
       { title: "Create Forum"
       , label: "Forum Name:"
       , text: ""
       }
-      , editScenarioDialog
+      , editScenarioWidget
       ).open(self, function (value, name) {
 
          var handle;
@@ -468,7 +482,7 @@ editScenarioDialog.observe(self, "createForumButton", "clicked", function () {
       });
 });
 
-editScenarioDialog.observe(self, "deleteForumButton", "clicked", function () {
+editScenarioWidget.observe(self, "deleteForumButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Warning
@@ -477,7 +491,7 @@ editScenarioDialog.observe(self, "deleteForumButton", "clicked", function () {
       , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
       , defaultButton: dmz.ui.messageBox.Cancel
       }
-      , editScenarioDialog
+      , editScenarioWidget
    ).open(self, function (value) {
 
       var handle
@@ -525,7 +539,7 @@ setup = function () {
          , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
          , defaultButton: dmz.ui.messageBox.Cancel
          }
-         , editScenarioDialog
+         , editScenarioWidget
          ).open(self, function (value) {
 
             if (value) {
@@ -562,7 +576,7 @@ setup = function () {
       if (pictureList.count()) { pictureList.currentIndex(0); }
    }
 
-   editScenarioDialog.observe(self, "editAdvisorButton", "clicked", function () {
+   editScenarioWidget.observe(self, "editAdvisorButton", "clicked", function () {
 
       var groupIndex
         , groupHandle
@@ -625,7 +639,7 @@ setup = function () {
       });
    }
 
-   editScenarioDialog.observe(self, "editLobbyistButton", "clicked", function () {
+   editScenarioWidget.observe(self, "editLobbyistButton", "clicked", function () {
 
       var groupIndex
         , groupHandle
@@ -684,16 +698,14 @@ setup = function () {
          lobbyistPictureLabel.pixmap(lobbyistPictureObjects[index]);
       }
    });
-
-   editScenarioDialog.open(self, function (result, dialog) {});
 };
 
-editScenarioDialog.observe(self, "addStudentButton", "clicked", function () {
+editScenarioWidget.observe(self, "addStudentButton", "clicked", function () {
 
    userToGroup(ungroupedStudentList.currentItem());
 });
 
-editScenarioDialog.observe(self, "removeStudentButton", "clicked", function () {
+editScenarioWidget.observe(self, "removeStudentButton", "clicked", function () {
 
    userFromGroup(groupStudentList.currentItem());
 });
@@ -701,14 +713,14 @@ editScenarioDialog.observe(self, "removeStudentButton", "clicked", function () {
 groupStudentList.observe(self, "itemActivated", userFromGroup);
 ungroupedStudentList.observe(self, "itemActivated", userToGroup);
 
-editScenarioDialog.observe(self, "addGroupButton", "clicked", function () {
+editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
 
    dmz.ui.inputDialog.create(
       { title: "Create New Group"
       , label: "Group Name:"
       , text: ""
       }
-      , editScenarioDialog
+      , editScenarioWidget
    ).open(self, function (value, groupName) {
 
       var group;
@@ -722,7 +734,7 @@ editScenarioDialog.observe(self, "addGroupButton", "clicked", function () {
    });
 });
 
-editScenarioDialog.observe(self, "createPlayerButton", "clicked", function () {
+editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
@@ -744,7 +756,7 @@ editScenarioDialog.observe(self, "createPlayerButton", "clicked", function () {
    });
 });
 
-editScenarioDialog.observe(self, "deleteGameButton", "clicked", function () {
+editScenarioWidget.observe(self, "deleteGameButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Warning
@@ -753,7 +765,7 @@ editScenarioDialog.observe(self, "deleteGameButton", "clicked", function () {
       , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
       , defaultButton: dmz.ui.messageBox.Cancel
       }
-      , editScenarioDialog
+      , editScenarioWidget
    ).open(self, function (value) {
 
       if (value) {
@@ -765,7 +777,7 @@ editScenarioDialog.observe(self, "deleteGameButton", "clicked", function () {
             , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
             , defaultButton: dmz.ui.messageBox.Cancel
             }
-            , editScenarioDialog
+            , editScenarioWidget
          ).open(self, function (value) {
 
             if (value) { dmz.object.destroy(CurrentGameHandle); }
@@ -774,7 +786,7 @@ editScenarioDialog.observe(self, "deleteGameButton", "clicked", function () {
    });
 });
 
-editScenarioDialog.observe(self, "removeGroupButton", "clicked", function () {
+editScenarioWidget.observe(self, "removeGroupButton", "clicked", function () {
 
    var index = groupComboBox.currentIndex()
      , groupHandle = groupList[index]
@@ -799,7 +811,7 @@ editScenarioDialog.observe(self, "removeGroupButton", "clicked", function () {
    dmz.object.destroy(groupHandle);
 });
 
-editScenarioDialog.observe(self, "allGroupButton", "clicked", function () {
+editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 
    var groupListDialog = dmz.ui.loader.load("GroupListDialog.ui")
      , listLayout = groupListDialog.lookup("vLayout")
@@ -852,14 +864,14 @@ editScenarioDialog.observe(self, "allGroupButton", "clicked", function () {
    });
 });
 
-editScenarioDialog.observe(self, "addLobbyistButton", "clicked", function () {
+editScenarioWidget.observe(self, "addLobbyistButton", "clicked", function () {
 
    dmz.ui.inputDialog.create(
       { title: "Create New Lobbyist"
       , label: "Lobbyist Name:"
       , text: ""
       }
-      , editScenarioDialog
+      , editScenarioWidget
       ).open(self, function (value, name) {
 
          var handle;
@@ -873,7 +885,7 @@ editScenarioDialog.observe(self, "addLobbyistButton", "clicked", function () {
       });
 });
 
-editScenarioDialog.observe(self, "removeLobbyistButton", "clicked", function () {
+editScenarioWidget.observe(self, "removeLobbyistButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Warning
@@ -882,7 +894,7 @@ editScenarioDialog.observe(self, "removeLobbyistButton", "clicked", function () 
       , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
       , defaultButton: dmz.ui.messageBox.Cancel
       }
-      , editScenarioDialog
+      , editScenarioWidget
    ).open(self, function (value) {
 
       var index = lobbyistComboBox.currentIndex()
@@ -899,14 +911,14 @@ editScenarioDialog.observe(self, "removeLobbyistButton", "clicked", function () 
    });
 });
 
-editScenarioDialog.observe(self, "addAdvisorButton", "clicked", function () {
+editScenarioWidget.observe(self, "addAdvisorButton", "clicked", function () {
 
    dmz.ui.inputDialog.create(
       { title: "Create New Advisor"
       , label: "Advisor Name:"
       , text: ""
       }
-      , editScenarioDialog
+      , editScenarioWidget
       ).open(self, function (value, name) {
 
          var handle;
@@ -921,7 +933,7 @@ editScenarioDialog.observe(self, "addAdvisorButton", "clicked", function () {
       });
 });
 
-editScenarioDialog.observe(self, "removeAdvisorButton", "clicked", function () {
+editScenarioWidget.observe(self, "removeAdvisorButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Warning
@@ -930,7 +942,7 @@ editScenarioDialog.observe(self, "removeAdvisorButton", "clicked", function () {
       , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
       , defaultButton: dmz.ui.messageBox.Cancel
       }
-      , editScenarioDialog
+      , editScenarioWidget
    ).open(self, function (value) {
 
       var index = advisorComboBox.currentIndex()
@@ -947,7 +959,7 @@ editScenarioDialog.observe(self, "removeAdvisorButton", "clicked", function () {
    });
 });
 
-editScenarioDialog.observe(self, "removePlayerButton", "clicked", function () {
+editScenarioWidget.observe(self, "removePlayerButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Info
@@ -955,11 +967,11 @@ editScenarioDialog.observe(self, "removePlayerButton", "clicked", function () {
       , standardButtons: [dmz.ui.messageBox.Ok]
       , defaultButton: dmz.ui.messageBox.Ok
       }
-      , editScenarioDialog
+      , editScenarioWidget
    ).open(self, function (value) {});
 });
 
-editScenarioDialog.observe(self, "importStudentListButton", "clicked", function () {
+editScenarioWidget.observe(self, "importStudentListButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Info
@@ -967,11 +979,11 @@ editScenarioDialog.observe(self, "importStudentListButton", "clicked", function 
       , standardButtons: [dmz.ui.messageBox.Ok]
       , defaultButton: dmz.ui.messageBox.Ok
       }
-      , editScenarioDialog
+      , editScenarioWidget
    ).open(self, function (value) {});
 });
 
-editScenarioDialog.observe(self, "generateReportButton", "clicked", function () {
+editScenarioWidget.observe(self, "generateReportButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Info
@@ -979,11 +991,11 @@ editScenarioDialog.observe(self, "generateReportButton", "clicked", function () 
       , standardButtons: [dmz.ui.messageBox.Ok]
       , defaultButton: dmz.ui.messageBox.Ok
       }
-      , editScenarioDialog
+      , editScenarioWidget
    ).open(self, function (value) {});
 });
 
-editScenarioDialog.observe(self, "gameStatsButton", "clicked", function () {
+editScenarioWidget.observe(self, "gameStatsButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Info
@@ -991,6 +1003,6 @@ editScenarioDialog.observe(self, "gameStatsButton", "clicked", function () {
       , standardButtons: [dmz.ui.messageBox.Ok]
       , defaultButton: dmz.ui.messageBox.Ok
       }
-      , editScenarioDialog
+      , editScenarioWidget
    ).open(self, function (value) {});
 });
