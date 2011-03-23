@@ -66,7 +66,7 @@ dmz.object.create.observe(self, function (handle, objType) {
 
       if (objType.isOfType(dmz.const.UserType)) {
 
-         list.addItem(dmz.const.getDisplayName(handle), handle);
+         list.addItem(dmz.object.text(handle, dmz.const.NameHandle))
          UserList.push(handle);
       }
       else if (objType.isOfType(dmz.const.GroupType)) {
@@ -91,7 +91,7 @@ dmz.object.create.observe(self, function (handle, objType) {
 
       if (selected) {
 
-         LogoutMessage.send();
+//         LogoutMessage.send();
 
          handle = selected.data();
          username = selected.text();

@@ -265,17 +265,9 @@ updateAdvisor = function (module, idx) {
         , question
         ;
 
-      self.log.warn ("Update " + idx + ":"
-         , "hil: " + hil
-         , "hilGroup: " + hilGroup
-         , "gA[hG]: [" + groupAdvisors[hilGroup] + "]"
-         , "len: " + (groupAdvisors[hilGroup] ? groupAdvisors[hilGroup].length : 0)
-         );
-
       if (hil && hilGroup && groupAdvisors[hilGroup] && (idx < groupAdvisors[hilGroup].length)) {
 
          advisorHandle = groupAdvisors[hilGroup][idx];
-         self.log.warn ("Update " + idx + ":", "aH:", advisorHandle);
          if (advisorHandle) {
 
             data = advisorData[advisorHandle];
@@ -998,7 +990,7 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
             item = tree.add(
                [ dmz.object.scalar(questionHandle, dmz.const.ID)
                , dmz.const.getAuthorName(questionHandle)
-               , new Date (dmz.object.timeStamp(questionHandle, dmz.const.CreatedAtHandle) * 1000)
+               , dmz.util.timeStampToDate(dmz.object.timeStamp(questionHandle, dmz.const.CreatedAtHandle) * 1000)
                ]
                , questionHandle
                , 0
@@ -1022,13 +1014,15 @@ function (linkObjHandle, attrHandle, advisorHandle, voteHandle) {
      , tree
      , widget
      , groupHandle = getAdvisorGroupHandle(advisorHandle)
+     , index
      ;
 
    if (groupHandle && groupAdvisors[groupHandle] && groupAdvisors[groupHandle].length) {
 
-      widget = advisorWidgets[groupAdvisors[groupHandle].length - 1];
-      if (widget) {
+      index = groupAdvisors[groupHandle].indexOf(advisorHandle);
+      if (index !== -1) {
 
+         widget = advisorWidgets[index];
          tree = widget.lookup("voteHistoryTree");
          if (tree && !voteHistoryWidgets[voteHandle]) {
 
@@ -1038,7 +1032,7 @@ function (linkObjHandle, attrHandle, advisorHandle, voteHandle) {
                , yesHandleList ? yesHandleList.length : 0
                , noHandleList ? noHandleList.length : 0
                , undecHandleList ? undecHandleList.length : 0
-               , new Date (dmz.object.timeStamp(voteHandle, dmz.const.CreatedAtHandle) * 1000)
+               , dmz.util.timeStampToDate(dmz.object.timeStamp(voteHandle, dmz.const.CreatedAtHandle))
                ]
                , voteHandle
                , 0

@@ -50,7 +50,7 @@ dmz.object.create.observe(self, function (handle, objType) {
       else if (objType.isOfType(dmz.const.ForumType)) {
 
          ForumList[handle] =
-            { widget: tree.add([dmz.const._getDisplayName(handle), "", "", ""])
+            { widget: tree.add([dmz.const.getDisplayName(handle), "", "", ""])
             };
 
          ForumList[handle].widget.data(0, handle);
@@ -101,7 +101,7 @@ dmz.object.link.observe(self, dmz.const.CreatedByHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    var post = PostList[superHandle];
-   if (post && post.widget) { post.widget.text(1,dmz.const._getDisplayName(subHandle)); }
+   if (post && post.widget) { post.widget.text(1,dmz.const.getDisplayName(subHandle)); }
 });
 
 dmz.object.link.observe(self, dmz.const.ParentHandle,
@@ -109,7 +109,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    var child = PostList[superHandle]
      , parent = PostList[subHandle] ? PostList[subHandle] : ForumList[subHandle]
-     , author = dmz.const._getAuthorName(superHandle)
+     , author = dmz.const.getAuthorName(superHandle)
      , title = dmz.object.text(superHandle, dmz.const.TitleHandle)
      , text = dmz.object.text(superHandle, dmz.const.TextHandle)
      , createdAt = dmz.object.timeStamp(superHandle, dmz.const.CreatedAtHandle)

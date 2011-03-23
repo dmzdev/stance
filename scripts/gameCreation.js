@@ -468,6 +468,7 @@ editScenarioDialog.observe(self, "deleteForumButton", "clicked", function () {
          index = forumComboBox.currentIndex();
          handle = forumList[index];
          if (handle) { dmz.object.destroy(handle); }
+         forumComboBox.remove(index);
       }
    });
 });
