@@ -91,7 +91,7 @@ dmz.object.create.observe(self, function (handle, objType) {
 
       if (selected) {
 
-//         LogoutMessage.send();
+         LogoutMessage.send();
 
          handle = selected.data();
          username = selected.text();
