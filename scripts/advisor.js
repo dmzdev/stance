@@ -51,7 +51,6 @@ var dmz =
    , approveVote
    , answerQuestion
    , fillList
-   , getUserGroupHandle
    , getVoteGroupHandle
    , getAdvisorGroupHandle
    , getVoteStatus
@@ -74,19 +73,6 @@ dmz.object.timeStamp.observe(self, dmz.const.CreatedAtHandle, function (objHandl
       questionHistoryWidgets[objHandle].text(2, dmz.util.timeStampToDate(value));
    }
 });
-
-getUserGroupHandle = function (userHandle) {
-
-   var userGroupHandle = 0
-     , retval = 0
-     ;
-   if (userHandle) {
-
-      userGroupHandle = dmz.object.superLinks(userHandle, dmz.const.GroupMembersHandle);
-      if (userGroupHandle && userGroupHandle[0]) { retval = userGroupHandle[0]; }
-   }
-   return retval;
-};
 
 getVoteGroupHandle = function (voteHandle) {
 
@@ -256,7 +242,7 @@ updateAdvisor = function (module, idx) {
 
       var handle
         , hil = dmz.object.hil()
-        , hilGroup = getUserGroupHandle(hil)
+        , hilGroup = dmz.const.getUserGroupHandle(hil)
         , advisorHandle
         , data
         , btn
@@ -639,7 +625,7 @@ function (objHandle, attr, value, prev) {
 
    var type = dmz.object.type(objHandle)
      , hil = dmz.object.hil()
-     , hilGroup = getUserGroupHandle(hil)
+     , hilGroup = dmz.const.getUserGroupHandle(hil)
      , undecHandleList = dmz.object.subLinks(objHandle, dmz.const.VoteUndecidedHandle)
      , yesHandleList = dmz.object.subLinks(objHandle, dmz.const.VoteYesHandle)
      , noHandleList = dmz.object.subLinks(objHandle, dmz.const.VoteNoHandle)
@@ -702,7 +688,7 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
      ;
 
    if (groupHandle &&
-      (groupHandle === getUserGroupHandle(dmz.object.hil())) &&
+      (groupHandle === dmz.const.getUserGroupHandle(dmz.object.hil())) &&
       groupAdvisors[groupHandle] && groupAdvisors[groupHandle].length) {
 
       index = groupAdvisors[groupHandle].indexOf(advisorHandle);
@@ -726,7 +712,7 @@ dmz.object.flag.observe(self, dmz.const.VoteSubmittedHandle,
 function (objHandle, attr, value, prev) {
 
    var hil = dmz.object.hil()
-     , hilGroup = getUserGroupHandle(hil)
+     , hilGroup = dmz.const.getUserGroupHandle(hil)
      ;
 
    if (voteHistoryWidgets[objHandle]) {
@@ -747,7 +733,7 @@ function (objHandle, attr, value, prev) {
 dmz.object.link.observe(self, dmz.const.GroupActiveVoteHandle,
 function (linkObjHandle, attrHandle, groupHandle, voteHandle) {
 
-   if (groupHandle && (groupHandle === getUserGroupHandle(dmz.object.hil()))) {
+   if (groupHandle && (groupHandle === dmz.const.getUserGroupHandle(dmz.object.hil()))) {
 
       advisorWidgets.forEach(function (widget) {
 
@@ -765,7 +751,7 @@ function (linkObjHandle, attrHandle, groupHandle, voteHandle) {
 dmz.object.unlink.observe(self, dmz.const.GroupActiveVoteHandle,
 function (linkObjHandle, attrHandle, groupHandle, voteHandle) {
 
-   if (groupHandle && (groupHandle === getUserGroupHandle(dmz.object.hil()))) {
+   if (groupHandle && (groupHandle === dmz.const.getUserGroupHandle(dmz.object.hil()))) {
 
       advisorWidgets.forEach(function (widget) {
 
@@ -783,7 +769,7 @@ function (linkObjHandle, attrHandle, groupHandle, voteHandle) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   var hilGroup = getUserGroupHandle(objHandle)
+   var hilGroup = dmz.const.getUserGroupHandle(objHandle)
      , vote
      , undecHandleList
      , linkHandle
@@ -890,7 +876,7 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
 dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
 
    var index
-     , hilGroup = getUserGroupHandle(dmz.object.hil())
+     , hilGroup = dmz.const.getUserGroupHandle(dmz.object.hil())
      ;
 
    if (advisorData[handle]) { advisorData[handle].name = value; }
@@ -922,7 +908,7 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
      , widget
      , btn
      , textEdit
-     , isActive = (getUserGroupHandle(dmz.object.hil()) === groupHandle)
+     , isActive = (dmz.const.getUserGroupHandle(dmz.object.hil()) === groupHandle)
      , index
      ;
 
@@ -974,7 +960,7 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
      , widget
      , btn
      , textEdit
-     , isActive = (getUserGroupHandle(dmz.object.hil()) === groupHandle)
+     , isActive = (dmz.const.getUserGroupHandle(dmz.object.hil()) === groupHandle)
      , index
      ;
 
@@ -1048,7 +1034,7 @@ function (linkObjHandle, attrHandle, advisorHandle, voteHandle) {
          dmz.object.flag(
             voteHandle,
             dmz.const.VisibleHandle,
-            (getUserGroupHandle(dmz.object.hil()) === groupHandle));
+            (dmz.const.getUserGroupHandle(dmz.object.hil()) === groupHandle));
       }
    }
 });
@@ -1092,7 +1078,7 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 dmz.object.text.observe(self, dmz.const.BioHandle, function (handle, attr, value) {
 
    var index
-     , hilGroup = getUserGroupHandle(dmz.object.hil())
+     , hilGroup = dmz.const.getUserGroupHandle(dmz.object.hil())
      ;
 
    if (advisorData[handle]) { advisorData[handle].bio = value; }

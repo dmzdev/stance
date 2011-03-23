@@ -73,11 +73,13 @@ var dmz =
       { getDisplayName: false
       , getAuthorName: false
       , getAuthorHandle: false
+      , getUserGroupHandle: false
       }
 
    , getDisplayName
    , getAuthorHandle
    , getAuthorName
+   , getUserGroupHandle
    ;
 
 
@@ -102,9 +104,23 @@ getAuthorHandle = function (handle) {
 
 getAuthorName = function (handle) { return getDisplayName(getAuthorHandle(handle)); }
 
+getUserGroupHandle = function (userHandle) {
+
+   var userGroupHandle = 0
+     , retval = 0
+     ;
+   if (userHandle) {
+
+      userGroupHandle = dmz.object.superLinks(userHandle, Handles.GroupMembersHandle);
+      if (userGroupHandle && userGroupHandle[0]) { retval = userGroupHandle[0]; }
+   }
+   return retval;
+};
+
 Functions.getDisplayName = getDisplayName;
 Functions.getAuthorHandle = getAuthorHandle;
 Functions.getAuthorName = getAuthorName;
+Functions.getUserGroupHandle = getUserGroupHandle;
 
 (function () {
 

@@ -125,13 +125,14 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
       hil = dmz.object.hil();
       if (hil) {
 
-         postsRead = dmz.object.subLinks(hil, dmz.const.PostVisitedHandled);
-         if (postsRead && (postsRead.indexOf(child) !== -1)) {
+         postsRead = dmz.object.subLinks(hil, dmz.const.PostVisitedHandle);
+         if (postsRead && (postsRead.indexOf(superHandle) !== -1)) {
 
             backgroundBrush = ReadPostBrush;
          }
       }
       child.widget.background(0, backgroundBrush);
+      parent.widget.expand();
       tree.resizeColumnToContents(0);
       tree.resizeColumnToContents(1);
    }
@@ -150,8 +151,8 @@ function (objHandle, attrHandle, value) {
    if (value && type && type.isOfType(dmz.const.UserType)) {
 
       postsRead = dmz.object.subLinks(objHandle, dmz.const.PostVisitedHandle);
-      currGroup = dmz.object.superLinks(objHandle, dmz.const.GroupMembersHandle);
-      if (currGroup && currGroup[0]) {
+      currGroup = dmz.const.getUserGroupHandle(objHandle);
+      if (currGroup) {
 
          Object.keys(ForumList).forEach(function (forumHandle) {
 
@@ -162,7 +163,7 @@ function (objHandle, attrHandle, value) {
             dmz.object.flag(
                forumHandle,
                dmz.const.VisibleHandle,
-               GroupList[currGroup[0]].indexOf(forumHandle) !== -1);
+               GroupList[currGroup].indexOf(forumHandle) !== -1);
          });
       }
 
@@ -240,12 +241,13 @@ tree.observe (self, "currentItemChanged", function (curr) {
       text = curr.text(3);
       textBox.text (text ? text : " ");
 
-      if (hil && !dmz.object.linkHandle(dmz.const.PostVisitedHandle, hil, currHandle) &&
-         type.isOfType(dmz.const.PostType)) {
+      if (hil && type.isOfType(dmz.const.PostType) &&
+         !dmz.object.linkHandle(dmz.const.PostVisitedHandle, hil, currHandle)) {
 
          dmz.object.link(dmz.const.PostVisitedHandle, hil, currHandle);
-         curr.background(0, ReadPostBrush);
       }
+
+      curr.background(0, ReadPostBrush);
 
       if (type.isOfType(dmz.const.ForumType)) {
 
@@ -311,6 +313,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
                   dmz.object.text(post, dmz.const.TitleHandle, title);
                   dmz.object.text(post, dmz.const.TextHandle, text);
                   dmz.object.timeStamp(post, dmz.const.CreatedAtHandle, dmz.time.getFrameTime());
+                  dmz.object.link(dmz.const.PostVisitedHandle, author, post);
                   dmz.object.link(dmz.const.ParentHandle, post, parentHandle);
                   dmz.object.link(dmz.const.CreatedByHandle, post, author);
                   dmz.object.activate(post);
