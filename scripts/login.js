@@ -76,8 +76,8 @@ LoginSuccessMessage.subscribe(self, function (data) {
                 [ { serverDate: Date.parse("3/15/11")
                   , startHour: 6
                   , endHour: 18
-                  , startDate: Date.parse("1/1/12")
-                  , endDate: Date.parse("1/1/12")
+                  , currentDate: Date.parse("1/1/12")
+                  , nextDate: Date.parse("1/1/12")
                   }
                 ,
                   { serverDate: Date.parse("3/16/11")
