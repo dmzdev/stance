@@ -86,13 +86,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="pictureList">
-       <item>
-        <property name="text">
-         <string>--Default--</string>
-        </property>
-       </item>
-      </widget>
+      <widget class="QComboBox" name="pictureList"/>
      </item>
      <item row="2" column="0" colspan="2">
       <widget class="QLabel" name="label_3">

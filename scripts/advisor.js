@@ -15,7 +15,9 @@ var dmz =
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
    , module: require("dmz/runtime/module")
+   , resources: require("dmz/runtime/resources")
    , time: require("dmz/runtime/time")
+   , util: require("dmz/types/util")
    }
 
    // UI Elements
@@ -63,8 +65,14 @@ dmz.object.scalar.observe(self, dmz.const.ID, function (objHandle, attr, value) 
 
 dmz.object.timeStamp.observe(self, dmz.const.CreatedAtHandle, function (objHandle, attr, value) {
 
-   if (voteHistoryWidgets[objHandle]) { voteHistoryWidgets[objHandle].text(5, value * 1000); }
-   else if (questionHistoryWidgets[objHandle]) { questionHistoryWidgets[objHandle].text(2, value * 1000); }
+   if (voteHistoryWidgets[objHandle]) {
+
+      voteHistoryWidgets[objHandle].text(5, dmz.util.timeStampToDate(value));
+   }
+   else if (questionHistoryWidgets[objHandle]) {
+
+      questionHistoryWidgets[objHandle].text(2, dmz.util.timeStampToDate(value));
+   }
 });
 
 getUserGroupHandle = function (userHandle) {
@@ -257,9 +265,17 @@ updateAdvisor = function (module, idx) {
         , question
         ;
 
+      self.log.warn ("Update " + idx + ":"
+         , "hil: " + hil
+         , "hilGroup: " + hilGroup
+         , "gA[hG]: [" + groupAdvisors[hilGroup] + "]"
+         , "len: " + (groupAdvisors[hilGroup] ? groupAdvisors[hilGroup].length : 0)
+         );
+
       if (hil && hilGroup && groupAdvisors[hilGroup] && (idx < groupAdvisors[hilGroup].length)) {
 
          advisorHandle = groupAdvisors[hilGroup][idx];
+         self.log.warn ("Update " + idx + ":", "aH:", advisorHandle);
          if (advisorHandle) {
 
             data = advisorData[advisorHandle];
@@ -392,7 +408,7 @@ fillList = function (uiList, handleList) {
 
          handleList.forEach(function (userHandle) {
 
-            UserVoteListItems[userHandle] = uiList.addItem(dmz.const._getDisplayName(userHandle));
+            UserVoteListItems[userHandle] = uiList.addItem(dmz.const.getDisplayName(userHandle));
          });
       }
    }
@@ -901,7 +917,7 @@ function (linkObjHandle, attrHandle, creationHandle, authorHandle) {
 
    if (questionHistoryWidgets[creationHandle]) {
 
-      questionHistoryWidgets[creationHandle].text(1, dmz.const._getDisplayName(authorHandle));
+      questionHistoryWidgets[creationHandle].text(1, dmz.const.getDisplayName(authorHandle));
    }
 });
 
@@ -942,8 +958,8 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
 
             item = tree.add(
                [ dmz.object.scalar(questionHandle, dmz.const.ID)
-               , dmz.const._getAuthorName(questionHandle)
-               , new Date (dmz.object.timeStamp(questionHandle, dmz.const.CreatedAtHandle) * 1000)
+               , dmz.const.getAuthorName(questionHandle)
+               , dmz.util.timeStampToDate(dmz.object.timeStamp(questionHandle, dmz.const.CreatedAtHandle))
                ]
                , questionHandle
                , 0
@@ -981,7 +997,7 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
 
             item = tree.add(
                [ dmz.object.scalar(questionHandle, dmz.const.ID)
-               , dmz.const._getAuthorName(questionHandle)
+               , dmz.const.getAuthorName(questionHandle)
                , new Date (dmz.object.timeStamp(questionHandle, dmz.const.CreatedAtHandle) * 1000)
                ]
                , questionHandle
@@ -1056,10 +1072,7 @@ function (objHandle, attr, value, prev) {
 dmz.object.link.observe(self, dmz.const.AdvisorGroupHandle,
 function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 
-   var file
-     , directory
-     , votes
-     ;
+   var file;
    if (!groupAdvisors[groupHandle]) { groupAdvisors[groupHandle] = []; }
    if (groupAdvisors[groupHandle].length <= advisorCount) {
 
@@ -1068,19 +1081,16 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 
          advisorData[advisorHandle] =
             { bio: dmz.object.text(advisorHandle, dmz.const.BioHandle)
-            , name: dmz.const._getDisplayName(advisorHandle)
+            , name: dmz.const.getDisplayName(advisorHandle)
             , picture: false
             , taskFunction: false
             , voteWidgets: []
             };
 
-         file = dmz.object.text(advisorHandle, dmz.const.PictureFileNameHandle);
-         directory = dmz.object.text(advisorHandle, dmz.const.PictureDirectoryNameHandle);
-         if (file && file.length && directory && directory.length) {
-
-            file = dmz.ui.graph.createPixmap(directory + file);
-            if (file) { advisorData[advisorHandle].picture = file; }
-         }
+         file =
+            dmz.ui.graph.createPixmap(
+               dmz.resources.findFile(dmz.object.text(advisorHandle, dmz.const.PictureHandle)));
+         if (file) { advisorData[advisorHandle].picture = file; }
       }
    }
 });
@@ -1102,66 +1112,16 @@ dmz.object.text.observe(self, dmz.const.BioHandle, function (handle, attr, value
    }
 });
 
-dmz.object.text.observe(self, dmz.const.PictureDirectoryNameHandle,
+dmz.object.text.observe(self, dmz.const.PictureHandle,
 function (handle, attr, value) {
 
-   var index
-     , file
-     , hilGroup
-     ;
-
+   var pic;
    if (advisorData[handle]) {
 
-      file = dmz.object.text(handle, dmz.const.PictureFileNameHandle)
-      if (file && file.length) {
-
-         file = dmz.ui.graph.createPixmap(value + file);
-         if (file) {
-
-            advisorData[handle].picture = file;
-            hilGroup = getUserGroupHandle(dmz.object.hil());
-            if (hilGroup && groupAdvisors[hilGroup]) {
-
-               index = groupAdvisors[hilGroup].indexOf(handle);
-               if ((index !== -1) && (index < advisorCount)) {
-
-                  advisorWidgets[index].lookup("pictureLabel").pixmap(file);
-               }
-            }
-         }
-      }
+      advisorData[handle].picture =
+         dmz.ui.graph.createPixmap(dmz.resources.findFile(value));
    }
-});
-
-dmz.object.text.observe(self, dmz.const.PictureFileNameHandle,
-function (handle, attr, value) {
-
-   var index
-     , file
-     , hilGroup = getUserGroupHandle(dmz.object.hil())
-     ;
-
-   if (advisorData[handle]) {
-
-      file = dmz.object.text(handle, dmz.const.PictureDirectoryNameHandle)
-      if (file && file.length) {
-
-         file = dmz.ui.graph.createPixmap(file + value);
-         if (file) {
-
-            advisorData[handle].picture = file;
-            if (hilGroup && groupAdvisors[hilGroup]) {
-
-               index = groupAdvisors[hilGroup].indexOf(handle);
-               if ((index !== -1) && (index < advisorCount)) {
-
-                  advisorWidgets[index].lookup("pictureLabel").pixmap(file);
-               }
-            }
-         }
-      }
-   }
-});
+})
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 

@@ -21,9 +21,6 @@
       <object-type-set>
          <!-- <object-type name="intel"/> -->
       </object-type-set>
-      <attribute name="Active">
-         <mask name="flag"/>
-      </attribute>
       <attribute name="server_time">
          <mask name="timestamp"/>
       </attribute>

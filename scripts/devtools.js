@@ -66,13 +66,13 @@ dmz.object.create.observe(self, function (handle, objType) {
 
       if (objType.isOfType(dmz.const.UserType)) {
 
-         list.addItem(dmz.const._getDisplayName(handle), handle);
+         list.addItem(dmz.const.getDisplayName(handle), handle);
          UserList.push(handle);
       }
       else if (objType.isOfType(dmz.const.GroupType)) {
 
          GroupList.push(handle);
-         groups.addItem(dmz.const._getDisplayName(handle));
+         groups.addItem(dmz.const.getDisplayName(handle));
       }
    }
 });
@@ -109,7 +109,7 @@ dmz.object.create.observe(self, function (handle, objType) {
 
 //            dmz.object.flag(handle, dmz.object.HILAttribute, handle === data);
 //         });
-		groups.currentIndex(0); // Not bothering to look up
+         groups.currentIndex(0); // Not bothering to look up
       }
    });
 

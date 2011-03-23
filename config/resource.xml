@@ -44,6 +44,16 @@
    <resource name="Riot" file="Riot-sm.png">
       <webMap file="Riot.png"/>
    </resource>
+<!--   <resource name="adv_" file=""/> -->
+   <resource name="adv_0" file="sad200.jpg"/>
+   <resource name="adv_1" file="silly200.png"/>
+   <resource name="adv_2" file="firefox200.jpg"/>
+   <resource name="adv_3" file="handi200.jpg"/>
+<!--   <resource name="lob_" file=""/> -->
+   <resource name="lob_0" file="sad200.jpg"/>
+   <resource name="lob_1" file="silly200.png"/>
+   <resource name="lob_2" file="firefox200.jpg"/>
+   <resource name="lob_3" file="handi200.jpg"/>
 </resource-map>
 </runtime>
 </dmz>

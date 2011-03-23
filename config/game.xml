@@ -30,6 +30,19 @@
          </advisor-list>
       </group>
    </group-list>
+   <advisor-pictures>
+      <picture name="adv_0"/>
+      <picture name="adv_1"/>
+      <picture name="adv_2"/>
+      <picture name="adv_3"/>
+   </advisor-pictures>
+   <lobbyist-pictures>
+      <picture name="lob_0"/>
+      <picture name="lob_1"/>
+      <picture name="lob_2"/>
+      <picture name="lob_3"/>
+   </lobbyist-pictures>   
+<!--   
    <advisor-picture-list path="./assets/" default="sad200.jpg">
       <picture name="Sally Fice" file="silly200.png"/>
       <picture name="Fore Fix" file="firefox200.jpg"/>
@@ -40,6 +53,7 @@
       <picture name="Fore Fix" file="firefox200.jpg"/>
       <picture name="H. Andy Kapt" file="handi200.jpg"/>
    </lobbyist-picture-list>
+-->   
 </gameCreation>
 <archive>
    <object type="game" uuid="73482562-b36f-45f1-9e1c-87a02269622a">

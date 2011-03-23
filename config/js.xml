@@ -24,7 +24,7 @@
    <instance name="forum"/>
    <instance name="login"/>
    <instance name="game-time"/>
-<!--   <instance name="advisor"/>-->
+   <instance name="advisor"/>
 </javascript>
 <login>
 <!--   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>-->

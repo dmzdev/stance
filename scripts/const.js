@@ -51,6 +51,7 @@ var dmz =
       , ParentHandle: dmz.defs.createNamedHandle("parent")
       , PictureDirectoryNameHandle: dmz.defs.createNamedHandle("pic_dir_name")
       , PictureFileNameHandle: dmz.defs.createNamedHandle("pic_file_name")
+      , PictureHandle: dmz.defs.createNamedHandle("picture")
       , PostVisitedHandle: dmz.defs.createNamedHandle("post_visited")
       , ServerTimeHandle: dmz.defs.createNamedHandle("server_time")
       , TextHandle: dmz.defs.createNamedHandle("text")
@@ -69,9 +70,9 @@ var dmz =
       }
 
    , Functions =
-      { _getDisplayName: false
-      , _getAuthorName: false
-      , _getAuthorHandle: false
+      { getDisplayName: false
+      , getAuthorName: false
+      , getAuthorHandle: false
       }
 
    , getDisplayName
@@ -101,9 +102,9 @@ getAuthorHandle = function (handle) {
 
 getAuthorName = function (handle) { return getDisplayName(getAuthorHandle(handle)); }
 
-Functions._getDisplayName = getDisplayName;
-Functions._getAuthorHandle = getAuthorHandle;
-Functions._getAuthorName = getAuthorName;
+Functions.getDisplayName = getDisplayName;
+Functions.getAuthorHandle = getAuthorHandle;
+Functions.getAuthorName = getAuthorName;
 
 (function () {
 

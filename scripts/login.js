@@ -45,7 +45,10 @@ _activateUser = function (name) {
 
          if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
 
-         dmz.object.flag(handle, dmz.const.AdminFlagHandle, _admin);
+         if (_admin) {
+
+            dmz.object.flag(handle, dmz.const.AdminFlagHandle, true);
+         }
          dmz.object.flag(handle, dmz.object.HILAttribute, true);
       }
    }
