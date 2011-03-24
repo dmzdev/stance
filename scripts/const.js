@@ -22,6 +22,7 @@ var dmz =
 
    , Handles =
       { ActiveHandle: dmz.defs.createNamedHandle("Active")
+      , ActivatedAt: dmz.defs.createNamedHandle("actived_at")
       , AdminFlagHandle: dmz.defs.createNamedHandle("admin_user")
       , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
       , AdvisorActiveQuestionHandle: dmz.defs.createNamedHandle("advisor_active_question")

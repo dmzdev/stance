@@ -15,6 +15,8 @@ var dmz =
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
+   , time: require("dmz/runtime/time")
+   , util: require("dmz/types/util")
    , resources: require("dmz/runtime/resources")
    }
 
@@ -40,6 +42,10 @@ var dmz =
            }
         , editScenarioWidget
         )
+
+   , startDate = editScenarioDialog.lookup("startDate")
+   , currentDate = editScenarioDialog.lookup("currentDate")
+   , nextDate = editScenarioDialog.lookup("nextDate")
 
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
 
@@ -84,7 +90,7 @@ var dmz =
    , setup
    , groupToForum
    , groupFromForum
-
+   , updateTimePage
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
@@ -120,7 +126,6 @@ readUserConfig = function () {
            ;
 
          groupHandle = dmz.object.create(dmz.const.GroupType);
-         dmz.object.activate(groupHandle);
          dmz.object.text(groupHandle, dmz.const.NameHandle, name);
          dmz.object.link(dmz.const.GameGroupHandle, CurrentGameHandle, groupHandle);
          for (idx = 0; idx < studentList.length; idx += 1) {
@@ -131,6 +136,7 @@ readUserConfig = function () {
                dmz.object.link(dmz.const.GroupMembersHandle, groupHandle, user);
             }
          }
+         dmz.object.activate(groupHandle);
       });
    }
 };
@@ -474,9 +480,9 @@ editScenarioWidget.observe(self, "createForumButton", "clicked", function () {
          if (value && (name.length > 0)) {
 
             handle = dmz.object.create(dmz.const.ForumType);
-            dmz.object.activate(handle);
             dmz.object.text(handle, dmz.const.NameHandle, name);
             dmz.object.link(dmz.const.GameForumsHandle, CurrentGameHandle, handle);
+            dmz.object.activate(handle);
          }
       });
 });
@@ -545,6 +551,15 @@ setup = function () {
 
                active = !active;
                dmz.object.flag(CurrentGameHandle, dmz.const.ActiveHandle, active);
+
+               if (active) {
+
+                  dmz.object.timeStamp(
+                     CurrentGameHandle,
+                     dmz.const.ActivatedAt,
+                     dmz.time.getFrameTime());
+               }
+
                gameStateButton.text(active ? "End Game" : "Start Game");
             }
          });
@@ -726,9 +741,9 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
       if (value) {
 
          group = dmz.object.create(dmz.const.GroupType);
-         dmz.object.activate(group);
          dmz.object.text(group, dmz.const.NameHandle, groupName);
          dmz.object.link(dmz.const.GameGroupHandle, CurrentGameHandle, group);
+         dmz.object.activate(group);
       }
    });
 });
@@ -878,8 +893,8 @@ editScenarioWidget.observe(self, "addLobbyistButton", "clicked", function () {
 
             handle = dmz.object.create(dmz.const.LobbyistType);
             dmz.object.text(handle, dmz.const.NameHandle, name);
-            dmz.object.activate(handle);
             dmz.object.link(dmz.const.GameUngroupedLobbyistsHandle, CurrentGameHandle, handle);
+            dmz.object.activate(handle);
          }
       });
 });
@@ -925,9 +940,9 @@ editScenarioWidget.observe(self, "addAdvisorButton", "clicked", function () {
          if (value && (name.length > 0)) {
 
             handle = dmz.object.create(dmz.const.AdvisorType);
-            dmz.object.activate(handle);
             dmz.object.text(handle, dmz.const.NameHandle, name);
             dmz.object.link(dmz.const.GameUngroupedAdvisorsHandle, CurrentGameHandle, handle);
+            dmz.object.activate(handle);
          }
       });
 });
@@ -1005,3 +1020,19 @@ editScenarioWidget.observe(self, "gameStatsButton", "clicked", function () {
       , editScenarioWidget
    ).open(self, function (value) {});
 });
+
+editScenarioDialog.observe(self, "tabWidget", "currentChanged", function (current, widget) {
+
+   if (current === 3) {
+
+      updateTimePage();
+      self.log.warn("time page: " + current);
+   }
+});
+
+updateTimePage = function () {
+
+   var frameTime = dmz.util.timeStampToDate(dmz.time.getFrameTime());
+
+   startDate.dateTime(frameTime);
+}
