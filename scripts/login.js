@@ -73,7 +73,7 @@ LoginSuccessMessage.subscribe(self, function (data) {
 
          _activateUser(_userName);
 
-         if (0) {
+         if (1) {
 
             var timeSegment =
                 [ { serverDate: Date.parse("3/15/11")
@@ -93,29 +93,13 @@ LoginSuccessMessage.subscribe(self, function (data) {
                 ;
 
             var data = dmz.data.create()
-              , rtStart =
-                [ Date.parse("6pm 3/15/11")
-                , Date.parse("6pm 3/16/11")
-                ]
-              , rtEnd =
-                [ Date.parse("6am 3/16/11")
-                , Date.parse("6am 3/17/11")
-                ]
-              , gtStart =
-                [ Date.parse("6pm 1/1/12")
-                , Date.parse("6pm 1/2/12")
-                ]
-              , gtEnd =
-                [ Date.parse("6am 1/2/12")
-                , Date.parse("6am 1/2/12")
-                ]
               , ix
               ;
 
             ix = 0;
             timeSegment.forEach (function (obj) {
 
-               data.number("serverDate", ix, toTimeStamp(obj.realTimeStart));
+               data.number("serverDate", ix, toTimeStamp(obj.serverDate));
                data.number("startHour", ix, obj.startHour);
                data.number("endHour", ix, obj.endHour);
                data.number("startDate", ix, obj.startDate);
@@ -123,27 +107,6 @@ LoginSuccessMessage.subscribe(self, function (data) {
                ix++;
             });
 
-            for (var ix  = 0; ix < rtStart.length; ix++) {
-
-               data.number("real_time_start", ix, dmz.util.dateToTimeStamp());
-            }
-
-            ix = 0;
-            realTime.forEach(function (value) {
-
-               data.string("real_time_2", ix, value.toString());
-               data.number("real_time", ix++, dmz.util.dateToTimeStamp(value));
-            });
-
-            ix = 0;
-            gameTime.forEach(function (value) {
-
-               data.string("game_time_2", ix, value.toString());
-               data.number("game_time", ix++, dmz.util.dateToTimeStamp(value));
-            });
-
-            data.number("index", 0, 0);
-            data.number("index", 1, realTime.length);
             dmz.object.data(_gameHandle, dmz.const.GameTimeHandle, data);
          }
       }
