@@ -1,6 +1,7 @@
 var dmz =
    { ui:
-      { consts: require('dmz/ui/consts')
+      { button: require("dmz/ui/button")
+      , consts: require('dmz/ui/consts')
       , label: require("dmz/ui/label")
       , layout: require("dmz/ui/layout")
       , loader: require('dmz/ui/uiLoader')
@@ -32,7 +33,7 @@ var dmz =
 
    , DockName = "Edit Scenario"
    , dock = dmz.ui.mainWindow.createDock
-        (DockName
+         ( DockName
          , { area: dmz.ui.consts.RightToolBarArea
            , allowedAreas: [dmz.ui.consts.LeftToolBarArea, dmz.ui.consts.RightToolBarArea]
            , floating: true
@@ -58,6 +59,12 @@ var dmz =
    , lobbyistBio = editLobbyistDialog.lookup("lobbyistBio")
    , lobbyistMessage = editLobbyistDialog.lookup("lobbyistMessage")
    , lobbyistPictureList = editLobbyistDialog.lookup("pictureList")
+
+   , CreateMediaInjectDialog = dmz.ui.loader.load("MediaInjectDialog.ui")
+   , MediaTypeList = CreateMediaInjectDialog.lookup("mediaType")
+   , MediaTitleText = CreateMediaInjectDialog.lookup("titleText")
+   , MediaUrlText = CreateMediaInjectDialog.lookup("urlText")
+   , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupFLayout")
 
    // Variables
    , groupList = []
@@ -170,6 +177,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    groupComboBox.addItem(name);
    advisorGroupList.addItem(name);
    lobbyistGroupList.addItem(name);
+   MediaGroupFLayout.addRow(name, dmz.ui.button.createCheckBox());
 
    forumGroupWidgets[subHandle] =
       { assoc: forumAssocList.addItem(name, subHandle)
@@ -906,6 +914,59 @@ editScenarioWidget.observe(self, "removeLobbyistButton", "clicked", function () 
          lobbyistList.splice(index, 1);
          lobbyistComboBox.removeIndex(index);
          dmz.object.destroy(handle);
+      }
+   });
+});
+
+editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
+
+   CreateMediaInjectDialog.open(self, function (value, dialog) {
+
+      var idx
+        , count = MediaGroupFLayout.rowCount()
+        , media = false
+        , groupHandle
+        , groupMembers
+        ;
+
+      if (value) {
+
+         for (idx = 0; idx < count; idx += 1) {
+
+            if (MediaGroupFLayout.at(idx, 1).isChecked()) {
+
+               if (!media) {
+
+                  media = dmz.object.create(dmz.const.MediaType);
+                  dmz.object.activate(media);
+               }
+               dmz.object.text(media, dmz.const.TitleHandle, MediaTitleText.text());
+               dmz.object.text(media, dmz.const.TextHandle, MediaUrlText.text());
+
+               groupHandle = groupList[idx];
+               groupMembers = dmz.object.subLinks(groupHandle, dmz.const.GroupMembersHandle);
+               if (groupMembers) {
+
+                  groupMembers.forEach(function (userHandle) {
+
+                     if (!dmz.object.flag(userHandle, dmz.const.AdminFlagHandle)) {
+
+                        dmz.object.link(dmz.const.ActiveMediaHandle, userHandle, media);
+                     }
+                  });
+               }
+
+
+//               data.number(groupPinHandle, indexCounter++, GroupHandleList[idx]);
+            }
+         }
+      }
+
+      MediaTitleText.text("");
+      MediaUrlText.text("");
+      for (idx = 0; idx < count; idx += 1) {
+
+         MediaGroupFLayout.at(idx, 1).setChecked(false);
       }
    });
 });
