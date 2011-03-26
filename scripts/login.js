@@ -2,6 +2,7 @@ var dmz =
        { object: require("dmz/components/object")
        , data: require("dmz/runtime/data")
        , message: require("dmz/runtime/messaging")
+       , module: require("dmz/runtime/module")
        , time: require("dmz/runtime/time")
        , defs: require("dmz/runtime/definitions")
        , objectType: require("dmz/runtime/objectType")
@@ -18,6 +19,7 @@ var dmz =
     // Variables
     , _window = dmz.ui.mainWindow.window()
     , _title = _window.title()
+    , _timeMod
     , _gameHandle
     , _userList = []
     , _userName
@@ -45,10 +47,8 @@ _activateUser = function (name) {
 
          if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
 
-         if (_admin) {
+         if (_admin) { dmz.object.flag(handle, dmz.const.AdminFlagHandle, true); }
 
-            dmz.object.flag(handle, dmz.const.AdminFlagHandle, true);
-         }
          dmz.object.flag(handle, dmz.object.HILAttribute, true);
       }
    }
@@ -64,29 +64,58 @@ LoginSuccessMessage.subscribe(self, function (data) {
          _admin = data.boolean("admin");
          _userName = data.string(dmz.const.NameHandle);
 
-         dmz.object.text(_gameHandle, dmz.const.UserNameHandle, _userName);
+//         dmz.object.text(_gameHandle, dmz.const.UserNameHandle, _userName);
 
-         dmz.object.timeStamp(
-            _gameHandle,
-            dmz.const.ServerTimeHandle,
-            data.number(TimeStampAttr));
+         if (_timeMod) { _timeMod.serverTime(data.number(TimeStampAttr)); }
+         else { self.log.error("Failed to to set server time"); }
 
          _activateUser(_userName);
 
          if (1) {
 
             var timeSegment =
-                [ { serverDate: Date.parse("3/15/11")
+                [ { serverDate: Date.parse("3/23/11")
                   , startHour: 6
+                  , startMinute: 0
                   , endHour: 18
-                  , currentDate: Date.parse("1/1/12")
-                  , nextDate: Date.parse("1/1/12")
+                  , endMinute: 0
+                  , startDate: Date.parse("1/1/12")
+                  , endDate: Date.parse("1/1/12")
                   }
                 ,
-                  { serverDate: Date.parse("3/16/11")
+                  { serverDate: Date.parse("3/24/11")
                   , startHour: 6
+                  , startMinute: 0
                   , endHour: 18
+                  , endMinute: 0
                   , startDate: Date.parse("1/2/12")
+                  , endDate: Date.parse("1/2/12")
+                  }
+                ,
+                  { serverDate: Date.parse("3/25/11")
+                  , startHour: 6
+                  , startMinute: 0
+                  , endHour: 18
+                  , endMinute: 0
+                  , startDate: Date.parse("1/3/12")
+                  , endDate: Date.parse("1/10/12")
+                  }
+                ,
+                  { serverDate: Date.parse("3/26/11")
+                  , startHour: 6
+                  , startMinute: 0
+                  , endHour: 18
+                  , endMinute: 0
+                  , startDate: Date.parse("1/4/12")
+                  , endDate: Date.parse("1/4/12")
+                  }
+                ,
+                  { serverDate: Date.parse("3/27/11")
+                  , startHour: 6
+                  , startMinute: 0
+                  , endHour: 18
+                  , endMinute: 0
+                  , startDate: Date.parse("1/5/12")
                   , endDate: Date.parse("1/5/12")
                   }
                 ]
@@ -101,11 +130,15 @@ LoginSuccessMessage.subscribe(self, function (data) {
 
                data.number("serverDate", ix, toTimeStamp(obj.serverDate));
                data.number("startHour", ix, obj.startHour);
+               data.number("startMinute", ix, obj.startMinute);
                data.number("endHour", ix, obj.endHour);
-               data.number("startDate", ix, obj.startDate);
-               data.number("endDate", ix, obj.endDate);
+               data.number("endMinute", ix, obj.endMinute);
+               data.number("startDate", ix, toTimeStamp(obj.startDate));
+               data.number("endDate", ix, toTimeStamp(obj.endDate));
                ix++;
             });
+
+            data.number("count", 0, timeSegment.length);
 
             dmz.object.data(_gameHandle, dmz.const.GameTimeHandle, data);
          }
@@ -164,6 +197,12 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
 
       self.log.info("User identified: " + name);
    }
+});
+
+dmz.module.subscribe(self, "game-time", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) { _timeMod = module; }
+   else if (Mode === dmz.module.Deactivate) { _timeMod = undefined; }
 });
 
 (function () {

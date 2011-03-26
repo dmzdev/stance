@@ -27,7 +27,7 @@
    <instance name="advisor"/>
 </javascript>
 <login>
-<!--   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>-->
+   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>
 </login>
 <main>
    <scene height="800" width="400"/>
