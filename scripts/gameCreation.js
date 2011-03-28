@@ -18,6 +18,7 @@ var dmz =
    , time: require("dmz/runtime/time")
    , util: require("dmz/types/util")
    , resources: require("dmz/runtime/resources")
+   , module: require("dmz/runtime/module")
    }
 
    // UI Elements
@@ -43,9 +44,12 @@ var dmz =
         , editScenarioWidget
         )
 
-   , startDate = editScenarioDialog.lookup("startDate")
-   , currentDate = editScenarioDialog.lookup("currentDate")
-   , nextDate = editScenarioDialog.lookup("nextDate")
+   , timeMod
+   , startDate = editScenarioWidget.lookup("startDate")
+   , currentDate = editScenarioWidget.lookup("currentDate")
+   , nextDate = editScenarioWidget.lookup("nextDate")
+   , gameDateTime = editScenarioWidget.lookup("gameTime")
+   , serverDateTime = editScenarioWidget.lookup("serverTime")
 
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
 
@@ -1021,7 +1025,7 @@ editScenarioWidget.observe(self, "gameStatsButton", "clicked", function () {
    ).open(self, function (value) {});
 });
 
-editScenarioDialog.observe(self, "tabWidget", "currentChanged", function (current, widget) {
+editScenarioWidget.observe(self, "tabWidget", "currentChanged", function (current, widget) {
 
    if (current === 3) {
 
@@ -1036,6 +1040,32 @@ updateTimePage = function () {
 
    startDate.dateTime(frameTime);
 }
+
+dmz.object.timeStamp.observe(self, dmz.const.ServerTimeHandle,
+function (handle, attr, value) {
+
+   if (handle === CurrentGameHandle) {
+
+      serverTime = value;
+
+      serverDateTime.dateTime(dmz.util.timeStampToDate(serverTime));
+   }
+});
+
+dmz.time.setRepeatingTimer (self, 2.0, function (Delta) {
+
+   if (timeMod) {
+
+      serverDateTime.dateTime(dmz.util.timeStampToDate(timeMod.serverTime()));
+      gameDateTime.dateTime(dmz.util.timeStampToDate(timeMod.gameTime()));
+   }
+});
+
+dmz.module.subscribe(self, "game-time", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) { timeMod = module; }
+   else if (Mode === dmz.module.Deactivate) { timeMod = undefined; }
+});
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
