@@ -13,486 +13,346 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QTabWidget" name="tabWidget">
-   <property name="geometry">
-    <rect>
-     <x>12</x>
-     <y>6</y>
-     <width>490</width>
-     <height>401</height>
-    </rect>
-   </property>
-   <property name="currentIndex">
-    <number>0</number>
-   </property>
-   <widget class="QWidget" name="tab_13">
-    <attribute name="title">
-     <string>Game</string>
-    </attribute>
-    <layout class="QHBoxLayout" name="horizontalLayout_27">
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_37">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_13">
+      <attribute name="title">
+       <string>Game</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_27">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_28">
+        <layout class="QVBoxLayout" name="verticalLayout_37">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_38">
+          <layout class="QHBoxLayout" name="horizontalLayout_28">
            <item>
-            <widget class="QPushButton" name="gameStateButton">
-             <property name="text">
-              <string>Start Game</string>
-             </property>
-            </widget>
+            <layout class="QVBoxLayout" name="verticalLayout_38">
+             <item>
+              <widget class="QPushButton" name="gameStateButton">
+               <property name="text">
+                <string>Start Game</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="deleteGameButton">
+               <property name="text">
+                <string>Delete Game</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QPushButton" name="deleteGameButton">
-             <property name="text">
-              <string>Delete Game</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_39">
-           <item>
-            <widget class="QPushButton" name="generateReportButton">
-             <property name="text">
-              <string>Generate AAR</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="gameStatsButton">
-             <property name="text">
-              <string>Game Stats</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_9">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="tab_14">
-    <attribute name="title">
-     <string>User/Group</string>
-    </attribute>
-    <layout class="QVBoxLayout" name="verticalLayout_40">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_29">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_41">
-         <item>
-          <widget class="QPushButton" name="addGroupButton">
-           <property name="text">
-            <string>Add Group</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="removeGroupButton">
-           <property name="text">
-            <string>Remove Current Group</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="allGroupButton">
-           <property name="text">
-            <string>Show All Group Assignments</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QComboBox" name="groupComboBox"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_30">
-       <item>
-        <widget class="QListWidget" name="ungroupedStudentList">
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_42">
-         <item>
-          <widget class="QToolButton" name="addStudentButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="arrowType">
-            <enum>Qt::RightArrow</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="removeStudentButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="arrowType">
-            <enum>Qt::LeftArrow</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QListWidget" name="groupStudentList">
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="Line" name="line_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_31">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_43">
-         <item>
-          <widget class="QPushButton" name="createPlayerButton">
-           <property name="text">
-            <string>Create Player</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="removePlayerButton">
-           <property name="text">
-            <string>Remove Selected Player</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QPushButton" name="importStudentListButton">
-         <property name="text">
-          <string>Import Student List</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="tab_15">
-    <attribute name="title">
-     <string>Forums</string>
-    </attribute>
-    <layout class="QVBoxLayout" name="verticalLayout_44">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_32">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_45">
-         <item>
-          <widget class="QPushButton" name="createForumButton">
-           <property name="text">
-            <string>Add Forum</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="deleteForumButton">
-           <property name="text">
-            <string>Remove Forum</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QComboBox" name="forumList"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_33">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_46">
-         <item>
-          <widget class="QLabel" name="label_11">
-           <property name="text">
-            <string>Groups:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QListWidget" name="forumGroupList">
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_47">
-         <item>
-          <widget class="QToolButton" name="addForumGroupButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="arrowType">
-            <enum>Qt::RightArrow</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="removeForumGroupButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="arrowType">
-            <enum>Qt::LeftArrow</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_48">
-         <item>
-          <widget class="QLabel" name="label_12">
-           <property name="text">
-            <string>Associated Groups:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QListWidget" name="forumAssocList">
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="tab_16">
-    <attribute name="title">
-     <string>Time</string>
-    </attribute>
-    <layout class="QVBoxLayout" name="verticalLayout_49">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_34">
-       <item>
-        <widget class="QLabel" name="label_13">
-         <property name="text">
-          <string>Game Start Date:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDateEdit" name="startDate">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_35">
-       <item>
-        <widget class="QLabel" name="label_14">
-         <property name="text">
-          <string>Current Game Date:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDateEdit" name="currentDate">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_36">
-       <item>
-        <widget class="QLabel" name="label_15">
-         <property name="text">
-          <string>Next Game Date:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDateEdit" name="nextDate"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <spacer name="verticalSpacer_10">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="tab_17">
-    <attribute name="title">
-     <string>Advisors</string>
-    </attribute>
-    <layout class="QHBoxLayout" name="horizontalLayout_37">
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_50">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_38">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_51">
-           <item>
-            <widget class="QPushButton" name="addAdvisorButton">
-             <property name="text">
-              <string>Add Advisor</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="editAdvisorButton">
-             <property name="text">
-              <string>Edit Advisor</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="removeAdvisorButton">
-             <property name="text">
-              <string>Remove Advisor</string>
-             </property>
-            </widget>
+            <layout class="QVBoxLayout" name="verticalLayout_39">
+             <item>
+              <widget class="QPushButton" name="generateReportButton">
+               <property name="text">
+                <string>Generate AAR</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="gameStatsButton">
+               <property name="text">
+                <string>Game Stats</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
          <item>
-          <widget class="QComboBox" name="advisorList"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_11">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="tab_18">
-    <attribute name="title">
-     <string>Intel</string>
-    </attribute>
-    <layout class="QVBoxLayout" name="verticalLayout_52">
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_53">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_39">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_54">
-           <item>
-            <widget class="QPushButton" name="addLobbyistButton">
-             <property name="text">
-              <string>Add Lobbyist</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="editLobbyistButton">
-             <property name="text">
-              <string>Edit Lobbyist</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="removeLobbyistButton">
-             <property name="text">
-              <string>Remove Lobbyist</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QComboBox" name="lobbyistList"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QPushButton" name="addInjectButton">
-           <property name="text">
-            <string>Add Media Inject</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
+          <spacer name="verticalSpacer_9">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Vertical</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>40</width>
-             <height>20</height>
+             <width>20</width>
+             <height>40</height>
             </size>
            </property>
           </spacer>
          </item>
         </layout>
        </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_14">
+      <attribute name="title">
+       <string>User/Group</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_40">
        <item>
-        <spacer name="verticalSpacer_12">
+        <layout class="QHBoxLayout" name="horizontalLayout_29">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_41">
+           <item>
+            <widget class="QPushButton" name="addGroupButton">
+             <property name="text">
+              <string>Add Group</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="removeGroupButton">
+             <property name="text">
+              <string>Remove Current Group</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="allGroupButton">
+             <property name="text">
+              <string>Show All Group Assignments</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QComboBox" name="groupComboBox"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_30">
+         <item>
+          <widget class="QListWidget" name="ungroupedStudentList">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_42">
+           <item>
+            <widget class="QToolButton" name="addStudentButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::RightArrow</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="removeStudentButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::LeftArrow</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QListWidget" name="groupStudentList">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_31">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_43">
+           <item>
+            <widget class="QPushButton" name="createPlayerButton">
+             <property name="text">
+              <string>Create Player</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="removePlayerButton">
+             <property name="text">
+              <string>Remove Selected Player</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPushButton" name="importStudentListButton">
+           <property name="text">
+            <string>Import Student List</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_15">
+      <attribute name="title">
+       <string>Forums</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_44">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_32">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_45">
+           <item>
+            <widget class="QPushButton" name="createForumButton">
+             <property name="text">
+              <string>Add Forum</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="deleteForumButton">
+             <property name="text">
+              <string>Remove Forum</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QComboBox" name="forumList"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_33">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_46">
+           <item>
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>Groups:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListWidget" name="forumGroupList">
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_47">
+           <item>
+            <widget class="QToolButton" name="addForumGroupButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::RightArrow</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="removeForumGroupButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="arrowType">
+              <enum>Qt::LeftArrow</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_48">
+           <item>
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>Associated Groups:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListWidget" name="forumAssocList">
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_16">
+      <attribute name="title">
+       <string>Time</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_49">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_34">
+         <item>
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Game Start Date:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDateEdit" name="startDate">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_35">
+         <item>
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Current Game Date:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDateEdit" name="currentDate">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_36">
+         <item>
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>Next Game Date:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDateEdit" name="nextDate"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_10">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -505,10 +365,146 @@
         </spacer>
        </item>
       </layout>
-     </item>
-    </layout>
-   </widget>
-  </widget>
+     </widget>
+     <widget class="QWidget" name="tab_17">
+      <attribute name="title">
+       <string>Advisors</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_37">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_50">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_38">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_51">
+             <item>
+              <widget class="QPushButton" name="addAdvisorButton">
+               <property name="text">
+                <string>Add Advisor</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="editAdvisorButton">
+               <property name="text">
+                <string>Edit Advisor</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="removeAdvisorButton">
+               <property name="text">
+                <string>Remove Advisor</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QComboBox" name="advisorList"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_11">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_18">
+      <attribute name="title">
+       <string>Intel</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_52">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_53">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_39">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_54">
+             <item>
+              <widget class="QPushButton" name="addLobbyistButton">
+               <property name="text">
+                <string>Add Lobbyist</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="editLobbyistButton">
+               <property name="text">
+                <string>Edit Lobbyist</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="removeLobbyistButton">
+               <property name="text">
+                <string>Remove Lobbyist</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QComboBox" name="lobbyistList"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QPushButton" name="addInjectButton">
+             <property name="text">
+              <string>Add Media Inject</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_12">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

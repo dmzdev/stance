@@ -65,7 +65,7 @@ var dmz =
    , MediaTypeList = CreateMediaInjectDialog.lookup("mediaType")
    , MediaTitleText = CreateMediaInjectDialog.lookup("titleText")
    , MediaUrlText = CreateMediaInjectDialog.lookup("urlText")
-   , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupFLayout")
+   , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupLayout")
 
    // Variables
    , groupList = []
@@ -78,6 +78,11 @@ var dmz =
    , forumList = []
    , forumGroupWidgets = {}
    , CurrentGameHandle = false
+   , MediaTypes =
+        { Video: dmz.const.VideoType
+        , Memo: dmz.const.MemoType
+        , Newspaper: dmz.const.NewspaperType
+        }
 
    // Function decls
    , createNewGame
@@ -930,8 +935,10 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
       var idx
         , count = MediaGroupFLayout.rowCount()
         , media = false
+        , type = MediaTypeList.currentText()
         , groupHandle
         , groupMembers
+        , links
         ;
 
       if (value) {
@@ -942,8 +949,11 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
 
                if (!media) {
 
-                  media = dmz.object.create(dmz.const.MediaType);
+                  media = dmz.object.create(MediaTypes[type]);
                   dmz.object.activate(media);
+                  links = dmz.object.subLinks(CurrentGameHandle, dmz.const.GameMediaHandle);
+                  dmz.object.scalar(media, dmz.const.ID, links ? links.length : 0);
+                  dmz.object.link(dmz.const.GameMediaHandle, CurrentGameHandle, media);
                }
                dmz.object.text(media, dmz.const.TitleHandle, MediaTitleText.text());
                dmz.object.text(media, dmz.const.TextHandle, MediaUrlText.text());

@@ -13,11 +13,13 @@ var dmz =
       , GameType: dmz.objectType.lookup("game")
       , GroupType: dmz.objectType.lookup("group")
       , LobbyistType: dmz.objectType.lookup("lobbyist")
-      , MediaType: dmz.objectType.lookup("media")
+      , MemoType: dmz.objectType.lookup("media-memo")
+      , NewspaperType: dmz.objectType.lookup("media-newspaper")
       , PinType: dmz.objectType.lookup("map_push_pin")
       , PostType: dmz.objectType.lookup("post")
       , QuestionType: dmz.objectType.lookup("question")
       , UserType: dmz.objectType.lookup("user")
+      , VideoType: dmz.objectType.lookup("media-video")
       , VoteType: dmz.objectType.lookup("vote")
       }
 
@@ -35,6 +37,7 @@ var dmz =
       , ForumLink: dmz.defs.createNamedHandle("group_forum_link")
       , GameGroupHandle: dmz.defs.createNamedHandle("game_group")
       , GameForumsHandle: dmz.defs.createNamedHandle("game_forums")
+      , GameMediaHandle: dmz.defs.createNamedHandle("game_media")
       , GameTimeHandle: dmz.defs.createNamedHandle("game_time")
       , GameTimeFactorHandle: dmz.defs.createNamedHandle("game_time_factor")
       , GameStartTimeHandle: dmz.defs.createNamedHandle("game_start_time")
