@@ -52,6 +52,7 @@ var dmz =
    , pictureList = editAdvisorDialog.lookup("pictureList")
    , advisorBio = editAdvisorDialog.lookup("advisorBio")
    , pictureLabel = editAdvisorDialog.lookup("pictureLabel")
+   , advisorSpecialty = editAdvisorDialog.lookup("specialtyEdit")
 
    , editLobbyistDialog = dmz.ui.loader.load("EditLobbyistDialog.ui")
    , lobbyistPictureLabel = editLobbyistDialog.lookup("pictureLabel")
@@ -611,6 +612,9 @@ setup = function () {
          text = dmz.object.text(advisorHandle, dmz.const.BioHandle);
          if (!text) { text = ""; }
          advisorBio.text(text);
+         text = dmz.object.text(advisorHandle, dmz.const.CommentHandle);
+         if (!text) { text = ""; }
+         advisorSpecialty.text(text);
 
          editAdvisorDialog.open(self, function (result) {
 
@@ -626,6 +630,7 @@ setup = function () {
                text = pictureList.currentText();
                dmz.object.text(advisorHandle, dmz.const.PictureHandle, text);
                dmz.object.text(advisorHandle, dmz.const.BioHandle, advisorBio.text());
+               dmz.object.text(advisorHandle, dmz.const.CommentHandle, advisorSpecialty.text());
             }
          });
       }
