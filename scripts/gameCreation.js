@@ -1036,3 +1036,29 @@ updateTimePage = function () {
 
    startDate.dateTime(frameTime);
 }
+
+dmz.object.flag.observe(self, dmz.object.HILAttribute,
+function (objHandle, attrHandle, value) {
+
+   if (value) {
+
+      if (dmz.object.flag(objHandle, dmz.const.AdminFlagHandle)) {
+
+         editScenarioWidget.lookup("tabWidget").show();
+         dock.enabled(true);
+      }
+      else {
+
+         editScenarioWidget.lookup("tabWidget").hide();
+         dock.hide();
+         dock.enabled(false);
+      }
+   }
+});
+
+(function () {
+
+   editScenarioWidget.lookup("tabWidget").hide();
+   dock.hide();
+   dock.enabled(false);
+}());
