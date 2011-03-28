@@ -101,22 +101,22 @@ LoginSuccessMessage.subscribe(self, function (data) {
                   , endDate: Date.parse("1/10/12")
                   }
                 ,
-                  { serverDate: Date.parse("3/26/11")
+                  { serverDate: Date.parse("3/28/11")
                   , startHour: 6
                   , startMinute: 0
                   , endHour: 18
                   , endMinute: 0
-                  , startDate: Date.parse("1/4/12")
-                  , endDate: Date.parse("1/4/12")
+                  , startDate: Date.parse("1/13/12")
+                  , endDate: Date.parse("2/13/12")
                   }
                 ,
-                  { serverDate: Date.parse("3/27/11")
+                  { serverDate: Date.parse("3/29/11")
                   , startHour: 6
                   , startMinute: 0
                   , endHour: 18
                   , endMinute: 0
-                  , startDate: Date.parse("1/5/12")
-                  , endDate: Date.parse("1/5/12")
+                  , startDate: Date.parse("2/14/12")
+                  , endDate: Date.parse("2/12/12")
                   }
                 ]
                 ;
@@ -211,11 +211,15 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
 
       dmz.time.setTimer(self, 0.5, function () {
 
-         var data = dmz.data.create();
+         var data = dmz.data.create()
+           , date = new Date()
+//           , date = Date.parse("5:59:40 pm 3/20/11")
+           ;
+
 
          data.string(dmz.const.NameHandle, 0, self.config.string("fake-login.name", "dmz"));
          data.boolean(dmz.const.AdminHandle, 0, self.config.boolean("fake-login.admin", false));
-         data.number(TimeStampAttr, 0, Date.now()/1000);
+         data.number(TimeStampAttr, 0, toTimeStamp(date));
 
          self.log.warn(">>> Faking user login! <<<");
          LoginSuccessMessage.send(data);
