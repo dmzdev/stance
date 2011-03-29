@@ -93,6 +93,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="specialtyLabel">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QTextEdit" name="bioText">
          <property name="minimumSize">
           <size>
@@ -374,6 +384,9 @@ p, li { white-space: pre-wrap; }
              <height>200</height>
             </size>
            </property>
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
            <property name="autoExpandDelay">
             <number>0</number>
            </property>
@@ -412,6 +425,9 @@ p, li { white-space: pre-wrap; }
         <layout class="QVBoxLayout" name="verticalLayout_10">
          <item>
           <widget class="QTreeWidget" name="voteHistoryTree">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
            <property name="sortingEnabled">
             <bool>true</bool>
            </property>

@@ -270,50 +270,53 @@ onPinRemoved = function (data) {
 
          if (event.button() === dmz.ui.consts.RightButton) {
 
-            x = event.x();
-            y = event.y();
-            newPinDialog.open(self, function (value, dialog) {
+            if (dmz.object.flag(dmz.object.hil(), dmz.const.AdminFlagHandle)) {
 
-               var data
-                 , title
-                 , desc
-                 , count = groupFLayout.rowCount()
-                 , widget
-                 , idx
-                 , indexCounter
-                 ;
+               x = event.x();
+               y = event.y();
+               newPinDialog.open(self, function (value, dialog) {
 
-               if (value) {
+                  var data
+                    , title
+                    , desc
+                    , count = groupFLayout.rowCount()
+                    , widget
+                    , idx
+                    , indexCounter
+                    ;
 
-                  title = titleEdit.text();
-                  desc = descEdit.text();
+                  if (value) {
 
-                  data = dmz.data.create();
-                  data.number(pinPositionHandle, 0, x);
-                  data.number(pinPositionHandle, 1, y);
-                  data.string(pinTitleHandle, 0, title ? title : " ");
-                  data.string(pinDescHandle, 0, desc ? desc : " ");
-                  data.string(pinFileHandle, 0, PinIconList[typeList.currentIndex()].webfile);
-                  data.number(pinObjectHandle, 0, 0);
+                     title = titleEdit.text();
+                     desc = descEdit.text();
 
-                  for (idx = 0, indexCounter = 0; idx < count; idx += 1) {
+                     data = dmz.data.create();
+                     data.number(pinPositionHandle, 0, x);
+                     data.number(pinPositionHandle, 1, y);
+                     data.string(pinTitleHandle, 0, title ? title : " ");
+                     data.string(pinDescHandle, 0, desc ? desc : " ");
+                     data.string(pinFileHandle, 0, PinIconList[typeList.currentIndex()].webfile);
+                     data.number(pinObjectHandle, 0, 0);
 
-                     if (groupFLayout.at(idx, 1).isChecked()) {
+                     for (idx = 0, indexCounter = 0; idx < count; idx += 1) {
 
-                        data.number(groupPinHandle, indexCounter++, GroupHandleList[idx]);
+                        if (groupFLayout.at(idx, 1).isChecked()) {
+
+                           data.number(groupPinHandle, indexCounter++, GroupHandleList[idx]);
+                        }
                      }
+
+                     addPinMessage.send(data);
                   }
 
-                  addPinMessage.send(data);
-               }
+                  titleEdit.clear();
+                  descEdit.clear();
+                  for (idx = 0; idx < count; idx += 1) {
 
-               titleEdit.clear();
-               descEdit.clear();
-               for (idx = 0; idx < count; idx += 1) {
-
-                  groupFLayout.at(idx, 1).setChecked(false);
-               }
-            });
+                     groupFLayout.at(idx, 1).setChecked(false);
+                  }
+               });
+            }
          }
       }
    });

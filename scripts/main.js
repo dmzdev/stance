@@ -49,7 +49,9 @@ var dmz =
    , PageLink =
       { Map: false
       , Forum: false
-      , Media: false
+      , Video: false
+      , Newspaper: false
+      , Memo: false
       , Advisor0: false
       , Advisor1: false
       , Advisor2: false
@@ -158,14 +160,16 @@ setupMainWindow = function () {
       computer.pos(300, 10);
       dmz.ui.graph.createTextItem("Computer", computer);
 
-      PageLink.Map = [map];
-      PageLink.Advisor0 = [advisors[0]];
-      PageLink.Advisor1 = [advisors[1]];
-      PageLink.Advisor2 = [advisors[2]];
-      PageLink.Advisor3 = [advisors[3]];
-      PageLink.Advisor4 = [advisors[4]];
-      PageLink.Forum = [computer];
-      PageLink.Media = [newspaper, inbox, tv];
+      PageLink.Map = map;
+      PageLink.Advisor0 = advisors[0];
+      PageLink.Advisor1 = advisors[1];
+      PageLink.Advisor2 = advisors[2];
+      PageLink.Advisor3 = advisors[3];
+      PageLink.Advisor4 = advisors[4];
+      PageLink.Forum = computer;
+      PageLink.Video = tv;
+      PageLink.Newspaper = newspaper;
+      PageLink.Memo = inbox;
 
       box = dmz.ui.webview.create();
       box.url ("http://dev.chds.us/?dystopia:map2");
@@ -181,11 +185,34 @@ setupMainWindow = function () {
       advisors.forEach(function (item) { item.data(0, widget); });
       stackedWidget.add(widget);
 
-      widget = dmz.ui.label.create("Media screen");
-      PageLink.Media.forEach(function (item) { item.data(0, widget); });
+      widget = dmz.ui.label.create("Video screen");
+      tv.data(0, widget);
       stackedWidget.add(widget);
 
-      homeButton.observe(self, "clicked", function () { stackedWidget.currentIndex (0); });
+      widget = dmz.ui.label.create("Newspaper screen");
+      newspaper.data(0, widget);
+      stackedWidget.add(widget);
+
+      widget = dmz.ui.label.create("Memo screen");
+      inbox.data(0, widget);
+      stackedWidget.add(widget);
+
+      homeButton.observe(self, "clicked", function () {
+
+         stackedWidget.currentIndex (0);
+         Object.keys(PageLink).forEach(function (key) {
+
+            var item = PageLink[key]
+              , func
+              ;
+
+            if (item) {
+
+              func = item.data(2);
+              if (func) { func(); }
+            }
+         });
+      });
 
       stackedWidget.currentIndex(0);
       gscene.eventFilter(self, mouseEvent);
@@ -193,21 +220,15 @@ setupMainWindow = function () {
    }
 }
 
-_exports.addPage = function (name, widget, func) {
+_exports.addPage = function (name, widget, func, onHome) {
 
-   var widget
-     , chn
-     ;
-   if (name && widget && stackedWidget && PageLink[name] && PageLink[name][0]) {
+   if (name && widget && stackedWidget && PageLink[name]) {
 
-      stackedWidget.remove(PageLink[name][0].data(0));
-      chn = PageLink[name][0].data(1);
+      stackedWidget.remove(PageLink[name].data(0));
       stackedWidget.add(widget);
-      PageLink[name].forEach(function (item) {
-
-         item.data(0, widget);
-         item.data(1, func);
-      });
+      PageLink[name].data(0, widget);
+      PageLink[name].data(1, func);
+      PageLink[name].data(2, onHome);
    }
    else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
 }

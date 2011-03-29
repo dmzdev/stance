@@ -257,9 +257,10 @@ updateAdvisor = function (module, idx) {
          if (advisorHandle) {
 
             data = advisorData[advisorHandle];
-            if (data.name) { advisorWidgets[idx].lookup("nameLabel").text(data.name); }
             if (data.bio) { advisorWidgets[idx].lookup("bioText").text(data.bio); }
+            if (data.name) { advisorWidgets[idx].lookup("nameLabel").text(data.name); }
             if (data.picture) { advisorWidgets[idx].lookup("pictureLabel").pixmap(data.picture); }
+            if (data.specialty) { advisorWidgets[idx].lookup("specialtyLabel").text(data.specialty); }
 
             // Need to disable this unless online?
             advisorWidgets[idx].observe(self, "submitQuestionButton", "clicked", function () {
@@ -873,6 +874,23 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
    }
 });
 
+dmz.object.text.observe(self, dmz.const.CommentHandle, function (handle, attr, value) {
+
+   var index
+     , hilGroup = dmz.const.getUserGroupHandle(dmz.object.hil())
+     ;
+
+   if (advisorData[handle]) { advisorData[handle].specialty = value; }
+   if (hilGroup && groupAdvisors[hilGroup]) {
+
+      index = groupAdvisors[hilGroup].indexOf(handle);
+      if ((index !== -1) && (index < advisorCount)) {
+
+         advisorWidgets[index].lookup("specialtyLabel").text(value);
+      }
+   }
+});
+
 dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
 
    var index
@@ -1062,6 +1080,7 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
          advisorData[advisorHandle] =
             { bio: dmz.object.text(advisorHandle, dmz.const.BioHandle)
             , name: dmz.const.getDisplayName(advisorHandle)
+            , specialty: dmz.object.text(advisorHandle, dmz.const.CommentHandle)
             , picture: false
             , taskFunction: false
             , voteWidgets: []

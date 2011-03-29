@@ -6,70 +6,67 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>353</width>
-    <height>148</height>
+    <width>279</width>
+    <height>160</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QFormLayout" name="formLayout">
+   <property name="fieldGrowthPolicy">
+    <enum>QFormLayout::ExpandingFieldsGrow</enum>
+   </property>
    <item row="0" column="0">
     <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Headline:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="headlineEdit">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Type:</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="typeComboBox">
+   <item row="0" column="1">
+    <widget class="QComboBox" name="mediaType">
      <item>
       <property name="text">
-       <string>Print (Newspaper)</string>
+       <string>Newspaper</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Media (Audio, Video)</string>
+       <string>Memo</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Video</string>
       </property>
      </item>
     </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Title:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="titleText"/>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Link:</string>
+      <string>URL:</string>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QLineEdit" name="linkEdit">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
+    <widget class="QLineEdit" name="urlText"/>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="3" column="1">
+    <layout class="QFormLayout" name="groupLayout"/>
+   </item>
+   <item row="4" column="1">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

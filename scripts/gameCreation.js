@@ -1,6 +1,7 @@
 var dmz =
    { ui:
-      { consts: require('dmz/ui/consts')
+      { button: require("dmz/ui/button")
+      , consts: require('dmz/ui/consts')
       , label: require("dmz/ui/label")
       , layout: require("dmz/ui/layout")
       , loader: require('dmz/ui/uiLoader')
@@ -32,7 +33,7 @@ var dmz =
 
    , DockName = "Edit Scenario"
    , dock = dmz.ui.mainWindow.createDock
-        (DockName
+         ( DockName
          , { area: dmz.ui.consts.RightToolBarArea
            , allowedAreas: [dmz.ui.consts.LeftToolBarArea, dmz.ui.consts.RightToolBarArea]
            , floating: true
@@ -51,6 +52,7 @@ var dmz =
    , pictureList = editAdvisorDialog.lookup("pictureList")
    , advisorBio = editAdvisorDialog.lookup("advisorBio")
    , pictureLabel = editAdvisorDialog.lookup("pictureLabel")
+   , advisorSpecialty = editAdvisorDialog.lookup("specialtyEdit")
 
    , editLobbyistDialog = dmz.ui.loader.load("EditLobbyistDialog.ui")
    , lobbyistPictureLabel = editLobbyistDialog.lookup("pictureLabel")
@@ -58,6 +60,12 @@ var dmz =
    , lobbyistBio = editLobbyistDialog.lookup("lobbyistBio")
    , lobbyistMessage = editLobbyistDialog.lookup("lobbyistMessage")
    , lobbyistPictureList = editLobbyistDialog.lookup("pictureList")
+
+   , CreateMediaInjectDialog = dmz.ui.loader.load("MediaInjectDialog.ui")
+   , MediaTypeList = CreateMediaInjectDialog.lookup("mediaType")
+   , MediaTitleText = CreateMediaInjectDialog.lookup("titleText")
+   , MediaUrlText = CreateMediaInjectDialog.lookup("urlText")
+   , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupLayout")
 
    // Variables
    , groupList = []
@@ -70,6 +78,11 @@ var dmz =
    , forumList = []
    , forumGroupWidgets = {}
    , CurrentGameHandle = false
+   , MediaTypes =
+        { Video: { type: dmz.const.VideoType, attr: dmz.const.ActiveVideoHandle }
+        , Memo: { type: dmz.const.MemoType, attr: dmz.const.ActiveMemoHandle }
+        , Newspaper: { type: dmz.const.NewspaperType, attr: dmz.const.ActiveNewspaperHandle }
+        }
 
    // Function decls
    , createNewGame
@@ -170,6 +183,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    groupComboBox.addItem(name);
    advisorGroupList.addItem(name);
    lobbyistGroupList.addItem(name);
+   MediaGroupFLayout.addRow(name, dmz.ui.button.createCheckBox());
 
    forumGroupWidgets[subHandle] =
       { assoc: forumAssocList.addItem(name, subHandle)
@@ -603,6 +617,9 @@ setup = function () {
          text = dmz.object.text(advisorHandle, dmz.const.BioHandle);
          if (!text) { text = ""; }
          advisorBio.text(text);
+         text = dmz.object.text(advisorHandle, dmz.const.CommentHandle);
+         if (!text) { text = ""; }
+         advisorSpecialty.text(text);
 
          editAdvisorDialog.open(self, function (result) {
 
@@ -618,6 +635,7 @@ setup = function () {
                text = pictureList.currentText();
                dmz.object.text(advisorHandle, dmz.const.PictureHandle, text);
                dmz.object.text(advisorHandle, dmz.const.BioHandle, advisorBio.text());
+               dmz.object.text(advisorHandle, dmz.const.CommentHandle, advisorSpecialty.text());
             }
          });
       }
@@ -906,6 +924,63 @@ editScenarioWidget.observe(self, "removeLobbyistButton", "clicked", function () 
          lobbyistList.splice(index, 1);
          lobbyistComboBox.removeIndex(index);
          dmz.object.destroy(handle);
+      }
+   });
+});
+
+editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
+
+   CreateMediaInjectDialog.open(self, function (value, dialog) {
+
+      var idx
+        , count = MediaGroupFLayout.rowCount()
+        , media = false
+        , type = MediaTypeList.currentText()
+        , groupHandle
+        , groupMembers
+        , links
+        , linkAttr = false
+        ;
+
+      if (value && MediaTypes[type]) {
+
+         for (idx = 0; idx < count; idx += 1) {
+
+            if (MediaGroupFLayout.at(idx, 1).isChecked()) {
+
+               if (!media) {
+
+                  media = dmz.object.create(MediaTypes[type].type);
+                  linkAttr = MediaTypes[type].attr;
+                  dmz.object.activate(media);
+                  links = dmz.object.subLinks(CurrentGameHandle, dmz.const.GameMediaHandle);
+                  dmz.object.scalar(media, dmz.const.ID, links ? links.length : 0);
+                  dmz.object.link(dmz.const.GameMediaHandle, CurrentGameHandle, media);
+               }
+               dmz.object.text(media, dmz.const.TitleHandle, MediaTitleText.text());
+               dmz.object.text(media, dmz.const.TextHandle, MediaUrlText.text());
+
+               groupHandle = groupList[idx];
+               groupMembers = dmz.object.subLinks(groupHandle, dmz.const.GroupMembersHandle);
+               if (groupMembers && linkAttr) {
+
+                  groupMembers.forEach(function (userHandle) {
+
+                     if (!dmz.object.flag(userHandle, dmz.const.AdminFlagHandle)) {
+
+                        dmz.object.link(linkAttr, userHandle, media);
+                     }
+                  });
+               }
+            }
+         }
+      }
+
+      MediaTitleText.text("");
+      MediaUrlText.text("");
+      for (idx = 0; idx < count; idx += 1) {
+
+         MediaGroupFLayout.at(idx, 1).setChecked(false);
       }
    });
 });
