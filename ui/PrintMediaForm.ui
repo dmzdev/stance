@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>603</width>
-    <height>527</height>
+    <width>538</width>
+    <height>409</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,9 +33,6 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetFixedSize</enum>
-     </property>
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -50,42 +47,21 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="playButton">
-       <property name="text">
-        <string>Play</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pauseButton">
-       <property name="text">
-        <string>Pause</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="stopButton">
-       <property name="text">
-        <string>Stop</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="prevButton">
        <property name="text">
-        <string>Prev</string>
+        <string/>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="nextButton">
        <property name="text">
-        <string>Next</string>
+        <string/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="currPlaylist">
+      <widget class="QLabel" name="currentLabel">
        <property name="text">
         <string>0</string>
        </property>
@@ -99,7 +75,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="totalPlaylist">
+      <widget class="QLabel" name="totalLabel">
        <property name="text">
         <string>0</string>
        </property>

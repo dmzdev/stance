@@ -185,6 +185,7 @@ setUserPlayList = function (userHandle) {
       self.log.warn ("list: ", list);
       totalPlaylist.text(list.length);
       currPlaylist.text("1");
+      CurrentVideoIndex = 0;
    }
 };
 
@@ -195,7 +196,7 @@ function (objHandle, attrHandle, userHandle, videoHandle) {
 
       VideoSourceList.unshift (
          { handle: videoHandle
-         , source: dmz.object.text(handle, dmz.const.TextHandle)
+         , source: dmz.object.text(videoHandle, dmz.const.TextHandle)
          });
 
       CurrentVideoIndex += 1;
