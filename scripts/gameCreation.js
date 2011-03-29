@@ -79,9 +79,9 @@ var dmz =
    , forumGroupWidgets = {}
    , CurrentGameHandle = false
    , MediaTypes =
-        { Video: dmz.const.VideoType
-        , Memo: dmz.const.MemoType
-        , Newspaper: dmz.const.NewspaperType
+        { Video: { type: dmz.const.VideoType, attr: dmz.const.ActiveVideoHandle }
+        , Memo: { type: dmz.const.MemoType, attr: dmz.const.ActiveMemoHandle }
+        , Newspaper: { type: dmz.const.NewspaperType, attr: dmz.const.ActiveNewspaperHandle }
         }
 
    // Function decls
@@ -939,9 +939,10 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
         , groupHandle
         , groupMembers
         , links
+        , linkAttr = false
         ;
 
-      if (value) {
+      if (value && MediaTypes[type]) {
 
          for (idx = 0; idx < count; idx += 1) {
 
@@ -949,7 +950,8 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
 
                if (!media) {
 
-                  media = dmz.object.create(MediaTypes[type]);
+                  media = dmz.object.create(MediaTypes[type].type);
+                  linkAttr = MediaTypes[type].attr;
                   dmz.object.activate(media);
                   links = dmz.object.subLinks(CurrentGameHandle, dmz.const.GameMediaHandle);
                   dmz.object.scalar(media, dmz.const.ID, links ? links.length : 0);
@@ -960,19 +962,16 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
 
                groupHandle = groupList[idx];
                groupMembers = dmz.object.subLinks(groupHandle, dmz.const.GroupMembersHandle);
-               if (groupMembers) {
+               if (groupMembers && linkAttr) {
 
                   groupMembers.forEach(function (userHandle) {
 
                      if (!dmz.object.flag(userHandle, dmz.const.AdminFlagHandle)) {
 
-                        dmz.object.link(dmz.const.ActiveMediaHandle, userHandle, media);
+                        dmz.object.link(linkAttr, userHandle, media);
                      }
                   });
                }
-
-
-//               data.number(groupPinHandle, indexCounter++, GroupHandleList[idx]);
             }
          }
       }

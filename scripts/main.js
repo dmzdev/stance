@@ -186,15 +186,15 @@ setupMainWindow = function () {
       stackedWidget.add(widget);
 
       widget = dmz.ui.label.create("Video screen");
-      PageLink.Video.data(0, widget);
+      tv.data(0, widget);
       stackedWidget.add(widget);
 
       widget = dmz.ui.label.create("Newspaper screen");
-      PageLink.Newspaper.data(0, widget);
+      newspaper.data(0, widget);
       stackedWidget.add(widget);
 
       widget = dmz.ui.label.create("Memo screen");
-      PageLink.Memo.data(0, widget);
+      inbox.data(0, widget);
       stackedWidget.add(widget);
 
       homeButton.observe(self, "clicked", function () {
@@ -222,13 +222,9 @@ setupMainWindow = function () {
 
 _exports.addPage = function (name, widget, func, onHome) {
 
-   var widget
-     , chn
-     ;
    if (name && widget && stackedWidget && PageLink[name]) {
 
       stackedWidget.remove(PageLink[name].data(0));
-      chn = PageLink[name].data(1);
       stackedWidget.add(widget);
       PageLink[name].data(0, widget);
       PageLink[name].data(1, func);

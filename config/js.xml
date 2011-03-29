@@ -25,6 +25,7 @@
    <instance name="login"/>
    <instance name="game-time"/>
    <instance name="advisor"/>
+   <instance name="video"/>
 </javascript>
 <login>
 <!--   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>-->
