@@ -159,6 +159,7 @@ function (objHandle, attrHandle, userHandle, newspaperHandle) {
          });
 
       CurrentIndex += 1;
+      totalLabel.text(SourceList.length);
 
       dmz.ui.messageBox.create(
          { type: dmz.ui.messageBox.Info
@@ -173,6 +174,7 @@ function (objHandle, attrHandle, userHandle, newspaperHandle) {
          if (value) {
 
             CurrentIndex = 0;
+            currLabel.text(CurrentIndex + 1);
             NewSource = true;
             loadCurrent();
          }

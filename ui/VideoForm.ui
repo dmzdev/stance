@@ -85,7 +85,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="currPlaylist">
+      <widget class="QLabel" name="currLabel">
        <property name="text">
         <string>0</string>
        </property>
@@ -99,7 +99,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="totalPlaylist">
+      <widget class="QLabel" name="totalLabel">
        <property name="text">
         <string>0</string>
        </property>

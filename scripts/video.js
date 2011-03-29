@@ -29,17 +29,17 @@ var dmz =
 , stopButton = videoForm.lookup("stopButton")
 , nextButton = videoForm.lookup("nextButton")
 , prevButton = videoForm.lookup("prevButton")
-, currPlaylist = videoForm.lookup("currPlaylist")
-, totalPlaylist = videoForm.lookup("totalPlaylist")
+, currLabel = videoForm.lookup("currLabel")
+, totalLabel = videoForm.lookup("totalLabel")
 , video = dmz.ui.phonon.createVideoPlayer()
 , source = dmz.ui.phonon.createMediaObject()
 //, source = dmz.ui.phonon.createMediaObject("http://www.chds.us/media/viewpoints/mov/chds_viewpoints%2029_rodrigo_gomez.mov")
 //, source2 = dmz.ui.phonon.createMediaObject("http://www.chds.us/coursefiles/DA3210/videos/obsession/obsession_radical_islam.mov")
 
 // Variables
-, CurrentVideoIndex = 0
+, CurrentIndex = 0
 , NewSource = false
-, VideoSourceList = [] // { handle, source }
+, SourceList = [] // { handle, source }
 , CurrentWindow = false
 
 // Function decls
@@ -58,9 +58,9 @@ playCurrent = function () {
      , video
      ;
 
-   if (CurrentVideoIndex < VideoSourceList.length) {
+   if (CurrentIndex < SourceList.length) {
 
-      video = VideoSourceList[CurrentVideoIndex];
+      video = SourceList[CurrentIndex];
       if (video.source) {
 
          if (NewSource) { source.currentSource(video.source); NewSource = false; }
@@ -79,14 +79,14 @@ playCurrent = function () {
       }
       else {
 
-         self.log.error("Video error for object", VideoSourceList[CurrentVideoIndex].handle);
+         self.log.error("Video error for object", SourceList[CurrentIndex].handle);
       }
    }
 };
 
 pauseCurrent = function () {
 
-   if (CurrentVideoIndex < VideoSourceList.length) {
+   if (CurrentIndex < SourceList.length) {
 
       if (source.hasVideo()) { source.pause(); }
       playButton.enabled(true);
@@ -96,7 +96,7 @@ pauseCurrent = function () {
 
 stopCurrent = function () {
 
-   if (CurrentVideoIndex < VideoSourceList.length) {
+   if (CurrentIndex < SourceList.length) {
 
       if (source.hasVideo()) { source.stop(); }
       playButton.enabled(true);
@@ -106,33 +106,33 @@ stopCurrent = function () {
 
 skipForward = function () {
 
-   if (CurrentVideoIndex < VideoSourceList.length) {
+   if (CurrentIndex < SourceList.length) {
 
       stopCurrent();
-      if ((CurrentVideoIndex + 1) < VideoSourceList.length) {
+      if ((CurrentIndex + 1) < SourceList.length) {
 
-         CurrentVideoIndex += 1;
+         CurrentIndex += 1;
          NewSource = true;
          playCurrent();
       }
-      else { CurrentVideoIndex = 0; }
-      currPlaylist.text(CurrentVideoIndex + 1);
+      else { CurrentIndex = 0; }
+      currLabel.text(CurrentIndex + 1);
    }
 };
 
 skipBackward = function () {
 
-   if (CurrentVideoIndex < VideoSourceList.length) {
+   if (CurrentIndex < SourceList.length) {
 
       stopCurrent();
-      if (CurrentVideoIndex > 0) {
+      if (CurrentIndex > 0) {
 
-         CurrentVideoIndex -= 1;
+         CurrentIndex -= 1;
          NewSource = true;
          playCurrent();
       }
-      else { CurrentVideoIndex = 0; }
-      currPlaylist.text(CurrentVideoIndex + 1);
+      else { CurrentIndex = 0; }
+      currLabel.text(CurrentIndex + 1);
    }
 };
 
@@ -162,7 +162,7 @@ setUserPlayList = function (userHandle) {
      , list = []
      ;
 
-   VideoSourceList = []
+   SourceList = []
    NewSource = true;
    if (activeList && viewedList) { list = activeList.concat(viewedList); }
    else { list = activeList ? activeList : viewedList; }
@@ -177,15 +177,15 @@ setUserPlayList = function (userHandle) {
       });
       list.forEach(function (handle) {
 
-         VideoSourceList.push (
+         SourceList.push (
             { handle: handle
             , source: dmz.object.text(handle, dmz.const.TextHandle)
             });
       });
       self.log.warn ("list: ", list);
-      totalPlaylist.text(list.length);
-      currPlaylist.text("1");
-      CurrentVideoIndex = 0;
+      totalLabel.text(list.length);
+      currLabel.text("1");
+      CurrentIndex = 0;
    }
 };
 
@@ -194,12 +194,13 @@ function (objHandle, attrHandle, userHandle, videoHandle) {
 
    if (CurrentWindow && (userHandle === dmz.object.hil())) {
 
-      VideoSourceList.unshift (
+      SourceList.unshift (
          { handle: videoHandle
          , source: dmz.object.text(videoHandle, dmz.const.TextHandle)
          });
 
-      CurrentVideoIndex += 1;
+      CurrentIndex += 1;
+      totalLabel.text(SourceList.length);
       pauseCurrent();
 
       dmz.ui.messageBox.create(
@@ -212,7 +213,8 @@ function (objHandle, attrHandle, userHandle, videoHandle) {
          , videoForm
       ).open(self, function (value) {
 
-         if (value) { CurrentVideoIndex = 0; NewSource = true; }
+         if (value) { CurrentIndex = 0; NewSource = true; }
+         currLabel.text(CurrentIndex + 1);
          playCurrent();
       });
    }
@@ -235,7 +237,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
               CurrentWindow = true;
               setUserPlayList(dmz.object.hil());
-              CurrentVideoIndex = 0;
+              CurrentIndex = 0;
               playCurrent();
            }
          , function () { CurrentWindow = false; stopCurrent(); } // onHome
