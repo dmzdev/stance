@@ -1200,16 +1200,16 @@ function (objHandle, attrHandle, value) {
       }
       else {
 
-//         editScenarioWidget.lookup("tabWidget").hide();
-//         dock.hide();
-//         dock.enabled(false);
+         editScenarioWidget.lookup("tabWidget").hide();
+         dock.hide();
+         dock.enabled(false);
       }
    }
 });
 
 (function () {
 
-//   editScenarioWidget.lookup("tabWidget").hide();
-//   dock.hide();
-//   dock.enabled(false);
+   editScenarioWidget.lookup("tabWidget").hide();
+   dock.hide();
+   dock.enabled(false);
 }());
