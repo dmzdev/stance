@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
+    <width>537</width>
     <height>453</height>
    </rect>
   </property>
@@ -356,6 +356,13 @@
          </item>
          <item row="1" column="2">
           <widget class="QDateEdit" name="serverEndDateEdit">
+           <property name="date">
+            <date>
+             <year>2010</year>
+             <month>2</month>
+             <day>1</day>
+            </date>
+           </property>
            <property name="minimumDate">
             <date>
              <year>2010</year>
@@ -378,6 +385,9 @@
           <widget class="QLabel" name="serverDeltaLabel">
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -436,6 +446,9 @@
            <property name="text">
             <string>0</string>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
           </widget>
          </item>
          <item row="1" column="4">
@@ -491,8 +504,8 @@
        <item>
         <widget class="QLabel" name="timeInfoLabel">
          <property name="text">
-          <string>The game will run for {server_delta} real days.
-Elapsed in game time will be {game_delta} days.</string>
+          <string>The game will run for {{serverDelta}} real days.
+Elapsed in game time will be {{gameDelta}} days.</string>
          </property>
         </widget>
        </item>

@@ -25,7 +25,6 @@ var dmz =
 
    , Handles =
       { ActiveHandle: dmz.defs.createNamedHandle("Active")
-      , ActivatedAt: dmz.defs.createNamedHandle("actived_at")
       , AdminFlagHandle: dmz.defs.createNamedHandle("admin_user")
       , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
       , AdvisorActiveQuestionHandle: dmz.defs.createNamedHandle("advisor_active_question")
@@ -39,8 +38,6 @@ var dmz =
       , GameGroupHandle: dmz.defs.createNamedHandle("game_group")
       , GameForumsHandle: dmz.defs.createNamedHandle("game_forums")
       , GameMediaHandle: dmz.defs.createNamedHandle("game_media")
-      , GameTimeHandle: dmz.defs.createNamedHandle("game_time")
-      , GameTimeFactorHandle: dmz.defs.createNamedHandle("game_time_factor")
       , GameStartTimeHandle: dmz.defs.createNamedHandle("game_start_time")
       , GameUngroupedUsersHandle: dmz.defs.createNamedHandle("game_ungrouped_users")
       , GameUngroupedAdvisorsHandle: dmz.defs.createNamedHandle("game_ungrouped_advisors")
@@ -51,7 +48,6 @@ var dmz =
       , GroupCompletedVotesHandle: dmz.defs.createNamedHandle("group_completed_votes")
       , ID: dmz.defs.createNamedHandle("id")
       , InGameStartTimeHandle: dmz.defs.createNamedHandle("in_game_start_time")
-      , InGameEndTimeHandle: dmz.defs.createNamedHandle("in_game_end_time")
       , LobbyistGroupHandle: dmz.defs.createNamedHandle("lobbyist_group")
       , LobbyistMessageHandle: dmz.defs.createNamedHandle("lobbyist_message")
       , ActiveMemoHandle: dmz.defs.createNamedHandle("active_memo")
@@ -61,8 +57,6 @@ var dmz =
       , ActiveNewspaperHandle: dmz.defs.createNamedHandle("active_newspaper")
       , ViewedNewspaperHandle: dmz.defs.createNamedHandle("viewed_newspaper")
       , NameHandle: dmz.defs.createNamedHandle("name")
-      , OnServerStartTimeHandle: dmz.defs.createNamedHandle("on_server_start_time")
-      , OnServerEndTimeHandle: dmz.defs.createNamedHandle("on_server_start_end")
       , ParentHandle: dmz.defs.createNamedHandle("parent")
       , PictureDirectoryNameHandle: dmz.defs.createNamedHandle("pic_dir_name")
       , PictureFileNameHandle: dmz.defs.createNamedHandle("pic_file_name")

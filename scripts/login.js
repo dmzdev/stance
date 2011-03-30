@@ -46,11 +46,7 @@ _activateUser = function (name) {
       if (handle) {
 
          if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
-
-         if (_admin) {
-
-            dmz.object.flag(handle, dmz.stance.AdminFlagHandle, true);
-         }
+         if (_admin) { dmz.object.flag(handle, dmz.stance.AdminFlagHandle, true); }
          dmz.object.flag(handle, dmz.object.HILAttribute, true);
       }
    }
@@ -65,8 +61,6 @@ LoginSuccessMessage.subscribe(self, function (data) {
          _window.title(_title);
          _admin = data.boolean("admin");
          _userName = data.string(dmz.stance.NameHandle);
-
-//         dmz.object.text(_gameHandle, dmz.stance.UserNameHandle, _userName);
 
          if (_timeMod) { _timeMod.setServerTime(data.number(TimeStampAttr)); }
          else { self.log.error("Failed to to set server time"); }
@@ -143,7 +137,7 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
 
          var data = dmz.data.create()
 //           , date = new Date()
-           , date = Date.parse("5:59:40 pm 3/28/11")
+           , date = Date.parse("5:59:40 pm 3/9/11")
            ;
 
          data.string(dmz.stance.NameHandle, 0, self.config.string("fake-login.name", "dmz"));
