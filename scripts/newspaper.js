@@ -12,7 +12,7 @@ var dmz =
       , webview: require("dmz/ui/webView")
       , widget: require("dmz/ui/widget")
       }
-   , const: require("const")
+   , stance: require("stanceConst")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
@@ -59,11 +59,11 @@ loadCurrent = function () {
 
             webpage.page().mainFrame().load(item.source);
             NewSource = false;
-            linkHandle = dmz.object.linkHandle(dmz.const.ActiveNewspaperHandle, hil, item.handle);
+            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveNewspaperHandle, hil, item.handle);
             if (linkHandle) {
 
                dmz.object.unlink(linkHandle);
-               dmz.object.link(dmz.const.ViewedNewspaperHandle, hil, item.handle);
+               dmz.object.link(dmz.stance.ViewedNewspaperHandle, hil, item.handle);
             }
          }
       }
@@ -116,8 +116,8 @@ prevButton.observe(self, "clicked", skipBackward);
 
 setUserPlayList = function (userHandle) {
 
-   var activeList = dmz.object.subLinks(userHandle, dmz.const.ActiveNewspaperHandle)
-     , viewedList = dmz.object.subLinks(userHandle, dmz.const.ViewedNewspaperHandle)
+   var activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveNewspaperHandle)
+     , viewedList = dmz.object.subLinks(userHandle, dmz.stance.ViewedNewspaperHandle)
      , list = []
      ;
 
@@ -131,14 +131,14 @@ setUserPlayList = function (userHandle) {
       list.sort(function (obj1, obj2) {
 
          var result =
-            dmz.object.scalar(obj2, dmz.const.ID) - dmz.object.scalar(obj1, dmz.const.ID);
+            dmz.object.scalar(obj2, dmz.stance.ID) - dmz.object.scalar(obj1, dmz.stance.ID);
          return result ? result : 0;
       });
       list.forEach(function (handle) {
 
          SourceList.push (
             { handle: handle
-            , source: dmz.object.text(handle, dmz.const.TextHandle)
+            , source: dmz.object.text(handle, dmz.stance.TextHandle)
             });
       });
       self.log.warn ("list: ", list);
@@ -148,14 +148,14 @@ setUserPlayList = function (userHandle) {
    }
 };
 
-dmz.object.link.observe(self, dmz.const.ActiveNewspaperHandle,
+dmz.object.link.observe(self, dmz.stance.ActiveNewspaperHandle,
 function (objHandle, attrHandle, userHandle, newspaperHandle) {
 
    if (CurrentWindow && (userHandle === dmz.object.hil())) {
 
       SourceList.unshift (
          { handle: newspaperHandle
-         , source: dmz.object.text(newspaperHandle, dmz.const.TextHandle)
+         , source: dmz.object.text(newspaperHandle, dmz.stance.TextHandle)
          });
 
       CurrentIndex += 1;

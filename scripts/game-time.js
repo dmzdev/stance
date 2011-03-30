@@ -8,7 +8,7 @@ var dmz =
        , message: require("dmz/runtime/messaging")
        , objectType: require("dmz/runtime/objectType")
        , util: require("dmz/types/util")
-       , const: require("const")
+       , stance: require("stanceConst")
        }
     , DateJs = require("datejs/time")
     // Constants
@@ -43,7 +43,7 @@ _game.startedAt = function () {
 
    if (this.handle) {
 
-      result = dmz.object.timeStamp (this.handle, dmz.const.GameStartTimeHandle);
+      result = dmz.object.timeStamp (this.handle, dmz.stance.GameStartTimeHandle);
       result = new Date(result * 1000);
    }
 
@@ -59,7 +59,7 @@ _setServerTime = function (time) {
 
    if (_game.handle) {
 
-      dmz.object.timeStamp(_game.handle, dmz.const.ServerTimeHandle, timeStamp);
+      dmz.object.timeStamp(_game.handle, dmz.stance.ServerTimeHandle, timeStamp);
    }
    else  { _serverTime = dmz.util.timeStampToDate(timeStamp); }
 }
@@ -69,7 +69,7 @@ _setUser = function (name) {
 
    if (_game.handle && name) {
 
-      dmz.object.text(_game.handle, dmz.const.UserNameHandle, name);
+      dmz.object.text(_game.handle, dmz.stance.UserNameHandle, name);
    }
    else { _user = name; }
 }
@@ -81,7 +81,7 @@ _updateGameActive = function (time) {
 
    if (_game.handle) {
 
-//      dmz.object.flag(_game.handle, dmz.const.ActiveHandle, active);
+//      dmz.object.flag(_game.handle, dmz.stance.ActiveHandle, active);
    }
 
    return active;
@@ -135,14 +135,14 @@ _playInRealTime = function () {
 
 dmz.object.create.observe(self, function (handle, type) {
 
-   if (type.isOfType(dmz.const.GameType)) {
+   if (type.isOfType(dmz.stance.GameType)) {
 
       if (!_game.handle) { _game.handle = handle; }
    }
 });
 
 
-dmz.object.flag.observe(self, dmz.const.ActiveHandle, function (handle, attr, value) {
+dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
 
    if (handle === _game.handle) { _game.active = value; }
 });
@@ -161,7 +161,7 @@ var _getRealTime = function (index) {
 
    if (_game.handle) {
 
-      data = dmz.object.data(_game.handle, dmz.const.GameTimeHandle);
+      data = dmz.object.data(_game.handle, dmz.stance.GameTimeHandle);
 
       rt.index = index || data.number("index");
       self.log.warn(  "rt.index: " + rt.index);
@@ -187,7 +187,7 @@ var _getCurrentAndNext = function (index, func) {
 
    if (_game.handle) {
 
-      data = dmz.object.data(_game.handle, dmz.const.GameTimeHandle);
+      data = dmz.object.data(_game.handle, dmz.stance.GameTimeHandle);
 
       if (typeof index == 'function') {
 
@@ -274,7 +274,7 @@ var _calculateGameTime = function (realTime, gameTime) {
 }
 
 
-dmz.object.timeStamp.observe(self, dmz.const.ServerTimeHandle,
+dmz.object.timeStamp.observe(self, dmz.stance.ServerTimeHandle,
 function (handle, attr, value) {
 
    var serverTime
@@ -299,7 +299,7 @@ function (handle, attr, value) {
 
 //      if (serverTime.)
 ////      startTime = _game.startedAt();
-//      data = dmz.object.data(_game.handle, dmz.const.GameTimeHandle);
+//      data = dmz.object.data(_game.handle, dmz.stance.GameTimeHandle);
 
 //      index = data.number("index");
 //self.log.warn("index:" + index);
@@ -318,7 +318,7 @@ function (handle, attr, value) {
 //         self.log.error("After");
 //      }
 
-//      dmz.object.timeStamp(_game.handle, dmz.const.GameTimeHandle, value);
+//      dmz.object.timeStamp(_game.handle, dmz.stance.GameTimeHandle, value);
 //      self.log.error("_serverTime: " + _serverTime);
 
 // for now just set game time to be server time
@@ -327,7 +327,7 @@ dmz.time.setFrameTime(value);
 });
 
 
-dmz.object.timeStamp.observe(self, dmz.const.GameTimeHandle,
+dmz.object.timeStamp.observe(self, dmz.stance.GameTimeHandle,
 function (handle, attr, value) {
 
    if (handle === _game.handle) {
@@ -338,7 +338,7 @@ self.log.warn("gameTime: " + dmz.util.timeStampToDate(value));
 });
 
 
-dmz.object.scalar.observe(self, dmz.const.GameTimeFactorHandle,
+dmz.object.scalar.observe(self, dmz.stance.GameTimeFactorHandle,
 function (handle, attr, value) {
 
    if (handle === _game.handle) {

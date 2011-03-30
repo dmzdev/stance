@@ -6,7 +6,7 @@ var dmz =
        , defs: require("dmz/runtime/definitions")
        , objectType: require("dmz/runtime/objectType")
        , util: require("dmz/types/util")
-       , const: require("const")
+       , stance: require("stanceConst")
        , ui:
           { mainWindow: require("dmz/ui/mainWindow")
           }
@@ -47,7 +47,7 @@ _activateUser = function (name) {
 
          if (_admin) {
 
-            dmz.object.flag(handle, dmz.const.AdminFlagHandle, true);
+            dmz.object.flag(handle, dmz.stance.AdminFlagHandle, true);
          }
          dmz.object.flag(handle, dmz.object.HILAttribute, true);
       }
@@ -62,13 +62,13 @@ LoginSuccessMessage.subscribe(self, function (data) {
 
          _window.title(_title);
          _admin = data.boolean("admin");
-         _userName = data.string(dmz.const.NameHandle);
+         _userName = data.string(dmz.stance.NameHandle);
 
-         dmz.object.text(_gameHandle, dmz.const.UserNameHandle, _userName);
+         dmz.object.text(_gameHandle, dmz.stance.UserNameHandle, _userName);
 
          dmz.object.timeStamp(
             _gameHandle,
-            dmz.const.ServerTimeHandle,
+            dmz.stance.ServerTimeHandle,
             data.number(TimeStampAttr));
 
          _activateUser(_userName);
@@ -144,7 +144,7 @@ LoginSuccessMessage.subscribe(self, function (data) {
 
             data.number("index", 0, 0);
             data.number("index", 1, realTime.length);
-            dmz.object.data(_gameHandle, dmz.const.GameTimeHandle, data);
+            dmz.object.data(_gameHandle, dmz.stance.GameTimeHandle, data);
          }
       }
    }
@@ -157,16 +157,16 @@ LogoutMessage.subscribe(self, function () {
 
 dmz.object.create.observe(self, function (handle, type) {
 
-   if (type.isOfType(dmz.const.GameType)) {
+   if (type.isOfType(dmz.stance.GameType)) {
 
       if (!_gameHandle) { _gameHandle = handle; }
    }
 });
 
-dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
+dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, value) {
 
    var type = dmz.object.type(handle);
-   if (type && type.isOfType (dmz.const.UserType)) {
+   if (type && type.isOfType (dmz.stance.UserType)) {
 
       _userList[value] = handle;
       _activateUser (value);
@@ -190,11 +190,11 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
       }
    }
 
-   if (value && type && type.isOfType(dmz.const.UserType)) {
+   if (value && type && type.isOfType(dmz.stance.UserType)) {
 
       _userHandle = handle;
 
-      name = dmz.object.text(_userHandle, dmz.const.NameHandle);
+      name = dmz.object.text(_userHandle, dmz.stance.NameHandle);
       if (name === _userName) { unverified = ""; }
 
       _window.title(_title + " (" + name + ")" + unverified);
@@ -211,8 +211,8 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
 
          var data = dmz.data.create();
 
-         data.string(dmz.const.NameHandle, 0, self.config.string("fake-login.name", "dmz"));
-         data.boolean(dmz.const.AdminHandle, 0, self.config.boolean("fake-login.admin", false));
+         data.string(dmz.stance.NameHandle, 0, self.config.string("fake-login.name", "dmz"));
+         data.boolean(dmz.stance.AdminHandle, 0, self.config.boolean("fake-login.admin", false));
          data.number(TimeStampAttr, 0, Date.now()/1000);
 
          self.log.warn(">>> Faking user login! <<<");

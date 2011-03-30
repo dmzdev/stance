@@ -6,7 +6,7 @@ var dmz =
        , defs: require("dmz/runtime/definitions")
        , module: require("dmz/runtime/module")
        , util: require("dmz/types/util")
-       , const: require("const")
+       , stance: require("stanceConst")
        , ui:
           { consts: require('dmz/ui/consts')
           , loader: require('dmz/ui/uiLoader')
@@ -64,15 +64,15 @@ dmz.object.create.observe(self, function (handle, objType) {
 
    if (objType) {
 
-      if (objType.isOfType(dmz.const.UserType)) {
+      if (objType.isOfType(dmz.stance.UserType)) {
 
-         list.addItem(dmz.object.text(handle, dmz.const.NameHandle))
+         list.addItem(dmz.object.text(handle, dmz.stance.NameHandle))
          UserList.push(handle);
       }
-      else if (objType.isOfType(dmz.const.GroupType)) {
+      else if (objType.isOfType(dmz.stance.GroupType)) {
 
          GroupList.push(handle);
-         groups.addItem(dmz.const.getDisplayName(handle));
+         groups.addItem(dmz.stance.getDisplayName(handle));
       }
    }
 });
@@ -98,7 +98,7 @@ dmz.object.create.observe(self, function (handle, objType) {
 
          data = dmz.data.create();
 
-         data.string(dmz.const.NameHandle, 0, username);
+         data.string(dmz.stance.NameHandle, 0, username);
 //         data.boolean("admin", 0, admin.isChecked());
          data.number(TimeStampAttr, 0, Date.now()/1000);
 
@@ -117,15 +117,15 @@ dmz.object.create.observe(self, function (handle, objType) {
    groups.observe(self, "currentIndexChanged", function (index) {
 
       var hil = dmz.object.hil();
-      self.log.warn ("currItemChanged:", hil, dmz.const.AdminFlagHandle);
-      if (hil && dmz.object.flag(hil, dmz.const.AdminFlagHandle)) {
+      self.log.warn ("currItemChanged:", hil, dmz.stance.AdminFlagHandle);
+      if (hil && dmz.object.flag(hil, dmz.stance.AdminFlagHandle)) {
 
          self.log.warn ("admin", index, GroupList.length);
-         dmz.object.unlinkSuperObjects(hil, dmz.const.GroupMembersHandle);
+         dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
          if (index && (index < GroupList.length)) {
 
             self.log.warn ("linking");
-            dmz.object.link(dmz.const.GroupMembersHandle, GroupList[index], hil);
+            dmz.object.link(dmz.stance.GroupMembersHandle, GroupList[index], hil);
             dmz.object.flag(hil, dmz.object.HILAttribute, false);
             dmz.object.flag(hil, dmz.object.HILAttribute, true);
          }

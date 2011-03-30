@@ -1,7 +1,7 @@
 var dmz =
        { object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
-       , const: require("const")
+       , stance: require("stanceConst")
        , data: require("dmz/runtime/data")
        , defs: require("dmz/runtime/definitions")
        , module: require("dmz/runtime/module")
@@ -86,7 +86,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
    if (objType) {
 
-      if (objType.isOfType(dmz.const.PinType)) {
+      if (objType.isOfType(dmz.stance.PinType)) {
 
          if (!PinHandleList[objHandle] && dmz.object.flag(objHandle, pinActiveHandle)) {
 
@@ -106,7 +106,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
             else { addPinMessage.send(data); }
          }
       }
-      else if (objType.isOfType(dmz.const.GroupType)) { GroupQueue[objHandle] = true; }
+      else if (objType.isOfType(dmz.stance.GroupType)) { GroupQueue[objHandle] = true; }
    }
 });
 
@@ -126,7 +126,7 @@ dmz.object.position.observe(self, pinPositionHandle, function (handle, attr, val
    }
 });
 
-dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
+dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, value) {
 
    var index;
    if (GroupQueue[handle]) {
@@ -174,7 +174,7 @@ onPinAdded = function (data) {
 
       if (!pinHandle) {
 
-         pinHandle = dmz.object.create(dmz.const.PinType);
+         pinHandle = dmz.object.create(dmz.stance.PinType);
          PinIDList[id] = { id: id, handle: pinHandle };
          PinHandleList[pinHandle] = PinIDList[id];
          dmz.object.position(pinHandle, pinPositionHandle, [x, y, 0]);
@@ -190,7 +190,7 @@ onPinAdded = function (data) {
             if (handle && dmz.object.isObject(handle)) {
 
                type = dmz.object.type(handle);
-               if (type && type.isOfType(dmz.const.GroupType) &&
+               if (type && type.isOfType(dmz.stance.GroupType) &&
                   !dmz.object.linkHandle(groupPinHandle, handle, pinHandle)) {
 
                   dmz.object.link(groupPinHandle, handle, pinHandle);
@@ -270,7 +270,7 @@ onPinRemoved = function (data) {
 
          if (event.button() === dmz.ui.consts.RightButton) {
 
-            if (dmz.object.flag(dmz.object.hil(), dmz.const.AdminFlagHandle)) {
+            if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminFlagHandle)) {
 
                x = event.x();
                y = event.y();

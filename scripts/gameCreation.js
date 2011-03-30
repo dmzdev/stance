@@ -12,7 +12,7 @@ var dmz =
       , groupBox: require("dmz/ui/groupBox")
       , graph: require("dmz/ui/graph")
       }
-   , const: require("const")
+   , stance: require("stanceConst")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
@@ -79,9 +79,9 @@ var dmz =
    , forumGroupWidgets = {}
    , CurrentGameHandle = false
    , MediaTypes =
-        { Video: { type: dmz.const.VideoType, attr: dmz.const.ActiveVideoHandle }
-        , Memo: { type: dmz.const.MemoType, attr: dmz.const.ActiveMemoHandle }
-        , Newspaper: { type: dmz.const.NewspaperType, attr: dmz.const.ActiveNewspaperHandle }
+        { Video: { type: dmz.stance.VideoType, attr: dmz.stance.ActiveVideoHandle }
+        , Memo: { type: dmz.stance.MemoType, attr: dmz.stance.ActiveMemoHandle }
+        , Newspaper: { type: dmz.stance.NewspaperType, attr: dmz.stance.ActiveNewspaperHandle }
         }
 
    // Function decls
@@ -132,16 +132,16 @@ readUserConfig = function () {
            , user
            ;
 
-         groupHandle = dmz.object.create(dmz.const.GroupType);
+         groupHandle = dmz.object.create(dmz.stance.GroupType);
          dmz.object.activate(groupHandle);
-         dmz.object.text(groupHandle, dmz.const.NameHandle, name);
-         dmz.object.link(dmz.const.GameGroupHandle, CurrentGameHandle, groupHandle);
+         dmz.object.text(groupHandle, dmz.stance.NameHandle, name);
+         dmz.object.link(dmz.stance.GameGroupHandle, CurrentGameHandle, groupHandle);
          for (idx = 0; idx < studentList.length; idx += 1) {
 
             user = configToStudent(studentList[idx])
             if (user) {
 
-               dmz.object.link(dmz.const.GroupMembersHandle, groupHandle, user);
+               dmz.object.link(dmz.stance.GroupMembersHandle, groupHandle, user);
             }
          }
       });
@@ -155,9 +155,9 @@ createNewUser = function (userName, displayName) {
 
    if (userName && displayName) {
 
-      user = dmz.object.create(dmz.const.UserType);
-      dmz.object.text(user, dmz.const.NameHandle, userName);
-      dmz.object.text(user, dmz.const.DisplayNameHandle, displayName);
+      user = dmz.object.create(dmz.stance.UserType);
+      dmz.object.text(user, dmz.stance.NameHandle, userName);
+      dmz.object.text(user, dmz.stance.DisplayNameHandle, displayName);
       dmz.object.activate(user);
    }
    return user;
@@ -167,7 +167,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
    if (objType) {
 
-      if (objType.isOfType(dmz.const.GameType)) {
+      if (objType.isOfType(dmz.stance.GameType)) {
 
          CurrentGameHandle = objHandle;
          setup();
@@ -175,10 +175,10 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    }
 });
 
-dmz.object.link.observe(self, dmz.const.GameGroupHandle,
+dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var name = dmz.const.getDisplayName(subHandle);
+   var name = dmz.stance.getDisplayName(subHandle);
    groupList.push(subHandle);
    groupComboBox.addItem(name);
    advisorGroupList.addItem(name);
@@ -192,10 +192,10 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    forumGroupWidgets[subHandle].assoc.hidden(true);
 });
 
-dmz.object.unlink.observe(self, dmz.const.GameGroupHandle,
+dmz.object.unlink.observe(self, dmz.stance.GameGroupHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var name = dmz.const.getDisplayName(subHandle)
+   var name = dmz.stance.getDisplayName(subHandle)
      , index
      ;
 
@@ -218,19 +218,19 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    }
 });
 
-dmz.object.link.observe(self, dmz.const.GameForumsHandle,
+dmz.object.link.observe(self, dmz.stance.GameForumsHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var name = dmz.const.getDisplayName(subHandle);
+   var name = dmz.stance.getDisplayName(subHandle);
 
    forumComboBox.addItem(name);
    forumList.push(subHandle);
 });
 
-dmz.object.unlink.observe(self, dmz.const.GameGroupHandle,
+dmz.object.unlink.observe(self, dmz.stance.GameGroupHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var name = dmz.const.getDisplayName(subHandle)
+   var name = dmz.stance.getDisplayName(subHandle)
      , index
      ;
 
@@ -242,7 +242,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    }
 });
 
-dmz.object.link.observe(self, dmz.const.ForumLink,
+dmz.object.link.observe(self, dmz.stance.ForumLink,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    if (forumGroupWidgets[superHandle]) {
@@ -252,7 +252,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    }
 });
 
-dmz.object.unlink.observe(self, dmz.const.ForumLink,
+dmz.object.unlink.observe(self, dmz.stance.ForumLink,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    if (forumGroupWidgets[superHandle]) {
@@ -262,64 +262,64 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    }
 });
 
-dmz.object.link.observe(self, dmz.const.GroupMembersHandle,
+dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
 function (linkObjHandle, attrHandle, groupHandle, studentHandle) {
 
    if (!userList[studentHandle]) {
 
       userList[studentHandle] =
-         groupStudentList.addItem(dmz.const.getDisplayName(studentHandle), studentHandle);
+         groupStudentList.addItem(dmz.stance.getDisplayName(studentHandle), studentHandle);
 
       userList[studentHandle].hidden(groupList[0] && (groupHandle !== groupList[0]));
    }
 });
 
-dmz.object.link.observe(self, dmz.const.GameUngroupedUsersHandle,
+dmz.object.link.observe(self, dmz.stance.GameUngroupedUsersHandle,
 function (linkObjHandle, attrHandle, gameHandle, userHandle) {
 
    if (!userList[userHandle]) {
 
       userList[userHandle] = ungroupedStudentList.addItem(
-         dmz.const.getDisplayName(userHandle), userHandle);
+         dmz.stance.getDisplayName(userHandle), userHandle);
    }
 });
 
-dmz.object.link.observe(self, dmz.const.AdvisorGroupHandle,
+dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
 function (linkObjHandle, attrHandle, gameHandle, advisorHandle) {
 
    if (advisorList.indexOf(advisorHandle) === -1) {
 
-      advisorComboBox.addItem(dmz.const.getDisplayName(advisorHandle));
+      advisorComboBox.addItem(dmz.stance.getDisplayName(advisorHandle));
       advisorList.push(advisorHandle);
    }
 });
 
-dmz.object.link.observe(self, dmz.const.GameUngroupedAdvisorsHandle,
+dmz.object.link.observe(self, dmz.stance.GameUngroupedAdvisorsHandle,
 function (linkObjHandle, attrHandle, gameHandle, advisorHandle) {
 
    if (advisorList.indexOf(advisorHandle) === -1) {
 
-      advisorComboBox.addItem(dmz.const.getDisplayName(advisorHandle));
+      advisorComboBox.addItem(dmz.stance.getDisplayName(advisorHandle));
       advisorList.push(advisorHandle);
    }
 });
 
-dmz.object.link.observe(self, dmz.const.LobbyistGroupHandle,
+dmz.object.link.observe(self, dmz.stance.LobbyistGroupHandle,
 function (linkObjHandle, attrHandle, gameHandle, lobbyistHandle) {
 
    if (lobbyistList.indexOf(lobbyistHandle) === -1) {
 
-      lobbyistComboBox.addItem(dmz.const.getDisplayName(lobbyistHandle));
+      lobbyistComboBox.addItem(dmz.stance.getDisplayName(lobbyistHandle));
       lobbyistList.push(lobbyistHandle);
    }
 });
 
-dmz.object.link.observe(self, dmz.const.GameUngroupedLobbyistsHandle,
+dmz.object.link.observe(self, dmz.stance.GameUngroupedLobbyistsHandle,
 function (linkObjHandle, attrHandle, gameHandle, lobbyistHandle) {
 
    if (lobbyistList.indexOf(lobbyistHandle) === -1) {
 
-      lobbyistComboBox.addItem(dmz.const.getDisplayName(lobbyistHandle));
+      lobbyistComboBox.addItem(dmz.stance.getDisplayName(lobbyistHandle));
       lobbyistList.push(lobbyistHandle);
    }
 });
@@ -335,7 +335,7 @@ groupComboBox.observe(self, "currentIndexChanged", function (index) {
 
    if (groupHandle) {
 
-      members = dmz.object.subLinks(groupHandle, dmz.const.GroupMembersHandle);
+      members = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
       count = groupStudentList.count();
       for (idx = 0; idx < count; idx += 1) {
 
@@ -360,8 +360,8 @@ userToGroup = function (item) {
       if (objHandle && (currentIndex < groupList.length)) {
 
          dmz.object.unlink(
-            dmz.object.linkHandle(dmz.const.GameUngroupedUsersHandle, CurrentGameHandle, objHandle));
-         dmz.object.link(dmz.const.GroupMembersHandle, groupList[currentIndex], objHandle);
+            dmz.object.linkHandle(dmz.stance.GameUngroupedUsersHandle, CurrentGameHandle, objHandle));
+         dmz.object.link(dmz.stance.GroupMembersHandle, groupList[currentIndex], objHandle);
          ungroupedStudentList.removeItem(item);
          groupStudentList.addItem(item);
       }
@@ -383,8 +383,8 @@ userFromGroup = function (item) {
       if (objHandle && (currentIndex < groupList.length)) {
 
          dmz.object.unlink(
-            dmz.object.linkHandle(dmz.const.GroupMembersHandle, groupList[currentIndex], objHandle));
-         dmz.object.link(dmz.const.GameUngroupedUsersHandle, CurrentGameHandle, objHandle);
+            dmz.object.linkHandle(dmz.stance.GroupMembersHandle, groupList[currentIndex], objHandle));
+         dmz.object.link(dmz.stance.GameUngroupedUsersHandle, CurrentGameHandle, objHandle);
          groupStudentList.removeItem(item);
          ungroupedStudentList.addItem(item);
       }
@@ -409,7 +409,7 @@ groupToForum = function (item) {
 
       if (groupHandle && forumHandle) {
 
-         dmz.object.link(dmz.const.ForumLink, groupHandle, forumHandle);
+         dmz.object.link(dmz.stance.ForumLink, groupHandle, forumHandle);
       }
    }
 };
@@ -434,7 +434,7 @@ groupFromForum = function (item) {
       if (groupHandle && forumHandle) {
 
          dmz.object.unlink(
-            dmz.object.linkHandle(dmz.const.ForumLink, groupHandle, forumHandle));
+            dmz.object.linkHandle(dmz.stance.ForumLink, groupHandle, forumHandle));
 
       }
    }
@@ -458,7 +458,7 @@ forumComboBox.observe(self, "currentIndexChanged", function (index) {
 
    if (listHandle) {
 
-      forumGroups = dmz.object.superLinks(listHandle, dmz.const.ForumLink);
+      forumGroups = dmz.object.superLinks(listHandle, dmz.stance.ForumLink);
       Object.keys(forumGroupWidgets).forEach(function (groupHandle) {
 
          var hide;
@@ -487,10 +487,10 @@ editScenarioWidget.observe(self, "createForumButton", "clicked", function () {
          var handle;
          if (value && (name.length > 0)) {
 
-            handle = dmz.object.create(dmz.const.ForumType);
+            handle = dmz.object.create(dmz.stance.ForumType);
             dmz.object.activate(handle);
-            dmz.object.text(handle, dmz.const.NameHandle, name);
-            dmz.object.link(dmz.const.GameForumsHandle, CurrentGameHandle, handle);
+            dmz.object.text(handle, dmz.stance.NameHandle, name);
+            dmz.object.link(dmz.stance.GameForumsHandle, CurrentGameHandle, handle);
          }
       });
 });
@@ -536,13 +536,13 @@ setup = function () {
      ;
 
    gameStateButton.text(
-      dmz.object.flag(CurrentGameHandle, dmz.const.ActiveHandle) ?
+      dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle) ?
       "End Game" :
       "Start Game");
 
    gameStateButton.observe(self, "clicked", function () {
 
-      var active = dmz.object.flag(CurrentGameHandle, dmz.const.ActiveHandle)
+      var active = dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle)
         ;
 
       dmz.ui.messageBox.create(
@@ -558,7 +558,7 @@ setup = function () {
             if (value) {
 
                active = !active;
-               dmz.object.flag(CurrentGameHandle, dmz.const.ActiveHandle, active);
+               dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle, active);
                gameStateButton.text(active ? "End Game" : "Start Game");
             }
          });
@@ -604,20 +604,20 @@ setup = function () {
 
          advisorHandle = advisorList[index];
 
-         links = dmz.object.superLinks(advisorHandle, dmz.const.AdvisorGroupHandle);
+         links = dmz.object.superLinks(advisorHandle, dmz.stance.AdvisorGroupHandle);
          if (links && links[0]) {
 
-            groupIndex = advisorGroupList.findText(dmz.const.getDisplayName(links[0]));
+            groupIndex = advisorGroupList.findText(dmz.stance.getDisplayName(links[0]));
          }
 
-         pictureIndex = pictureList.findText(dmz.object.text(advisorHandle, dmz.const.PictureHandle));
+         pictureIndex = pictureList.findText(dmz.object.text(advisorHandle, dmz.stance.PictureHandle));
 
          pictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
          advisorGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
-         text = dmz.object.text(advisorHandle, dmz.const.BioHandle);
+         text = dmz.object.text(advisorHandle, dmz.stance.BioHandle);
          if (!text) { text = ""; }
          advisorBio.text(text);
-         text = dmz.object.text(advisorHandle, dmz.const.CommentHandle);
+         text = dmz.object.text(advisorHandle, dmz.stance.CommentHandle);
          if (!text) { text = ""; }
          advisorSpecialty.text(text);
 
@@ -625,17 +625,17 @@ setup = function () {
 
             if (result) {
 
-               dmz.object.unlinkSuperObjects(advisorHandle, dmz.const.AdvisorGroupHandle);
-               dmz.object.unlinkSuperObjects(advisorHandle, dmz.const.GameUngroupedAdvisorsHandle);
+               dmz.object.unlinkSuperObjects(advisorHandle, dmz.stance.AdvisorGroupHandle);
+               dmz.object.unlinkSuperObjects(advisorHandle, dmz.stance.GameUngroupedAdvisorsHandle);
                dmz.object.link(
-                  dmz.const.AdvisorGroupHandle,
+                  dmz.stance.AdvisorGroupHandle,
                   groupList[advisorGroupList.currentIndex()],
                   advisorHandle);
 
                text = pictureList.currentText();
-               dmz.object.text(advisorHandle, dmz.const.PictureHandle, text);
-               dmz.object.text(advisorHandle, dmz.const.BioHandle, advisorBio.text());
-               dmz.object.text(advisorHandle, dmz.const.CommentHandle, advisorSpecialty.text());
+               dmz.object.text(advisorHandle, dmz.stance.PictureHandle, text);
+               dmz.object.text(advisorHandle, dmz.stance.BioHandle, advisorBio.text());
+               dmz.object.text(advisorHandle, dmz.stance.CommentHandle, advisorSpecialty.text());
             }
          });
       }
@@ -670,22 +670,22 @@ setup = function () {
       if (index < lobbyistList.length) {
 
          lobbyistHandle = lobbyistList[index];
-         links = dmz.object.superLinks(lobbyistHandle, dmz.const.LobbyistGroupHandle);
+         links = dmz.object.superLinks(lobbyistHandle, dmz.stance.LobbyistGroupHandle);
          if (links && links[0]) {
 
-            groupIndex = lobbyistGroupList.findText(dmz.const.getDisplayName(links[0]));
+            groupIndex = lobbyistGroupList.findText(dmz.stance.getDisplayName(links[0]));
          }
 
          pictureIndex =
-            lobbyistPictureList.findText(dmz.object.text(lobbyistHandle, dmz.const.PictureHandle));
+            lobbyistPictureList.findText(dmz.object.text(lobbyistHandle, dmz.stance.PictureHandle));
 
          lobbyistPictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
          lobbyistGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
-         text = dmz.object.text(lobbyistHandle, dmz.const.BioHandle);
+         text = dmz.object.text(lobbyistHandle, dmz.stance.BioHandle);
          if (!text) { text = ""; }
          lobbyistBio.text(text);
 
-         text = dmz.object.text(lobbyistHandle, dmz.const.LobbyistMessageHandle);
+         text = dmz.object.text(lobbyistHandle, dmz.stance.LobbyistMessageHandle);
          if (!text) { text = ""; }
          lobbyistMessage.text(text);
 
@@ -693,16 +693,16 @@ setup = function () {
 
             if (result) {
 
-               dmz.object.unlinkSuperObjects(lobbyistHandle, dmz.const.LobbyistGroupHandle);
+               dmz.object.unlinkSuperObjects(lobbyistHandle, dmz.stance.LobbyistGroupHandle);
                dmz.object.link(
-                  dmz.const.LobbyistGroupHandle,
+                  dmz.stance.LobbyistGroupHandle,
                   groupList[lobbyistGroupList.currentIndex()],
                   lobbyistHandle);
 
                text = lobbyistPictureList.currentText();
-               dmz.object.text(lobbyistHandle, dmz.const.PictureHandle, text);
-               dmz.object.text(lobbyistHandle, dmz.const.BioHandle, lobbyistBio.text());
-               dmz.object.text(lobbyistHandle, dmz.const.LobbyistMessageHandle, lobbyistMessage.text());
+               dmz.object.text(lobbyistHandle, dmz.stance.PictureHandle, text);
+               dmz.object.text(lobbyistHandle, dmz.stance.BioHandle, lobbyistBio.text());
+               dmz.object.text(lobbyistHandle, dmz.stance.LobbyistMessageHandle, lobbyistMessage.text());
             }
          });
       }
@@ -743,10 +743,10 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
       var group;
       if (value) {
 
-         group = dmz.object.create(dmz.const.GroupType);
+         group = dmz.object.create(dmz.stance.GroupType);
          dmz.object.activate(group);
-         dmz.object.text(group, dmz.const.NameHandle, groupName);
-         dmz.object.link(dmz.const.GameGroupHandle, CurrentGameHandle, group);
+         dmz.object.text(group, dmz.stance.NameHandle, groupName);
+         dmz.object.link(dmz.stance.GameGroupHandle, CurrentGameHandle, group);
       }
    });
 });
@@ -765,7 +765,7 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
          student = createNewUser(userName.text(), displayName.text());
          if (student) {
 
-            dmz.object.link(dmz.const.GameUngroupedUsersHandle, CurrentGameHandle, student);
+            dmz.object.link(dmz.stance.GameUngroupedUsersHandle, CurrentGameHandle, student);
          }
       }
       displayName.clear();
@@ -813,7 +813,7 @@ editScenarioWidget.observe(self, "removeGroupButton", "clicked", function () {
      , item
      ;
 
-   groupMembers = dmz.object.subLinks(groupHandle, dmz.const.GroupMembersHandle);
+   groupMembers = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
    if (groupMembers) {
 
       groupMembers.forEach(function (user) {
@@ -838,31 +838,31 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
      , groupBox
      ;
 
-   groups = dmz.object.subLinks(CurrentGameHandle, dmz.const.GameGroupHandle);
+   groups = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameGroupHandle);
    groups.forEach(function (groupHandle) {
 
-      groupBox = dmz.ui.groupBox.create(dmz.const.getDisplayName(groupHandle));
+      groupBox = dmz.ui.groupBox.create(dmz.stance.getDisplayName(groupHandle));
       vLayout = dmz.ui.layout.createVBoxLayout();
-      studentList = dmz.object.subLinks(groupHandle, dmz.const.GroupMembersHandle);
+      studentList = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
       if (studentList) {
 
          studentList.forEach(function (student) {
 
-            vLayout.addWidget(dmz.ui.label.create(dmz.const.getDisplayName(student)));
+            vLayout.addWidget(dmz.ui.label.create(dmz.stance.getDisplayName(student)));
          });
       }
       groupBox.layout(vLayout);
       listLayout.addWidget(groupBox);
    });
 
-   studentList = dmz.object.subLinks(CurrentGameHandle, dmz.const.GameUngroupedUsersHandle);
+   studentList = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameUngroupedUsersHandle);
    if (studentList) {
 
       groupBox = dmz.ui.groupBox.create("Ungrouped Students")
       vLayout = dmz.ui.layout.createVBoxLayout();
       studentList.forEach(function (student) {
 
-         vLayout.addWidget(dmz.ui.label.create(dmz.const.getDisplayName(student)));
+         vLayout.addWidget(dmz.ui.label.create(dmz.stance.getDisplayName(student)));
       });
       groupBox.layout(vLayout);
       listLayout.addWidget(groupBox);
@@ -894,10 +894,10 @@ editScenarioWidget.observe(self, "addLobbyistButton", "clicked", function () {
          var handle;
          if (value && (name.length > 0)) {
 
-            handle = dmz.object.create(dmz.const.LobbyistType);
-            dmz.object.text(handle, dmz.const.NameHandle, name);
+            handle = dmz.object.create(dmz.stance.LobbyistType);
+            dmz.object.text(handle, dmz.stance.NameHandle, name);
             dmz.object.activate(handle);
-            dmz.object.link(dmz.const.GameUngroupedLobbyistsHandle, CurrentGameHandle, handle);
+            dmz.object.link(dmz.stance.GameUngroupedLobbyistsHandle, CurrentGameHandle, handle);
          }
       });
 });
@@ -953,20 +953,20 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
                   media = dmz.object.create(MediaTypes[type].type);
                   linkAttr = MediaTypes[type].attr;
                   dmz.object.activate(media);
-                  links = dmz.object.subLinks(CurrentGameHandle, dmz.const.GameMediaHandle);
-                  dmz.object.scalar(media, dmz.const.ID, links ? links.length : 0);
-                  dmz.object.link(dmz.const.GameMediaHandle, CurrentGameHandle, media);
+                  links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
+                  dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
+                  dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, media);
                }
-               dmz.object.text(media, dmz.const.TitleHandle, MediaTitleText.text());
-               dmz.object.text(media, dmz.const.TextHandle, MediaUrlText.text());
+               dmz.object.text(media, dmz.stance.TitleHandle, MediaTitleText.text());
+               dmz.object.text(media, dmz.stance.TextHandle, MediaUrlText.text());
 
                groupHandle = groupList[idx];
-               groupMembers = dmz.object.subLinks(groupHandle, dmz.const.GroupMembersHandle);
+               groupMembers = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
                if (groupMembers && linkAttr) {
 
                   groupMembers.forEach(function (userHandle) {
 
-                     if (!dmz.object.flag(userHandle, dmz.const.AdminFlagHandle)) {
+                     if (!dmz.object.flag(userHandle, dmz.stance.AdminFlagHandle)) {
 
                         dmz.object.link(linkAttr, userHandle, media);
                      }
@@ -999,10 +999,10 @@ editScenarioWidget.observe(self, "addAdvisorButton", "clicked", function () {
 
          if (value && (name.length > 0)) {
 
-            handle = dmz.object.create(dmz.const.AdvisorType);
+            handle = dmz.object.create(dmz.stance.AdvisorType);
             dmz.object.activate(handle);
-            dmz.object.text(handle, dmz.const.NameHandle, name);
-            dmz.object.link(dmz.const.GameUngroupedAdvisorsHandle, CurrentGameHandle, handle);
+            dmz.object.text(handle, dmz.stance.NameHandle, name);
+            dmz.object.link(dmz.stance.GameUngroupedAdvisorsHandle, CurrentGameHandle, handle);
          }
       });
 });
@@ -1086,7 +1086,7 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
-      if (dmz.object.flag(objHandle, dmz.const.AdminFlagHandle)) {
+      if (dmz.object.flag(objHandle, dmz.stance.AdminFlagHandle)) {
 
          editScenarioWidget.lookup("tabWidget").show();
          dock.enabled(true);

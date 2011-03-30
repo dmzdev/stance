@@ -12,7 +12,7 @@ var dmz =
       , webview: require("dmz/ui/webView")
       , widget: require("dmz/ui/widget")
       }
-   , const: require("const")
+   , stance: require("stanceConst")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
@@ -59,11 +59,11 @@ loadCurrent = function () {
 
             webpage.page().mainFrame().load(item.source);
             NewSource = false;
-            linkHandle = dmz.object.linkHandle(dmz.const.ActiveMemoHandle, hil, item.handle);
+            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveMemoHandle, hil, item.handle);
             if (linkHandle) {
 
                dmz.object.unlink(linkHandle);
-               dmz.object.link(dmz.const.ViewedMemoHandle, hil, item.handle);
+               dmz.object.link(dmz.stance.ViewedMemoHandle, hil, item.handle);
             }
          }
       }
@@ -116,8 +116,8 @@ prevButton.observe(self, "clicked", skipBackward);
 
 setUserPlayList = function (userHandle) {
 
-   var activeList = dmz.object.subLinks(userHandle, dmz.const.ActiveMemoHandle)
-     , viewedList = dmz.object.subLinks(userHandle, dmz.const.ViewedMemoHandle)
+   var activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveMemoHandle)
+     , viewedList = dmz.object.subLinks(userHandle, dmz.stance.ViewedMemoHandle)
      , list = []
      ;
 
@@ -131,14 +131,14 @@ setUserPlayList = function (userHandle) {
       list.sort(function (obj1, obj2) {
 
          var result =
-            dmz.object.scalar(obj2, dmz.const.ID) - dmz.object.scalar(obj1, dmz.const.ID);
+            dmz.object.scalar(obj2, dmz.stance.ID) - dmz.object.scalar(obj1, dmz.stance.ID);
          return result ? result : 0;
       });
       list.forEach(function (handle) {
 
          SourceList.push (
             { handle: handle
-            , source: dmz.object.text(handle, dmz.const.TextHandle)
+            , source: dmz.object.text(handle, dmz.stance.TextHandle)
             });
       });
       totalLabel.text(list.length);
@@ -147,14 +147,14 @@ setUserPlayList = function (userHandle) {
    }
 };
 
-dmz.object.link.observe(self, dmz.const.ActiveMemoHandle,
+dmz.object.link.observe(self, dmz.stance.ActiveMemoHandle,
 function (objHandle, attrHandle, userHandle, memoHandle) {
 
    if (CurrentWindow && (userHandle === dmz.object.hil())) {
 
       SourceList.unshift (
          { handle: memoHandle
-         , source: dmz.object.text(memoHandle, dmz.const.TextHandle)
+         , source: dmz.object.text(memoHandle, dmz.stance.TextHandle)
          });
 
       CurrentIndex += 1;

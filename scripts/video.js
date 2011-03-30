@@ -12,7 +12,7 @@ var dmz =
       , treeWidget: require("dmz/ui/treeWidget")
       , widget: require("dmz/ui/widget")
       }
-   , const: require("const")
+   , stance: require("stanceConst")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
@@ -66,11 +66,11 @@ playCurrent = function () {
          if (NewSource) { source.currentSource(video.source); NewSource = false; }
          if (source.hasVideo()) {
 
-            linkHandle = dmz.object.linkHandle(dmz.const.ActiveVideoHandle, hil, video.handle);
+            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveVideoHandle, hil, video.handle);
             if (linkHandle) {
 
                dmz.object.unlink(linkHandle);
-               dmz.object.link(dmz.const.ViewedVideoHandle, hil, video.handle);
+               dmz.object.link(dmz.stance.ViewedVideoHandle, hil, video.handle);
             }
             source.play();
          }
@@ -157,8 +157,8 @@ source.observe(self, "finished", skipForward);
 
 setUserPlayList = function (userHandle) {
 
-   var activeList = dmz.object.subLinks(userHandle, dmz.const.ActiveVideoHandle)
-     , viewedList = dmz.object.subLinks(userHandle, dmz.const.ViewedVideoHandle)
+   var activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveVideoHandle)
+     , viewedList = dmz.object.subLinks(userHandle, dmz.stance.ViewedVideoHandle)
      , list = []
      ;
 
@@ -172,14 +172,14 @@ setUserPlayList = function (userHandle) {
       list.sort(function (obj1, obj2) {
 
          var result =
-            dmz.object.scalar(obj2, dmz.const.ID) - dmz.object.scalar(obj1, dmz.const.ID);
+            dmz.object.scalar(obj2, dmz.stance.ID) - dmz.object.scalar(obj1, dmz.stance.ID);
          return result ? result : 0;
       });
       list.forEach(function (handle) {
 
          SourceList.push (
             { handle: handle
-            , source: dmz.object.text(handle, dmz.const.TextHandle)
+            , source: dmz.object.text(handle, dmz.stance.TextHandle)
             });
       });
       self.log.warn ("list: ", list);
@@ -189,14 +189,14 @@ setUserPlayList = function (userHandle) {
    }
 };
 
-dmz.object.link.observe(self, dmz.const.ActiveVideoHandle,
+dmz.object.link.observe(self, dmz.stance.ActiveVideoHandle,
 function (objHandle, attrHandle, userHandle, videoHandle) {
 
    if (CurrentWindow && (userHandle === dmz.object.hil())) {
 
       SourceList.unshift (
          { handle: videoHandle
-         , source: dmz.object.text(videoHandle, dmz.const.TextHandle)
+         , source: dmz.object.text(videoHandle, dmz.stance.TextHandle)
          });
 
       CurrentIndex += 1;
