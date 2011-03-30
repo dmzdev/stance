@@ -13,7 +13,9 @@
    <object-type name="intel"/>
    <object-type name="map_push_pin"/>
    <object-type name="advisor"/>
-   <object-type name="media"/>
+   <object-type name="media-video"/>
+   <object-type name="media-newspaper"/>
+   <object-type name="media-memo"/>
    <object-type name="lobbyist"/>
    <object-type name="question"/>
    <message name="AddPinMessage"/>

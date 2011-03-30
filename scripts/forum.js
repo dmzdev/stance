@@ -10,7 +10,7 @@ var dmz =
           , messageBox: require("dmz/ui/messageBox")
           , graph: require("dmz/ui/graph")
           }
-       , const: require("const")
+       , stance: require("stanceConst")
        , time: require("dmz/runtime/time")
        , util: require("dmz/types/util")
        }
@@ -43,24 +43,24 @@ dmz.object.create.observe(self, function (handle, objType) {
 
    if (objType) {
 
-      if (objType.isOfType(dmz.const.PostType)) {
+      if (objType.isOfType(dmz.stance.PostType)) {
 
          PostList[handle] = { widget: false };
       }
-      else if (objType.isOfType(dmz.const.ForumType)) {
+      else if (objType.isOfType(dmz.stance.ForumType)) {
 
          ForumList[handle] =
-            { widget: tree.add([dmz.const.getDisplayName(handle), "", "", ""])
+            { widget: tree.add([dmz.stance.getDisplayName(handle), "", "", ""])
             };
 
          ForumList[handle].widget.data(0, handle);
          tree.resizeColumnToContents(0);
       }
-      else if (objType.isOfType(dmz.const.GroupType)) { GroupList[handle] = []; }
+      else if (objType.isOfType(dmz.stance.GroupType)) { GroupList[handle] = []; }
    }
 });
 
-dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, value) {
+dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, value) {
 
    if (ForumList[handle]) {
 
@@ -69,13 +69,13 @@ dmz.object.text.observe(self, dmz.const.NameHandle, function (handle, attr, valu
    }
 });
 
-dmz.object.link.observe(self, dmz.const.ForumLink,
+dmz.object.link.observe(self, dmz.stance.ForumLink,
 function (linkObjHandle, attrHandle, groupHandle, forumHandle) {
 
    GroupList[groupHandle].push(forumHandle);
 });
 
-dmz.object.text.observe(self, dmz.const.TitleHandle, function (handle, attr, value) {
+dmz.object.text.observe(self, dmz.stance.TitleHandle, function (handle, attr, value) {
 
    var post = PostList[handle];
    if (post && post.widget) {
@@ -85,34 +85,34 @@ dmz.object.text.observe(self, dmz.const.TitleHandle, function (handle, attr, val
    }
 });
 
-dmz.object.timeStamp.observe(self, dmz.const.CreatedAtHandle, function (handle, attr, value) {
+dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtHandle, function (handle, attr, value) {
 
    var post = PostList[handle];
    if (post && post.widget) { post.widget.text(2, dmz.util.timeStampToDate(value)); }
 });
 
-dmz.object.text.observe(self, dmz.const.TextHandle, function (handle, attr, value) {
+dmz.object.text.observe(self, dmz.stance.TextHandle, function (handle, attr, value) {
 
    var post = PostList[handle];
    if (post && post.widget) { post.widget.text(3, value); }
 });
 
-dmz.object.link.observe(self, dmz.const.CreatedByHandle,
+dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    var post = PostList[superHandle];
-   if (post && post.widget) { post.widget.text(1,dmz.const.getDisplayName(subHandle)); }
+   if (post && post.widget) { post.widget.text(1,dmz.stance.getDisplayName(subHandle)); }
 });
 
-dmz.object.link.observe(self, dmz.const.ParentHandle,
+dmz.object.link.observe(self, dmz.stance.ParentHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    var child = PostList[superHandle]
      , parent = PostList[subHandle] ? PostList[subHandle] : ForumList[subHandle]
-     , author = dmz.const.getAuthorName(superHandle)
-     , title = dmz.object.text(superHandle, dmz.const.TitleHandle)
-     , text = dmz.object.text(superHandle, dmz.const.TextHandle)
-     , createdAt = dmz.object.timeStamp(superHandle, dmz.const.CreatedAtHandle)
+     , author = dmz.stance.getAuthorName(superHandle)
+     , title = dmz.object.text(superHandle, dmz.stance.TitleHandle)
+     , text = dmz.object.text(superHandle, dmz.stance.TextHandle)
+     , createdAt = dmz.object.timeStamp(superHandle, dmz.stance.CreatedAtHandle)
      , hil
      , backgroundBrush = UnreadPostBrush
      , postsRead
@@ -125,7 +125,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
       hil = dmz.object.hil();
       if (hil) {
 
-         postsRead = dmz.object.subLinks(hil, dmz.const.PostVisitedHandle);
+         postsRead = dmz.object.subLinks(hil, dmz.stance.PostVisitedHandle);
          if (postsRead && (postsRead.indexOf(superHandle) !== -1)) {
 
             backgroundBrush = ReadPostBrush;
@@ -148,10 +148,10 @@ function (objHandle, attrHandle, value) {
      , forum
      ;
 
-   if (value && type && type.isOfType(dmz.const.UserType)) {
+   if (value && type && type.isOfType(dmz.stance.UserType)) {
 
-      postsRead = dmz.object.subLinks(objHandle, dmz.const.PostVisitedHandle);
-      currGroup = dmz.const.getUserGroupHandle(objHandle);
+      postsRead = dmz.object.subLinks(objHandle, dmz.stance.PostVisitedHandle);
+      currGroup = dmz.stance.getUserGroupHandle(objHandle);
       if (currGroup) {
 
          Object.keys(ForumList).forEach(function (forumHandle) {
@@ -162,7 +162,7 @@ function (objHandle, attrHandle, value) {
             forumHandle = parseInt(forumHandle);
             dmz.object.flag(
                forumHandle,
-               dmz.const.VisibleHandle,
+               dmz.stance.VisibleHandle,
                GroupList[currGroup].indexOf(forumHandle) !== -1);
          });
       }
@@ -193,21 +193,21 @@ function (objHandle, attrHandle, value) {
 
          currHandle = currHandle.data(0);
          tree.currentItem().background(ReadPostBrush);
-         if (!dmz.object.linkHandle(dmz.const.PostVisitedHandle, objHandle, currHandle)) {
+         if (!dmz.object.linkHandle(dmz.stance.PostVisitedHandle, objHandle, currHandle)) {
 
-            dmz.object.link(dmz.const.PostVisitedHandle, objHandle, currHandle);
+            dmz.object.link(dmz.stance.PostVisitedHandle, objHandle, currHandle);
          }
       }
    }
 });
 
 
-dmz.object.flag.observe(self, dmz.const.VisibleHandle, function (handle, attr, value) {
+dmz.object.flag.observe(self, dmz.stance.VisibleHandle, function (handle, attr, value) {
 
    var type = dmz.object.type(handle)
      ;
 
-   if (type && type.isOfType(dmz.const.ForumType)) {
+   if (type && type.isOfType(dmz.stance.ForumType)) {
 
       ForumList[handle].widget.hidden(!value);
    }
@@ -241,26 +241,26 @@ tree.observe (self, "currentItemChanged", function (curr) {
       text = curr.text(3);
       textBox.text (text ? text : " ");
 
-      if (hil && type.isOfType(dmz.const.PostType) &&
-         !dmz.object.linkHandle(dmz.const.PostVisitedHandle, hil, currHandle)) {
+      if (hil && type.isOfType(dmz.stance.PostType) &&
+         !dmz.object.linkHandle(dmz.stance.PostVisitedHandle, hil, currHandle)) {
 
-         dmz.object.link(dmz.const.PostVisitedHandle, hil, currHandle);
+         dmz.object.link(dmz.stance.PostVisitedHandle, hil, currHandle);
       }
 
       curr.background(0, ReadPostBrush);
 
-      if (type.isOfType(dmz.const.ForumType)) {
+      if (type.isOfType(dmz.stance.ForumType)) {
 
          replyButton.text("New Thread");
          parentHandle = currHandle;
          maxPostLength = 1000;
       }
-      else if (type.isOfType(dmz.const.PostType)) {
+      else if (type.isOfType(dmz.stance.PostType)) {
 
          replyButton.text("New Reply");
          maxPostLength = 400;
-         parentHandle = dmz.object.subLinks(currHandle, dmz.const.ParentHandle)[0];
-         if (dmz.object.type(parentHandle).isOfType(dmz.const.ForumType)) {
+         parentHandle = dmz.object.subLinks(currHandle, dmz.stance.ParentHandle)[0];
+         if (dmz.object.type(parentHandle).isOfType(dmz.stance.ForumType)) {
 
             parentHandle = currHandle;
          }
@@ -284,7 +284,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
 
       replyButton.observe(self, "clicked", function () {
 
-         if (type.isOfType(dmz.const.PostType)) {
+         if (type.isOfType(dmz.stance.PostType)) {
 
             text = "Re: " + curr.text(0);
             replyTitleText.text(text);
@@ -309,13 +309,13 @@ tree.observe (self, "currentItemChanged", function (curr) {
 
                if ((text.length <= maxPostLength) && parentHandle) {
 
-                  post = dmz.object.create(dmz.const.PostType);
-                  dmz.object.text(post, dmz.const.TitleHandle, title);
-                  dmz.object.text(post, dmz.const.TextHandle, text);
-                  dmz.object.timeStamp(post, dmz.const.CreatedAtHandle, dmz.time.getFrameTime());
-                  dmz.object.link(dmz.const.PostVisitedHandle, author, post);
-                  dmz.object.link(dmz.const.ParentHandle, post, parentHandle);
-                  dmz.object.link(dmz.const.CreatedByHandle, post, author);
+                  post = dmz.object.create(dmz.stance.PostType);
+                  dmz.object.text(post, dmz.stance.TitleHandle, title);
+                  dmz.object.text(post, dmz.stance.TextHandle, text);
+                  dmz.object.timeStamp(post, dmz.stance.CreatedAtHandle, dmz.time.getFrameTime());
+                  dmz.object.link(dmz.stance.PostVisitedHandle, author, post);
+                  dmz.object.link(dmz.stance.ParentHandle, post, parentHandle);
+                  dmz.object.link(dmz.stance.CreatedByHandle, post, author);
                   dmz.object.activate(post);
                }
             }
@@ -334,7 +334,7 @@ dmz.object.destroy.observe(self, function (objHandle) {
      ;
    if (ForumList[objHandle]) {
 
-      members = dmz.object.subLinks(objHandle, dmz.const.ParentHandle);
+      members = dmz.object.subLinks(objHandle, dmz.stance.ParentHandle);
       if (members) {
 
          members.forEach(function (handle) { dmz.object.destroy(handle); });

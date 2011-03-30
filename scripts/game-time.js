@@ -1,8 +1,7 @@
 require("datejs/date"); // www.datejs.com - an open-source JavaScript Date Library.
 
 var dmz =
-       { stanceConst: require("const")
-       , object: require("dmz/components/object")
+       { object: require("dmz/components/object")
        , time: require("dmz/runtime/time")
        , defs: require("dmz/runtime/definitions")
        , data: require("dmz/runtime/data")
@@ -10,6 +9,7 @@ var dmz =
        , module: require("dmz/runtime/module")
        , objectType: require("dmz/runtime/objectType")
        , util: require("dmz/types/util")
+       , stance: require("stanceConst")
        }
     , DateJs = require("datejs/time")
     // Constants
