@@ -68,7 +68,7 @@ LoginSuccessMessage.subscribe(self, function (data) {
 
 //         dmz.object.text(_gameHandle, dmz.stance.UserNameHandle, _userName);
 
-         if (_timeMod) { _timeMod.serverTime(data.number(TimeStampAttr)); }
+         if (_timeMod) { _timeMod.setServerTime(data.number(TimeStampAttr)); }
          else { self.log.error("Failed to to set server time"); }
 
          _activateUser(_userName);
@@ -142,8 +142,8 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
       dmz.time.setTimer(self, 0.5, function () {
 
          var data = dmz.data.create()
-           , date = new Date()
-//           , date = Date.parse("5:59:40 pm 3/20/11")
+//           , date = new Date()
+           , date = Date.parse("5:59:40 pm 3/28/11")
            ;
 
          data.string(dmz.stance.NameHandle, 0, self.config.string("fake-login.name", "dmz"));
