@@ -21,15 +21,6 @@
       <object-type-set>
          <!-- <object-type name="intel"/> -->
       </object-type-set>
-      <attribute name="server_time">
-         <mask name="timestamp"/>
-      </attribute>
-      <attribute name="game_time">
-         <mask name="timestamp"/>
-      </attribute>
-      <attribute name="local_time">
-         <mask name="timestamp"/>
-      </attribute>
       <attribute name="Object_Human_In_The_Loop">
          <mask name="flag"/>
       </attribute>
@@ -39,7 +30,7 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-   <db app="stance_scott"/>
+   <db app="stance_testing"/>
 </web-services-object>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>
@@ -94,14 +85,4 @@
       </row>
    </color-grid>
 </chds-login>
-<!-- <runtime>
-   <object-type name="Player"/>
- </runtime> -->
-<!-- <archive>
-   <object name="hil" type="Player">
-      <attributes name="Object_Human_In_The_Loop">
-         <flag value="true"/>
-      </attributes>
-   </object>
-</archive> -->
 </dmz>
