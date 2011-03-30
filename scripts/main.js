@@ -214,6 +214,10 @@ setupMainWindow = function () {
          });
       });
 
+      Object.keys(PageLink).forEach(function (key) {
+
+         PageLink[key].cursor(dmz.ui.consts.PointingHandCursor);
+      });
       stackedWidget.currentIndex(0);
       gscene.eventFilter(self, mouseEvent);
       dmz.ui.mainWindow.centralWidget(main);
