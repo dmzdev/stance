@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tab_13">
       <attribute name="title">
@@ -430,43 +430,18 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_53">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_39">
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_54">
-             <item>
-              <widget class="QPushButton" name="addLobbyistButton">
-               <property name="text">
-                <string>Add Lobbyist</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="editLobbyistButton">
-               <property name="text">
-                <string>Edit Lobbyist</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="removeLobbyistButton">
-               <property name="text">
-                <string>Remove Lobbyist</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QComboBox" name="lobbyistList"/>
-           </item>
-          </layout>
-         </item>
-         <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <widget class="QPushButton" name="addInjectButton">
              <property name="text">
               <string>Add Media Inject</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="addLobbyistButton">
+             <property name="text">
+              <string>Add Lobbyist Inject</string>
              </property>
             </widget>
            </item>

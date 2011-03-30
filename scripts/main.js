@@ -35,7 +35,7 @@ var dmz =
    // Object Types
 
    // Variables
-   , AdvisorCount = 6
+   , AdvisorCount = 5
    , sceneWidth = self.config.number("scene.width", 800)
    , sceneHeight = self.config.number("scene.height", 400)
 
@@ -57,6 +57,7 @@ var dmz =
       , Advisor2: false
       , Advisor3: false
       , Advisor4: false
+      , Lobbyist: false
       }
 
    // Function decls
@@ -121,6 +122,7 @@ setupMainWindow = function () {
      , length
      , box
      , widget
+     , lobbyist
      ;
 
    if (main && stackedWidget && mainGView) {
@@ -136,6 +138,10 @@ setupMainWindow = function () {
          dmz.ui.graph.createTextItem("Advisor #" + (idx + 1), box);
          advisors.push(box);
       }
+
+      lobbyist = gscene.addRect(0, 0, 100, 100);
+      lobbyist.pos (2 * idx * 100, 0);
+      dmz.ui.graph.createTextItem("Lobbyist", lobbyist);
 
       map = dmz.ui.graph.createRectItem(0, 0, 60, 60, advisors[0]);
       map.pos(0, 150);
@@ -170,6 +176,7 @@ setupMainWindow = function () {
       PageLink.Video = tv;
       PageLink.Newspaper = newspaper;
       PageLink.Memo = inbox;
+      PageLink.Lobbyist = lobbyist;
 
       box = dmz.ui.webview.create();
       box.url ("http://dev.chds.us/?dystopia:map2");
@@ -197,6 +204,10 @@ setupMainWindow = function () {
       inbox.data(0, widget);
       stackedWidget.add(widget);
 
+      widget = dmz.ui.label.create("Lobbyist screen");
+      lobbyist.data(0, widget);
+      stackedWidget.add(widget);
+
       homeButton.observe(self, "clicked", function () {
 
          stackedWidget.currentIndex (0);
@@ -216,7 +227,7 @@ setupMainWindow = function () {
 
       Object.keys(PageLink).forEach(function (key) {
 
-         PageLink[key].cursor(dmz.ui.consts.PointingHandCursor);
+         if (PageLink[key]) { PageLink[key].cursor(dmz.ui.consts.PointingHandCursor); }
       });
       stackedWidget.currentIndex(0);
       gscene.eventFilter(self, mouseEvent);

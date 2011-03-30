@@ -874,7 +874,7 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
    }
 });
 
-dmz.object.text.observe(self, dmz.stance.CommentHandle, function (handle, attr, value) {
+dmz.object.text.observe(self, dmz.stance.TitleHandle, function (handle, attr, value) {
 
    var index
      , hilGroup = dmz.stance.getUserGroupHandle(dmz.object.hil())
@@ -1080,7 +1080,7 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
          advisorData[advisorHandle] =
             { bio: dmz.object.text(advisorHandle, dmz.stance.BioHandle)
             , name: dmz.stance.getDisplayName(advisorHandle)
-            , specialty: dmz.object.text(advisorHandle, dmz.stance.CommentHandle)
+            , specialty: dmz.object.text(advisorHandle, dmz.stance.TitleHandle)
             , picture: false
             , taskFunction: false
             , voteWidgets: []

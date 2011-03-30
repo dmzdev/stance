@@ -26,7 +26,6 @@ var dmz =
    , groupComboBox = editScenarioWidget.lookup("groupComboBox")
    , gameStateButton = editScenarioWidget.lookup("gameStateButton")
    , advisorComboBox = editScenarioWidget.lookup("advisorList")
-   , lobbyistComboBox = editScenarioWidget.lookup("lobbyistList")
    , forumComboBox = editScenarioWidget.lookup("forumList")
    , forumAssocList = editScenarioWidget.lookup("forumAssocList")
    , forumGroupList = editScenarioWidget.lookup("forumGroupList")
@@ -60,6 +59,8 @@ var dmz =
    , lobbyistBio = editLobbyistDialog.lookup("lobbyistBio")
    , lobbyistMessage = editLobbyistDialog.lookup("lobbyistMessage")
    , lobbyistPictureList = editLobbyistDialog.lookup("pictureList")
+   , lobbyistTitle = editLobbyistDialog.lookup("lobbyistTitle")
+   , lobbyistName = editLobbyistDialog.lookup("nameEdit")
 
    , CreateMediaInjectDialog = dmz.ui.loader.load("MediaInjectDialog.ui")
    , MediaTypeList = CreateMediaInjectDialog.lookup("mediaType")
@@ -74,7 +75,6 @@ var dmz =
    , advisorPictureObjects = []
    , lobbyistPictureObjects = []
    , advisorList = []
-   , lobbyistList = []
    , forumList = []
    , forumGroupWidgets = {}
    , CurrentGameHandle = false
@@ -617,7 +617,7 @@ setup = function () {
          text = dmz.object.text(advisorHandle, dmz.stance.BioHandle);
          if (!text) { text = ""; }
          advisorBio.text(text);
-         text = dmz.object.text(advisorHandle, dmz.stance.CommentHandle);
+         text = dmz.object.text(advisorHandle, dmz.stance.TitleHandle);
          if (!text) { text = ""; }
          advisorSpecialty.text(text);
 
@@ -635,9 +635,17 @@ setup = function () {
                text = pictureList.currentText();
                dmz.object.text(advisorHandle, dmz.stance.PictureHandle, text);
                dmz.object.text(advisorHandle, dmz.stance.BioHandle, advisorBio.text());
-               dmz.object.text(advisorHandle, dmz.stance.CommentHandle, advisorSpecialty.text());
+               dmz.object.text(advisorHandle, dmz.stance.TitleHandle, advisorSpecialty.text());
             }
          });
+      }
+   });
+
+   lobbyistPictureList.observe(self, "currentIndexChanged", function (index) {
+
+      if (index < lobbyistPictureObjects.length) {
+
+         lobbyistPictureLabel.pixmap(lobbyistPictureObjects[index]);
       }
    });
 
@@ -656,64 +664,58 @@ setup = function () {
       });
    }
 
-   editScenarioWidget.observe(self, "editLobbyistButton", "clicked", function () {
+   editScenarioWidget.observe(self, "addLobbyistButton", "clicked", function () {
 
-      var groupIndex
-        , groupHandle
-        , pictureIndex
-        , lobbyistHandle
-        , links
-        , index = lobbyistComboBox.currentIndex()
-        , text
-        ;
+      lobbyistPictureList.currentIndex(0);
+      lobbyistGroupList.currentIndex(0);
+      lobbyistBio.text("");
+      lobbyistMessage.text("");
+      lobbyistTitle.text("");
+      lobbyistName.text("");
+      editLobbyistDialog.open(self, function (result) {
 
-      if (index < lobbyistList.length) {
+         var groupIndex = lobbyistGroupList.currentIndex()
+           , links
+           , text
+           , lobbyistHandle
+           ;
 
-         lobbyistHandle = lobbyistList[index];
-         links = dmz.object.superLinks(lobbyistHandle, dmz.stance.LobbyistGroupHandle);
-         if (links && links[0]) {
+         if (result) {
 
-            groupIndex = lobbyistGroupList.findText(dmz.stance.getDisplayName(links[0]));
-         }
+            links = dmz.object.subLinks(groupList[groupIndex], dmz.stance.ActiveLobbyistHandle);
+            if (links) {
 
-         pictureIndex =
-            lobbyistPictureList.findText(dmz.object.text(lobbyistHandle, dmz.stance.PictureHandle));
+               links.forEach(function (lobbyistHandle) {
 
-         lobbyistPictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
-         lobbyistGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
-         text = dmz.object.text(lobbyistHandle, dmz.stance.BioHandle);
-         if (!text) { text = ""; }
-         lobbyistBio.text(text);
+                  var linkHandle =
+                     dmz.object.linkHandle(
+                        dmz.stance.ActiveLobbyistHandle,
+                        groupList[groupIndex],
+                        lobbyistHandle);
 
-         text = dmz.object.text(lobbyistHandle, dmz.stance.LobbyistMessageHandle);
-         if (!text) { text = ""; }
-         lobbyistMessage.text(text);
+                  if (linkHandle) {
 
-         editLobbyistDialog.open(self, function (result) {
-
-            if (result) {
-
-               dmz.object.unlinkSuperObjects(lobbyistHandle, dmz.stance.LobbyistGroupHandle);
-               dmz.object.link(
-                  dmz.stance.LobbyistGroupHandle,
-                  groupList[lobbyistGroupList.currentIndex()],
-                  lobbyistHandle);
-
-               text = lobbyistPictureList.currentText();
-               dmz.object.text(lobbyistHandle, dmz.stance.PictureHandle, text);
-               dmz.object.text(lobbyistHandle, dmz.stance.BioHandle, lobbyistBio.text());
-               dmz.object.text(lobbyistHandle, dmz.stance.LobbyistMessageHandle, lobbyistMessage.text());
+                     dmz.object.unlink(linkHandle);
+                     dmz.object.link(
+                        dmz.stance.PreviousLobbyistHandle,
+                        groupList[groupIndex],
+                        lobbyistHandle);
+                  }
+               });
             }
-         });
-      }
-   });
 
-   lobbyistPictureList.observe(self, "currentIndexChanged", function (index) {
+            lobbyistHandle = dmz.object.create(dmz.stance.LobbyistType);
+            dmz.object.activate(lobbyistHandle);
+            text = lobbyistPictureList.currentText();
+            dmz.object.text(lobbyistHandle, dmz.stance.PictureHandle, text);
+            dmz.object.text(lobbyistHandle, dmz.stance.BioHandle, lobbyistBio.text());
+            dmz.object.text(lobbyistHandle, dmz.stance.NameHandle, lobbyistName.text());
+            dmz.object.text(lobbyistHandle, dmz.stance.TitleHandle, lobbyistTitle.text());
+            dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
+            dmz.object.link(dmz.stance.ActiveLobbyistHandle, groupList[groupIndex], lobbyistHandle);
 
-      if (index < lobbyistPictureObjects.length) {
-
-         lobbyistPictureLabel.pixmap(lobbyistPictureObjects[index]);
-      }
+         }
+      });
    });
 };
 
@@ -877,53 +879,6 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
          widget = listLayout.at(0);
          listLayout.removeWidget(widget);
          widget.close();
-      }
-   });
-});
-
-editScenarioWidget.observe(self, "addLobbyistButton", "clicked", function () {
-
-   dmz.ui.inputDialog.create(
-      { title: "Create New Lobbyist"
-      , label: "Lobbyist Name:"
-      , text: ""
-      }
-      , editScenarioWidget
-      ).open(self, function (value, name) {
-
-         var handle;
-         if (value && (name.length > 0)) {
-
-            handle = dmz.object.create(dmz.stance.LobbyistType);
-            dmz.object.text(handle, dmz.stance.NameHandle, name);
-            dmz.object.activate(handle);
-            dmz.object.link(dmz.stance.GameUngroupedLobbyistsHandle, CurrentGameHandle, handle);
-         }
-      });
-});
-
-editScenarioWidget.observe(self, "removeLobbyistButton", "clicked", function () {
-
-   dmz.ui.messageBox.create(
-      { type: dmz.ui.messageBox.Warning
-      , text: "Are you sure you want to delete this lobbyist?"
-      , informativeText: "Clicking <b>Ok</b> will cause all data for this lobbyist to be permanently deleted!"
-      , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-      , defaultButton: dmz.ui.messageBox.Cancel
-      }
-      , editScenarioWidget
-   ).open(self, function (value) {
-
-      var index = lobbyistComboBox.currentIndex()
-        , handle
-        ;
-
-      if (value && (index < lobbyistList.length)) {
-
-         handle = lobbyistList[index];
-         lobbyistList.splice(index, 1);
-         lobbyistComboBox.removeIndex(index);
-         dmz.object.destroy(handle);
       }
    });
 });

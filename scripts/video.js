@@ -182,7 +182,6 @@ setUserPlayList = function (userHandle) {
             , source: dmz.object.text(handle, dmz.stance.TextHandle)
             });
       });
-      self.log.warn ("list: ", list);
       totalLabel.text(list.length);
       currLabel.text("1");
       CurrentIndex = 0;
