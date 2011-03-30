@@ -24,6 +24,12 @@
       <attribute name="server_time">
          <mask name="timestamp"/>
       </attribute>
+      <attribute name="game_time">
+         <mask name="timestamp"/>
+      </attribute>
+      <attribute name="local_time">
+         <mask name="timestamp"/>
+      </attribute>
       <attribute name="Object_Human_In_The_Loop">
          <mask name="flag"/>
       </attribute>

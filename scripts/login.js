@@ -66,82 +66,10 @@ LoginSuccessMessage.subscribe(self, function (data) {
 
 //         dmz.object.text(_gameHandle, dmz.const.UserNameHandle, _userName);
 
-         if (_timeMod) { _timeMod.serverTime(data.number(TimeStampAttr)); }
+         if (_timeMod) { _timeMod.setServerTime(data.number(TimeStampAttr)); }
          else { self.log.error("Failed to to set server time"); }
 
          _activateUser(_userName);
-
-         if (1) {
-
-            var timeSegment =
-                [ { serverDate: Date.parse("3/23/11")
-                  , startHour: 6
-                  , startMinute: 0
-                  , endHour: 18
-                  , endMinute: 0
-                  , startDate: Date.parse("1/1/12")
-                  , endDate: Date.parse("1/1/12")
-                  }
-                ,
-                  { serverDate: Date.parse("3/24/11")
-                  , startHour: 6
-                  , startMinute: 0
-                  , endHour: 18
-                  , endMinute: 0
-                  , startDate: Date.parse("1/2/12")
-                  , endDate: Date.parse("1/2/12")
-                  }
-                ,
-                  { serverDate: Date.parse("3/25/11")
-                  , startHour: 6
-                  , startMinute: 0
-                  , endHour: 18
-                  , endMinute: 0
-                  , startDate: Date.parse("1/3/12")
-                  , endDate: Date.parse("1/10/12")
-                  }
-                ,
-                  { serverDate: Date.parse("3/28/11")
-                  , startHour: 6
-                  , startMinute: 0
-                  , endHour: 18
-                  , endMinute: 0
-                  , startDate: Date.parse("1/13/12")
-                  , endDate: Date.parse("2/13/12")
-                  }
-                ,
-                  { serverDate: Date.parse("3/29/11")
-                  , startHour: 6
-                  , startMinute: 0
-                  , endHour: 18
-                  , endMinute: 0
-                  , startDate: Date.parse("2/14/12")
-                  , endDate: Date.parse("2/12/12")
-                  }
-                ]
-                ;
-
-            var data = dmz.data.create()
-              , ix
-              ;
-
-            ix = 0;
-            timeSegment.forEach (function (obj) {
-
-               data.number("serverDate", ix, toTimeStamp(obj.serverDate));
-               data.number("startHour", ix, obj.startHour);
-               data.number("startMinute", ix, obj.startMinute);
-               data.number("endHour", ix, obj.endHour);
-               data.number("endMinute", ix, obj.endMinute);
-               data.number("startDate", ix, toTimeStamp(obj.startDate));
-               data.number("endDate", ix, toTimeStamp(obj.endDate));
-               ix++;
-            });
-
-            data.number("count", 0, timeSegment.length);
-
-            dmz.object.data(_gameHandle, dmz.const.GameTimeHandle, data);
-         }
       }
    }
 });
@@ -212,8 +140,8 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
       dmz.time.setTimer(self, 0.5, function () {
 
          var data = dmz.data.create()
-           , date = new Date()
-//           , date = Date.parse("5:59:40 pm 3/20/11")
+//           , date = new Date()
+           , date = Date.parse("5:59:40 pm 3/28/11")
            ;
 
 

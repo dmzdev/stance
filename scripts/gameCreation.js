@@ -44,12 +44,14 @@ var dmz =
         , editScenarioWidget
         )
 
-   , timeMod
-   , startDate = editScenarioWidget.lookup("startDate")
-   , currentDate = editScenarioWidget.lookup("currentDate")
-   , nextDate = editScenarioWidget.lookup("nextDate")
-   , gameDateTime = editScenarioWidget.lookup("gameTime")
-   , serverDateTime = editScenarioWidget.lookup("serverTime")
+   , serverStartDateEdit = editScenarioWidget.lookup("serverStartDateEdit")
+   , serverEndDateEdit = editScenarioWidget.lookup("serverEndDateEdit")
+   , serverDeltaLabel = editScenarioWidget.lookup("serverDeltaLabel")
+   , gameStartDateEdit = editScenarioWidget.lookup("gameStartDateEdit")
+   , gameEndDateEdit = editScenarioWidget.lookup("gameEndDateEdit")
+   , gameDeltaLabel = editScenarioWidget.lookup("gameDeltaLabel")
+   , timeFactorSpinBox = editScenarioWidget.lookup("timeFactorSpinBox")
+   , timeInfoLabel = editScenarioWidget.lookup("timeInfoLabel")
 
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
 
@@ -82,6 +84,8 @@ var dmz =
    , CurrentGameHandle = false
 
    // Function decls
+   , toTimeStamp = dmz.util.dateToTimeStamp
+   , toDate = dmz.util.timeStampToDate
    , createNewGame
    , createNewUser
    , readUserConfig
@@ -1025,47 +1029,36 @@ editScenarioWidget.observe(self, "gameStatsButton", "clicked", function () {
    ).open(self, function (value) {});
 });
 
-editScenarioWidget.observe(self, "tabWidget", "currentChanged", function (current, widget) {
+timeFactorSpinBox.observe(self, "valueChanged", function (value) {
 
-   if (current === 3) {
-
-      updateTimePage();
-      self.log.warn("time page: " + current);
-   }
+   updateTimePage();
 });
 
 updateTimePage = function () {
 
-   var frameTime = dmz.util.timeStampToDate(dmz.time.getFrameTime());
+   var frameTime = toDate(dmz.time.getFrameTime());
 
-   startDate.dateTime(frameTime);
-}
+   serverStartDate.dateTime(frameTime);
+};
 
-dmz.object.timeStamp.observe(self, dmz.const.ServerTimeHandle,
-function (handle, attr, value) {
 
-   if (handle === CurrentGameHandle) {
+//dmz.object.timeStamp.observe(self, dmz.const.ServerTimeHandle,
+//function (handle, attr, value) {
 
-      serverTime = value;
+//   if (handle === CurrentGameHandle && serverDateTime) {
 
-      serverDateTime.dateTime(dmz.util.timeStampToDate(serverTime));
-   }
-});
+//      serverDateTime.dateTime(dmz.util.timeStampToDate(value));
+//   }
+//});
 
-dmz.time.setRepeatingTimer (self, 2.0, function (Delta) {
+//dmz.object.timeStamp.observe(self, dmz.const.GameTimeHandle,
+//function (handle, attr, value) {
 
-   if (timeMod) {
+//   if (handle === CurrentGameHandle && gameDateTime) {
 
-      serverDateTime.dateTime(dmz.util.timeStampToDate(timeMod.serverTime()));
-      gameDateTime.dateTime(dmz.util.timeStampToDate(timeMod.gameTime()));
-   }
-});
-
-dmz.module.subscribe(self, "game-time", function (Mode, module) {
-
-   if (Mode === dmz.module.Activate) { timeMod = module; }
-   else if (Mode === dmz.module.Deactivate) { timeMod = undefined; }
-});
+//      gameDateTime.dateTime(dmz.util.timeStampToDate(value));
+//   }
+//});
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {

@@ -18,6 +18,9 @@
       <attribute name="server_time">
          <mask name="timestamp"/>
       </attribute>
+      <attribute name="game_time">
+         <mask name="timestamp"/>
+      </attribute>
       <attribute name="_publish">
          <mask name="flag"/>
       </attribute>

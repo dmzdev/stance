@@ -29,6 +29,9 @@
 <login>
    <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>
 </login>
+<game-time>
+   <update-interval value="10"/>
+</game-time>
 <main>
    <scene height="800" width="400"/>
 </main>
