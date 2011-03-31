@@ -215,6 +215,18 @@ approveVote = function (voteHandle) {
          dmz.object.flag(voteHandle, dmz.stance.ActiveHandle, false);
          dmz.object.flag(voteHandle, dmz.stance.VoteResultHandle, false);
       }
+      else {
+
+         dmz.email.sendEmail
+            ( dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle)
+            , "STANCE: Your group must vote on a new task!"
+            , "Student, \n" + "Your advisor has approved voting on the following task:\n" +
+                 dmz.object.text(voteHandle, dmz.stance.TextHandle) +
+                 "\nYour advisor's response to the task was:\n" +
+                 dmz.object.text(voteHandle, dmz.stance.CommentHandle) +
+                 "\nPlease go vote on this task as soon as possible!"
+            );
+      }
 
       VoteOpinionArea.text("");
       VoteTextArea.text("");
@@ -270,6 +282,7 @@ updateAdvisor = function (module, idx) {
                  , text = textWidget ? textWidget.text() : ""
                  , question
                  , list
+                 , game
                  ;
 
                if (text.length) {
@@ -285,8 +298,18 @@ updateAdvisor = function (module, idx) {
                   list = list ? list.length : -1; // Signal error -- Linking question to advisor failed
                   dmz.object.scalar(question, dmz.stance.ID, list);
 
+                  game = dmz.object.superLinks(hilGroup, dmz.stance.GameGroupHandle);
+                  if (game && game[0]) {
 
-//                  dmz.email.sendEmail()
+                     dmz.email.sendEmail
+                        ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
+                        , "STANCE: New question!"
+                        , "Admin Notice: \n" +
+                              dmz.stance.getDisplayName(hilGroup) +
+                              " has a new question for " +
+                              dmz.stance.getDisplayName(advisorHandle)
+                        );
+                  }
                }
                textWidget.text("");
             });
@@ -300,6 +323,7 @@ updateAdvisor = function (module, idx) {
                  , opinText
                  , count = 0
                  , groupVotes
+                 , game
                  ;
 
                text = textWidget ? textWidget.text() : "";
@@ -331,7 +355,18 @@ updateAdvisor = function (module, idx) {
                   groupVotes = groupVotes ? groupVotes.length : 0;
                   dmz.object.scalar(vote, dmz.stance.ID, groupVotes + 1);
 
-//                  dmz.email.sendEmail()
+                  game = dmz.object.superLinks(hilGroup, dmz.stance.GameGroupHandle);
+                  if (game && game[0]) {
+
+                     dmz.email.sendEmail
+                        ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
+                        , "STANCE: New task!"
+                        , "Admin Notice: \n" +
+                              dmz.stance.getDisplayName(hilGroup) +
+                              " has submitted a new task for " +
+                              dmz.stance.getDisplayName(advisorHandle)
+                        );
+                  }
                }
                textWidget.text("");
             });
@@ -502,6 +537,7 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
    var undecHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle)
      , yesHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteYesHandle)
      , noHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteNoHandle)
+     , game
      ;
 
    if (voteHistoryWidgets[voteHandle]) {
@@ -524,6 +560,21 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
 
       dmz.object.flag(voteHandle, dmz.stance.ActiveHandle, false);
       dmz.object.flag(voteHandle, dmz.stance.VoteResultHandle, true);
+      game =
+         dmz.object.superLinks(
+            dmz.stance.getUserGroupHandle(userHandle),
+            dmz.stance.GameGroupHandle);
+      if (game && game[0]) {
+
+         dmz.email.sendEmail
+            ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
+            , "STANCE: Task voting completed!"
+            , "Admin Notice: \n" +
+                  dmz.stance.getDisplayName(dmz.stance.getUserGroupHandle(userHandle)) +
+                  " has voted Yes on the following issue:" +
+                  dmz.object.text(voteHandle, dmz.stance.TextHandle)
+            );
+      }
    }
 });
 
@@ -533,6 +584,7 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
    var undecHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle)
      , yesHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteYesHandle)
      , noHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteNoHandle)
+     , game
      ;
 
    if (voteHistoryWidgets[voteHandle]) {
@@ -558,6 +610,21 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
 
          dmz.object.flag(voteHandle, dmz.stance.ActiveHandle, false);
          dmz.object.flag(voteHandle, dmz.stance.VoteResultHandle, false);
+         game =
+            dmz.object.superLinks(
+               dmz.stance.getUserGroupHandle(userHandle),
+               dmz.stance.GameGroupHandle);
+         if (game && game[0]) {
+
+            dmz.email.sendEmail
+               ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
+               , "STANCE: Task voting completed!"
+               , "Admin Notice: \n" +
+                     dmz.stance.getDisplayName(dmz.stance.getUserGroupHandle(userHandle)) +
+                     " has voted No on the following issue:" +
+                     dmz.object.text(voteHandle, dmz.stance.TextHandle)
+               );
+         }
       }
    }
 });
@@ -567,6 +634,7 @@ function (objHandle, attr, value, prev) {
 
    var groupHandle = getVoteGroupHandle(objHandle)
      , link
+     , game
      ;
 
    if (voteHistoryWidgets[objHandle]) {

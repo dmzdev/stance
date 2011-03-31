@@ -67,8 +67,6 @@ var dmz =
       , ServerTimeHandle: dmz.defs.createNamedHandle("server_time")
       , TextHandle: dmz.defs.createNamedHandle("text")
       , TitleHandle: dmz.defs.createNamedHandle("title")
-      , UserNameHandle: dmz.defs.createNamedHandle("user_name")
-      , UserGroupHandle: dmz.defs.createNamedHandle("user_group")
       , VisibleHandle: dmz.defs.createNamedHandle("visible")
       , VoteResultHandle: dmz.defs.createNamedHandle("vote_result")
       , VoteUndecidedHandle: dmz.defs.createNamedHandle("vote_undecided")

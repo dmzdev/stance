@@ -2,13 +2,13 @@ var dmz =
    { stance: require("stanceConst")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
-   , module: require("dmz/runtime/module")
+   , util: require("dmz/types/util")
    }
-   , _exports = {}
+   , sendEmail
    ;
 
 
-_exports.sendEmail = function (targets, title, text) {
+sendEmail = function (targets, title, text) {
 
    var userListStr = ""
      , title = (title && title.length) ? title : "No subject."
@@ -23,18 +23,22 @@ _exports.sendEmail = function (targets, title, text) {
          var type = dmz.object.type(userHandle);
          if (type && type.isOfType(dmz.stance.UserType)) {
 
-            userListStr.concat(dmz.object.text(userHandle, dmz.stance.UserNameHandle) + ",");
+            userListStr =
+               userListStr.concat(
+                  dmz.object.text(userHandle, dmz.stance.NameHandle) + ",");
          }
       });
+
       if (userListStr.length) {
 
          email = dmz.object.create(dmz.stance.EmailType);
          dmz.object.text(email, dmz.stance.EmailRecipientHandle, userListStr);
          dmz.object.text(email, dmz.stance.TitleHandle, title);
          dmz.object.text(email, dmz.stance.TextHandle, text);
+         dmz.object.flag(email, dmz.stance.SentHandle, false);
          dmz.object.activate(email);
       }
    }
 }
 
-dmz.module.publish(self, _exports);
+dmz.util.defineConst(exports, "sendEmail", sendEmail);

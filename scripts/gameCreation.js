@@ -540,6 +540,23 @@ editScenarioWidget.observe(self, "deleteForumButton", "clicked", function () {
    });
 });
 
+dmz.object.flag.observe(self, dmz.stance.AdminHandle, function (handle, attr, value) {
+
+   var adminList = dmz.object.subLinks(CurrentGameHandle, dmz.stance.AdminHandle);
+   if (value) {
+
+      if (!adminList || (adminList.indexOf(handle) === -1)) {
+
+         dmz.object.link(dmz.stance.AdminHandle, CurrentGameHandle, handle);
+      }
+   }
+   else if (adminList && (adminList.indexOf(handle) !== -1)) {
+
+      dmz.object.unlink(
+         dmz.object.linkHandle(dmz.stance.AdminHandle, CurrentGameHandle, handle));
+   }
+})
+
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
 
    var userList = []
@@ -556,30 +573,6 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
       serverEndDateEdit.enabled(!value);
       gameStartDateEdit.enabled(!value);
       timeFactorSpinBox.enabled(!value);
-
-      groups = dmz.object.subLinks(handle, dmz.stance.GameGroupHandle);
-      if (groups) {
-
-         groups.forEach(function (groupHandle) {
-
-            var users = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
-            if (users) {
-
-               users.forEach(function (userHandle) { userList.push(userHandle); });
-            }
-         });
-      }
-
-      subject = "STANCE Game " + (value ? "Completed!" : "Initiated!")
-      body = "Students, \n Your STANCE game ";
-      if (value) { body += "is now over! \nThank you for participating!"; }
-      else {
-
-         body +=
-            "has just begun! Please log on at your earliest convenience and " +
-            "examine the initial scenario description."
-      }
-      dmz.email.sendEmail(userList, subject, body);
    }
 });
 
@@ -613,11 +606,44 @@ setup = function () {
          , editScenarioWidget
          ).open(self, function (value) {
 
+            var groups
+              , userList = []
+              , subject
+              , body
+              ;
             if (value === dmz.ui.messageBox.Ok) {
 
                active = !active;
                dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle, active);
-//               gameStateButton.text(active ? "End Game" : "Start Game");
+               groups = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameGroupHandle);
+               if (groups) {
+
+                  groups.forEach(function (groupHandle) {
+
+                     var users = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
+                     if (users) {
+
+                        users.forEach(function (userHandle) {
+
+                           if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
+
+                              userList.push(userHandle);
+                           }
+                        });
+                     }
+                  });
+               }
+
+               subject = "STANCE Game " + (!active ? "Completed!" : "Initiated!")
+               body = "Students, \n Your STANCE game ";
+               if (!active) { body += "is now over! \nThank you for participating!"; }
+               else {
+
+                  body +=
+                     "has just begun! Please log on at your earliest convenience and " +
+                     "examine the initial scenario description."
+               }
+               dmz.email.sendEmail(userList, subject, body);
             }
          });
    });
