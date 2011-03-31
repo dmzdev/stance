@@ -17,6 +17,7 @@ var dmz =
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
    , module: require("dmz/runtime/module")
+   , stance: require("stanceConst")
    }
 
    // UI Elements
@@ -25,6 +26,7 @@ var dmz =
 //   , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
 
    , main = dmz.ui.loader.load("main")
+   , groupBox = main.lookup("groupBox")
    , stackedWidget = main.lookup("stackedWidget")
    , mainGView = main.lookup("graphicsView")
    , gscene
@@ -35,6 +37,7 @@ var dmz =
    // Object Types
 
    // Variables
+   , GroupList = [-1]
    , AdvisorCount = 5
    , sceneWidth = self.config.number("scene.width", 800)
    , sceneHeight = self.config.number("scene.height", 400)
@@ -47,18 +50,18 @@ var dmz =
    , tv
    , computer
    , PageLink =
-      { Map: false
-      , Forum: false
-      , Video: false
-      , Newspaper: false
-      , Memo: false
-      , Advisor0: false
-      , Advisor1: false
-      , Advisor2: false
-      , Advisor3: false
-      , Advisor4: false
-      , Lobbyist: false
-      }
+        { Map: false
+        , Forum: false
+        , Video: false
+        , Newspaper: false
+        , Memo: false
+        , Advisor0: false
+        , Advisor1: false
+        , Advisor2: false
+        , Advisor3: false
+        , Advisor4: false
+        , Lobbyist: false
+        }
 
    // Function decls
    , setupMainWindow
@@ -67,6 +70,15 @@ var dmz =
    // API
    , _exports = {}
    ;
+
+self.shutdown = function () {
+
+   var hil = dmz.object.hil();
+   if (dmz.object.flag(hil, dmz.stance.AdminFlagHandle)) {
+
+      dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
+   }
+};
 
 mouseEvent = function (object, event) {
 
@@ -113,6 +125,27 @@ mouseEvent = function (object, event) {
    return false;
 
 }
+
+dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
+function (objHandle, attrHandle, gameHandle, groupHandle) {
+
+   GroupList.push(groupHandle);
+   groupBox.addItem(dmz.stance.getDisplayName(groupHandle));
+});
+
+groupBox.observe(self, "currentIndexChanged", function (index) {
+
+   var hil = dmz.object.hil();
+
+   dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
+   if (index && (index < GroupList.length)) {
+
+      dmz.object.link(dmz.stance.GroupMembersHandle, GroupList[index], hil);
+      dmz.object.flag(hil, dmz.object.HILAttribute, false);
+      dmz.object.flag(hil, dmz.object.HILAttribute, true);
+   }
+});
+
 
 setupMainWindow = function () {
 
@@ -248,6 +281,53 @@ _exports.addPage = function (name, widget, func, onHome) {
    else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
 }
 
-setupMainWindow();
+dmz.object.flag.observe(self, dmz.stance.AdminFlagHandle,
+function (objHandle, attrHandle, value) {
+
+   var groupHandle = dmz.stance.getUserGroupHandle(objHandle)
+     , index = -1
+     ;
+
+   if (value && (objHandle === dmz.object.hil())) {
+
+      groupBox.show();
+      groupBox.enabled(true);
+   }
+   else {
+
+      groupBox.hide();
+      groupBox.enabled(false);
+   }
+});
+
+dmz.object.flag.observe(self, dmz.object.HILAttribute,
+function (objHandle, attrHandle, value) {
+
+   var groupHandle = dmz.stance.getUserGroupHandle(objHandle)
+     , index = -1
+     ;
+
+   if (value) {
+
+      if (dmz.object.flag(objHandle, dmz.stance.AdminFlagHandle)) {
+
+         groupBox.show();
+         groupBox.enabled(true);
+      }
+      else {
+
+         groupBox.hide();
+         groupBox.enabled(false);
+      }
+   }
+
+});
+
+(function () {
+
+   groupBox.hide();
+   groupBox.enabled(false);
+   setupMainWindow();
+}());
 
 dmz.module.publish(self, _exports);

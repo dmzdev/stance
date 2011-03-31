@@ -45,6 +45,15 @@
       </spacer>
      </item>
      <item>
+      <widget class="QComboBox" name="groupBox">
+       <item>
+        <property name="text">
+         <string>None</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="homeButton">
        <property name="text">
         <string>Home</string>

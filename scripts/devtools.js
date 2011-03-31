@@ -22,7 +22,6 @@ var dmz =
    , DockName = "Dev Tools"
    , form = dmz.ui.loader.load("DevTools.ui")
    , list = form.lookup("listWidget")
-   , groups = form.lookup("groupList")
    , dock = dmz.ui.mainWindow.createDock
      (DockName
      , { area: dmz.ui.consts.RightToolBarArea
@@ -33,34 +32,19 @@ var dmz =
      , form
      )
 
-
+   // DMZ variables
    , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
    , LogoutMessage = dmz.message.create("Logout_Message")
    , TimeStampAttr = dmz.defs.createNamedHandle("time-stamp")
 
-   // Object Lists
-   , ForumList = {}
-   , PostList = {}
-
    // Variables
 
-   , CurrentUser = false
    , UserList = []
-   , GroupList = [-1]
-
-   // Test Function decls
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); };
 
 dmz.object.create.observe(self, function (handle, objType) {
-
-   var parent = false
-     , parentLinks
-     , parent
-     , child
-     , text
-     ;
 
    if (objType) {
 
@@ -68,11 +52,6 @@ dmz.object.create.observe(self, function (handle, objType) {
 
          list.addItem(dmz.object.text(handle, dmz.stance.NameHandle))
          UserList.push(handle);
-      }
-      else if (objType.isOfType(dmz.stance.GroupType)) {
-
-         GroupList.push(handle);
-         groups.addItem(dmz.stance.getDisplayName(handle));
       }
    }
 });
@@ -99,36 +78,10 @@ dmz.object.create.observe(self, function (handle, objType) {
          data = dmz.data.create();
 
          data.string(dmz.stance.NameHandle, 0, username);
-//         data.boolean("admin", 0, admin.isChecked());
          data.number(TimeStampAttr, 0, Date.now()/1000);
 
          self.log.warn(">>> Faking login for: " + username + " <<<");
          LoginSuccessMessage.send(data);
-
-//         UserList.forEach(function (handle) {
-
-//            dmz.object.flag(handle, dmz.object.HILAttribute, handle === data);
-//         });
-         groups.currentIndex(0); // Not bothering to look up
-      }
-   });
-
-   groups.addItem("None");
-   groups.observe(self, "currentIndexChanged", function (index) {
-
-      var hil = dmz.object.hil();
-      self.log.warn ("currItemChanged:", hil, dmz.stance.AdminFlagHandle);
-      if (hil && dmz.object.flag(hil, dmz.stance.AdminFlagHandle)) {
-
-         self.log.warn ("admin", index, GroupList.length);
-         dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
-         if (index && (index < GroupList.length)) {
-
-            self.log.warn ("linking");
-            dmz.object.link(dmz.stance.GroupMembersHandle, GroupList[index], hil);
-            dmz.object.flag(hil, dmz.object.HILAttribute, false);
-            dmz.object.flag(hil, dmz.object.HILAttribute, true);
-         }
       }
    });
 
