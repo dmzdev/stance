@@ -9,6 +9,7 @@ var dmz =
 
    , ObjectTypes =
       { AdvisorType: dmz.objectType.lookup("advisor")
+      , EmailType: dmz.objectType.lookup("email")
       , ForumType: dmz.objectType.lookup("forum")
       , GameType: dmz.objectType.lookup("game")
       , GroupType: dmz.objectType.lookup("group")
@@ -25,7 +26,7 @@ var dmz =
 
    , Handles =
       { ActiveHandle: dmz.defs.createNamedHandle("Active")
-      , AdminFlagHandle: dmz.defs.createNamedHandle("admin_user")
+      , AdminHandle: dmz.defs.createNamedHandle("admin_user")
       , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
       , AdvisorActiveQuestionHandle: dmz.defs.createNamedHandle("advisor_active_question")
       , AdvisorAnsweredQuestionHandle: dmz.defs.createNamedHandle("advisor_answered_question")
@@ -61,6 +62,8 @@ var dmz =
       , PictureFileNameHandle: dmz.defs.createNamedHandle("pic_file_name")
       , PictureHandle: dmz.defs.createNamedHandle("picture")
       , PostVisitedHandle: dmz.defs.createNamedHandle("post_visited")
+      , EmailRecipientHandle: dmz.defs.createNamedHandle("email_recipient")
+      , SentHandle: dmz.defs.createNamedHandle("sent")
       , ServerTimeHandle: dmz.defs.createNamedHandle("server_time")
       , TextHandle: dmz.defs.createNamedHandle("text")
       , TitleHandle: dmz.defs.createNamedHandle("title")

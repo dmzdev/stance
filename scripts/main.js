@@ -74,7 +74,7 @@ var dmz =
 self.shutdown = function () {
 
    var hil = dmz.object.hil();
-   if (dmz.object.flag(hil, dmz.stance.AdminFlagHandle)) {
+   if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
       dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
    }
@@ -281,7 +281,7 @@ _exports.addPage = function (name, widget, func, onHome) {
    else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
 }
 
-dmz.object.flag.observe(self, dmz.stance.AdminFlagHandle,
+dmz.object.flag.observe(self, dmz.stance.AdminHandle,
 function (objHandle, attrHandle, value) {
 
    var groupHandle = dmz.stance.getUserGroupHandle(objHandle)
@@ -309,7 +309,7 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
-      if (dmz.object.flag(objHandle, dmz.stance.AdminFlagHandle)) {
+      if (dmz.object.flag(objHandle, dmz.stance.AdminHandle)) {
 
          groupBox.show();
          groupBox.enabled(true);

@@ -270,7 +270,7 @@ onPinRemoved = function (data) {
 
          if (event.button() === dmz.ui.consts.RightButton) {
 
-            if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminFlagHandle)) {
+            if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
 
                x = event.x();
                y = event.y();

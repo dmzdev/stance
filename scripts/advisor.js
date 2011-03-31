@@ -10,6 +10,7 @@ var dmz =
       , treeWidget: require("dmz/ui/treeWidget")
       , widget: require("dmz/ui/widget")
       }
+   , email: require("email")
    , stance: require("stanceConst")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
@@ -283,6 +284,9 @@ updateAdvisor = function (module, idx) {
                   list = dmz.object.subLinks(advisorHandle, dmz.stance.AdvisorActiveQuestionHandle);
                   list = list ? list.length : -1; // Signal error -- Linking question to advisor failed
                   dmz.object.scalar(question, dmz.stance.ID, list);
+
+
+//                  dmz.email.sendEmail()
                }
                textWidget.text("");
             });
@@ -313,7 +317,7 @@ updateAdvisor = function (module, idx) {
 
                      list.forEach(function (userHandle) {
 
-                        if (!dmz.object.flag(userHandle, dmz.stance.AdminFlagHandle)) {
+                        if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
 
                            dmz.object.link(dmz.stance.VoteUndecidedHandle, vote, userHandle);
                            count += 1;
@@ -326,6 +330,8 @@ updateAdvisor = function (module, idx) {
                   groupVotes = dmz.object.subLinks(hilGroup, dmz.stance.GroupCompletedVotesHandle);
                   groupVotes = groupVotes ? groupVotes.length : 0;
                   dmz.object.scalar(vote, dmz.stance.ID, groupVotes + 1);
+
+//                  dmz.email.sendEmail()
                }
                textWidget.text("");
             });
@@ -361,7 +367,7 @@ updateAdvisor = function (module, idx) {
                textEdit.enabled(false);
                textEdit.text("");
 
-               if (dmz.object.flag(hil, dmz.stance.AdminFlagHandle)) {
+               if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
                   answerQuestion(question[0]);
                }
@@ -588,7 +594,7 @@ function (objHandle, attr, value, prev) {
       voteHistoryWidgets[objHandle].text(1, getVoteStatus(objHandle));
    }
 
-   if (hil && !dmz.object.flag(hil, dmz.stance.AdminFlagHandle)) {
+   if (hil && !dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
       if (dmz.object.flag(objHandle, dmz.stance.ActiveHandle) &&
          undecHandleList && (undecHandleList.indexOf(hil) !== -1)) {
@@ -723,7 +729,7 @@ function (objHandle, attr, value, prev) {
 
    if (value) {
 
-      if (dmz.object.flag(hil, dmz.stance.AdminFlagHandle) && hilGroup &&
+      if (dmz.object.flag(hil, dmz.stance.AdminHandle) && hilGroup &&
          dmz.object.linkHandle(dmz.stance.GroupActiveVoteHandle, hilGroup, objHandle)) {
 
          approveVote(objHandle);
@@ -827,7 +833,7 @@ function (objHandle, attrHandle, value) {
 
          if (dmz.object.flag(vote, dmz.stance.ActiveHandle)) {
 
-            if (dmz.object.flag(objHandle, dmz.stance.AdminFlagHandle)) {
+            if (dmz.object.flag(objHandle, dmz.stance.AdminHandle)) {
 
                if (dmz.object.flag(vote, dmz.stance.VoteSubmittedHandle)) { approveVote(vote); }
             }
@@ -864,7 +870,7 @@ dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
 function (objHandle, attrHandle, groupHandle, userHandle) {
 
    var vote;
-   if (dmz.object.flag(userHandle, dmz.stance.AdminFlagHandle)) {
+   if (dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
 
       vote = dmz.object.subLinks(groupHandle, dmz.stance.GroupActiveVoteHandle);
       if (vote && vote[0] && dmz.object.flag(vote[0], dmz.stance.VoteSubmittedHandle)) {

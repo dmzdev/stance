@@ -21,6 +21,7 @@ var dmz =
    , util: require("dmz/types/util")
    , resources: require("dmz/runtime/resources")
    , module: require("dmz/runtime/module")
+   , email: require("email")
    }
    , DateJs = require("datejs/time")
 
@@ -506,12 +507,12 @@ editScenarioWidget.observe(self, "createForumButton", "clicked", function () {
          var handle;
          if (value && (name.length > 0)) {
 
-            handle = dmz.object.create(dmz.stance.ForumType);
+				handle = dmz.object.create(dmz.stance.ForumType);
 			dmz.object.activate(handle);
-            dmz.object.text(handle, dmz.stance.NameHandle, name);
-            dmz.object.link(dmz.stance.GameForumsHandle, CurrentGameHandle, handle);
-         }
-      });
+				dmz.object.text(handle, dmz.stance.NameHandle, name);
+				dmz.object.link(dmz.stance.GameForumsHandle, CurrentGameHandle, handle);
+			}
+		});
 });
 
 editScenarioWidget.observe(self, "deleteForumButton", "clicked", function () {
@@ -541,6 +542,12 @@ editScenarioWidget.observe(self, "deleteForumButton", "clicked", function () {
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
 
+   var userList = []
+     , subject
+     , body
+     , groups
+     ;
+
    if (handle === CurrentGameHandle) {
 
       gameStateButton.text(value ? "End Game" : "Start Game");
@@ -549,6 +556,30 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
       serverEndDateEdit.enabled(!value);
       gameStartDateEdit.enabled(!value);
       timeFactorSpinBox.enabled(!value);
+
+      groups = dmz.object.subLinks(handle, dmz.stance.GameGroupHandle);
+      if (groups) {
+
+         groups.forEach(function (groupHandle) {
+
+            var users = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
+            if (users) {
+
+               users.forEach(function (userHandle) { userList.push(userHandle); });
+            }
+         });
+      }
+
+      subject = "STANCE Game " + (value ? "Completed!" : "Initiated!")
+      body = "Students, \n Your STANCE game ";
+      if (value) { body += "is now over! \nThank you for participating!"; }
+      else {
+
+         body +=
+            "has just begun! Please log on at your earliest convenience and " +
+            "examine the initial scenario description."
+      }
+      dmz.email.sendEmail(userList, subject, body);
    }
 });
 
@@ -950,7 +981,7 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
 
                   groupMembers.forEach(function (userHandle) {
 
-                     if (!dmz.object.flag(userHandle, dmz.stance.AdminFlagHandle)) {
+                     if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
 
                         dmz.object.link(linkAttr, userHandle, media);
                      }
@@ -1149,7 +1180,7 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
-      if (dmz.object.flag(objHandle, dmz.stance.AdminFlagHandle)) {
+      if (dmz.object.flag(objHandle, dmz.stance.AdminHandle)) {
 
          editScenarioWidget.lookup("tabWidget").show();
          dock.enabled(true);
