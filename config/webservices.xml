@@ -7,10 +7,10 @@
    <plugin name="dmzQtPluginLoginChds" scope="chds-login"/>
 </plugin-list>
 <web-services>
-<!--   <server host="localhost" port="5984">-->
+   <server host="localhost" port="5984">
 <!--   <server host="http://172.20.89.96:5984/" port="5984"/> -->
 <!--   <server host="dmz.couchone.com" port="80">-->
-   <server host="games.chds.us" port="443" path="/db/">
+<!--   <server host="games.chds.us" port="443" path="/db/">-->
 <!--      <proxy host="localhost" port="8888"/>-->
    </server>
 <!--   <login-target name="dmzQtPluginLoginDialog"/>-->
@@ -21,9 +21,6 @@
       <object-type-set>
          <!-- <object-type name="intel"/> -->
       </object-type-set>
-      <attribute name="server_time">
-         <mask name="timestamp"/>
-      </attribute>
       <attribute name="Object_Human_In_The_Loop">
          <mask name="flag"/>
       </attribute>
@@ -33,7 +30,7 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-   <db app="stance_ben"/>
+   <db app="stance_testing"/>
 </web-services-object>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>
@@ -88,14 +85,4 @@
       </row>
    </color-grid>
 </chds-login>
-<!-- <runtime>
-   <object-type name="Player"/>
- </runtime> -->
-<!-- <archive>
-   <object name="hil" type="Player">
-      <attributes name="Object_Human_In_The_Loop">
-         <flag value="true"/>
-      </attributes>
-   </object>
-</archive> -->
 </dmz>

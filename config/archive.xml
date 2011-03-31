@@ -15,9 +15,6 @@
       <object-type-set>
 <!--         <object-type name="map_push_pin"/>-->
       </object-type-set>
-      <attribute name="server_time">
-         <mask name="timestamp"/>
-      </attribute>
       <attribute name="_publish">
          <mask name="flag"/>
       </attribute>

@@ -13,11 +13,16 @@ var dmz =
       , graph: require("dmz/ui/graph")
       }
    , stance: require("stanceConst")
+   , data: require("dmz/runtime/data")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
+   , time: require("dmz/runtime/time")
+   , util: require("dmz/types/util")
    , resources: require("dmz/runtime/resources")
+   , module: require("dmz/runtime/module")
    }
+   , DateJs = require("datejs/time")
 
    // UI Elements
    , editScenarioWidget = dmz.ui.loader.load("EditScenarioForm.ui")
@@ -40,6 +45,16 @@ var dmz =
            }
         , editScenarioWidget
         )
+
+   , serverStartDateEdit = editScenarioWidget.lookup("serverStartDateEdit")
+   , serverEndDateEdit = editScenarioWidget.lookup("serverEndDateEdit")
+   , serverDeltaLabel = editScenarioWidget.lookup("serverDeltaLabel")
+   , gameStartDateEdit = editScenarioWidget.lookup("gameStartDateEdit")
+   , gameEndDateEdit = editScenarioWidget.lookup("gameEndDateEdit")
+   , gameDeltaLabel = editScenarioWidget.lookup("gameDeltaLabel")
+   , timeFactorSpinBox = editScenarioWidget.lookup("timeFactorSpinBox")
+   , timeInfoLabel = editScenarioWidget.lookup("timeInfoLabel")
+   , timeInfoText = timeInfoLabel.text()
 
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
 
@@ -83,8 +98,11 @@ var dmz =
         , Memo: { type: dmz.stance.MemoType, attr: dmz.stance.ActiveMemoHandle }
         , Newspaper: { type: dmz.stance.NewspaperType, attr: dmz.stance.ActiveNewspaperHandle }
         }
+   , inUpdate = false
 
    // Function decls
+   , toTimeStamp = dmz.util.dateToTimeStamp
+   , toDate = dmz.util.timeStampToDate
    , createNewGame
    , createNewUser
    , readUserConfig
@@ -97,7 +115,7 @@ var dmz =
    , setup
    , groupToForum
    , groupFromForum
-
+   , updateTimePage
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
@@ -133,8 +151,8 @@ readUserConfig = function () {
            ;
 
          groupHandle = dmz.object.create(dmz.stance.GroupType);
-         dmz.object.activate(groupHandle);
          dmz.object.text(groupHandle, dmz.stance.NameHandle, name);
+         dmz.object.activate(groupHandle);
          dmz.object.link(dmz.stance.GameGroupHandle, CurrentGameHandle, groupHandle);
          for (idx = 0; idx < studentList.length; idx += 1) {
 
@@ -144,6 +162,7 @@ readUserConfig = function () {
                dmz.object.link(dmz.stance.GroupMembersHandle, groupHandle, user);
             }
          }
+
       });
    }
 };
@@ -488,7 +507,7 @@ editScenarioWidget.observe(self, "createForumButton", "clicked", function () {
          if (value && (name.length > 0)) {
 
             handle = dmz.object.create(dmz.stance.ForumType);
-            dmz.object.activate(handle);
+			dmz.object.activate(handle);
             dmz.object.text(handle, dmz.stance.NameHandle, name);
             dmz.object.link(dmz.stance.GameForumsHandle, CurrentGameHandle, handle);
          }
@@ -520,6 +539,19 @@ editScenarioWidget.observe(self, "deleteForumButton", "clicked", function () {
    });
 });
 
+dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
+
+   if (handle === CurrentGameHandle) {
+
+      gameStateButton.text(value ? "End Game" : "Start Game");
+
+      serverStartDateEdit.enabled (!value);
+      serverEndDateEdit.enabled(!value);
+      gameStartDateEdit.enabled(!value);
+      timeFactorSpinBox.enabled(!value);
+   }
+});
+
 setup = function () {
 
    var groups
@@ -534,11 +566,6 @@ setup = function () {
      , lobbyists
      , forums
      ;
-
-   gameStateButton.text(
-      dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle) ?
-      "End Game" :
-      "Start Game");
 
    gameStateButton.observe(self, "clicked", function () {
 
@@ -555,11 +582,11 @@ setup = function () {
          , editScenarioWidget
          ).open(self, function (value) {
 
-            if (value) {
+            if (value === dmz.ui.messageBox.Ok) {
 
                active = !active;
                dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle, active);
-               gameStateButton.text(active ? "End Game" : "Start Game");
+//               gameStateButton.text(active ? "End Game" : "Start Game");
             }
          });
    });
@@ -717,6 +744,8 @@ setup = function () {
          }
       });
    });
+
+   updateTimePage ();
 };
 
 editScenarioWidget.observe(self, "addStudentButton", "clicked", function () {
@@ -746,8 +775,8 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
       if (value) {
 
          group = dmz.object.create(dmz.stance.GroupType);
-         dmz.object.activate(group);
          dmz.object.text(group, dmz.stance.NameHandle, groupName);
+         dmz.object.activate(group);
          dmz.object.link(dmz.stance.GameGroupHandle, CurrentGameHandle, group);
       }
    });
@@ -955,8 +984,8 @@ editScenarioWidget.observe(self, "addAdvisorButton", "clicked", function () {
          if (value && (name.length > 0)) {
 
             handle = dmz.object.create(dmz.stance.AdvisorType);
-            dmz.object.activate(handle);
             dmz.object.text(handle, dmz.stance.NameHandle, name);
+            dmz.object.activate(handle);
             dmz.object.link(dmz.stance.GameUngroupedAdvisorsHandle, CurrentGameHandle, handle);
          }
       });
@@ -1035,6 +1064,85 @@ editScenarioWidget.observe(self, "gameStatsButton", "clicked", function () {
       , editScenarioWidget
    ).open(self, function (value) {});
 });
+
+dmz.object.data.observe(self, dmz.stance.GameStartTimeHandle, function (handle, attr, value) {
+
+   var server = {}
+     , game = {}
+     ;
+
+   if (handle === CurrentGameHandle && !inUpdate) {
+
+      inUpdate = true;
+      server.start = toDate(value.number("server", 0));
+      server.end = toDate(value.number("server", 1));
+      serverStartDateEdit.dateTime(server.start);
+      serverEndDateEdit.dateTime(server.end);
+
+      game.start = toDate(value.number("game", 0));
+      gameStartDateEdit.dateTime(game.start);
+
+      inUpdate = false;
+
+      timeFactorSpinBox.value(value.number("factor", 0));
+   }
+});
+
+updateTimePage = function () {
+
+   var server = {}
+     , game = {}
+     , data
+     , info = timeInfoText
+     , GameStartTime = dmz.stance.GameStartTimeHandle
+     ;
+
+   if (!inUpdate) {
+
+      server.start = serverStartDateEdit.dateTime();
+      server.end = serverEndDateEdit.dateTime();
+      server.delta = toTimeStamp(server.end) - toTimeStamp(server.start);
+      server.span = new DateJs.TimeSpan(server.end - server.start);
+      server.period = new DateJs.TimePeriod(server.start, server.end);
+      serverDeltaLabel.text(server.span.getDays());
+
+      game.start = gameStartDateEdit.dateTime();
+      game.end = game.start.clone();
+      game.end.addMilliseconds(server.span.getTotalMilliseconds() * timeFactorSpinBox.value());
+      game.span = new DateJs.TimeSpan(game.end - game.start);
+      game.period = new DateJs.TimePeriod(game.start, game.end);
+      gameDeltaLabel.text(game.span.getDays());
+      gameEndDateEdit.dateTime(game.end);
+
+      info = info.replace("{{serverDelta}}", server.span.getDays());
+      info = info.replace("{{gameDelta}}", game.span.getDays());
+
+      timeInfoLabel.text(info);
+
+      if (CurrentGameHandle) {
+
+         data = dmz.data.create();
+         data.number("server", 0, toTimeStamp(server.start));
+         data.number("server", 1, toTimeStamp(server.end));
+         data.number("game", 0, toTimeStamp(game.start));
+         data.number("game", 1, toTimeStamp(game.end));
+         data.number("factor", 0, timeFactorSpinBox.value());
+
+         inUpdate = true;
+         dmz.object.data(CurrentGameHandle, GameStartTime, data);
+         inUpdate = false;
+      }
+   }
+};
+
+serverStartDateEdit.observe(self, "dateTimeChanged", function (value) {
+
+   serverEndDateEdit.minimum(value);
+});
+
+serverEndDateEdit.observe(self, "dateTimeChanged", updateTimePage);
+gameStartDateEdit.observe(self, "dateTimeChanged", updateTimePage);
+timeFactorSpinBox.observe(self, "valueChanged", updateTimePage);
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
