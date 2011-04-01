@@ -27,6 +27,7 @@ var dmz =
     , _admin = false
     // Fuctions
     , toTimeStamp = dmz.util.dateToTimeStamp
+    , toDate = dmz.util.timeStampToDate
     , _activateUser
     ;
 
@@ -54,6 +55,8 @@ _activateUser = function (name) {
 
 LoginSuccessMessage.subscribe(self, function (data) {
 
+   var timeStamp;
+
    if (data && dmz.data.isTypeOf(data)) {
 
       if (_gameHandle) {
@@ -62,7 +65,14 @@ LoginSuccessMessage.subscribe(self, function (data) {
          _admin = data.boolean("admin");
          _userName = data.string(dmz.stance.NameHandle);
 
-         if (_timeMod) { _timeMod.setServerTime(data.number(TimeStampAttr)); }
+         if (_timeMod) {
+
+            timeStamp = data.number(TimeStampAttr);
+            _timeMod.serverTime(timeStamp);
+
+            self.log.warn("Server Time: " + toDate(timeStamp));
+            self.log.warn("  Game Time: " + toDate(_timeMod.gameTime(timeStamp)));
+         }
          else { self.log.error("Failed to to set server time"); }
 
          _activateUser(_userName);

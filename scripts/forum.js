@@ -35,6 +35,8 @@ var dmz =
    , UnreadPostBrush = dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
    , ReadPostBrush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: 1 })
 
+   // Functions
+   , toDate = dmz.util.timeStampToDate
    ;
 
 dmz.object.create.observe(self, function (handle, objType) {
@@ -85,10 +87,11 @@ dmz.object.text.observe(self, dmz.stance.TitleHandle, function (handle, attr, va
    }
 });
 
-dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtHandle, function (handle, attr, value) {
+dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtGameTimeHandle,
+function (handle, attr, value) {
 
    var post = PostList[handle];
-   if (post && post.widget) { post.widget.text(2, dmz.util.timeStampToDate(value)); }
+   if (post && post.widget) { post.widget.text(2, toDate(value)); }
 });
 
 dmz.object.text.observe(self, dmz.stance.TextHandle, function (handle, attr, value) {
@@ -112,7 +115,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
      , author = dmz.stance.getAuthorName(superHandle)
      , title = dmz.object.text(superHandle, dmz.stance.TitleHandle)
      , text = dmz.object.text(superHandle, dmz.stance.TextHandle)
-     , createdAt = dmz.object.timeStamp(superHandle, dmz.stance.CreatedAtHandle)
+     , createdAt = dmz.object.timeStamp(superHandle, dmz.stance.CreatedAtGameTimeHandle)
      , hil
      , backgroundBrush = UnreadPostBrush
      , postsRead
@@ -120,7 +123,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    if (child && parent && parent.widget) {
 
-      child.widget = parent.widget.add ([title, author, dmz.util.timeStampToDate(createdAt), text]);
+      child.widget = parent.widget.add ([title, author, toDate(createdAt), text]);
       child.widget.data(0, superHandle);
       hil = dmz.object.hil();
       if (hil) {
@@ -312,7 +315,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
                   post = dmz.object.create(dmz.stance.PostType);
                   dmz.object.text(post, dmz.stance.TitleHandle, title);
                   dmz.object.text(post, dmz.stance.TextHandle, text);
-                  dmz.object.timeStamp(post, dmz.stance.CreatedAtHandle, dmz.time.getFrameTime());
+                  dmz.object.timeStamp(post, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
                   dmz.object.link(dmz.stance.PostVisitedHandle, author, post);
                   dmz.object.link(dmz.stance.ParentHandle, post, parentHandle);
                   dmz.object.link(dmz.stance.CreatedByHandle, post, author);
