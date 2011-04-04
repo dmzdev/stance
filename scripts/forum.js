@@ -14,6 +14,7 @@ var dmz =
        , time: require("dmz/runtime/time")
        , util: require("dmz/types/util")
        }
+   , PostItem = require("PosItem")
 
    // UI elements
    , form = dmz.ui.loader.load("ForumTreeForm.ui")
@@ -25,19 +26,48 @@ var dmz =
    , postText = dialog.lookup("postTextEdit")
    , messageLengthRem = dialog.lookup("charRemAmt")
    , buttonBox = dialog.lookup("buttonBox")
+   , _view = form.lookup("forumGraphicsView")
 
    // Object Lists
    , ForumList = {}
    , PostList = {}
    , GroupList = {}
+   , _postList = {}
 
    // Variables
    , UnreadPostBrush = dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
    , ReadPostBrush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: 1 })
+   , _scene
 
    // Functions
    , toDate = dmz.util.timeStampToDate
+   , _setupView
    ;
+
+
+
+_setupView = function () {
+
+   if (!_scene) {
+
+      _scene = dmz.ui.graph.createScene(0, 0, 200, 500);
+
+      _view.scene(_scene);
+
+      var post = PostItem.create();
+
+      _scene.addItem(post.item ());
+   }
+};
+
+(function () {
+
+   _setupView();
+}());
+
+// -------------------------------------------------------------------
+// --------------------- old forum code ------------------------------
+// -------------------------------------------------------------------
 
 dmz.object.create.observe(self, function (handle, objType) {
 
