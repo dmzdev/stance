@@ -17,7 +17,9 @@ var dmz =
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
    , module: require("dmz/runtime/module")
+   , resources: require("dmz/runtime/resources")
    , stance: require("stanceConst")
+   , vector: require("dmz/types/vector")
    }
 
    // UI Elements
@@ -39,8 +41,8 @@ var dmz =
    // Variables
    , GroupList = [-1]
    , AdvisorCount = 5
-   , sceneWidth = self.config.number("scene.width", 800)
-   , sceneHeight = self.config.number("scene.height", 400)
+   , sceneWidth = self.config.number("scene.width", 1280)
+   , sceneHeight = self.config.number("scene.height", 800)
 
    , advisors = []
    , map
@@ -62,10 +64,13 @@ var dmz =
         , Advisor4: false
         , Lobbyist: false
         }
+   , groupAdvisors = {}
+   , advisorPicture = {}
 
    // Function decls
    , setupMainWindow
    , mouseEvent
+   , updateGraphicsForGroup
 
    // API
    , _exports = {}
@@ -156,6 +161,9 @@ setupMainWindow = function () {
      , box
      , widget
      , lobbyist
+     , imageList = self.config.get("set.image")
+     , file
+     , pixmap
      ;
 
    if (main && stackedWidget && mainGView) {
@@ -164,82 +172,132 @@ setupMainWindow = function () {
       mainGView.scene(gscene);
       stackedWidget.remove(1); // Get rid of Qt Designer-forced second page
 
-      for (idx = 0; idx < AdvisorCount; idx += 1) {
+      imageList.forEach(function (image) {
 
-         box = gscene.addRect(0, 0, 100, 100);
-         box.pos (2 * idx * 100, 0);
-         dmz.ui.graph.createTextItem("Advisor #" + (idx + 1), box);
-         advisors.push(box);
+         var name = image.string("name")
+           , resource = image.string("resource")
+           , file
+           , config
+           , loc
+           , pixmap
+           , widget
+           ;
+
+         if (name && resource) {
+
+            file = dmz.resources.findFile(resource)
+            config = dmz.resources.lookupConfig(resource)
+            if (config) {
+
+               loc = config.vector("loc");
+               if (dmz.vector.isTypeOf(loc)) {
+
+                  pixmap = dmz.ui.graph.createPixmap(file);
+                  if (pixmap) {
+
+                     pixmap = gscene.addPixmap(pixmap);
+                     pixmap.pos(loc.x, loc.y);
+                     widget = dmz.ui.label.create(name);
+                     pixmap.data(0, widget);
+                     stackedWidget.add(widget);
+                     PageLink[name] = pixmap;
+
+                     pixmap.cursor(dmz.ui.consts.PointingHandCursor);
+                  }
+               }
+            }
+         }
+      });
+
+
+      file = dmz.resources.findFile(self.config.string("set.background"));
+      if (file) {
+
+         pixmap = dmz.ui.graph.createPixmap(file);
+         if (pixmap) {
+
+            pixmap = gscene.addPixmap(pixmap);
+            pixmap.pos(0, 0);
+         }
       }
 
-      lobbyist = gscene.addRect(0, 0, 100, 100);
-      lobbyist.pos (2 * idx * 100, 0);
-      dmz.ui.graph.createTextItem("Lobbyist", lobbyist);
 
-      map = dmz.ui.graph.createRectItem(0, 0, 60, 60, advisors[0]);
-      map.pos(0, 150);
-      dmz.ui.graph.createTextItem("Map", map);
+//      for (idx = 0; idx < AdvisorCount; idx += 1) {
 
-      tv = dmz.ui.graph.createRectItem(0, 0, 60, 60, advisors[AdvisorCount - 1]);
-      tv.pos (40, 150);
-      dmz.ui.graph.createTextItem("TV", tv);
+//         box = gscene.addRect(0, 0, 100, 100);
+//         box.pos (2 * idx * 100, 0);
+//         dmz.ui.graph.createTextItem("Advisor #" + (idx + 1), box);
+//         advisors.push(box);
+//      }
 
-      desk = gscene.addRect(0, 0, 400, 100);
-      desk.pos(200, 300);
+//      lobbyist = gscene.addRect(0, 0, 100, 100);
+//      lobbyist.pos (2 * idx * 100, 0);
+//      dmz.ui.graph.createTextItem("Lobbyist", lobbyist);
 
-      newspaper = dmz.ui.graph.createRectItem(0, 0, 100, 25, desk);
-      newspaper.pos(100, 50);
-      dmz.ui.graph.createTextItem("Newspaper", newspaper);
+//      map = dmz.ui.graph.createRectItem(0, 0, 60, 60, advisors[0]);
+//      map.pos(0, 150);
+//      dmz.ui.graph.createTextItem("Map", map);
 
-      inbox = dmz.ui.graph.createRectItem(0, 0, 50, 50, desk);
-      inbox.pos(10, 10);
-      dmz.ui.graph.createTextItem("Inbox", inbox);
+//      tv = dmz.ui.graph.createRectItem(0, 0, 60, 60, advisors[AdvisorCount - 1]);
+//      tv.pos (40, 150);
+//      dmz.ui.graph.createTextItem("TV", tv);
 
-      computer = dmz.ui.graph.createRectItem(0, 0, 100, 90, desk);
-      computer.pos(300, 10);
-      dmz.ui.graph.createTextItem("Computer", computer);
+//      desk = gscene.addRect(0, 0, 400, 100);
+//      desk.pos(200, 300);
 
-      PageLink.Map = map;
-      PageLink.Advisor0 = advisors[0];
-      PageLink.Advisor1 = advisors[1];
-      PageLink.Advisor2 = advisors[2];
-      PageLink.Advisor3 = advisors[3];
-      PageLink.Advisor4 = advisors[4];
-      PageLink.Forum = computer;
-      PageLink.Video = tv;
-      PageLink.Newspaper = newspaper;
-      PageLink.Memo = inbox;
-      PageLink.Lobbyist = lobbyist;
+//      newspaper = dmz.ui.graph.createRectItem(0, 0, 100, 25, desk);
+//      newspaper.pos(100, 50);
+//      dmz.ui.graph.createTextItem("Newspaper", newspaper);
 
-      box = dmz.ui.webview.create();
-      box.url ("http://dev.chds.us/?dystopia:map2");
-      box.contextMenuPolicy (dmz.ui.consts.NoContextMenu);
-      map.data(0, box);
-      stackedWidget.add(box);
+//      inbox = dmz.ui.graph.createRectItem(0, 0, 50, 50, desk);
+//      inbox.pos(10, 10);
+//      dmz.ui.graph.createTextItem("Inbox", inbox);
 
-      widget = dmz.ui.label.create("Forum screen");
-      computer.data(0, widget);
-      stackedWidget.add(widget);
+//      computer = dmz.ui.graph.createRectItem(0, 0, 100, 90, desk);
+//      computer.pos(300, 10);
+//      dmz.ui.graph.createTextItem("Computer", computer);
 
-      widget = dmz.ui.label.create("Advisor screen");
-      advisors.forEach(function (item) { item.data(0, widget); });
-      stackedWidget.add(widget);
+//      PageLink.Map = map;
+//      PageLink.Advisor0 = advisors[0];
+//      PageLink.Advisor1 = advisors[1];
+//      PageLink.Advisor2 = advisors[2];
+//      PageLink.Advisor3 = advisors[3];
+//      PageLink.Advisor4 = advisors[4];
+//      PageLink.Forum = computer;
+//      PageLink.Video = tv;
+//      PageLink.Newspaper = newspaper;
+//      PageLink.Memo = inbox;
+//      PageLink.Lobbyist = lobbyist;
 
-      widget = dmz.ui.label.create("Video screen");
-      tv.data(0, widget);
-      stackedWidget.add(widget);
+//      box = dmz.ui.webview.create();
+//      box.url ("http://dev.chds.us/?dystopia:map2");
+//      box.contextMenuPolicy (dmz.ui.consts.NoContextMenu);
+//      map.data(0, box);
+//      stackedWidget.add(box);
 
-      widget = dmz.ui.label.create("Newspaper screen");
-      newspaper.data(0, widget);
-      stackedWidget.add(widget);
+//      widget = dmz.ui.label.create("Forum screen");
+//      computer.data(0, widget);
+//      stackedWidget.add(widget);
 
-      widget = dmz.ui.label.create("Memo screen");
-      inbox.data(0, widget);
-      stackedWidget.add(widget);
+//      widget = dmz.ui.label.create("Advisor screen");
+//      advisors.forEach(function (item) { item.data(0, widget); });
+//      stackedWidget.add(widget);
 
-      widget = dmz.ui.label.create("Lobbyist screen");
-      lobbyist.data(0, widget);
-      stackedWidget.add(widget);
+//      widget = dmz.ui.label.create("Video screen");
+//      tv.data(0, widget);
+//      stackedWidget.add(widget);
+
+//      widget = dmz.ui.label.create("Newspaper screen");
+//      newspaper.data(0, widget);
+//      stackedWidget.add(widget);
+
+//      widget = dmz.ui.label.create("Memo screen");
+//      inbox.data(0, widget);
+//      stackedWidget.add(widget);
+
+//      widget = dmz.ui.label.create("Lobbyist screen");
+//      lobbyist.data(0, widget);
+//      stackedWidget.add(widget);
 
       homeButton.observe(self, "clicked", function () {
 
@@ -258,10 +316,6 @@ setupMainWindow = function () {
          });
       });
 
-      Object.keys(PageLink).forEach(function (key) {
-
-         if (PageLink[key]) { PageLink[key].cursor(dmz.ui.consts.PointingHandCursor); }
-      });
       stackedWidget.currentIndex(0);
       gscene.eventFilter(self, mouseEvent);
       dmz.ui.mainWindow.centralWidget(main);
@@ -280,6 +334,30 @@ _exports.addPage = function (name, widget, func, onHome) {
    }
    else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
 }
+
+dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
+function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
+
+   var file;
+   if (!groupAdvisors[groupHandle]) { groupAdvisors[groupHandle] = []; }
+   if (groupAdvisors[groupHandle].length <= AdvisorCount) {
+
+      groupAdvisors[groupHandle].push(advisorHandle);
+      if (!advisorPicture[advisorHandle]) {
+
+         advisorPicture[advisorHandle] =
+            { loc: dmz.object.position(advisorHandle, dmz.stance.PictureHandle)
+            };
+
+         advisorPicture[advisorHandle].file =
+            dmz.resources.findFile(dmz.object.text(advisorHandle, dmz.stance.PictureHandle));
+      }
+   }
+   if (dmz.stance.getUserGroupHandle(dmz.object.hil()) === groupHandle) {
+
+      updateGraphicsForGroup(groupHandle);
+   }
+});
 
 dmz.object.flag.observe(self, dmz.stance.AdminHandle,
 function (objHandle, attrHandle, value) {

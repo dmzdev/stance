@@ -1156,7 +1156,6 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
             , name: dmz.stance.getDisplayName(advisorHandle)
             , specialty: dmz.object.text(advisorHandle, dmz.stance.TitleHandle)
             , picture: false
-            , taskFunction: false
             , voteWidgets: []
             };
 

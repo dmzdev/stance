@@ -1,35 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dmz>
+<main>
+   <set name="default" background="default_background">
+      <image name="Exit" resource="default_exit"/>
+      <image name="Forum" resource="default_computer"/>
+      <image name="Map" resource="default_map"/>
+      <image name="Video" resource="default_tv"/>
+      <image name="Newspaper" resource="default_newspaper"/>
+      <image name="Memo" resource="default_memos"/>
+      <image name="Lobbyist" resource="default_videophone"/>
+      <image name="Advisor0" resource="default_adv0"/>
+      <image name="Advisor1" resource="default_adv1"/>
+      <image name="Advisor2" resource="default_adv2"/>
+      <image name="Advisor3" resource="default_adv3"/>
+      <image name="Advisor4" resource="default_adv4"/>
+      <!-- <image name="Background" resource="default_background"/> -->
+   </set>
+</main>
 <gameCreation>
-   <group-list>
-      <group name="Congress">
-         <student-list>
-            <student name="Joe Bob" email="jbob@email.com"/>
-            <student name="Jill Sue" email="jsue@email.com"/>
-         </student-list>
-         <advisor-list>
-            <advisor name="" info="" picfile=""/>
-         </advisor-list>
-      </group>
-      <group name="Drug Cartel">
-         <student-list>
-            <student name="Alex Dillbert" email="adillbert@email.com"/>
-            <student name="Chris Six" email="csix@email.com"/>
-         </student-list>
-         <advisor-list>
-            <advisor name="" info="" picfile=""/>
-         </advisor-list>
-      </group>
-      <group name="White House">
-         <student-list>
-            <student name="Jon Stewart" email="jstewart@email.com"/>
-            <student name="Nick Brick" email="nbrick@email.com"/>
-         </student-list>
-         <advisor-list>
-            <advisor name="" info="" picfile=""/>
-         </advisor-list>
-      </group>
-   </group-list>
+   <group-picture-set>
+      <set name="default">
+         <background name="default_background"/>
+         <exit name="default_exit"/>
+         <computer name="default_computer"/>
+         <map name="default_map"/>
+         <tv name="default_tv"/>
+         <newspaper name="default_newspaper"/>
+         <inbox name="default_memos"/>
+         <phone name="default_videophone"/>
+         <advisor0 name="default_adv0"/>
+         <advisor1 name="default_adv1"/>
+         <advisor2 name="default_adv2"/>
+         <advisor3 name="default_adv3"/>
+         <advisor4 name="default_adv4"/>
+      </set>
+   </group-picture-set>
    <advisor-pictures>
       <picture name="adv_0"/>
       <picture name="adv_1"/>
@@ -41,19 +46,7 @@
       <picture name="lob_1"/>
       <picture name="lob_2"/>
       <picture name="lob_3"/>
-   </lobbyist-pictures>   
-<!--   
-   <advisor-picture-list path="./assets/" default="sad200.jpg">
-      <picture name="Sally Fice" file="silly200.png"/>
-      <picture name="Fore Fix" file="firefox200.jpg"/>
-      <picture name="H. Andy Kapt" file="handi200.jpg"/>
-   </advisor-picture-list>
-   <lobbyist-picture-list path="./assets/" default="sad200.jpg">
-      <picture name="Sally Fice" file="silly200.png"/>
-      <picture name="Fore Fix" file="firefox200.jpg"/>
-      <picture name="H. Andy Kapt" file="handi200.jpg"/>
-   </lobbyist-picture-list>
--->   
+   </lobbyist-pictures>
 </gameCreation>
 <archive>
    <object type="game" uuid="73482562-b36f-45f1-9e1c-87a02269622a">
@@ -71,7 +64,7 @@
       <attributes name="admin_user">
          <flag value="true"/>
       </attributes>
-   </object>   
+   </object>
    <object type="user" uuid="12832b4e-5094-4636-b458-6cad452fccd1">
       <attributes name="name">
          <text value="sangster@me.com"/>
@@ -81,8 +74,8 @@
       </attributes>
       <attributes name="admin_user">
          <flag value="true"/>
-      </attributes>      
-   </object>   
+      </attributes>
+   </object>
 </archive>
 </dmz>
 

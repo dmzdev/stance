@@ -44,6 +44,51 @@
    <resource name="Riot" file="Riot-sm.png">
       <webMap file="Riot.png"/>
    </resource>
+   <resource name="default_exit" file="exit.png">
+      <loc x="227" y="38"/>
+   </resource>
+   <resource name="default_resources" file="resources.png">
+      <loc x="4" y="44"/>
+   </resource>
+   <resource name="default_adv0" file="ad01.png">
+      <loc x="351" y="57"/>
+   </resource>
+   <resource name="default_adv1" file="ad02.png">
+      <loc x="470" y="57"/>
+   </resource>
+   <resource name="default_adv2" file="ad03.png">
+      <loc x="590" y="57"/>
+   </resource>
+   <resource name="default_adv3" file="ad04.png">
+      <loc x="706" y="57"/>
+   </resource>
+   <resource name="default_adv4" file="ad05.png">
+      <loc x="820" y="57"/>
+   </resource>
+   <resource name="default_map" file="map.png">
+      <loc x="1049" y="44"/>
+   </resource>
+   <resource name="default_computer" file="computer.png">
+      <loc x="476" y="266"/>
+   </resource>
+   <resource name="default_newspaper" file="newspaper.png">
+      <loc x="109" y="489"/>
+   </resource>
+   <resource name="default_videophone" file="vidphone.png">
+      <loc x="125" y="401"/>
+   </resource>
+   <resource name="default_tv" file="tv.png">
+      <loc x="245" y="309"/>
+   </resource>
+   <resource name="default_vote" file="vote.png">
+      <loc x="907" y="345"/>
+   </resource>
+   <resource name="default_memos" file="memos.png">
+      <loc x="974" y="467"/>
+   </resource>
+   <resource name="default_background" file="office08.png">
+      <loc x="0" y="0"/>
+   </resource>
 <!--   <resource name="adv_" file=""/> -->
    <resource name="adv_0" file="sad200.jpg"/>
    <resource name="adv_1" file="silly200.png"/>

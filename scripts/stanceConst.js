@@ -75,7 +75,14 @@ var dmz =
       , VoteAdvisorHandle: dmz.defs.createNamedHandle("vote_advisor")
       , VoteSubmittedHandle: dmz.defs.createNamedHandle("vote_submitted")
       , VoteApprovedHandle: dmz.defs.createNamedHandle("vote_approved")
-      , VoterTotalHandle: dmz.defs.createNamedHandle("voter_total")
+      , VoterTotalImageHandle: dmz.defs.createNamedHandle("voter_total")
+      , BackgroundImageHandle: dmz.defs.createNamedHandle("background_image")
+      , MapImageHandle: dmz.defs.createNamedHandle("map_image")
+      , ComputerImageHandle: dmz.defs.createNamedHandle("computer_image")
+      , TVImageHandle: dmz.defs.createNamedHandle("tv_image")
+      , NewspaperImageHandle: dmz.defs.createNamedHandle("newspaper_image")
+      , InboxImageHandle: dmz.defs.createNamedHandle("inbox_image")
+      , PhoneImageHandle: dmz.defs.createNamedHandle("phone_image")
       }
 
    , Functions =
