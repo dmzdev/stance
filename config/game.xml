@@ -14,25 +14,23 @@
       <image name="Advisor2" resource="default_adv2"/>
       <image name="Advisor3" resource="default_adv3"/>
       <image name="Advisor4" resource="default_adv4"/>
-      <!-- <image name="Background" resource="default_background"/> -->
    </set>
 </main>
 <gameCreation>
    <group-picture-set>
-      <set name="default">
-         <background name="default_background"/>
-         <exit name="default_exit"/>
-         <computer name="default_computer"/>
-         <map name="default_map"/>
-         <tv name="default_tv"/>
-         <newspaper name="default_newspaper"/>
-         <inbox name="default_memos"/>
-         <phone name="default_videophone"/>
-         <advisor0 name="default_adv0"/>
-         <advisor1 name="default_adv1"/>
-         <advisor2 name="default_adv2"/>
-         <advisor3 name="default_adv3"/>
-         <advisor4 name="default_adv4"/>
+      <set name="default" background="default_background">
+         <image name="Exit" resource="default_exit"/>
+         <image name="Forum" resource="default_computer"/>
+         <image name="Map" resource="default_map"/>
+         <image name="Video" resource="default_tv"/>
+         <image name="Newspaper" resource="default_newspaper"/>
+         <image name="Memo" resource="default_memos"/>
+         <image name="Lobbyist" resource="default_videophone"/>
+         <image name="Advisor0" resource="default_adv0"/>
+         <image name="Advisor1" resource="default_adv1"/>
+         <image name="Advisor2" resource="default_adv2"/>
+         <image name="Advisor3" resource="default_adv3"/>
+         <image name="Advisor4" resource="default_adv4"/>
       </set>
    </group-picture-set>
    <advisor-pictures>
