@@ -5,6 +5,7 @@ var dmz =
        , module: require("dmz/runtime/module")
        , ui:
           { consts: require('dmz/ui/consts')
+          , layout: require("dmz/ui/layout")
           , loader: require('dmz/ui/uiLoader')
           , mainWindow: require('dmz/ui/mainWindow')
           , messageBox: require("dmz/ui/messageBox")
@@ -14,6 +15,7 @@ var dmz =
        , time: require("dmz/runtime/time")
        , util: require("dmz/types/util")
        }
+   , PostItem = require("PosItem")
 
    // UI elements
    , form = dmz.ui.loader.load("ForumTreeForm.ui")
@@ -25,17 +27,58 @@ var dmz =
    , postText = dialog.lookup("postTextEdit")
    , messageLengthRem = dialog.lookup("charRemAmt")
    , buttonBox = dialog.lookup("buttonBox")
+   , _frame = form.lookup("forumFrame")
 
    // Object Lists
    , ForumList = {}
    , PostList = {}
    , GroupList = {}
+   , _postList = {}
 
    // Variables
    , UnreadPostBrush = dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
    , ReadPostBrush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: 1 })
 
+   // Functions
+   , toDate = dmz.util.timeStampToDate
+   , _setupView
    ;
+
+
+
+_setupView = function () {
+
+   var layout = _frame.layout(dmz.ui.layout.createVBoxLayout(), true)
+     , post
+     , lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere risus eu nisi imperdiet pellentesque. Duis a turpis nec ante euismod hendrerit non nec odio. Quisque vel nunc vel massa tempor condimentum.\n\nProin nisl nibh, placerat non lacinia sed, luctus ullamcorper lorem. Nulla massa dui, condimentum ac blandit dapibus, aliquam sit amet nunc. Vestibulum lacus."
+     ;
+
+   if (layout) {
+
+      for (var ix = 0; ix < 1; ix++) {
+
+         self.log.warn("ix: " + ix);
+         post = PostItem.create({ by: "Scottie-" + ix, message: ((ix % 2) ? lorem : "WhooHoo!!!") });
+//         post.widget.observer("replyButton", function() { post_reply(handle); });
+
+         layout.addWidget(post.widget())
+      }
+
+//      post = PostItem.create({ by: "Scottie-!!!!", message: lorem+lorem+lorem+lorem+lorem+lorem+lorem });
+//      layout.addWidget(post.widget())
+
+      layout.addStretch(1);
+   }
+};
+
+(function () {
+
+   _setupView();
+}());
+
+// -------------------------------------------------------------------
+// --------------------- old forum code ------------------------------
+// -------------------------------------------------------------------
 
 dmz.object.create.observe(self, function (handle, objType) {
 
@@ -85,10 +128,11 @@ dmz.object.text.observe(self, dmz.stance.TitleHandle, function (handle, attr, va
    }
 });
 
-dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtHandle, function (handle, attr, value) {
+dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtGameTimeHandle,
+function (handle, attr, value) {
 
    var post = PostList[handle];
-   if (post && post.widget) { post.widget.text(2, dmz.util.timeStampToDate(value)); }
+   if (post && post.widget) { post.widget.text(2, toDate(value)); }
 });
 
 dmz.object.text.observe(self, dmz.stance.TextHandle, function (handle, attr, value) {
@@ -112,7 +156,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
      , author = dmz.stance.getAuthorName(superHandle)
      , title = dmz.object.text(superHandle, dmz.stance.TitleHandle)
      , text = dmz.object.text(superHandle, dmz.stance.TextHandle)
-     , createdAt = dmz.object.timeStamp(superHandle, dmz.stance.CreatedAtHandle)
+     , createdAt = dmz.object.timeStamp(superHandle, dmz.stance.CreatedAtGameTimeHandle)
      , hil
      , backgroundBrush = UnreadPostBrush
      , postsRead
@@ -120,7 +164,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    if (child && parent && parent.widget) {
 
-      child.widget = parent.widget.add ([title, author, dmz.util.timeStampToDate(createdAt), text]);
+      child.widget = parent.widget.add ([title, author, toDate(createdAt), text]);
       child.widget.data(0, superHandle);
       hil = dmz.object.hil();
       if (hil) {
@@ -312,7 +356,7 @@ tree.observe (self, "currentItemChanged", function (curr) {
                   post = dmz.object.create(dmz.stance.PostType);
                   dmz.object.text(post, dmz.stance.TitleHandle, title);
                   dmz.object.text(post, dmz.stance.TextHandle, text);
-                  dmz.object.timeStamp(post, dmz.stance.CreatedAtHandle, dmz.time.getFrameTime());
+                  dmz.object.timeStamp(post, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
                   dmz.object.link(dmz.stance.PostVisitedHandle, author, post);
                   dmz.object.link(dmz.stance.ParentHandle, post, parentHandle);
                   dmz.object.link(dmz.stance.CreatedByHandle, post, author);
