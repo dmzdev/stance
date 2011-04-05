@@ -1,39 +1,27 @@
-var util = require("dmz/types/util")
-  , graph = require("dmz/ui/graph")
-  , resources = require("dmz/runtime/resources")
+var dmz =
+   { ui:
+      { loader: require('dmz/ui/uiLoader')
+      , layout: require("dmz/ui/layout")
+      , label: require("dmz/ui/label")
+      , graph: require("dmz/ui/graph")
+      }
+   , util: require("dmz/types/util")
+   , resources: require("dmz/runtime/resources")
+   }
+
+  // Variables
+  // Functions
+  , toDate = dmz.util.timeStampToDate
   , PostItem
   ;
 
-PostItem = function (params) {
+PostItem = function () {
 
-   var postedBy = params && params.postedBy || "Anonymous"
-     , postedAt = params && params.postedAt || new Date ()
-     , message = params && params.message
-     , avatarBoxFile = resources.findFile("AvatarBox")
-     , avatarDefaultFile = resources.findFile("AvatarDefault")
-     ;
-
-//   if (scene) { this.bg = scene.addRect(0, 0, 200, 100); }
-//   else { this.bg = graph.createRectItem(0, 0, 300, 100); }
-   this.bg = graph.createRectItem(0, 0, 400, 300);
-   this.bg.pos(-145, 0);
-
-   var pix = graph.createPixmap(58, 68);
-   pix.load(avatarBoxFile);
-   this.avatarBox = graph.createPixmapItem(pix, this.bg);
-   this.avatarBox.pos(4, 4);
-
-//   this.avatar = graph.createPixmapItem(avatarDefaultFile, this.avatarBox);
-//   this.avatar.pos(4, 4);
-
-   postedAt = postedAt.toString ("MM/dd/yyyy");
-   this.postedBy = graph.createTextItem("Posted by: " + postedBy + " at: " + postedAt, this.bg);
-   this.postedBy.pos(70, 4);
-
-   message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere risus eu nisi imperdiet pellentesque. Duis a turpis nec ante euismod hendrerit non nec odio. Quisque vel nunc vel massa tempor condimentum. Proin nisl nibh, placerat non lacinia sed, luctus ullamcorper lorem. Nulla massa dui, condimentum ac blandit dapibus, aliquam sit amet nunc. Vestibulum lacus."
-
-   this.message = graph.createTextItem(message, this.bg);
-   this.message.pos(70, 40);
+   this.form = dmz.ui.loader.load("PostItem")
+   this.avatar = this.form.lookup("avatarLabel")
+   this.postedBy = this.form.lookup("postedByLabel")
+   this.postedAt = this.form.lookup("postedAtLabel")
+   this.message = this.form.lookup("messageLabel")
 };
 
 exports.isTypeOf = function (value) {
@@ -41,10 +29,10 @@ exports.isTypeOf = function (value) {
    return PostItem.prototype.isPrototypeOf(value) ? value : undefined;
 };
 
-exports.create = function (params) {
+exports.create = function () {
 
-   var result = new PostItem(params);
-//   if (arguments.length > 0) { result.set.apply(result, arguments); }
+   var result = new PostItem();
+   if (arguments.length > 0) { result.set.apply(result, arguments); }
    return result;
 };
 
@@ -55,12 +43,28 @@ PostItem.prototype.create = exports.create;
 //   return "PostItem";
 //};
 
-PostItem.prototype.item = function () {
+PostItem.prototype.widget = function () {
 
-   return this.bg;
+   return this.form;
 };
 
-PostItem.prototype.pos = function () {
+PostItem.prototype.set = function (params) {
 
-   return this.pos (argument);
+   var time;
+
+   if (params.avatar) {
+
+   }
+
+   if (params.by) { this.postedBy.text(params.by); }
+
+   if (params.at) {
+
+      if (params.at instanceof Date) { time = params.at; }
+      else { time = toDate(params.at); }
+
+      this.postedAt.text(time);
+   }
+
+   if (params.message) { this.message.text(params.message); }
 };

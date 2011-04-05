@@ -5,6 +5,7 @@ var dmz =
        , module: require("dmz/runtime/module")
        , ui:
           { consts: require('dmz/ui/consts')
+          , layout: require("dmz/ui/layout")
           , loader: require('dmz/ui/uiLoader')
           , mainWindow: require('dmz/ui/mainWindow')
           , messageBox: require("dmz/ui/messageBox")
@@ -26,7 +27,7 @@ var dmz =
    , postText = dialog.lookup("postTextEdit")
    , messageLengthRem = dialog.lookup("charRemAmt")
    , buttonBox = dialog.lookup("buttonBox")
-   , _view = form.lookup("forumGraphicsView")
+   , _frame = form.lookup("forumFrame")
 
    // Object Lists
    , ForumList = {}
@@ -37,7 +38,6 @@ var dmz =
    // Variables
    , UnreadPostBrush = dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
    , ReadPostBrush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: 1 })
-   , _scene
 
    // Functions
    , toDate = dmz.util.timeStampToDate
@@ -48,15 +48,26 @@ var dmz =
 
 _setupView = function () {
 
-   if (!_scene) {
+   var layout = _frame.layout(dmz.ui.layout.createVBoxLayout(), true)
+     , post
+     , lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere risus eu nisi imperdiet pellentesque. Duis a turpis nec ante euismod hendrerit non nec odio. Quisque vel nunc vel massa tempor condimentum.\n\nProin nisl nibh, placerat non lacinia sed, luctus ullamcorper lorem. Nulla massa dui, condimentum ac blandit dapibus, aliquam sit amet nunc. Vestibulum lacus."
+     ;
 
-      _scene = dmz.ui.graph.createScene(0, 0, 200, 500);
+   if (layout) {
 
-      _view.scene(_scene);
+      for (var ix = 0; ix < 1; ix++) {
 
-      var post = PostItem.create();
+         self.log.warn("ix: " + ix);
+         post = PostItem.create({ by: "Scottie-" + ix, message: ((ix % 2) ? lorem : "WhooHoo!!!") });
+//         post.widget.observer("replyButton", function() { post_reply(handle); });
 
-      _scene.addItem(post.item ());
+         layout.addWidget(post.widget())
+      }
+
+//      post = PostItem.create({ by: "Scottie-!!!!", message: lorem+lorem+lorem+lorem+lorem+lorem+lorem });
+//      layout.addWidget(post.widget())
+
+      layout.addStretch(1);
    }
 };
 
