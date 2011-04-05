@@ -83,6 +83,9 @@ var dmz =
       , NewspaperImageHandle: dmz.defs.createNamedHandle("newspaper_image")
       , InboxImageHandle: dmz.defs.createNamedHandle("inbox_image")
       , PhoneImageHandle: dmz.defs.createNamedHandle("phone_image")
+      , AdvisorImageHandle: dmz.defs.createNamedHandle("advisor_image")
+      , ExitImageHandle: dmz.defs.createNamedHandle("exit_image")
+      , ResourceImageHandle: dmz.defs.createNamedHandle("resource_image")
       }
 
    , Functions =

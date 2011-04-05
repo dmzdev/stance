@@ -1144,7 +1144,9 @@ function (objHandle, attr, value, prev) {
 dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
 function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 
-   var file;
+   var file
+     , data
+     ;
    if (!groupAdvisors[groupHandle]) { groupAdvisors[groupHandle] = []; }
    if (groupAdvisors[groupHandle].length <= advisorCount) {
 
@@ -1159,10 +1161,13 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
             , voteWidgets: []
             };
 
-         file =
-            dmz.ui.graph.createPixmap(
-               dmz.resources.findFile(dmz.object.text(advisorHandle, dmz.stance.PictureHandle)));
-         if (file) { advisorData[advisorHandle].picture = file; }
+         data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
+         file = dmz.object.scalar(advisorHandle, dmz.stance.AdvisorImageHandle);
+         if (data && (file < data.length)) {
+
+            file = dmz.resources.findFile(data[file]);
+            if (file) { advisorData[advisorHandle].picture = dmz.ui.graph.createPixmap(file); }
+         }
       }
    }
 });
@@ -1184,16 +1189,44 @@ dmz.object.text.observe(self, dmz.stance.BioHandle, function (handle, attr, valu
    }
 });
 
-dmz.object.text.observe(self, dmz.stance.PictureHandle,
+dmz.object.text.observe(self, dmz.stance.AdvisorImageHandle,
 function (handle, attr, value) {
 
-   var pic;
+   var pic
+     , data
+     , groupHandle
+     ;
    if (advisorData[handle]) {
 
-      advisorData[handle].picture =
-         dmz.ui.graph.createPixmap(dmz.resources.findFile(value));
+      groupHandle = getAdvisorGroupHandle(handle);
+      data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
+      file = dmz.object.scalar(handle, dmz.stance.AdvisorImageHandle);
+      if (data && (file < data.length)) {
+
+         file = dmz.resources.findFile(data[file]);
+         if (file) { advisorData[handle].picture = dmz.ui.graph.createPixmap(file); }
+      }
    }
-})
+});
+
+dmz.object.data.observe(self, dmz.stance.AdvisorImageHandle,
+function (handle, attr, data) {
+
+   var advisors = dmz.object.subLinks(handle, dmz.stance.AdvisorGroupHandle)
+     ;
+   if (advisors) {
+
+      advisors.forEach(function (advisorHandle) {
+
+         var file = dmz.object.scalar(advisorHandle, dmz.stance.AdvisorImageHandle);
+         if (file < data.length) {
+
+            file = dmz.resources.findFile(data[file]);
+            if (file) { advisorData[advisorHandle].picture = dmz.ui.graph.createPixmap(file); }
+         }
+      });
+   }
+});
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 

@@ -64,7 +64,7 @@ var dmz =
 
    , editAdvisorDialog = dmz.ui.loader.load("EditAdvisorDialog.ui")
    , advisorGroupList = editAdvisorDialog.lookup("groupList")
-   , pictureList = editAdvisorDialog.lookup("pictureList")
+   , advisorNumberList = editAdvisorDialog.lookup("numberComboBox")
    , advisorBio = editAdvisorDialog.lookup("advisorBio")
    , pictureLabel = editAdvisorDialog.lookup("pictureLabel")
    , advisorSpecialty = editAdvisorDialog.lookup("specialtyEdit")
@@ -84,11 +84,17 @@ var dmz =
    , MediaUrlText = CreateMediaInjectDialog.lookup("urlText")
    , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupLayout")
 
+   , AddGroupDialog = dmz.ui.loader.load("AddGroupDialog.ui")
+   , groupButtonBox = AddGroupDialog.lookup("buttonBox")
+   , groupTemplatePic = AddGroupDialog.lookup("pictureLabel")
+   , groupTemplateComboBox = AddGroupDialog.lookup("templateComboBox")
+   , groupNameEdit = AddGroupDialog.lookup("nameEdit")
+
    // Variables
    , groupList = []
    , userList = {}
    , gameList = []
-   , advisorPictureObjects = []
+   , advisorPictureObjects = {}
    , lobbyistPictureObjects = []
    , advisorList = []
    , forumList = []
@@ -100,6 +106,8 @@ var dmz =
         , Newspaper: { type: dmz.stance.NewspaperType, attr: dmz.stance.ActiveNewspaperHandle }
         }
    , inUpdate = false
+   , TemplateList = []
+   , TemplateBackgroundPixmaps = []
 
    // Function decls
    , toTimeStamp = dmz.util.dateToTimeStamp
@@ -117,6 +125,8 @@ var dmz =
    , groupToForum
    , groupFromForum
    , updateTimePage
+   , readGroupTemplates
+   , setGroupTemplate
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
@@ -182,6 +192,91 @@ createNewUser = function (userName, displayName) {
    }
    return user;
 };
+
+readGroupTemplates = function () {
+
+   var setList = self.config.get("group-picture-set.set")
+     ;
+
+   setList.forEach(function (set) {
+
+      var imageList = set.get("image")
+        , setName = set.string("name")
+        , data = {}
+        , pixmap
+        ;
+
+      imageList.forEach(function (image) {
+
+         var name = image.string("name")
+           , resource = image.string("resource")
+           ;
+
+         if (name && resource) {
+
+            if (name === "Advisor") {
+
+               if (!data[name]) { data[name] = []; }
+               data[name].push(resource);
+            }
+            else { data[name] = resource; }
+         }
+      });
+
+      data.background = set.string("background");
+      file = dmz.resources.findFile(set.string("background"));
+      TemplateList.push(data);
+      groupTemplateComboBox.addItem(setName);
+      if (data.background) {
+
+         pixmap = dmz.resources.findfile(data.background);
+         if (pixmap) {
+
+            pixmap = dmz.ui.graph.createPixmap(pixmap);
+            TemplateBackgroundPixmaps.push(pixmap);
+         }
+      }
+   });
+}
+
+setGroupTemplate = function (groupHandle, templateIndex) {
+
+   var data
+     , advisorImages = []
+     ;
+   if (templateIndex < TemplateList.length) {
+
+      data = TemplateList[templateIndex];
+      if (data) {
+
+         Object.keys(data).forEach(function (key) {
+
+            var attr = false;
+
+            switch (key) {
+            case "Advisor": advisorImages.push (data[key]); break;
+            case "background": attr = dmz.stance.BackgroundImageHandle; break;
+            case "Exit": attr = dmz.stance.ExitImageHandle; break;
+            case "Forum": attr = dmz.stance.ComputerImageHandle; break;
+            case "Map": attr = dmz.stance.MapImageHandle; break;
+            case "Video": attr = dmz.stance.TVImageHandle; break;
+            case "Newspaper": attr = dmz.stance.NewspaperImageHandle; break;
+            case "Memo": attr = dmz.stance.InboxImageHandle; break;
+            case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
+            case "Resource": attr = dmz.stance.ResourceImageHandle; break;
+            default: self.log.warn ("Key ("+key+") has no associated handle."); break;
+            }
+
+            if (attr) { dmz.object.string(groupHandle, attr, data[key]); }
+         });
+
+         if (advisorImages.length) {
+
+            dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle, advisorImages);
+         }
+      }
+   }
+}
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
@@ -648,17 +743,10 @@ setup = function () {
          });
    });
 
-   pictureList.observe(self, "currentIndexChanged", function (index) {
-
-      if (index < advisorPictureObjects.length) {
-
-         pictureLabel.pixmap(advisorPictureObjects[index]);
-      }
-   });
-
    pictures = self.config.get("advisor-pictures.picture");
    if (pictures) {
 
+      idx = 0;
       pictures.forEach(function (pic) {
 
          var name = pic.string("name")
@@ -667,10 +755,11 @@ setup = function () {
 
          file = dmz.ui.graph.createPixmap(file);
          advisorPictureObjects.push(file);
-         pictureList.addItem(name);
+         advisorPictureObjects[file] = dmz.ui.graph.createPixmap(file);
+         advisorNumberList.addItem(idx.toString());
       });
 
-      if (pictureList.count()) { pictureList.currentIndex(0); }
+      if (advisorNumberList.count()) { advisorNumberList.currentIndex(0); }
    }
 
    editScenarioWidget.observe(self, "editAdvisorButton", "clicked", function () {
@@ -684,9 +773,49 @@ setup = function () {
         , text
         ;
 
+      advisorNumberList.clear();
+
       if (index < advisorList.length) {
 
          advisorHandle = advisorList[index];
+         advisorGroupList.observe(self, "currentIndexChanged", function (index) {
+
+            var pictureResources
+              , groupHandle
+              , idx
+              ;
+
+            advisorNumberList.clear();
+            pictureLabel.clear();
+            groupHandle = groupList[index];
+            if (groupHandle) {
+
+               pictureResources = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
+               for (idx = 1; idx <= pictureResources.length; idx += 1) {
+
+                  advisorNumberList.addItem(idx.toString());
+               }
+
+               advisorNumberList.observe(self, "currentIndexChanged", function (index) {
+
+                  var resource
+                    , pixmap
+                    ;
+                  if (index < pictureResources.length) {
+
+                     pixmap = dmz.resources.findFile(pictureResources[index]);
+                     pixmap = pixmap ? dmz.ui.graph.createPixmap(pixmap) : false;
+                     if (pixmap) { pictureLabel.pixmap(pixmap); }
+                  }
+               });
+
+               pictureIndex = dmz.object.scalar(groupHandle, dmz.stance.AdvisorImageHandle);
+               if (pictureIndex instanceof Number) {
+
+                  advisorNumberList.currentIndex(pictureIndex);
+               }
+            }
+         });
 
          links = dmz.object.superLinks(advisorHandle, dmz.stance.AdvisorGroupHandle);
          if (links && links[0]) {
@@ -694,9 +823,6 @@ setup = function () {
             groupIndex = advisorGroupList.findText(dmz.stance.getDisplayName(links[0]));
          }
 
-         pictureIndex = pictureList.findText(dmz.object.text(advisorHandle, dmz.stance.PictureHandle));
-
-         pictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
          advisorGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
          text = dmz.object.text(advisorHandle, dmz.stance.BioHandle);
          if (!text) { text = ""; }
@@ -704,6 +830,7 @@ setup = function () {
          text = dmz.object.text(advisorHandle, dmz.stance.TitleHandle);
          if (!text) { text = ""; }
          advisorSpecialty.text(text);
+
 
          editAdvisorDialog.open(self, function (result) {
 
@@ -716,8 +843,7 @@ setup = function () {
                   groupList[advisorGroupList.currentIndex()],
                   advisorHandle);
 
-               text = pictureList.currentText();
-               dmz.object.text(advisorHandle, dmz.stance.PictureHandle, text);
+               dmz.object.scalar(advisorHandle, dmz.stance.AdvisorImageHandle, advisorNumberList.currentIndex());
                dmz.object.text(advisorHandle, dmz.stance.BioHandle, advisorBio.text());
                dmz.object.text(advisorHandle, dmz.stance.TitleHandle, advisorSpecialty.text());
             }
@@ -820,19 +946,21 @@ ungroupedStudentList.observe(self, "itemActivated", userToGroup);
 
 editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
 
-   dmz.ui.inputDialog.create(
-      { title: "Create New Group"
-      , label: "Group Name:"
-      , text: ""
-      }
-      , editScenarioWidget
-   ).open(self, function (value, groupName) {
+   if (groupTemplateComboBox.count()) {
 
-      var group;
+      groupTemplateComboBox.currentIndex(0);
+   }
+   else { self.log.error ("No group templates found."); }
+
+   groupNameEdit.text("");
+
+   AddGroupDialog.open(self, function (value) {
+
       if (value) {
 
          group = dmz.object.create(dmz.stance.GroupType);
-         dmz.object.text(group, dmz.stance.NameHandle, groupName);
+         dmz.object.text(group, dmz.stance.NameHandle, groupNameEdit.text());
+         setGroupTemplate(group, groupTemplateComboBox.currentIndex());
          dmz.object.activate(group);
          dmz.object.link(dmz.stance.GameGroupHandle, CurrentGameHandle, group);
       }
@@ -1220,8 +1348,17 @@ function (objHandle, attrHandle, value) {
    }
 });
 
+groupTemplateComboBox.observe(self, "currentIndexChanged", function (index) {
+
+   if (index < TemplateBackgroundPixmaps.length) {
+
+      groupTemplatePic.pixmap(TemplateBackgroundPixmaps[index]);
+   }
+});
+
 (function () {
 
+   readGroupTemplates();
    editScenarioWidget.lookup("tabWidget").hide();
    dock.hide();
    dock.enabled(false);

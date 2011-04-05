@@ -23,10 +23,6 @@ var dmz =
    }
 
    // UI Elements
-//   , setGroupsForm = dmz.ui.loader.load("SetGroupsForm.ui")
-//   , doneButton = setGroupsForm.lookup("doneButton")
-//   , createGroupDialog = dmz.ui.loader.load("CreateGroupDialog.ui")
-
    , main = dmz.ui.loader.load("main")
    , groupBox = main.lookup("groupBox")
    , stackedWidget = main.lookup("stackedWidget")
@@ -34,16 +30,11 @@ var dmz =
    , gscene
    , homeButton = main.lookup("homeButton")
 
-   // Handles
-
-   // Object Types
-
    // Variables
    , GroupList = [-1]
    , AdvisorCount = 5
    , sceneWidth = self.config.number("scene.width", 1280)
    , sceneHeight = self.config.number("scene.height", 800)
-
    , advisors = []
    , map
    , newspaper
@@ -51,6 +42,7 @@ var dmz =
    , desk
    , tv
    , computer
+   , Background
    , PageLink =
         { Map: false
         , Forum: false
@@ -71,6 +63,7 @@ var dmz =
    , setupMainWindow
    , mouseEvent
    , updateGraphicsForGroup
+   , setPixmapFromResource
 
    // API
    , _exports = {}
@@ -84,6 +77,77 @@ self.shutdown = function () {
       dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
    }
 };
+
+updateGraphicsForGroup = function (groupHandle) {
+
+   setPixmapFromResource(
+      Background, dmz.object.string(groupHandle, dmz.stance.BackgroundImageHandle));
+
+   data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
+   if (data) {
+
+      for (index = 0; index < data.length; idx += 1) {
+
+         setPixmapFromResource(PageLink["Advisor" + index.toString()], data[index]);
+      }
+   }
+
+   Object.keys(PageLink).forEach(function (key) {
+
+      var item
+        , attr
+        ;
+
+      switch (key) {
+      case "Advisor0":
+      case "Advisor1":
+      case "Advisor2":
+      case "Advisor3":
+      case "Advisor4": break; // Handled above
+//         case "background": attr = dmz.stance.BackgroundImageHandle; break;
+      case "Exit": attr = dmz.stance.ExitImageHandle; break;
+      case "Forum": attr = dmz.stance.ComputerImageHandle; break;
+      case "Map": attr = dmz.stance.MapImageHandle; break;
+      case "Video": attr = dmz.stance.TVImageHandle; break;
+      case "Newspaper": attr = dmz.stance.NewspaperImageHandle; break;
+      case "Memo": attr = dmz.stance.InboxImageHandle; break;
+      case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
+      case "Resource": attr = dmz.stance.ResourceImageHandle; break;
+      default: self.log.warn ("Key ("+key+") has no associated handle."); break;
+      }
+
+      if (attr) {
+
+         setPixmapFromResource(PageLink[key], dmz.object.string(groupHandle, attr));
+      }
+   });
+}
+
+setPixmapFromResource = function (graphicsItem, resourceName) {
+
+   var file = dmz.resource.findFile(data[index])
+     , config = dmz.resource.lookupConfig(data[index])
+     , loc
+     , pixmap
+     ;
+
+   if (graphicsItem && config && file) {
+
+      loc = config.vector("loc");
+      if (dmz.vector.isTypeOf(loc)) {
+
+         if (dmz.vector.isTypeOf(loc)) {
+
+            pixmap = dmz.ui.graph.createPixmap(file);
+            if (pixmap) {
+
+               graphicsItem.pixmap(pixmap);
+               graphicsItem.pos(loc.x, loc.y);
+            }
+         }
+      }
+   }
+}
 
 mouseEvent = function (object, event) {
 
@@ -201,14 +265,11 @@ setupMainWindow = function () {
                      pixmap.data(0, widget);
                      stackedWidget.add(widget);
                      PageLink[name] = pixmap;
-
-                     pixmap.cursor(dmz.ui.consts.PointingHandCursor);
                   }
                }
             }
          }
       });
-
 
       file = dmz.resources.findFile(self.config.string("set.background"));
       if (file) {
@@ -218,86 +279,9 @@ setupMainWindow = function () {
 
             pixmap = gscene.addPixmap(pixmap);
             pixmap.pos(0, 0);
+            Background = pixmap;
          }
       }
-
-
-//      for (idx = 0; idx < AdvisorCount; idx += 1) {
-
-//         box = gscene.addRect(0, 0, 100, 100);
-//         box.pos (2 * idx * 100, 0);
-//         dmz.ui.graph.createTextItem("Advisor #" + (idx + 1), box);
-//         advisors.push(box);
-//      }
-
-//      lobbyist = gscene.addRect(0, 0, 100, 100);
-//      lobbyist.pos (2 * idx * 100, 0);
-//      dmz.ui.graph.createTextItem("Lobbyist", lobbyist);
-
-//      map = dmz.ui.graph.createRectItem(0, 0, 60, 60, advisors[0]);
-//      map.pos(0, 150);
-//      dmz.ui.graph.createTextItem("Map", map);
-
-//      tv = dmz.ui.graph.createRectItem(0, 0, 60, 60, advisors[AdvisorCount - 1]);
-//      tv.pos (40, 150);
-//      dmz.ui.graph.createTextItem("TV", tv);
-
-//      desk = gscene.addRect(0, 0, 400, 100);
-//      desk.pos(200, 300);
-
-//      newspaper = dmz.ui.graph.createRectItem(0, 0, 100, 25, desk);
-//      newspaper.pos(100, 50);
-//      dmz.ui.graph.createTextItem("Newspaper", newspaper);
-
-//      inbox = dmz.ui.graph.createRectItem(0, 0, 50, 50, desk);
-//      inbox.pos(10, 10);
-//      dmz.ui.graph.createTextItem("Inbox", inbox);
-
-//      computer = dmz.ui.graph.createRectItem(0, 0, 100, 90, desk);
-//      computer.pos(300, 10);
-//      dmz.ui.graph.createTextItem("Computer", computer);
-
-//      PageLink.Map = map;
-//      PageLink.Advisor0 = advisors[0];
-//      PageLink.Advisor1 = advisors[1];
-//      PageLink.Advisor2 = advisors[2];
-//      PageLink.Advisor3 = advisors[3];
-//      PageLink.Advisor4 = advisors[4];
-//      PageLink.Forum = computer;
-//      PageLink.Video = tv;
-//      PageLink.Newspaper = newspaper;
-//      PageLink.Memo = inbox;
-//      PageLink.Lobbyist = lobbyist;
-
-//      box = dmz.ui.webview.create();
-//      box.url ("http://dev.chds.us/?dystopia:map2");
-//      box.contextMenuPolicy (dmz.ui.consts.NoContextMenu);
-//      map.data(0, box);
-//      stackedWidget.add(box);
-
-//      widget = dmz.ui.label.create("Forum screen");
-//      computer.data(0, widget);
-//      stackedWidget.add(widget);
-
-//      widget = dmz.ui.label.create("Advisor screen");
-//      advisors.forEach(function (item) { item.data(0, widget); });
-//      stackedWidget.add(widget);
-
-//      widget = dmz.ui.label.create("Video screen");
-//      tv.data(0, widget);
-//      stackedWidget.add(widget);
-
-//      widget = dmz.ui.label.create("Newspaper screen");
-//      newspaper.data(0, widget);
-//      stackedWidget.add(widget);
-
-//      widget = dmz.ui.label.create("Memo screen");
-//      inbox.data(0, widget);
-//      stackedWidget.add(widget);
-
-//      widget = dmz.ui.label.create("Lobbyist screen");
-//      lobbyist.data(0, widget);
-//      stackedWidget.add(widget);
 
       homeButton.observe(self, "clicked", function () {
 
@@ -331,6 +315,7 @@ _exports.addPage = function (name, widget, func, onHome) {
       PageLink[name].data(0, widget);
       PageLink[name].data(1, func);
       PageLink[name].data(2, onHome);
+      PageLink[name].cursor(dmz.ui.consts.PointingHandCursor);
    }
    else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
 }
@@ -378,11 +363,21 @@ function (objHandle, attrHandle, value) {
    }
 });
 
+dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
+function (objHandle, attrHandle, groupHandle, userHandle) {
+
+   if (userHandle === dmz.object.hil()) { updateGraphicsForGroup(groupHandle); }
+});
+
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
    var groupHandle = dmz.stance.getUserGroupHandle(objHandle)
-     , index = -1
+     , index = 0
+     , data
+     , resource
+     , config
+     , loc
      ;
 
    if (value) {
@@ -397,8 +392,9 @@ function (objHandle, attrHandle, value) {
          groupBox.hide();
          groupBox.enabled(false);
       }
-   }
 
+      updateGraphicsForGroup(dmz.stance.getUserGroupHandle(objHandle));
+   }
 });
 
 (function () {
