@@ -47,12 +47,6 @@
          <image name="Advisor" resource="bw_adv4"/>
       </set>
    </group-picture-set>
-   <advisor-pictures>
-      <picture name="adv_0"/>
-      <picture name="adv_1"/>
-      <picture name="adv_2"/>
-      <picture name="adv_3"/>
-   </advisor-pictures>
    <lobbyist-pictures>
       <picture name="lob_0"/>
       <picture name="lob_1"/>

@@ -1163,9 +1163,9 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 
          data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
          file = dmz.object.scalar(advisorHandle, dmz.stance.AdvisorImageHandle);
-         if (data && (file < data.length)) {
+         if (data) {
 
-            file = dmz.resources.findFile(data[file]);
+            file = dmz.resources.findFile(data.string(dmz.stance.AdvisorImageHandle, file));
             if (file) { advisorData[advisorHandle].picture = dmz.ui.graph.createPixmap(file); }
          }
       }
@@ -1201,9 +1201,9 @@ function (handle, attr, value) {
       groupHandle = getAdvisorGroupHandle(handle);
       data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
       file = dmz.object.scalar(handle, dmz.stance.AdvisorImageHandle);
-      if (data && (file < data.length)) {
+      if (data) {
 
-         file = dmz.resources.findFile(data[file]);
+         file = dmz.resources.findFile(data.string(dmz.stance.AdvisorImageHandle, file));
          if (file) { advisorData[handle].picture = dmz.ui.graph.createPixmap(file); }
       }
    }
@@ -1219,11 +1219,8 @@ function (handle, attr, data) {
       advisors.forEach(function (advisorHandle) {
 
          var file = dmz.object.scalar(advisorHandle, dmz.stance.AdvisorImageHandle);
-         if (file < data.length) {
-
-            file = dmz.resources.findFile(data[file]);
-            if (file) { advisorData[advisorHandle].picture = dmz.ui.graph.createPixmap(file); }
-         }
+         file = dmz.resources.findFile(data.string(dmz.stance.AdvisorImageHandle, file));
+         if (file) { advisorData[advisorHandle].picture = dmz.ui.graph.createPixmap(file); }
       });
    }
 });

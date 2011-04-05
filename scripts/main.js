@@ -78,59 +78,15 @@ self.shutdown = function () {
    }
 };
 
-updateGraphicsForGroup = function (groupHandle) {
-
-   setPixmapFromResource(
-      Background, dmz.object.string(groupHandle, dmz.stance.BackgroundImageHandle));
-
-   data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
-   if (data) {
-
-      for (index = 0; index < data.length; idx += 1) {
-
-         setPixmapFromResource(PageLink["Advisor" + index.toString()], data[index]);
-      }
-   }
-
-   Object.keys(PageLink).forEach(function (key) {
-
-      var item
-        , attr
-        ;
-
-      switch (key) {
-      case "Advisor0":
-      case "Advisor1":
-      case "Advisor2":
-      case "Advisor3":
-      case "Advisor4": break; // Handled above
-//         case "background": attr = dmz.stance.BackgroundImageHandle; break;
-      case "Exit": attr = dmz.stance.ExitImageHandle; break;
-      case "Forum": attr = dmz.stance.ComputerImageHandle; break;
-      case "Map": attr = dmz.stance.MapImageHandle; break;
-      case "Video": attr = dmz.stance.TVImageHandle; break;
-      case "Newspaper": attr = dmz.stance.NewspaperImageHandle; break;
-      case "Memo": attr = dmz.stance.InboxImageHandle; break;
-      case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
-      case "Resource": attr = dmz.stance.ResourceImageHandle; break;
-      default: self.log.warn ("Key ("+key+") has no associated handle."); break;
-      }
-
-      if (attr) {
-
-         setPixmapFromResource(PageLink[key], dmz.object.string(groupHandle, attr));
-      }
-   });
-}
-
 setPixmapFromResource = function (graphicsItem, resourceName) {
 
-   var file = dmz.resource.findFile(data[index])
-     , config = dmz.resource.lookupConfig(data[index])
+   var file = dmz.resources.findFile(resourceName)
+     , config = dmz.resources.lookupConfig(resourceName)
      , loc
      , pixmap
      ;
 
+//   self.log.warn ("setPixmapFromResource:", graphicsItem, resourceName, file, config);
    if (graphicsItem && config && file) {
 
       loc = config.vector("loc");
@@ -147,7 +103,66 @@ setPixmapFromResource = function (graphicsItem, resourceName) {
          }
       }
    }
-}
+};
+
+updateGraphicsForGroup = function (groupHandle) {
+
+   var data
+     , advisorKey = ["Advisor0", "Advisor1", "Advisor2", "Advisor3", "Advisor4"]
+     , index
+     , count
+     ;
+
+   if (groupHandle && dmz.object.type(groupHandle).isOfType(dmz.stance.GroupType)) {
+
+      setPixmapFromResource(
+         Background, dmz.object.text(groupHandle, dmz.stance.BackgroundImageHandle));
+
+      data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
+      count = dmz.object.scalar(groupHandle, dmz.stance.AdvisorImageCountHandle);
+      self.log.warn ("Advisor Data:", data);
+      if (data) {
+
+         for (index = 0; index < count; index += 1) {
+
+            setPixmapFromResource(
+               PageLink[advisorKey[index]],
+               data.string(dmz.stance.AdvisorImageHandle, index)
+               );
+         }
+      }
+
+      Object.keys(PageLink).forEach(function (key) {
+
+         var item
+           , attr
+           ;
+
+         switch (key) {
+         case "Advisor0":
+         case "Advisor1":
+         case "Advisor2":
+         case "Advisor3":
+         case "Advisor4": break; // Handled above
+   //         case "background": attr = dmz.stance.BackgroundImageHandle; break;
+         case "Exit": attr = dmz.stance.ExitImageHandle; break;
+         case "Forum": attr = dmz.stance.ComputerImageHandle; break;
+         case "Map": attr = dmz.stance.MapImageHandle; break;
+         case "Video": attr = dmz.stance.TVImageHandle; break;
+         case "Newspaper": attr = dmz.stance.NewspaperImageHandle; break;
+         case "Memo": attr = dmz.stance.InboxImageHandle; break;
+         case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
+         case "Resource": attr = dmz.stance.ResourceImageHandle; break;
+         default: self.log.warn ("Key ("+key+") has no associated handle."); break;
+         }
+
+         if (attr) {
+
+            setPixmapFromResource(PageLink[key], dmz.object.text(groupHandle, attr));
+         }
+      });
+   }
+};
 
 mouseEvent = function (object, event) {
 
@@ -193,7 +208,7 @@ mouseEvent = function (object, event) {
    }
    return false;
 
-}
+};
 
 dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
 function (objHandle, attrHandle, gameHandle, groupHandle) {
@@ -236,6 +251,17 @@ setupMainWindow = function () {
       mainGView.scene(gscene);
       stackedWidget.remove(1); // Get rid of Qt Designer-forced second page
 
+      file = dmz.resources.findFile(self.config.string("set.background"));
+      if (file) {
+
+         pixmap = dmz.ui.graph.createPixmap(file);
+         if (pixmap) {
+
+            pixmap = gscene.addPixmap(pixmap);
+            pixmap.pos(0, 0);
+            Background = pixmap;
+         }
+      }
       imageList.forEach(function (image) {
 
          var name = image.string("name")
@@ -271,17 +297,6 @@ setupMainWindow = function () {
          }
       });
 
-      file = dmz.resources.findFile(self.config.string("set.background"));
-      if (file) {
-
-         pixmap = dmz.ui.graph.createPixmap(file);
-         if (pixmap) {
-
-            pixmap = gscene.addPixmap(pixmap);
-            pixmap.pos(0, 0);
-            Background = pixmap;
-         }
-      }
 
       homeButton.observe(self, "clicked", function () {
 

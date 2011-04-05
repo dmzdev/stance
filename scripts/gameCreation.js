@@ -218,24 +218,29 @@ readGroupTemplates = function () {
 
                if (!data[name]) { data[name] = []; }
                data[name].push(resource);
+               self.log.warn ("Constructing: data["+name+"]:", data[name], data[name].length, typeof(data[name]));
             }
             else { data[name] = resource; }
          }
       });
 
       data.background = set.string("background");
-      file = dmz.resources.findFile(set.string("background"));
       TemplateList.push(data);
       groupTemplateComboBox.addItem(setName);
       if (data.background) {
 
-         pixmap = dmz.resources.findfile(data.background);
+         pixmap = dmz.resources.findFile(data.background);
          if (pixmap) {
 
             pixmap = dmz.ui.graph.createPixmap(pixmap);
             TemplateBackgroundPixmaps.push(pixmap);
          }
       }
+
+      Object.keys(data).forEach(function (key) {
+
+         self.log.warn("data["+key+"]:", data[key]);
+      });
    });
 }
 
@@ -243,18 +248,22 @@ setGroupTemplate = function (groupHandle, templateIndex) {
 
    var data
      , advisorImages = []
+     , idx
      ;
+   self.log.warn ("SetGroupTemplate");
    if (templateIndex < TemplateList.length) {
 
       data = TemplateList[templateIndex];
+      self.log.warn ("SetGroupTemplate Data:", Object.keys(data));
       if (data) {
 
          Object.keys(data).forEach(function (key) {
 
             var attr = false;
 
+            self.log.warn ("data["+key+"]:", data[key], typeof data[key]);
             switch (key) {
-            case "Advisor": advisorImages.push (data[key]); break;
+            case "Advisor": advisorImages = data[key]; break;
             case "background": attr = dmz.stance.BackgroundImageHandle; break;
             case "Exit": attr = dmz.stance.ExitImageHandle; break;
             case "Forum": attr = dmz.stance.ComputerImageHandle; break;
@@ -267,12 +276,22 @@ setGroupTemplate = function (groupHandle, templateIndex) {
             default: self.log.warn ("Key ("+key+") has no associated handle."); break;
             }
 
-            if (attr) { dmz.object.string(groupHandle, attr, data[key]); }
+            if (attr) { dmz.object.text(groupHandle, attr, data[key]); }
          });
 
+         self.log.warn ("SetGroupTemplate advisorImages:", advisorImages);
+         self.log.warn ("AdvisorImages:", advisorImages.length, advisorImages);
          if (advisorImages.length) {
 
-            dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle, advisorImages);
+            data = dmz.data.create();
+            for (idx = 0; idx < advisorImages.length; idx += 1) {
+
+               data.string(dmz.stance.AdvisorImageHandle, idx, advisorImages[idx]);
+            }
+
+
+            dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle, data);
+            dmz.object.scalar(groupHandle, dmz.stance.AdvisorImageCountHandle, idx);
          }
       }
    }
@@ -743,25 +762,6 @@ setup = function () {
          });
    });
 
-   pictures = self.config.get("advisor-pictures.picture");
-   if (pictures) {
-
-      idx = 0;
-      pictures.forEach(function (pic) {
-
-         var name = pic.string("name")
-           , file = dmz.resources.findFile(name)
-           ;
-
-         file = dmz.ui.graph.createPixmap(file);
-         advisorPictureObjects.push(file);
-         advisorPictureObjects[file] = dmz.ui.graph.createPixmap(file);
-         advisorNumberList.addItem(idx.toString());
-      });
-
-      if (advisorNumberList.count()) { advisorNumberList.currentIndex(0); }
-   }
-
    editScenarioWidget.observe(self, "editAdvisorButton", "clicked", function () {
 
       var groupIndex
@@ -780,30 +780,30 @@ setup = function () {
          advisorHandle = advisorList[index];
          advisorGroupList.observe(self, "currentIndexChanged", function (index) {
 
-            var pictureResources
-              , groupHandle
+            var data
+              , groupHandle = groupList[index]
               , idx
+              , count
               ;
 
             advisorNumberList.clear();
             pictureLabel.clear();
-            groupHandle = groupList[index];
             if (groupHandle) {
 
-               pictureResources = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
-               for (idx = 1; idx <= pictureResources.length; idx += 1) {
-
-                  advisorNumberList.addItem(idx.toString());
-               }
+               data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
+               count = dmz.object.scalar(groupHandle, dmz.stance.AdvisorImageCountHandle);
+               for (idx = 1; idx <= count; idx += 1) { advisorNumberList.addItem(idx); }
 
                advisorNumberList.observe(self, "currentIndexChanged", function (index) {
 
                   var resource
                     , pixmap
                     ;
-                  if (index < pictureResources.length) {
+                  if (index < count) {
 
-                     pixmap = dmz.resources.findFile(pictureResources[index]);
+                     pixmap =
+                        dmz.resources.findFile(
+                           data.string(dmz.stance.AdvisorImageHandle, index));
                      pixmap = pixmap ? dmz.ui.graph.createPixmap(pixmap) : false;
                      if (pixmap) { pictureLabel.pixmap(pixmap); }
                   }
@@ -956,6 +956,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
 
    AddGroupDialog.open(self, function (value) {
 
+      var group;
       if (value) {
 
          group = dmz.object.create(dmz.stance.GroupType);
