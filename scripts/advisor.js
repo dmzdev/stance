@@ -270,12 +270,12 @@ updateAdvisor = function (module, idx) {
          if (advisorHandle) {
 
             data = advisorData[advisorHandle];
-            if (data.bio) { advisorWidgets[idx].lookup("bioText").text(data.bio); }
-            if (data.name) { advisorWidgets[idx].lookup("nameLabel").text(data.name); }
+            advisorWidgets[idx].lookup("bioText").text(data.bio ? data.bio: "No bio.");
+            advisorWidgets[idx].lookup("nameLabel").text(data.name ? data.name : "No name");
             if (data.picture) { advisorWidgets[idx].lookup("pictureLabel").pixmap(data.picture); }
-            if (data.specialty) { advisorWidgets[idx].lookup("specialtyLabel").text(data.specialty); }
+            else { advisorWidgets[idx].lookup("pictureLabel").clear(); }
+            advisorWidgets[idx].lookup("specialtyLabel").text(data.specialty ? data.specialty : "N/A");
 
-            // Need to disable this unless online?
             advisorWidgets[idx].observe(self, "submitQuestionButton", "clicked", function () {
 
                var textWidget = advisorWidgets[idx].lookup("questionText")

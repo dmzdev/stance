@@ -86,7 +86,6 @@ setPixmapFromResource = function (graphicsItem, resourceName) {
      , pixmap
      ;
 
-//   self.log.warn ("setPixmapFromResource:", graphicsItem, resourceName, file, config);
    if (graphicsItem && config && file) {
 
       loc = config.vector("loc");
@@ -120,7 +119,6 @@ updateGraphicsForGroup = function (groupHandle) {
 
       data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
       count = dmz.object.scalar(groupHandle, dmz.stance.AdvisorImageCountHandle);
-      self.log.warn ("Advisor Data:", data);
       if (data) {
 
          for (index = 0; index < count; index += 1) {
