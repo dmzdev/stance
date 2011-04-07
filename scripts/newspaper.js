@@ -22,26 +22,28 @@ var dmz =
    , util: require("dmz/types/util")
    }
 
-// UI Elements
-, webForm = dmz.ui.loader.load("PrintMediaForm.ui")
-, nextButton = webForm.lookup("nextButton")
-, prevButton = webForm.lookup("prevButton")
-, currLabel = webForm.lookup("currentLabel")
-, totalLabel = webForm.lookup("totalLabel")
-, webpage = dmz.ui.webview.create()
+   // UI Elements
+   , webForm = dmz.ui.loader.load("PrintMediaForm.ui")
+   , nextButton = webForm.lookup("nextButton")
+   , prevButton = webForm.lookup("prevButton")
+   , currLabel = webForm.lookup("currentLabel")
+   , totalLabel = webForm.lookup("totalLabel")
+   , webpage = dmz.ui.webview.create()
 
-// Variables
-, CurrentIndex = 0
-, NewSource = false
-, SourceList = [] // { handle, source }
-, CurrentWindow = false
+   // Variables
+   , CurrentIndex = 0
+   , NewSource = false
+   , SourceList = [] // { handle, source }
+   , CurrentWindow = false
+   , MainModule = false
+   , Queued = false
 
-// Function decls
-, loadCurrent
-, skipForward
-, skipBackward
-, setUserPlayList
-;
+   // Function decls
+   , loadCurrent
+   , skipForward
+   , skipBackward
+   , setUserPlayList
+   ;
 
 loadCurrent = function () {
 
@@ -180,6 +182,8 @@ function (objHandle, attrHandle, userHandle, newspaperHandle) {
          }
       });
    }
+   else if (!CurrentWindow && MainModule) { MainModule.highlight("Newspaper"); }
+   else if (!MainModule) { Queued = true; }
 });
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
@@ -192,6 +196,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
+      MainModule = module;
       module.addPage
          ("Newspaper"
          , webForm
@@ -203,6 +208,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            }
          , function () { CurrentWindow = false; } // onHome
          );
+
+      if (Queued) { Queued = false; module.highlight("Newspaper"); }
    }
 });
 

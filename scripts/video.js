@@ -41,6 +41,8 @@ var dmz =
 , NewSource = false
 , SourceList = [] // { handle, source }
 , CurrentWindow = false
+, MainModule = false
+, VideoQueue = false
 
 // Function decls
 , playCurrent
@@ -217,6 +219,8 @@ function (objHandle, attrHandle, userHandle, videoHandle) {
          playCurrent();
       });
    }
+   else if (!CurrentWindow && MainModule) { MainModule.highlight("Video"); }
+   else if (!MainModule) { VideoQueue = true; }
 });
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
@@ -229,6 +233,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
+      MainModule = module;
       module.addPage
          ("Video"
          , videoForm
@@ -241,6 +246,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            }
          , function () { CurrentWindow = false; stopCurrent(); } // onHome
          );
+
+      if (VideoQueue) { VideoQueue = false; module.highlight("Video"); }
    }
 });
 

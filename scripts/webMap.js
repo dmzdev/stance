@@ -64,6 +64,7 @@ var dmz =
    , GroupHandleList = []
    , PinGroupList = {}
    , GroupQueue = {}
+   , MainModule = false
 
    // Function decls
    , onPinAdded
@@ -103,7 +104,11 @@ dmz.object.create.observe(self, function (objHandle, objType) {
             data.string(pinFileHandle, 0, file);
             data.number(pinObjectHandle, 0, objHandle);
             if (!HaveActivatedMap) { PinQueue.push(data); }
-            else { addPinMessage.send(data); }
+            else {
+
+               addPinMessage.send(data);
+               MainModule.highlight("Map");
+            }
          }
       }
       else if (objType.isOfType(dmz.stance.GroupType)) { GroupQueue[objHandle] = true; }
@@ -365,6 +370,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
+      MainModule = module;
       module.addPage("Map", map, function () {
 
          if (!HaveActivatedMap) {

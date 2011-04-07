@@ -35,6 +35,8 @@ var dmz =
 , NewSource = false
 , SourceList = [] // { handle, source }
 , CurrentWindow = false
+, MainModule = false
+, Queued = false
 
 // Function decls
 , loadCurrent
@@ -179,6 +181,8 @@ function (objHandle, attrHandle, userHandle, memoHandle) {
          }
       });
    }
+   else if (!CurrentWindow && MainModule) { MainModule.highlight("Memo"); }
+   else if (!MainModule) { Queued = true; }
 });
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
@@ -202,6 +206,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            }
          , function () { CurrentWindow = false; } // onHome
          );
+
+      if (Queued) { Queued = false; module.highlight("Memo"); }
    }
 });
 

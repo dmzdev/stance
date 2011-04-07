@@ -42,6 +42,7 @@ var dmz =
    , desk
    , tv
    , computer
+   , LastWindow = false
    , Background
    , PageLink =
         { Map: false
@@ -55,6 +56,7 @@ var dmz =
         , Advisor3: false
         , Advisor4: false
         , Lobbyist: false
+        , Vote: false
         }
    , groupAdvisors = {}
    , advisorPicture = {}
@@ -151,6 +153,7 @@ updateGraphicsForGroup = function (groupHandle) {
          case "Memo": attr = dmz.stance.InboxImageHandle; break;
          case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
          case "Resource": attr = dmz.stance.ResourceImageHandle; break;
+         case "Vote": attr = dmz.stance.VoteImageHandle; break;
          default: self.log.warn ("Key ("+key+") has no associated handle."); break;
          }
 
@@ -184,25 +187,22 @@ mouseEvent = function (object, event) {
          items.forEach(function (item) {
 
             var widget = item.data(0)
-              , onChangeFunction = item.data(1);
+              , onChangeFunction = item.data(1)
+              , children = item.childItems()
               ;
 
             if (stackedWidget && widget) {
 
                stackedWidget.currentWidget(widget);
-               if (onChangeFunction) { onChangeFunction(); }
+               LastWindow = item;
             }
+            if (onChangeFunction) { onChangeFunction(); }
+            if (children) { children.forEach (function (child) { child.hide(); }); }
          });
 
       }
-      else if (type == dmz.ui.event.GraphicsSceneMouseRelease) {
-
-
-      }
-      else if (type == dmz.ui.event.GraphicsSceneMouseMove) {
-
-
-      }
+      else if (type == dmz.ui.event.GraphicsSceneMouseRelease) {}
+      else if (type == dmz.ui.event.GraphicsSceneMouseMove) {}
    }
    return false;
 
@@ -229,6 +229,32 @@ groupBox.observe(self, "currentIndexChanged", function (index) {
 });
 
 
+dmz.object.flag.observe(self, dmz.object.HILAttribute,
+function (objHandle, attrHandle, value) {
+
+   if (value) {
+
+      Object.keys(PageLink).forEach(function (item) {
+
+         var children = PageLink[item].childItems();
+         if (children) { children.forEach(function (item) { item.hide(); }); }
+      });
+   }
+});
+
+dmz.object.unlink.observe(self, dmz.stance.GroupMembersHandle,
+function (linkObjHandle, attrHandle, groupHandle, userHandle) {
+
+   if (userHandle === dmz.object.hil()) {
+
+      Object.keys(PageLink).forEach(function (item) {
+
+         var children = PageLink[item].childItems();
+         if (children) { children.forEach(function (item) { item.hide(); }); }
+      });
+   }
+});
+
 setupMainWindow = function () {
 
    var layout
@@ -239,6 +265,7 @@ setupMainWindow = function () {
      , widget
      , lobbyist
      , imageList = self.config.get("set.image")
+     , highlight
      , file
      , pixmap
      ;
@@ -250,6 +277,7 @@ setupMainWindow = function () {
       stackedWidget.remove(1); // Get rid of Qt Designer-forced second page
 
       file = dmz.resources.findFile(self.config.string("set.background"));
+      highlight = dmz.resources.findFile(self.config.string("set.highlight"));
       if (file) {
 
          pixmap = dmz.ui.graph.createPixmap(file);
@@ -267,6 +295,7 @@ setupMainWindow = function () {
            , file
            , config
            , loc
+           , offset
            , pixmap
            , widget
            ;
@@ -289,6 +318,14 @@ setupMainWindow = function () {
                      pixmap.data(0, widget);
                      stackedWidget.add(widget);
                      PageLink[name] = pixmap;
+                     if (highlight) {
+
+                        pixmap = dmz.ui.graph.createPixmap(highlight);
+                        pixmap = dmz.ui.graph.createPixmapItem(pixmap, PageLink[name]);
+                        offset = config.vector("offset")
+                        if (dmz.vector.isTypeOf(offset)) { pixmap.pos(offset.x, offset.y); }
+                        pixmap.hide();
+                     }
                   }
                }
             }
@@ -298,19 +335,16 @@ setupMainWindow = function () {
 
       homeButton.observe(self, "clicked", function () {
 
+         var item = LastWindow
+           , func
+           ;
+
          stackedWidget.currentIndex (0);
-         Object.keys(PageLink).forEach(function (key) {
+         if (item) {
 
-            var item = PageLink[key]
-              , func
-              ;
-
-            if (item) {
-
-              func = item.data(2);
-              if (func) { func(); }
-            }
-         });
+           func = item.data(2);
+           if (func) { func(); }
+         }
       });
 
       stackedWidget.currentIndex(0);
@@ -321,7 +355,7 @@ setupMainWindow = function () {
 
 _exports.addPage = function (name, widget, func, onHome) {
 
-   if (name && widget && stackedWidget && PageLink[name]) {
+   if (name && stackedWidget && PageLink[name]) {
 
       stackedWidget.remove(PageLink[name].data(0));
       stackedWidget.add(widget);
@@ -331,6 +365,16 @@ _exports.addPage = function (name, widget, func, onHome) {
       PageLink[name].cursor(dmz.ui.consts.PointingHandCursor);
    }
    else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
+}
+
+_exports.highlight = function (name) {
+
+   var children;
+   if (name && PageLink[name]) {
+
+      children = PageLink[name].childItems();
+      if (children) { children.forEach(function (item) { item.show(); }) }
+   }
 }
 
 dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,

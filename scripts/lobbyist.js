@@ -16,6 +16,10 @@ var dmz =
    , nameLabel = lobbyistForm.lookup("nameLabel")
    , specialtyLabel = lobbyistForm.lookup("specialtyLabel")
    , pictureLabel = lobbyistForm.lookup("pictureLabel")
+
+   // Variables
+   , MainModule = false
+   , Queued = false
    ;
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
@@ -23,6 +27,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
    var idx;
    if (Mode === dmz.module.Activate) {
 
+      MainModule = module;
       module.addPage ("Lobbyist", lobbyistForm, function () {
 
          var hil = dmz.object.hil()
@@ -52,5 +57,16 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             pictureLabel.clear();
          }
       });
+      if (Queued) { Queued = false; MainModule.highlight("Lobbyist"); }
+   }
+});
+
+dmz.object.link.observe(self, dmz.stance.ActiveLobbyistHandle,
+function (objHandle, attrHandle, groupHandle, lobbyistHandle) {
+
+   if (dmz.stance.getUserGroupHandle(dmz.object.hil()) === groupHandle) {
+
+      if (MainModule) { MainModule.highlight("Lobbyist"); }
+      else { Queued = true; }
    }
 });
