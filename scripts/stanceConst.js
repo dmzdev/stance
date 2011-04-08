@@ -42,7 +42,6 @@ var dmz =
       , GameMediaHandle: dmz.defs.createNamedHandle("game_media")
       , GameStartTimeHandle: dmz.defs.createNamedHandle("game_start_time")
       , GameUngroupedUsersHandle: dmz.defs.createNamedHandle("game_ungrouped_users")
-      , GameUngroupedAdvisorsHandle: dmz.defs.createNamedHandle("game_ungrouped_advisors")
       , GroupMembersHandle: dmz.defs.createNamedHandle("group_members")
       , GroupPermissionsHandle: dmz.defs.createNamedHandle("group_permissions")
       , GroupActiveVoteHandle: dmz.defs.createNamedHandle("group_active_vote")
@@ -84,6 +83,10 @@ var dmz =
       , NewspaperImageHandle: dmz.defs.createNamedHandle("newspaper_image")
       , InboxImageHandle: dmz.defs.createNamedHandle("inbox_image")
       , PhoneImageHandle: dmz.defs.createNamedHandle("phone_image")
+      , AdvisorImageHandle: dmz.defs.createNamedHandle("advisor_image")
+      , AdvisorImageCountHandle: dmz.defs.createNamedHandle("advisor_image_count")
+      , ExitImageHandle: dmz.defs.createNamedHandle("exit_image")
+      , ResourceImageHandle: dmz.defs.createNamedHandle("resource_image")
       }
 
    , Functions =

@@ -31,10 +31,11 @@ var dmz =
    , ungroupedStudentList = editScenarioWidget.lookup("ungroupedStudentList")
    , groupComboBox = editScenarioWidget.lookup("groupComboBox")
    , gameStateButton = editScenarioWidget.lookup("gameStateButton")
-   , advisorComboBox = editScenarioWidget.lookup("advisorList")
    , forumComboBox = editScenarioWidget.lookup("forumList")
    , forumAssocList = editScenarioWidget.lookup("forumAssocList")
    , forumGroupList = editScenarioWidget.lookup("forumGroupList")
+   , advisorGroupComboBox = editScenarioWidget.lookup("advisorGroupComboBox")
+   , groupAdvisorList = editScenarioWidget.lookup("groupAdvisorList")
 
    , DockName = "Edit Scenario"
    , dock = dmz.ui.mainWindow.createDock
@@ -63,11 +64,10 @@ var dmz =
    , scenarioList = instructorDialog.lookup("scenarioList")
 
    , editAdvisorDialog = dmz.ui.loader.load("EditAdvisorDialog.ui")
-   , advisorGroupList = editAdvisorDialog.lookup("groupList")
-   , pictureList = editAdvisorDialog.lookup("pictureList")
    , advisorBio = editAdvisorDialog.lookup("advisorBio")
    , pictureLabel = editAdvisorDialog.lookup("pictureLabel")
    , advisorSpecialty = editAdvisorDialog.lookup("specialtyEdit")
+   , advisorName = editAdvisorDialog.lookup("nameEdit")
 
    , editLobbyistDialog = dmz.ui.loader.load("EditLobbyistDialog.ui")
    , lobbyistPictureLabel = editLobbyistDialog.lookup("pictureLabel")
@@ -84,15 +84,22 @@ var dmz =
    , MediaUrlText = CreateMediaInjectDialog.lookup("urlText")
    , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupLayout")
 
+   , AddGroupDialog = dmz.ui.loader.load("AddGroupDialog.ui")
+   , groupButtonBox = AddGroupDialog.lookup("buttonBox")
+   , groupTemplatePic = AddGroupDialog.lookup("pictureLabel")
+   , groupTemplateComboBox = AddGroupDialog.lookup("templateComboBox")
+   , groupNameEdit = AddGroupDialog.lookup("nameEdit")
+
    // Variables
    , groupList = []
    , userList = {}
    , gameList = []
-   , advisorPictureObjects = []
+   , advisorPictureObjects = {}
    , lobbyistPictureObjects = []
    , advisorList = []
    , forumList = []
    , forumGroupWidgets = {}
+   , advisorWidgets = {}
    , CurrentGameHandle = false
    , MediaTypes =
         { Video: { type: dmz.stance.VideoType, attr: dmz.stance.ActiveVideoHandle }
@@ -100,73 +107,25 @@ var dmz =
         , Newspaper: { type: dmz.stance.NewspaperType, attr: dmz.stance.ActiveNewspaperHandle }
         }
    , inUpdate = false
+   , TemplateList = []
+   , TemplateBackgroundPixmaps = []
+   , AdvisorCount = 5
 
    // Function decls
    , toTimeStamp = dmz.util.dateToTimeStamp
    , toDate = dmz.util.timeStampToDate
-   , createNewGame
    , createNewUser
-   , readUserConfig
-   , createGroup
-   , removeCurrentGroup
-   , arrayContains
    , userToGroup
    , userFromGroup
-   , configToStudent
    , setup
    , groupToForum
    , groupFromForum
    , updateTimePage
+   , readGroupTemplates
+   , setGroupTemplate
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
-
-configToStudent = function (student) {
-
-   var userName
-     , displayName
-     ;
-
-   userName = student.string("userName", "UNAME FAIL");
-   displayName = student.string("displayName", "DNAME FAIL");
-   return createNewUser(userName, displayName);
-};
-
-readUserConfig = function () {
-
-   var studentList = self.config.get("student-list.student")
-     , groupConfigList = self.config.get("group-list.group")
-     ;
-
-   if (studentList) { studentList.forEach(configToStudent); }
-
-   if (groupConfigList) {
-
-      groupConfigList.forEach(function (group) {
-
-         var studentList = group.get("student-list.student")
-           , name = group.string("name", "No Name Group")
-           , groupHandle
-           , idx
-           , user
-           ;
-
-         groupHandle = dmz.object.create(dmz.stance.GroupType);
-         dmz.object.text(groupHandle, dmz.stance.NameHandle, name);
-         dmz.object.activate(groupHandle);
-         dmz.object.link(dmz.stance.GameGroupHandle, CurrentGameHandle, groupHandle);
-         for (idx = 0; idx < studentList.length; idx += 1) {
-
-            user = configToStudent(studentList[idx])
-            if (user) {
-
-               dmz.object.link(dmz.stance.GroupMembersHandle, groupHandle, user);
-            }
-         }
-
-      });
-   }
-};
 
 createNewUser = function (userName, displayName) {
 
@@ -182,6 +141,99 @@ createNewUser = function (userName, displayName) {
    }
    return user;
 };
+
+readGroupTemplates = function () {
+
+   var setList = self.config.get("group-picture-set.set")
+     ;
+
+   setList.forEach(function (set) {
+
+      var imageList = set.get("image")
+        , setName = set.string("name")
+        , data = {}
+        , pixmap
+        ;
+
+      imageList.forEach(function (image) {
+
+         var name = image.string("name")
+           , resource = image.string("resource")
+           ;
+
+         if (name && resource) {
+
+            if (name === "Advisor") {
+
+               if (!data[name]) { data[name] = []; }
+               data[name].push(resource);
+            }
+            else { data[name] = resource; }
+         }
+      });
+
+      data.background = set.string("background");
+      TemplateList.push(data);
+      groupTemplateComboBox.addItem(setName);
+      if (data.background) {
+
+         pixmap = dmz.resources.findFile(data.background);
+         if (pixmap) {
+
+            pixmap = dmz.ui.graph.createPixmap(pixmap);
+            TemplateBackgroundPixmaps.push(pixmap);
+         }
+      }
+   });
+}
+
+setGroupTemplate = function (groupHandle, templateIndex) {
+
+   var data
+     , advisorImages = []
+     , idx
+     ;
+
+   if (templateIndex < TemplateList.length) {
+
+      data = TemplateList[templateIndex];
+      if (data) {
+
+         Object.keys(data).forEach(function (key) {
+
+            var attr = false;
+            switch (key) {
+            case "Advisor": advisorImages = data[key]; break;
+            case "background": attr = dmz.stance.BackgroundImageHandle; break;
+            case "Exit": attr = dmz.stance.ExitImageHandle; break;
+            case "Forum": attr = dmz.stance.ComputerImageHandle; break;
+            case "Map": attr = dmz.stance.MapImageHandle; break;
+            case "Video": attr = dmz.stance.TVImageHandle; break;
+            case "Newspaper": attr = dmz.stance.NewspaperImageHandle; break;
+            case "Memo": attr = dmz.stance.InboxImageHandle; break;
+            case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
+            case "Resource": attr = dmz.stance.ResourceImageHandle; break;
+            default: self.log.warn ("Key ("+key+") has no associated handle."); break;
+            }
+
+            if (attr) { dmz.object.text(groupHandle, attr, data[key]); }
+         });
+
+         if (advisorImages.length) {
+
+            data = dmz.data.create();
+            for (idx = 0; idx < advisorImages.length; idx += 1) {
+
+               data.string(dmz.stance.AdvisorImageHandle, idx, advisorImages[idx]);
+            }
+
+
+            dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle, data);
+            dmz.object.scalar(groupHandle, dmz.stance.AdvisorImageCountHandle, idx);
+         }
+      }
+   }
+}
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
@@ -201,7 +253,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    var name = dmz.stance.getDisplayName(subHandle);
    groupList.push(subHandle);
    groupComboBox.addItem(name);
-   advisorGroupList.addItem(name);
+   advisorGroupComboBox.addItem(name);
    lobbyistGroupList.addItem(name);
    MediaGroupFLayout.addRow(name, dmz.ui.button.createCheckBox());
 
@@ -224,8 +276,8 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    index = groupComboBox.findText(name);
    if (index !== -1) { groupComboBox.removeIndex(index); }
-   index = advisorGroupList.findText(name);
-   if (index !== -1) { advisorGroupList.removeIndex(index); }
+   index = advisorGroupComboBox.findText(name);
+   if (index !== -1) { advisorGroupComboBox.removeIndex(index); }
    index = lobbyistGroupList.findText(name);
    if (index !== -1) { lobbyistGroupList.removeIndex(index); }
 
@@ -305,21 +357,17 @@ function (linkObjHandle, attrHandle, gameHandle, userHandle) {
 });
 
 dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
-function (linkObjHandle, attrHandle, gameHandle, advisorHandle) {
+function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 
+   var item
+     , links
+     ;
    if (advisorList.indexOf(advisorHandle) === -1) {
 
-      advisorComboBox.addItem(dmz.stance.getDisplayName(advisorHandle));
-      advisorList.push(advisorHandle);
-   }
-});
-
-dmz.object.link.observe(self, dmz.stance.GameUngroupedAdvisorsHandle,
-function (linkObjHandle, attrHandle, gameHandle, advisorHandle) {
-
-   if (advisorList.indexOf(advisorHandle) === -1) {
-
-      advisorComboBox.addItem(dmz.stance.getDisplayName(advisorHandle));
+      item =
+         groupAdvisorList.addItem(dmz.stance.getDisplayName(advisorHandle), advisorHandle);
+      item.hidden(groupHandle !== groupList[advisorGroupComboBox.currentIndex()]);
+      advisorWidgets[advisorHandle] = item;
       advisorList.push(advisorHandle);
    }
 });
@@ -648,83 +696,6 @@ setup = function () {
          });
    });
 
-   pictureList.observe(self, "currentIndexChanged", function (index) {
-
-      if (index < advisorPictureObjects.length) {
-
-         pictureLabel.pixmap(advisorPictureObjects[index]);
-      }
-   });
-
-   pictures = self.config.get("advisor-pictures.picture");
-   if (pictures) {
-
-      pictures.forEach(function (pic) {
-
-         var name = pic.string("name")
-           , file = dmz.resources.findFile(name)
-           ;
-
-         file = dmz.ui.graph.createPixmap(file);
-         advisorPictureObjects.push(file);
-         pictureList.addItem(name);
-      });
-
-      if (pictureList.count()) { pictureList.currentIndex(0); }
-   }
-
-   editScenarioWidget.observe(self, "editAdvisorButton", "clicked", function () {
-
-      var groupIndex
-        , groupHandle
-        , pictureIndex
-        , advisorHandle
-        , links
-        , index = advisorComboBox.currentIndex()
-        , text
-        ;
-
-      if (index < advisorList.length) {
-
-         advisorHandle = advisorList[index];
-
-         links = dmz.object.superLinks(advisorHandle, dmz.stance.AdvisorGroupHandle);
-         if (links && links[0]) {
-
-            groupIndex = advisorGroupList.findText(dmz.stance.getDisplayName(links[0]));
-         }
-
-         pictureIndex = pictureList.findText(dmz.object.text(advisorHandle, dmz.stance.PictureHandle));
-
-         pictureList.currentIndex((pictureIndex === -1) ? 0 : pictureIndex);
-         advisorGroupList.currentIndex((groupIndex === -1) ? 0 : groupIndex);
-         text = dmz.object.text(advisorHandle, dmz.stance.BioHandle);
-         if (!text) { text = ""; }
-         advisorBio.text(text);
-         text = dmz.object.text(advisorHandle, dmz.stance.TitleHandle);
-         if (!text) { text = ""; }
-         advisorSpecialty.text(text);
-
-         editAdvisorDialog.open(self, function (result) {
-
-            if (result) {
-
-               dmz.object.unlinkSuperObjects(advisorHandle, dmz.stance.AdvisorGroupHandle);
-               dmz.object.unlinkSuperObjects(advisorHandle, dmz.stance.GameUngroupedAdvisorsHandle);
-               dmz.object.link(
-                  dmz.stance.AdvisorGroupHandle,
-                  groupList[advisorGroupList.currentIndex()],
-                  advisorHandle);
-
-               text = pictureList.currentText();
-               dmz.object.text(advisorHandle, dmz.stance.PictureHandle, text);
-               dmz.object.text(advisorHandle, dmz.stance.BioHandle, advisorBio.text());
-               dmz.object.text(advisorHandle, dmz.stance.TitleHandle, advisorSpecialty.text());
-            }
-         });
-      }
-   });
-
    lobbyistPictureList.observe(self, "currentIndexChanged", function (index) {
 
       if (index < lobbyistPictureObjects.length) {
@@ -820,23 +791,106 @@ ungroupedStudentList.observe(self, "itemActivated", userToGroup);
 
 editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
 
-   dmz.ui.inputDialog.create(
-      { title: "Create New Group"
-      , label: "Group Name:"
-      , text: ""
-      }
-      , editScenarioWidget
-   ).open(self, function (value, groupName) {
+   if (groupTemplateComboBox.count()) {
 
-      var group;
+      groupTemplatePic.pixmap(TemplateBackgroundPixmaps[0]);
+      groupTemplateComboBox.currentIndex(0);
+   }
+   else { self.log.error ("No group templates found."); }
+
+   groupNameEdit.text("");
+
+   AddGroupDialog.open(self, function (value) {
+
+      var group
+        , idx
+        , advisorHandle
+        , name
+        , str
+        ;
+
       if (value) {
 
          group = dmz.object.create(dmz.stance.GroupType);
-         dmz.object.text(group, dmz.stance.NameHandle, groupName);
+         name = groupNameEdit.text();
+         dmz.object.text(group, dmz.stance.NameHandle, name);
+         setGroupTemplate(group, groupTemplateComboBox.currentIndex());
          dmz.object.activate(group);
          dmz.object.link(dmz.stance.GameGroupHandle, CurrentGameHandle, group);
+
+         for (idx = 0; idx < AdvisorCount; idx += 1) {
+
+            str = name + ": Advisor" + idx;
+            advisorHandle = dmz.object.create(dmz.stance.AdvisorType);
+            dmz.object.text(advisorHandle, dmz.stance.NameHandle, str);
+            dmz.object.scalar(advisorHandle, dmz.stance.AdvisorImageHandle, idx);
+            dmz.object.activate(advisorHandle);
+            dmz.object.link(dmz.stance.AdvisorGroupHandle, group, advisorHandle);
+         }
+
       }
    });
+});
+
+advisorGroupComboBox.observe(self, "currentIndexChanged", function (index) {
+
+   var groupHandle = groupList[index]
+     , links = dmz.object.subLinks(groupHandle, dmz.stance.AdvisorGroupHandle)
+     ;
+
+   if (links) {
+
+      Object.keys(advisorWidgets).forEach(function (advisorHandle) {
+
+         advisorHandle = parseInt(advisorHandle);
+         advisorWidgets[advisorHandle].hidden(links.indexOf(advisorHandle) === -1);
+      });
+   }
+});
+
+groupAdvisorList.observe(self, "itemActivated", function (item) {
+
+   var advisorHandle = item.data()
+     , text
+     , groupHandle
+     , data
+     ;
+
+   pictureLabel.clear();
+   if (advisorHandle) {
+
+      groupHandle = groupList[advisorGroupComboBox.currentIndex()];
+      data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
+      if (data) {
+
+         pictureLabel.pixmap(
+            dmz.ui.graph.createPixmap(
+               dmz.resources.findFile(
+                  data.string(
+                     dmz.stance.AdvisorImageHandle,
+                     dmz.object.scalar(advisorHandle, dmz.stance.AdvisorImageHandle)))));
+      }
+      else { pictureLabel.clear(); }
+
+      text = dmz.object.text(advisorHandle, dmz.stance.BioHandle);
+      advisorBio.text(text ? text : "");
+      text = dmz.object.text(advisorHandle, dmz.stance.TitleHandle);
+      advisorSpecialty.text(text ? text : "");
+      text = dmz.stance.getDisplayName(advisorHandle);
+      advisorName.text(text ? text : "");
+
+      editAdvisorDialog.open(self, function (result) {
+
+         if (result) {
+
+            text = advisorName.text();
+            item.text(text);
+            dmz.object.text(advisorHandle, dmz.stance.NameHandle, text);
+            dmz.object.text(advisorHandle, dmz.stance.BioHandle, advisorBio.text());
+            dmz.object.text(advisorHandle, dmz.stance.TitleHandle, advisorSpecialty.text());
+         }
+      });
+   }
 });
 
 editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
@@ -913,6 +967,16 @@ editScenarioWidget.observe(self, "removeGroupButton", "clicked", function () {
 
    groupList.splice (index, 1);
    groupComboBox.removeIndex(index);
+   advisorGroupComboBox.removeIndex(index);
+   lobbyistGroupList.removeIndex(index);
+   MediaGroupFLayout.takeAt(index);
+
+   groupMembers = dmz.object.subLinks(groupHandle, dmz.stance.AdvisorGroupHandle);
+   if (groupMembers) {
+
+      groupMembers.forEach(function (advisorHandle) { dmz.object.destroy(advisorHandle); });
+   }
+
    dmz.object.destroy(groupHandle);
 });
 
@@ -1022,54 +1086,6 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
       for (idx = 0; idx < count; idx += 1) {
 
          MediaGroupFLayout.at(idx, 1).setChecked(false);
-      }
-   });
-});
-
-editScenarioWidget.observe(self, "addAdvisorButton", "clicked", function () {
-
-   dmz.ui.inputDialog.create(
-      { title: "Create New Advisor"
-      , label: "Advisor Name:"
-      , text: ""
-      }
-      , editScenarioWidget
-      ).open(self, function (value, name) {
-
-         var handle;
-
-         if (value && (name.length > 0)) {
-
-            handle = dmz.object.create(dmz.stance.AdvisorType);
-            dmz.object.text(handle, dmz.stance.NameHandle, name);
-            dmz.object.activate(handle);
-            dmz.object.link(dmz.stance.GameUngroupedAdvisorsHandle, CurrentGameHandle, handle);
-         }
-      });
-});
-
-editScenarioWidget.observe(self, "removeAdvisorButton", "clicked", function () {
-
-   dmz.ui.messageBox.create(
-      { type: dmz.ui.messageBox.Warning
-      , text: "Are you sure you want to delete this advisor?"
-      , informativeText: "Clicking <b>Ok</b> will cause all data for this advisor to be permanently deleted!"
-      , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-      , defaultButton: dmz.ui.messageBox.Cancel
-      }
-      , editScenarioWidget
-   ).open(self, function (value) {
-
-      var index = advisorComboBox.currentIndex()
-        , handle
-        ;
-
-      if (value && (index < advisorList.length)) {
-
-         handle = advisorList[index];
-         advisorList.splice(index, 1);
-         advisorComboBox.removeIndex(index);
-         dmz.object.destroy(handle);
       }
    });
 });
@@ -1220,8 +1236,17 @@ function (objHandle, attrHandle, value) {
    }
 });
 
+groupTemplateComboBox.observe(self, "currentIndexChanged", function (index) {
+
+   if (index < TemplateBackgroundPixmaps.length) {
+
+      groupTemplatePic.pixmap(TemplateBackgroundPixmaps[index]);
+   }
+});
+
 (function () {
 
+   readGroupTemplates();
    editScenarioWidget.lookup("tabWidget").hide();
    dock.hide();
    dock.enabled(false);

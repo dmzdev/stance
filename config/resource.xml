@@ -89,6 +89,51 @@
    <resource name="default_background" file="office08.png">
       <loc x="0" y="0"/>
    </resource>
+   <resource name="bw_exit" file="bw-exit.png">
+      <loc x="227" y="38"/>
+   </resource>
+   <resource name="bw_resources" file="bw-resources.png">
+      <loc x="4" y="44"/>
+   </resource>
+   <resource name="bw_adv0" file="bw-ad01.png">
+      <loc x="351" y="57"/>
+   </resource>
+   <resource name="bw_adv1" file="bw-ad02.png">
+      <loc x="470" y="57"/>
+   </resource>
+   <resource name="bw_adv2" file="bw-ad03.png">
+      <loc x="590" y="57"/>
+   </resource>
+   <resource name="bw_adv3" file="bw-ad04.png">
+      <loc x="706" y="57"/>
+   </resource>
+   <resource name="bw_adv4" file="bw-ad05.png">
+      <loc x="820" y="57"/>
+   </resource>
+   <resource name="bw_map" file="bw-map.png">
+      <loc x="1049" y="44"/>
+   </resource>
+   <resource name="bw_computer" file="bw-computer.png">
+      <loc x="476" y="266"/>
+   </resource>
+   <resource name="bw_newspaper" file="bw-newspaper.png">
+      <loc x="109" y="489"/>
+   </resource>
+   <resource name="bw_videophone" file="bw-vidphone.png">
+      <loc x="125" y="401"/>
+   </resource>
+   <resource name="bw_tv" file="bw-tv.png">
+      <loc x="245" y="309"/>
+   </resource>
+   <resource name="bw_vote" file="bw-vote.png">
+      <loc x="907" y="345"/>
+   </resource>
+   <resource name="bw_memos" file="bw-memos.png">
+      <loc x="974" y="467"/>
+   </resource>
+   <resource name="bw_background" file="office08.png">
+      <loc x="0" y="0"/>
+   </resource>
 <!--   <resource name="adv_" file=""/> -->
    <resource name="adv_0" file="sad200.jpg"/>
    <resource name="adv_1" file="silly200.png"/>

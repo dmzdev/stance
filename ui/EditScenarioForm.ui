@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tab_13">
       <attribute name="title">
@@ -356,13 +356,6 @@
          </item>
          <item row="1" column="2">
           <widget class="QDateEdit" name="serverEndDateEdit">
-           <property name="date">
-            <date>
-             <year>2010</year>
-             <month>2</month>
-             <day>1</day>
-            </date>
-           </property>
            <property name="minimumDate">
             <date>
              <year>2010</year>
@@ -378,6 +371,13 @@
            </property>
            <property name="calendarPopup">
             <bool>true</bool>
+           </property>
+           <property name="date">
+            <date>
+             <year>2010</year>
+             <month>2</month>
+             <day>1</day>
+            </date>
            </property>
           </widget>
          </item>
@@ -400,13 +400,6 @@
          </item>
          <item row="2" column="1">
           <widget class="QDateEdit" name="gameStartDateEdit">
-           <property name="date">
-            <date>
-             <year>2010</year>
-             <month>1</month>
-             <day>1</day>
-            </date>
-           </property>
            <property name="currentSection">
             <enum>QDateTimeEdit::MonthSection</enum>
            </property>
@@ -415,6 +408,13 @@
            </property>
            <property name="calendarPopup">
             <bool>true</bool>
+           </property>
+           <property name="date">
+            <date>
+             <year>2010</year>
+             <month>1</month>
+             <day>1</day>
+            </date>
            </property>
           </widget>
          </item>
@@ -423,13 +423,6 @@
            <property name="readOnly">
             <bool>true</bool>
            </property>
-           <property name="date">
-            <date>
-             <year>2010</year>
-             <month>1</month>
-             <day>1</day>
-            </date>
-           </property>
            <property name="currentSection">
             <enum>QDateTimeEdit::MonthSection</enum>
            </property>
@@ -438,6 +431,13 @@
            </property>
            <property name="calendarPopup">
             <bool>true</bool>
+           </property>
+           <property name="date">
+            <date>
+             <year>2010</year>
+             <month>1</month>
+             <day>1</day>
+            </date>
            </property>
           </widget>
          </item>
@@ -532,36 +532,10 @@ Elapsed in game time will be {{gameDelta}} days.</string>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_50">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_38">
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_51">
-             <item>
-              <widget class="QPushButton" name="addAdvisorButton">
-               <property name="text">
-                <string>Add Advisor</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="editAdvisorButton">
-               <property name="text">
-                <string>Edit Advisor</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="removeAdvisorButton">
-               <property name="text">
-                <string>Remove Advisor</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QComboBox" name="advisorList"/>
-           </item>
-          </layout>
+          <widget class="QComboBox" name="advisorGroupComboBox"/>
+         </item>
+         <item>
+          <widget class="QListWidget" name="groupAdvisorList"/>
          </item>
          <item>
           <spacer name="verticalSpacer_11">
