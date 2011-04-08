@@ -37,8 +37,8 @@ dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, functio
 
    if (!dmz.object.timeStamp(handle, dmz.stance.CreatedAtGameTimeHandle)) {
 
-      self.log.warn("created at serve time: " + toDate(value));
-      self.log.warn("created at game  time: " + toDate(_exports.gameTime(value)));
+//      self.log.warn("created at serve time: " + toDate(value));
+//      self.log.warn("created at game  time: " + toDate(_exports.gameTime(value)));
       dmz.object.timeStamp(handle, dmz.stance.CreatedAtGameTimeHandle, _exports.gameTime(value));
    }
 });
@@ -82,7 +82,7 @@ _exports.gameTime = function (serverTime) {
 
       result = toTimeStamp(time);
    }
-   else { result = _export.serverTime(); }
+   else { result = _exports.serverTime(); }
 
    return result;
 }

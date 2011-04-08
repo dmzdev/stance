@@ -7,21 +7,50 @@ var dmz =
       }
    , util: require("dmz/types/util")
    , resources: require("dmz/runtime/resources")
+   , sys: require("sys")
    }
-
-  // Variables
-  // Functions
   , toDate = dmz.util.timeStampToDate
   , PostItem
+  , _self = dmz.sys.createSelf("PostItem-" + dmz.sys.createUUID())
+  , _cache = []
   ;
 
 PostItem = function () {
 
-   this.form = dmz.ui.loader.load("PostItem")
-   this.avatar = this.form.lookup("avatarLabel")
-   this.postedBy = this.form.lookup("postedByLabel")
-   this.postedAt = this.form.lookup("postedAtLabel")
-   this.message = this.form.lookup("messageLabel")
+   this.handle = 0;
+
+   this.form = dmz.ui.loader.load("PostItem");
+   this.avatar = this.form.lookup("avatarLabel");
+   this.postedBy = this.form.lookup("postedByLabel");
+   this.postedAt = this.form.lookup("postedAtLabel");
+   this.message = this.form.lookup("messageLabel");
+
+   this.listFrame = this.form.lookup("commentListFrame");
+   this.listFrame.hide();
+
+   this.addFrame = this.form.lookup("commentAddFrame");
+   this.addFrame.hide();
+
+   this.listLayout = dmz.ui.layout.createVBoxLayout();
+   this.addFrame.layout(this.listLayout, true);
+
+   this.list = [];
+
+   this.comment = this.form.lookup("commentTextEdit")
+
+   var that = this;
+
+   this.form.observe(_self, "commentCountLabel", "linkActivated", function (link) {
+
+      var visible = that.listFrame.visible();
+      that.listFrame.visible(!visible);
+   });
+
+   this.form.observe(_self, "commentAddLabel", "linkActivated", function (link) {
+
+      var visible = that.addFrame.visible();
+      that.addFrame.visible(!visible);
+   });
 };
 
 exports.isTypeOf = function (value) {
@@ -29,19 +58,24 @@ exports.isTypeOf = function (value) {
    return PostItem.prototype.isPrototypeOf(value) ? value : undefined;
 };
 
-exports.create = function () {
+exports.create = function (params) {
 
    var result = new PostItem();
-   if (arguments.length > 0) { result.set.apply(result, arguments); }
+   if (arguments.length > 0) { result.set.apply(result, params); }
    return result;
 };
 
-PostItem.prototype.create = exports.create;
+//PostItem.prototype.create = exports.create;
 
 //PostItem.prototype.toString = function () {
 
 //   return "PostItem";
 //};
+
+PostItem.prototype.handle = function () {
+
+   return this.handle;
+};
 
 PostItem.prototype.widget = function () {
 
@@ -50,21 +84,46 @@ PostItem.prototype.widget = function () {
 
 PostItem.prototype.set = function (params) {
 
-   var time;
+   if (params) {
 
-   if (params.avatar) {
+      if (params.handle) { this.handle = params.handle; }
+      if (params.by) { this.postedBy.text(params.by); }
+      if (params.at) { this.postedAt.text(params.at); }
+      if (params.message) { this.message.text(params.message); }
 
+      if (params.avatar) {
+
+      }
    }
+};
 
-   if (params.by) { this.postedBy.text(params.by); }
+PostItem.prototype.reset = function () {
 
-   if (params.at) {
+   this.handle = 0;
+   this.postedBy.clear();
+   this.postedAt.clear();
+   this.message.clear();
+   this.avatar.clear();
+}
 
-      if (params.at instanceof Date) { time = params.at; }
-      else { time = toDate(params.at); }
+PostItem.prototype.addComment = function (comment) {
 
-      this.postedAt.text(time);
+   var comment = _cache.pop();
+
+   if (!comment) {
+
+      comment = dmz.ui.loader.load("CommentItem");
    }
+}
 
-   if (params.message) { this.message.text(params.message); }
+PostItem.prototype.onSubmitComment = function (self, func) {
+
+   var that = this;
+
+   this.form.observe(self, "commentSubmitButton", "clicked", function () {
+
+      func(that.handle, that.comment.text());
+      that.comment.clear();
+      that.addFrame.hide();
+   });
 };

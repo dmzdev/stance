@@ -355,7 +355,7 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
    }
    if (dmz.stance.getUserGroupHandle(dmz.object.hil()) === groupHandle) {
 
-      updateGraphicsForGroup(groupHandle);
+//      updateGraphicsForGroup(groupHandle);
    }
 });
 
