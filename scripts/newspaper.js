@@ -125,6 +125,7 @@ setUserPlayList = function (userHandle) {
 
    SourceList = []
    NewSource = true;
+   if (activeList) { MainModule.highlight("Newspaper"); }
    if (activeList && viewedList) { list = activeList.concat(viewedList); }
    else { list = activeList ? activeList : viewedList; }
 
@@ -143,7 +144,6 @@ setUserPlayList = function (userHandle) {
             , source: dmz.object.text(handle, dmz.stance.TextHandle)
             });
       });
-      self.log.warn ("list: ", list);
       totalLabel.text(list.length);
       CurrentIndex = 0;
       currLabel.text(CurrentIndex + 1);

@@ -125,6 +125,7 @@ setUserPlayList = function (userHandle) {
 
    SourceList = []
    NewSource = true;
+   if (activeList) { MainModule.highlight("Memo"); }
    if (activeList && viewedList) { list = activeList.concat(viewedList); }
    else { list = activeList ? activeList : viewedList; }
 
@@ -195,6 +196,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
+      MainModule = module;
       module.addPage
          ("Memo"
          , webForm
