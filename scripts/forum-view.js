@@ -23,6 +23,7 @@ var dmz =
    , _scrollArea = _view.lookup("scrollArea")
    , _mainLayout = dmz.ui.layout.createVBoxLayout()
    , _postTextEdit = _view.lookup("postTextEdit")
+   , _commentAdd = {}
 
    // Object Lists
    , _master = { posts: [], forums: [] }
@@ -46,11 +47,12 @@ var dmz =
    , _updateMessage
    , _addPost
    , _addComment
+   , _addCommentClicked
    , _createPost
    , _refresh
    , _reset
    , _load
-   , _setForum
+   , _updateForumForUser
    ;
 
 (function () {
@@ -80,10 +82,11 @@ _addPost = function (postHandle) {
      ;
 
    post.layout = dmz.ui.layout.createGridLayout();
-   post.layout.property("spacing", 0);
+//   post.layout.property("spacing", 0);
+//   post.layout.columnMinimumWidth(0, 50);
 
    _mainLayout.insertLayout(0, post.layout);
-   _mainLayout.property("spacing", 4);
+//   _mainLayout.property("spacing", 4);
 
    post.showComments = false;
    post.commentList = [];
@@ -97,56 +100,96 @@ _addPost = function (postHandle) {
    post.postedBy = post.item.lookup("postedByLabel");
    post.postedAt = post.item.lookup("postedAtLabel");
    post.message = post.item.lookup("messageLabel");
-   post.commentCountLabel = post.item.lookup("commentCountLabel");
+///   post.commentCountLabel = post.item.lookup("commentCountLabel");
    post.layout.addWidget(post.item, 0, 0, 1, 2);
    post.item.show();
 
-   form = _commentAddCache.pop();
-   if (!form) { form = dmz.ui.loader.load("CommentAdd"); }
+//   post.toggleComments = function () {
 
-   post.layout.addWidget(form, post.layout.rowCount(), 1);
-   form.hide();
+//      post.showComments = !post.showComments;
 
-   form.observe(self, "submitButton", "clicked", function () {
+//      Object.keys(post.commentList).forEach(function(key) {
 
-      var textEdit = form.lookup("textEdit")
-        , message;
-
-      if (textEdit) {
-
-         message = textEdit.text();
-         if (message) {
-
-            if (!post.showComments) { post.toggleComments(); }
-            _createPost(post.handle, message);
-         }
-
-         textEdit.clear();
-      }
-
-      form.hide();
-   });
-
-   post.toggleComments = function () {
-
-      post.showComments = !post.showComments;
-
-      Object.keys(post.commentList).forEach(function(key) {
-
-         var comment = post.commentList[key];
-         if (comment && comment.item) { comment.item.visible(post.showComments); }
-      });
-   };
+//         var comment = post.commentList[key];
+//         if (comment && comment.item) { comment.item.visible(post.showComments); }
+//      });
+//   };
 
    _postList[postHandle] = post;
 
-   post.commentCountLabel.observe(self, "linkActivated", post.toggleComments);
+//   post.commentCountLabel.observe(self, "linkActivated", post.toggleComments);
 
    post.item.observe(self, "commentAddLabel", "linkActivated", function (link) {
 
-      form.visible(!form.visible());
-      _scrollArea.ensureVisible(form);
+      _addCommentClicked (postHandle);
    });
+
+//   post.item.observe(self, "commentAddLabel", "linkActivated", function (link) {
+
+//      var show;
+
+//      if (!_commentAdd.form) {
+
+//         _commentAdd.form = dmz.ui.loader.load("CommentAdd");
+//         _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
+
+//         _commentAdd.form.observe(self, "submitButton", "clicked", function () {
+
+//            var textEdit = _commentAdd.textEdit
+//              , form = _commentAdd.form
+//              , post = _commentAdd.post
+//              , message
+//              ;
+
+//            if (post) {
+
+//               if (textEdit) {
+
+//                  message = textEdit.text();
+//                  if (message) { _createPost(post.handle, message); }
+//                  textEdit.clear();
+//               }
+
+//               post.layout.removeWidget(form);
+//               _commentAdd.post = false;
+//            }
+
+//            form.hide();
+//         });
+//      }
+
+//      if (_commentAdd.form.visible()) {
+
+//         if (_commentAdd.post.handle === post.handle) {
+
+//            _commentAdd.form.hide();
+//            _commentAdd.post = false;
+//            post.layout.removeWidget(_commentAdd.form);
+//         }
+//         else {
+
+//            _commentAdd.form.hide();
+//            _commentAdd.post.layout.removeWidget(_commentAdd.form);
+//            _commentAdd.post = false;
+//            show = true;
+//         }
+//      }
+//      else { show = true; }
+
+//      if (show) {
+
+////         if (!post.showComments) { post.toggleComments(); }
+
+//         post.layout.addWidget(_commentAdd.form, post.layout.rowCount(), 1);
+//         _commentAdd.form.show();
+//         _commentAdd.post = post;
+
+//         dmz.time.setTimer(self, 0.1, function () {
+
+//            _scrollArea.ensureVisible(_commentAdd.form);
+//         });
+//      }
+//   });
 
    _updatePostedBy(postHandle);
    _updatePostedAt(postHandle);
@@ -177,15 +220,92 @@ _addComment = function (postHandle, commentHandle) {
 
       post.commentList.push(comment);
       post.layout.addWidget(comment.item, post.layout.rowCount(), 1);
-      comment.item.visible(post.showComments);
+//      comment.item.visible(post.showComments);
+      comment.item.show();
 
-      post.commentCountLabel.text(_htmlLink(post.commentList.length + " Comments"));
+//      post.commentCountLabel.text(_htmlLink(post.commentList.length + " Comments"));
 
       _commentList[commentHandle] = comment;
+
+      comment.item.observe(self, "commentAddLabel", "linkActivated", function (link) {
+
+         _addCommentClicked (postHandle);
+      });
 
       _updatePostedBy(commentHandle);
       _updatePostedAt(commentHandle);
       _updateMessage(commentHandle);
+   }
+};
+
+_addCommentClicked = function (postHandle) {
+
+   var show
+     , post = _postList[postHandle]
+     ;
+
+   if (!_commentAdd.form) {
+
+      _commentAdd.form = dmz.ui.loader.load("CommentAdd");
+      _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
+
+      _commentAdd.form.observe(self, "submitButton", "clicked", function () {
+
+         var textEdit = _commentAdd.textEdit
+           , form = _commentAdd.form
+           , post = _commentAdd.post
+           , message
+           ;
+
+         if (post) {
+
+            if (textEdit) {
+
+               message = textEdit.text();
+               if (message) { _createPost(post.handle, message); }
+               textEdit.clear();
+            }
+
+            post.layout.removeWidget(form);
+            _commentAdd.post = false;
+         }
+
+         form.hide();
+      });
+
+      _commentAdd.form.observe(self, "cancelButton", "clicked", function () {
+
+         if (_commentAdd.textEdit) { _commentAdd.textEdit.clear(); }
+         if (_commentAdd.post) { _commentAdd.post.layout.removeWidget(_commentAdd.form); }
+         _commentAdd.post = false;
+         _commentAdd.form.hide();
+      });
+   }
+
+   if (_commentAdd.form.visible()) {
+
+      if (_commentAdd.post.handle !== post.handle) {
+
+         _commentAdd.form.hide();
+         _commentAdd.post.layout.removeWidget(_commentAdd.form);
+         _commentAdd.post = false;
+         show = true;
+      }
+   }
+   else { show = true; }
+
+   if (show) {
+
+//         if (!post.showComments) { post.toggleComments(); }
+
+      post.layout.addWidget(_commentAdd.form, post.layout.rowCount(), 1);
+      _commentAdd.form.show();
+      _commentAdd.post = post;
+
+      dmz.time.setTimer(self, 0.1, function () {
+
+         _scrollArea.ensureVisible(_commentAdd.form);
+      });
    }
 };
 
@@ -207,7 +327,9 @@ _updatePostedAt = function (handle) {
 
    if (item && item.postedAt) {
 
-      item.postedAt.text(_master.posts[handle].postedAt);
+      var html = "<span style=\"color:#939393;\">{{time}}</span>";
+//      item.postedAt.text(_master.posts[handle].postedAt);
+      item.postedAt.text(html.replace("{{time}}", _master.posts[handle].postedAt));
    }
 };
 
@@ -231,7 +353,6 @@ _createPost = function (parent, message) {
    if (hil && parent && message) {
 
       post = dmz.object.create(dmz.stance.PostType);
-      dmz.object.text(post, dmz.stance.TitleHandle, "Reply to: " + parent);
       dmz.object.text(post, dmz.stance.TextHandle, message);
       dmz.object.timeStamp(post, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
       dmz.object.link(dmz.stance.PostVisitedHandle, hil, post);
@@ -293,13 +414,30 @@ _load = function () {
    }
 };
 
-_setForum = function (handle) {
+_updateForumForUser = function (userHandle) {
 
-   if (handle !== _forumHandle) {
+   var forumHandle
+     , forumList
+     , forum
+     , group
+     ;
+
+   group = dmz.stance.getUserGroupHandle(userHandle);
+
+   forumList = _master.forums.filter(function (element, index) {
+
+      return element.group === group;
+   });
+
+   forum = forumList.pop();
+   if (forum) { forumHandle = forum.handle; }
+
+   if (forumHandle !== _forumHandle) {
 
       _reset ();
-      _forumHandle = handle;
-      _load();
+      _forumHandle = forumHandle;
+
+      if (_forumHandle) { _load(); }
    }
 };
 
@@ -325,10 +463,12 @@ dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtGameTimeHandle,
 function (handle, attr, value) {
 
    var item = _master.posts[handle]
-     , timeStamp = toDate(value).toString("MMM dd, yyyy - hh:mm tt")
+     , timeStamp = toDate(value).toString("F")
+//     , timeStamp = toDate(value).toString("MM/dd/yy at hh:mm tt")
+//     , timeStamp = toDate(value).toString("MMM dd, yyyy - hh:mm tt")
      ;
 
-   if (item) { item.postedAt = timeStamp; }
+   if (item) { item.postedAt = "-  " + timeStamp; }
 
    _updatePostedAt(handle);
 });
@@ -387,20 +527,8 @@ function (objHandle, attrHandle, value) {
 
    if (type && type.isOfType(dmz.stance.UserType)) {
 
-      if (value) {
-
-         group = dmz.stance.getUserGroupHandle(objHandle);
-
-         forumList = _master.forums.filter(function (element, index) {
-
-            return element.group === group;
-         });
-
-         forum = forumList.pop();
-         if (forum) { forumHandle = forum.handle; }
-      }
-
-      _setForum(forumHandle);
+      if (value) { _updateForumForUser(objHandle); }
+      else { _updateForumForUser(); }
    }
 });
 
@@ -408,6 +536,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
-      module.addPage ("Forum", _view);
+      module.addPage ("Forum", _view, function () {
+
+         if (!_forumHandle) { _updateForumForUser(dmz.object.hil()); }
+      });
    }
 });
