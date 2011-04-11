@@ -151,6 +151,8 @@
    <resource name="lob_1" file="silly200.png"/>
    <resource name="lob_2" file="firefox200.jpg"/>
    <resource name="lob_3" file="handi200.jpg"/>
+   <resource name="AvatarBox" file="AvatarBox.png"/>
+   <resource name="AvatarDefault" file="AvatarDefault.png"/>
 </resource-map>
 </runtime>
 </dmz>

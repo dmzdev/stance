@@ -74,7 +74,8 @@ dmz.object.scalar.observe(self, dmz.stance.ID, function (objHandle, attr, value)
    else if (questionHistoryWidgets[objHandle]) { questionHistoryWidgets[objHandle].text(0, value); }
 });
 
-dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtHandle, function (objHandle, attr, value) {
+dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtGameTimeHandle,
+function (objHandle, attr, value) {
 
    if (voteHistoryWidgets[objHandle]) {
 
@@ -333,7 +334,7 @@ updateAdvisor = function (module, idx) {
                   dmz.object.activate(question);
                   dmz.object.flag(question, dmz.stance.ActiveHandle, true);
                   dmz.object.link(dmz.stance.CreatedByHandle, question, hil);
-                  dmz.object.timeStamp(question, dmz.stance.CreatedAtHandle, dmz.time.getFrameTime());
+                  dmz.object.timeStamp(question, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
                   dmz.object.text(question, dmz.stance.TextHandle, text);
 
                   list = dmz.object.subLinks(advisorHandle, dmz.stance.AdvisorActiveQuestionHandle);
@@ -379,7 +380,7 @@ updateAdvisor = function (module, idx) {
                   dmz.object.flag(vote, dmz.stance.ActiveHandle, true);
                   dmz.object.flag(vote, dmz.stance.VoteSubmittedHandle, true);
                   dmz.object.link(dmz.stance.CreatedByHandle, vote, hil);
-                  dmz.object.timeStamp(vote, dmz.stance.CreatedAtHandle, dmz.time.getFrameTime());
+                  dmz.object.timeStamp(vote, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
                   dmz.object.text(vote, dmz.stance.TextHandle, text);
                   list = dmz.object.subLinks(hilGroup, dmz.stance.GroupMembersHandle);
                   if (list && list.length) {
@@ -1142,7 +1143,7 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
                [ dmz.object.scalar(questionHandle, dmz.stance.ID)
                , str
                , dmz.stance.getAuthorName(questionHandle)
-               , dmz.util.timeStampToDate(dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtHandle))
+               , dmz.util.timeStampToDate(dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtGameTimeHandle))
                ]
                , questionHandle
                , 0
@@ -1201,7 +1202,7 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
                [ dmz.object.scalar(questionHandle, dmz.stance.ID)
                , str
                , dmz.stance.getAuthorName(questionHandle)
-               , dmz.util.timeStampToDate(dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtHandle) * 1000)
+               , dmz.util.timeStampToDate(dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtGameTimeHandle))
                ]
                , questionHandle
                , 0
@@ -1243,7 +1244,7 @@ function (linkObjHandle, attrHandle, advisorHandle, voteHandle) {
                , yesHandleList ? yesHandleList.length : 0
                , noHandleList ? noHandleList.length : 0
                , undecHandleList ? undecHandleList.length : 0
-               , dmz.util.timeStampToDate(dmz.object.timeStamp(voteHandle, dmz.stance.CreatedAtHandle))
+               , dmz.util.timeStampToDate(dmz.object.timeStamp(voteHandle, dmz.stance.CreatedAtGameTimeHandle))
                ]
                , voteHandle
                , 0

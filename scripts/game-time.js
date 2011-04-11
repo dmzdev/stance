@@ -3,7 +3,6 @@ require("datejs/date"); // www.datejs.com - an open-source JavaScript Date Libra
 var dmz =
        { object: require("dmz/components/object")
        , time: require("dmz/runtime/time")
-       , defs: require("dmz/runtime/definitions")
        , data: require("dmz/runtime/data")
        , module: require("dmz/runtime/module")
        , util: require("dmz/types/util")
@@ -34,6 +33,16 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
    if (handle === _game.handle) { _game.active = value; }
 });
 
+dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, function (handle, attr, value) {
+
+   if (!dmz.object.timeStamp(handle, dmz.stance.CreatedAtGameTimeHandle)) {
+
+//      self.log.warn("created at serve time: " + toDate(value));
+//      self.log.warn("created at game  time: " + toDate(_exports.gameTime(value)));
+      dmz.object.timeStamp(handle, dmz.stance.CreatedAtGameTimeHandle, _exports.gameTime(value));
+   }
+});
+
 dmz.object.data.observe(self, GameStartTime, function (handle, attr, value) {
 
    if (handle === _game.handle) {
@@ -44,45 +53,55 @@ dmz.object.data.observe(self, GameStartTime, function (handle, attr, value) {
    }
 });
 
-_exports.setServerTime = function (timeStamp) {
+_exports.gameTime = function (serverTime) {
 
-   var today
-     , time
+   var timeStamp = serverTime || _export.serverTime()
+     , result
+     , now
+     , time = {}
      , span
      ;
 
+   if (_game.active) {
+
+      if (timeStamp instanceof Date) { now = timeStamp; }
+      else { now = toDate(timeStamp); }
+
+      time = _game.start.clone();
+      span = new DateJs.TimeSpan(now - _server.start);
+
+      time.addDays(span.getDays() * _game.factor);
+
+      time.set(
+        { millisecond: now.getMilliseconds()
+        , second: now.getSeconds()
+        , minute: now.getMinutes()
+        , hour: now.getHours()
+        }
+      );
+
+      result = toTimeStamp(time);
+   }
+   else { result = _exports.serverTime(); }
+
+   return result;
+}
+
+_exports.serverTime = function (timeStamp) {
+
+   var result = dmz.time.getFrameTime();
+
    if (timeStamp) {
 
-      if (timeStamp instanceof Date) {
-
-         today = timeStamp;
-         timeStamp = toTimeStamp(today);
-      }
-      else { today = toDate(timeStamp); }
-
-      if (_game.active) {
-
-         time = _game.start.clone();
-         span = new DateJs.TimeSpan(today - _server.start);
-
-         time.addDays(span.getDays() * _game.factor);
-
-         time.set(
-            { millisecond: today.getMilliseconds()
-            , second: today.getSeconds()
-            , minute: today.getMinutes()
-            , hour: today.getHours()
-            }
-         );
-
-         self.log.info("Real Time: " + today);
-         self.log.info("Game Time: " + time);
-
-         timeStamp = toTimeStamp(time);
-      }
-
+      if (timeStamp instanceof Date) { timeStamp = toTimeStamp(timeStamp); }
       dmz.time.setFrameTime(timeStamp);
+      result = timeStamp;
+
+      self.log.info("Server Time: " + toDate(timeStamp));
+      self.log.info("  Game Time: " + toDate(_exports.gameTime(timeStamp)));
    }
+
+   return result;
 };
 
 // Publish module

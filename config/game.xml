@@ -74,7 +74,7 @@
          <flag value="true"/>
       </attributes>
    </object>
-   <object type="user" uuid="12832b4e-5094-4636-b458-6cad452fccd1">
+<!--   <object type="user" uuid="12832b4e-5094-4636-b458-6cad452fccd1">
       <attributes name="name">
          <text value="sangster@me.com"/>
       </attributes>
@@ -84,7 +84,7 @@
       <attributes name="admin_user">
          <flag value="true"/>
       </attributes>
-   </object>
+   </object>-->
 </archive>
 </dmz>
 
