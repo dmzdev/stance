@@ -214,6 +214,7 @@ _addCommentClicked = function (postHandle) {
          }
 
          form.hide();
+         _postTextEdit.setFocus();
       });
 
       _commentAdd.form.observe(self, "cancelButton", "clicked", function () {
@@ -222,6 +223,7 @@ _addCommentClicked = function (postHandle) {
          if (_commentAdd.post) { _commentAdd.post.layout.removeWidget(_commentAdd.form); }
          _commentAdd.post = false;
          _commentAdd.form.hide();
+         _postTextEdit.setFocus();
       });
    }
 
@@ -234,6 +236,8 @@ _addCommentClicked = function (postHandle) {
          _commentAdd.post = false;
          show = true;
       }
+      else { _commentAdd.textEdit.setFocus(); }
+
    }
    else { show = true; }
 
@@ -248,6 +252,7 @@ _addCommentClicked = function (postHandle) {
       dmz.time.setTimer(self, 0.1, function () {
 
          _scrollArea.ensureVisible(_commentAdd.form);
+         _commentAdd.textEdit.setFocus();
       });
    }
 };
@@ -266,15 +271,14 @@ _updatePostedBy = function (handle) {
 _updatePostedAt = function (handle) {
 
    var item = _postList[handle]
-     , html = "<span style=\"color:#939393;\">{{time}}</span>"
      ;
 
    if (!item) { item = _commentList[handle]; }
 
    if (item && item.postedAt) {
 
-//      item.postedAt.text(_master.posts[handle].postedAt);
-      item.postedAt.text(html.replace("{{time}}", _master.posts[handle].postedAt));
+      item.postedAt.text(
+         "<span style=\"color:#939393;\">" + _master.posts[handle].postedAt + "</span>");
    }
 };
 
