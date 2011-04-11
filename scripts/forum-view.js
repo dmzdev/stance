@@ -82,11 +82,13 @@ _addPost = function (postHandle) {
      ;
 
    post.layout = dmz.ui.layout.createGridLayout();
-//   post.layout.property("spacing", 0);
-//   post.layout.columnMinimumWidth(0, 50);
+   post.layout.property("spacing", 4);
+   post.layout.margins(4);
+   post.layout.columnMinimumWidth(0, 58);
 
    _mainLayout.insertLayout(0, post.layout);
-//   _mainLayout.property("spacing", 4);
+   _mainLayout.property("spacing", 4);
+   _mainLayout.margins(4);
 
    post.showComments = false;
    post.commentList = [];
@@ -101,6 +103,7 @@ _addPost = function (postHandle) {
    post.postedAt = post.item.lookup("postedAtLabel");
    post.message = post.item.lookup("messageLabel");
 ///   post.commentCountLabel = post.item.lookup("commentCountLabel");
+//   post.widget = dmz.ui.widget.create();
    post.layout.addWidget(post.item, 0, 0, 1, 2);
    post.item.show();
 
@@ -121,75 +124,13 @@ _addPost = function (postHandle) {
 
    post.item.observe(self, "commentAddLabel", "linkActivated", function (link) {
 
+//      _mainLayout.removeLayout(post.layout);
+//      post.layout.setParent();
+//      _mainLayout.insertLayout(0, post.layout);
+//      _scrollArea.ensureVisible(post.item);
+
       _addCommentClicked (postHandle);
    });
-
-//   post.item.observe(self, "commentAddLabel", "linkActivated", function (link) {
-
-//      var show;
-
-//      if (!_commentAdd.form) {
-
-//         _commentAdd.form = dmz.ui.loader.load("CommentAdd");
-//         _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
-
-//         _commentAdd.form.observe(self, "submitButton", "clicked", function () {
-
-//            var textEdit = _commentAdd.textEdit
-//              , form = _commentAdd.form
-//              , post = _commentAdd.post
-//              , message
-//              ;
-
-//            if (post) {
-
-//               if (textEdit) {
-
-//                  message = textEdit.text();
-//                  if (message) { _createPost(post.handle, message); }
-//                  textEdit.clear();
-//               }
-
-//               post.layout.removeWidget(form);
-//               _commentAdd.post = false;
-//            }
-
-//            form.hide();
-//         });
-//      }
-
-//      if (_commentAdd.form.visible()) {
-
-//         if (_commentAdd.post.handle === post.handle) {
-
-//            _commentAdd.form.hide();
-//            _commentAdd.post = false;
-//            post.layout.removeWidget(_commentAdd.form);
-//         }
-//         else {
-
-//            _commentAdd.form.hide();
-//            _commentAdd.post.layout.removeWidget(_commentAdd.form);
-//            _commentAdd.post = false;
-//            show = true;
-//         }
-//      }
-//      else { show = true; }
-
-//      if (show) {
-
-////         if (!post.showComments) { post.toggleComments(); }
-
-//         post.layout.addWidget(_commentAdd.form, post.layout.rowCount(), 1);
-//         _commentAdd.form.show();
-//         _commentAdd.post = post;
-
-//         dmz.time.setTimer(self, 0.1, function () {
-
-//            _scrollArea.ensureVisible(_commentAdd.form);
-//         });
-//      }
-//   });
 
    _updatePostedBy(postHandle);
    _updatePostedAt(postHandle);
@@ -248,6 +189,8 @@ _addCommentClicked = function (postHandle) {
 
       _commentAdd.form = dmz.ui.loader.load("CommentAdd");
       _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
+      _commentAdd.photo = _commentAdd.form.lookup("avatarLabel");
+      _commentAdd.photo.pixmap(AvatarDefault);
 
       _commentAdd.form.observe(self, "submitButton", "clicked", function () {
 
@@ -322,12 +265,14 @@ _updatePostedBy = function (handle) {
 
 _updatePostedAt = function (handle) {
 
-   var item = _postList[handle];
+   var item = _postList[handle]
+     , html = "<span style=\"color:#939393;\">{{time}}</span>"
+     ;
+
    if (!item) { item = _commentList[handle]; }
 
    if (item && item.postedAt) {
 
-      var html = "<span style=\"color:#939393;\">{{time}}</span>";
 //      item.postedAt.text(_master.posts[handle].postedAt);
       item.postedAt.text(html.replace("{{time}}", _master.posts[handle].postedAt));
    }
