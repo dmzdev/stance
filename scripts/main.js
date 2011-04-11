@@ -234,6 +234,19 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
+      if (dmz.object.flag(objHandle, dmz.stance.AdminHandle)) {
+
+         groupBox.show();
+         groupBox.enabled(true);
+      }
+      else {
+
+         groupBox.hide();
+         groupBox.enabled(false);
+      }
+
+      updateGraphicsForGroup(dmz.stance.getUserGroupHandle(objHandle));
+
       Object.keys(PageLink).forEach(function (item) {
 
          var children = PageLink[item].childItems();
@@ -351,7 +364,7 @@ setupMainWindow = function () {
       gscene.eventFilter(self, mouseEvent);
       dmz.ui.mainWindow.centralWidget(main);
    }
-}
+};
 
 _exports.addPage = function (name, widget, func, onHome) {
 
@@ -365,7 +378,7 @@ _exports.addPage = function (name, widget, func, onHome) {
       PageLink[name].cursor(dmz.ui.consts.PointingHandCursor);
    }
    else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
-}
+};
 
 _exports.highlight = function (name) {
 
@@ -375,7 +388,7 @@ _exports.highlight = function (name) {
       children = PageLink[name].childItems();
       if (children) { children.forEach(function (item) { item.show(); }) }
    }
-}
+};
 
 dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
 function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
@@ -424,34 +437,6 @@ dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
 function (objHandle, attrHandle, groupHandle, userHandle) {
 
    if (userHandle === dmz.object.hil()) { updateGraphicsForGroup(groupHandle); }
-});
-
-dmz.object.flag.observe(self, dmz.object.HILAttribute,
-function (objHandle, attrHandle, value) {
-
-   var groupHandle = dmz.stance.getUserGroupHandle(objHandle)
-     , index = 0
-     , data
-     , resource
-     , config
-     , loc
-     ;
-
-   if (value) {
-
-      if (dmz.object.flag(objHandle, dmz.stance.AdminHandle)) {
-
-         groupBox.show();
-         groupBox.enabled(true);
-      }
-      else {
-
-         groupBox.hide();
-         groupBox.enabled(false);
-      }
-
-      updateGraphicsForGroup(dmz.stance.getUserGroupHandle(objHandle));
-   }
 });
 
 (function () {

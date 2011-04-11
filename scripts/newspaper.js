@@ -153,37 +153,40 @@ setUserPlayList = function (userHandle) {
 dmz.object.link.observe(self, dmz.stance.ActiveNewspaperHandle,
 function (objHandle, attrHandle, userHandle, newspaperHandle) {
 
-   if (CurrentWindow && (userHandle === dmz.object.hil())) {
+   if (userHandle === dmz.object.hil()) {
 
-      SourceList.unshift (
-         { handle: newspaperHandle
-         , source: dmz.object.text(newspaperHandle, dmz.stance.TextHandle)
+      if (CurrentWindow) {
+
+         SourceList.unshift (
+            { handle: newspaperHandle
+            , source: dmz.object.text(newspaperHandle, dmz.stance.TextHandle)
+            });
+
+         CurrentIndex += 1;
+         totalLabel.text(SourceList.length);
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Info
+            , text: "A new item has just been added!"
+            , informativeText: "Click <b>Ok</b> to switch to it. Click <b>Cancel</b> to return to the current item."
+            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Cancel
+            }
+            , webForm
+         ).open(self, function (value) {
+
+            if (value) {
+
+               CurrentIndex = 0;
+               currLabel.text(CurrentIndex + 1);
+               NewSource = true;
+               loadCurrent();
+            }
          });
-
-      CurrentIndex += 1;
-      totalLabel.text(SourceList.length);
-
-      dmz.ui.messageBox.create(
-         { type: dmz.ui.messageBox.Info
-         , text: "A new item has just been added!"
-         , informativeText: "Click <b>Ok</b> to switch to it. Click <b>Cancel</b> to return to the current item."
-         , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-         , defaultButton: dmz.ui.messageBox.Cancel
-         }
-         , webForm
-      ).open(self, function (value) {
-
-         if (value) {
-
-            CurrentIndex = 0;
-            currLabel.text(CurrentIndex + 1);
-            NewSource = true;
-            loadCurrent();
-         }
-      });
+      }
+      else if (MainModule) { MainModule.highlight("Newspaper"); }
+      else { Queued = true; }
    }
-   else if (!CurrentWindow && MainModule) { MainModule.highlight("Newspaper"); }
-   else if (!MainModule) { Queued = true; }
 });
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
