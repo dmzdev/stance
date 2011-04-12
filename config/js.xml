@@ -18,6 +18,7 @@
    <path value="../js/scripts"/>
    <path value="./ui"/>
    <instance name="main"/>
+   <instance name="email"/>
    <instance name="devtools"/>
    <instance name="gameCreation"/>
    <instance name="webMap"/>

@@ -10,7 +10,6 @@ var dmz =
       , treeWidget: require("dmz/ui/treeWidget")
       , widget: require("dmz/ui/widget")
       }
-   , email: require("email")
    , stance: require("stanceConst")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
@@ -56,6 +55,7 @@ var dmz =
         , dmz.stance.Advisor3Handle
         , dmz.stance.Advisor4Handle
         ]
+   , EmailMod = false
 
    // Function decls
    , updateAdvisor
@@ -237,7 +237,7 @@ approveVote = function (voteHandle) {
       }
       else {
 
-         dmz.email.sendEmail
+         EmailMod.sendEmail
             ( dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle)
             , "STANCE: Your group must vote on a new task!"
             , "Student, \n" + "Your advisor has approved voting on the following task:\n" +
@@ -347,7 +347,7 @@ updateAdvisor = function (module, idx) {
                   game = dmz.object.superLinks(hilGroup, dmz.stance.GameGroupHandle);
                   if (game && game[0]) {
 
-                     dmz.email.sendEmail
+                     EmailMod.sendEmail
                         ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
                         , "STANCE: New question!"
                         , "Admin Notice: \n" +
@@ -404,7 +404,7 @@ updateAdvisor = function (module, idx) {
                   game = dmz.object.superLinks(hilGroup, dmz.stance.GameGroupHandle);
                   if (game && game[0]) {
 
-                     dmz.email.sendEmail
+                     EmailMod.sendEmail
                         ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
                         , "STANCE: New task!"
                         , "Admin Notice: \n" +
@@ -622,7 +622,7 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
             dmz.stance.GameGroupHandle);
       if (game && game[0]) {
 
-         dmz.email.sendEmail
+         EmailMod.sendEmail
             ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
             , "STANCE: Task voting completed!"
             , "Admin Notice: \n" +
@@ -672,7 +672,7 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
                dmz.stance.GameGroupHandle);
          if (game && game[0]) {
 
-            dmz.email.sendEmail
+            EmailMod.sendEmail
                ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
                , "STANCE: Task voting completed!"
                , "Admin Notice: \n" +
@@ -1427,4 +1427,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       });
       if (VoteQueued) { VoteQueued = false; module.highlight("Vote"); }
    }
+});
+
+dmz.module.subscribe(self, "email", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) { EmailMod = module; }
 });
