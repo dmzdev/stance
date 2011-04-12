@@ -1,14 +1,17 @@
 var dmz =
    { stance: require("stanceConst")
+   , module: require("dmz/runtime/module")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
    , util: require("dmz/types/util")
    }
    , sendEmail
+   , _exports = {}
+   , userFilterList = {}
    ;
 
 
-sendEmail = function (targets, title, text) {
+_exports.sendEmail = function (targets, title, text) {
 
    var userListStr = ""
      , title = (title && title.length) ? title : "No subject."
@@ -20,12 +23,12 @@ sendEmail = function (targets, title, text) {
 
       targets.forEach(function (userHandle) {
 
-         var type = dmz.object.type(userHandle);
-         if (type && type.isOfType(dmz.stance.UserType)) {
+         var type = dmz.object.type(userHandle)
+           , name = dmz.object.text(userHandle, dmz.stance.NameHandle)
+           ;
+         if (type && type.isOfType(dmz.stance.UserType) && !userFilterList[name]) {
 
-            userListStr =
-               userListStr.concat(
-                  dmz.object.text(userHandle, dmz.stance.NameHandle) + ",");
+            userListStr = userListStr.concat(name + ",");
          }
       });
 
@@ -39,6 +42,19 @@ sendEmail = function (targets, title, text) {
          dmz.object.activate(email);
       }
    }
-}
+};
 
-dmz.util.defineConst(exports, "sendEmail", sendEmail);
+(function () {
+
+   var list = self.config.get("user-filter.user");
+   if (list) {
+
+      list.forEach(function (userConfig) {
+
+         var name = userConfig.string("name");
+         if (name) { userFilterList[name] = true; }
+      });
+   }
+}());
+
+dmz.module.publish(self, _exports);

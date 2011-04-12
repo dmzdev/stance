@@ -22,28 +22,27 @@ var dmz =
    , util: require("dmz/types/util")
    }
 
-// UI Elements
-, webForm = dmz.ui.loader.load("PrintMediaForm.ui")
-, nextButton = webForm.lookup("nextButton")
-, prevButton = webForm.lookup("prevButton")
-, currLabel = webForm.lookup("currentLabel")
-, totalLabel = webForm.lookup("totalLabel")
-, webpage = dmz.ui.webview.create()
+   // UI Elements
+   , webForm = dmz.ui.loader.load("PrintMediaForm.ui")
+   , nextButton = webForm.lookup("nextButton")
+   , prevButton = webForm.lookup("prevButton")
+   , currLabel = webForm.lookup("currentLabel")
+   , totalLabel = webForm.lookup("totalLabel")
+   , webpage = dmz.ui.webview.create()
 
-// Variables
-, CurrentIndex = 0
-, NewSource = false
-, SourceList = [] // { handle, source }
-, CurrentWindow = false
-, MainModule = false
-, Queued = false
+   // Variables
+   , CurrentIndex = 0
+   , NewSource = false
+   , SourceList = [] // { handle, source }
+   , MainModule = false
+   , Queued = false
 
-// Function decls
-, loadCurrent
-, skipForward
-, skipBackward
-, setUserPlayList
-;
+   // Function decls
+   , loadCurrent
+   , skipForward
+   , skipBackward
+   , setUserPlayList
+   ;
 
 loadCurrent = function () {
 
@@ -78,30 +77,22 @@ loadCurrent = function () {
 
 skipForward = function () {
 
-   if (CurrentIndex < SourceList.length) {
+   if ((CurrentIndex + 1) < SourceList.length) {
 
-      if ((CurrentIndex + 1) < SourceList.length) {
-
-         CurrentIndex += 1;
-         NewSource = true;
-         loadCurrent();
-      }
-      else { CurrentIndex = 0; }
+      CurrentIndex += 1;
+      NewSource = true;
+      loadCurrent();
       currLabel.text(CurrentIndex + 1);
    }
 };
 
 skipBackward = function () {
 
-   if (CurrentIndex < SourceList.length) {
+   if (CurrentIndex > 0) {
 
-      if (CurrentIndex > 0) {
-
-         CurrentIndex -= 1;
-         NewSource = true;
-         loadCurrent();
-      }
-      else { CurrentIndex = 0; }
+      CurrentIndex -= 1;
+      NewSource = true;
+      loadCurrent();
       currLabel.text(CurrentIndex + 1);
    }
 };
@@ -155,36 +146,7 @@ function (objHandle, attrHandle, userHandle, memoHandle) {
 
    if (userHandle === dmz.object.hil()) {
 
-      if (CurrentWindow) {
-
-         SourceList.unshift (
-            { handle: memoHandle
-            , source: dmz.object.text(memoHandle, dmz.stance.TextHandle)
-            });
-
-         CurrentIndex += 1;
-         totalLabel.text(SourceList.length);
-
-         dmz.ui.messageBox.create(
-            { type: dmz.ui.messageBox.Info
-            , text: "A new item has just been added!"
-            , informativeText: "Click <b>Ok</b> to switch to it. Click <b>Cancel</b> to return to the current item."
-            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-            , defaultButton: dmz.ui.messageBox.Cancel
-            }
-            , webForm
-         ).open(self, function (value) {
-
-            if (value) {
-
-               CurrentIndex = 0;
-               currLabel.text(CurrentIndex + 1);
-               NewSource = true;
-               loadCurrent();
-            }
-         });
-      }
-      else if (MainModule) { MainModule.highlight("Memo"); }
+      if (MainModule) { MainModule.highlight("Memo"); }
       else { Queued = true; }
    }
 });
@@ -205,11 +167,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , webForm
          , function () {
 
-              CurrentWindow = true;
               setUserPlayList(dmz.object.hil());
               loadCurrent();
            }
-         , function () { CurrentWindow = false; } // onHome
          );
 
       if (Queued) { Queued = false; module.highlight("Memo"); }

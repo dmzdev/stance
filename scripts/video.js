@@ -40,7 +40,6 @@ var dmz =
 , CurrentIndex = 0
 , NewSource = false
 , SourceList = [] // { handle, source }
-, CurrentWindow = false
 , MainModule = false
 , VideoQueue = false
 
@@ -196,33 +195,7 @@ function (objHandle, attrHandle, userHandle, videoHandle) {
 
    if (userHandle === dmz.object.hil()) {
 
-      if (CurrentWindow) {
-
-         SourceList.unshift (
-            { handle: videoHandle
-            , source: dmz.object.text(videoHandle, dmz.stance.TextHandle)
-            });
-
-         CurrentIndex += 1;
-         totalLabel.text(SourceList.length);
-         pauseCurrent();
-
-         dmz.ui.messageBox.create(
-            { type: dmz.ui.messageBox.Info
-            , text: "A new video clip has just been added!"
-            , informativeText: "Click <b>Ok</b> to switch to that video. Click <b>Cancel</b> to resume your current video."
-            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-            , defaultButton: dmz.ui.messageBox.Cancel
-            }
-            , videoForm
-         ).open(self, function (value) {
-
-            if (value) { CurrentIndex = 0; NewSource = true; }
-            currLabel.text(CurrentIndex + 1);
-            playCurrent();
-         });
-      }
-      else if (MainModule) { MainModule.highlight("Video"); }
+      if (MainModule) { MainModule.highlight("Video"); }
       else { VideoQueue = true; }
    }
 });
@@ -243,12 +216,11 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , videoForm
          , function () {
 
-              CurrentWindow = true;
               setUserPlayList(dmz.object.hil());
               CurrentIndex = 0;
               playCurrent();
            }
-         , function () { CurrentWindow = false; stopCurrent(); } // onHome
+         , stopCurrent // onHome
          );
 
       if (VideoQueue) { VideoQueue = false; module.highlight("Video"); }

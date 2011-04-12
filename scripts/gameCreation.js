@@ -21,7 +21,6 @@ var dmz =
    , util: require("dmz/types/util")
    , resources: require("dmz/runtime/resources")
    , module: require("dmz/runtime/module")
-   , email: require("email")
    }
    , DateJs = require("datejs/time")
 
@@ -91,6 +90,7 @@ var dmz =
    , groupNameEdit = AddGroupDialog.lookup("nameEdit")
 
    // Variables
+   , EmailMod = false
    , groupList = []
    , userList = {}
    , gameList = []
@@ -692,7 +692,7 @@ setup = function () {
                      "has just begun! Please log on at your earliest convenience and " +
                      "examine the initial scenario description."
                }
-               dmz.email.sendEmail(userList, subject, body);
+               EmailMod.sendEmail(userList, subject, body);
             }
          });
    });
@@ -1252,3 +1252,8 @@ groupTemplateComboBox.observe(self, "currentIndexChanged", function (index) {
    dock.hide();
    dock.enabled(false);
 }());
+
+dmz.module.subscribe(self, "email", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) { EmailMod = module; }
+});

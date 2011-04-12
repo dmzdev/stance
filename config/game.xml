@@ -57,6 +57,13 @@
       <picture name="lob_3"/>
    </lobbyist-pictures>
 </gameCreation>
+<email>
+   <user-filter>
+      <user name="sangster@me.com"/>
+      <user name="shillcock@me.com"/>
+<!--      <user name=""/> -->
+   </user-filter>
+</email>
 <archive>
    <object type="game" uuid="73482562-b36f-45f1-9e1c-87a02269622a">
       <attributes name="name">
