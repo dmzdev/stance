@@ -406,6 +406,11 @@ p, li { white-space: pre-wrap; }
            </column>
            <column>
             <property name="text">
+             <string>Viewed</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
              <string>Author</string>
             </property>
            </column>

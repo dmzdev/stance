@@ -213,6 +213,7 @@ setGroupTemplate = function (groupHandle, templateIndex) {
             case "Memo": attr = dmz.stance.InboxImageHandle; break;
             case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
             case "Resource": attr = dmz.stance.ResourceImageHandle; break;
+            case "Vote": attr = dmz.stance.VoteImageHandle; break;
             default: self.log.warn ("Key ("+key+") has no associated handle."); break;
             }
 

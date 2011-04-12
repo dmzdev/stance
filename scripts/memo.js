@@ -35,6 +35,8 @@ var dmz =
 , NewSource = false
 , SourceList = [] // { handle, source }
 , CurrentWindow = false
+, MainModule = false
+, Queued = false
 
 // Function decls
 , loadCurrent
@@ -123,6 +125,7 @@ setUserPlayList = function (userHandle) {
 
    SourceList = []
    NewSource = true;
+   if (activeList) { MainModule.highlight("Memo"); }
    if (activeList && viewedList) { list = activeList.concat(viewedList); }
    else { list = activeList ? activeList : viewedList; }
 
@@ -150,34 +153,39 @@ setUserPlayList = function (userHandle) {
 dmz.object.link.observe(self, dmz.stance.ActiveMemoHandle,
 function (objHandle, attrHandle, userHandle, memoHandle) {
 
-   if (CurrentWindow && (userHandle === dmz.object.hil())) {
+   if (userHandle === dmz.object.hil()) {
 
-      SourceList.unshift (
-         { handle: memoHandle
-         , source: dmz.object.text(memoHandle, dmz.stance.TextHandle)
+      if (CurrentWindow) {
+
+         SourceList.unshift (
+            { handle: memoHandle
+            , source: dmz.object.text(memoHandle, dmz.stance.TextHandle)
+            });
+
+         CurrentIndex += 1;
+         totalLabel.text(SourceList.length);
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Info
+            , text: "A new item has just been added!"
+            , informativeText: "Click <b>Ok</b> to switch to it. Click <b>Cancel</b> to return to the current item."
+            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Cancel
+            }
+            , webForm
+         ).open(self, function (value) {
+
+            if (value) {
+
+               CurrentIndex = 0;
+               currLabel.text(CurrentIndex + 1);
+               NewSource = true;
+               loadCurrent();
+            }
          });
-
-      CurrentIndex += 1;
-      totalLabel.text(SourceList.length);
-
-      dmz.ui.messageBox.create(
-         { type: dmz.ui.messageBox.Info
-         , text: "A new item has just been added!"
-         , informativeText: "Click <b>Ok</b> to switch to it. Click <b>Cancel</b> to return to the current item."
-         , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-         , defaultButton: dmz.ui.messageBox.Cancel
-         }
-         , webForm
-      ).open(self, function (value) {
-
-         if (value) {
-
-            CurrentIndex = 0;
-            currLabel.text(CurrentIndex + 1);
-            NewSource = true;
-            loadCurrent();
-         }
-      });
+      }
+      else if (MainModule) { MainModule.highlight("Memo"); }
+      else { Queued = true; }
    }
 });
 
@@ -191,6 +199,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
+      MainModule = module;
       module.addPage
          ("Memo"
          , webForm
@@ -202,6 +211,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            }
          , function () { CurrentWindow = false; } // onHome
          );
+
+      if (Queued) { Queued = false; module.highlight("Memo"); }
    }
 });
 

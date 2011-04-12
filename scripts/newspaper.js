@@ -22,26 +22,28 @@ var dmz =
    , util: require("dmz/types/util")
    }
 
-// UI Elements
-, webForm = dmz.ui.loader.load("PrintMediaForm.ui")
-, nextButton = webForm.lookup("nextButton")
-, prevButton = webForm.lookup("prevButton")
-, currLabel = webForm.lookup("currentLabel")
-, totalLabel = webForm.lookup("totalLabel")
-, webpage = dmz.ui.webview.create()
+   // UI Elements
+   , webForm = dmz.ui.loader.load("PrintMediaForm.ui")
+   , nextButton = webForm.lookup("nextButton")
+   , prevButton = webForm.lookup("prevButton")
+   , currLabel = webForm.lookup("currentLabel")
+   , totalLabel = webForm.lookup("totalLabel")
+   , webpage = dmz.ui.webview.create()
 
-// Variables
-, CurrentIndex = 0
-, NewSource = false
-, SourceList = [] // { handle, source }
-, CurrentWindow = false
+   // Variables
+   , CurrentIndex = 0
+   , NewSource = false
+   , SourceList = [] // { handle, source }
+   , CurrentWindow = false
+   , MainModule = false
+   , Queued = false
 
-// Function decls
-, loadCurrent
-, skipForward
-, skipBackward
-, setUserPlayList
-;
+   // Function decls
+   , loadCurrent
+   , skipForward
+   , skipBackward
+   , setUserPlayList
+   ;
 
 loadCurrent = function () {
 
@@ -123,6 +125,7 @@ setUserPlayList = function (userHandle) {
 
    SourceList = []
    NewSource = true;
+   if (activeList) { MainModule.highlight("Newspaper"); }
    if (activeList && viewedList) { list = activeList.concat(viewedList); }
    else { list = activeList ? activeList : viewedList; }
 
@@ -141,7 +144,6 @@ setUserPlayList = function (userHandle) {
             , source: dmz.object.text(handle, dmz.stance.TextHandle)
             });
       });
-      self.log.warn ("list: ", list);
       totalLabel.text(list.length);
       CurrentIndex = 0;
       currLabel.text(CurrentIndex + 1);
@@ -151,34 +153,39 @@ setUserPlayList = function (userHandle) {
 dmz.object.link.observe(self, dmz.stance.ActiveNewspaperHandle,
 function (objHandle, attrHandle, userHandle, newspaperHandle) {
 
-   if (CurrentWindow && (userHandle === dmz.object.hil())) {
+   if (userHandle === dmz.object.hil()) {
 
-      SourceList.unshift (
-         { handle: newspaperHandle
-         , source: dmz.object.text(newspaperHandle, dmz.stance.TextHandle)
+      if (CurrentWindow) {
+
+         SourceList.unshift (
+            { handle: newspaperHandle
+            , source: dmz.object.text(newspaperHandle, dmz.stance.TextHandle)
+            });
+
+         CurrentIndex += 1;
+         totalLabel.text(SourceList.length);
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Info
+            , text: "A new item has just been added!"
+            , informativeText: "Click <b>Ok</b> to switch to it. Click <b>Cancel</b> to return to the current item."
+            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Cancel
+            }
+            , webForm
+         ).open(self, function (value) {
+
+            if (value) {
+
+               CurrentIndex = 0;
+               currLabel.text(CurrentIndex + 1);
+               NewSource = true;
+               loadCurrent();
+            }
          });
-
-      CurrentIndex += 1;
-      totalLabel.text(SourceList.length);
-
-      dmz.ui.messageBox.create(
-         { type: dmz.ui.messageBox.Info
-         , text: "A new item has just been added!"
-         , informativeText: "Click <b>Ok</b> to switch to it. Click <b>Cancel</b> to return to the current item."
-         , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-         , defaultButton: dmz.ui.messageBox.Cancel
-         }
-         , webForm
-      ).open(self, function (value) {
-
-         if (value) {
-
-            CurrentIndex = 0;
-            currLabel.text(CurrentIndex + 1);
-            NewSource = true;
-            loadCurrent();
-         }
-      });
+      }
+      else if (MainModule) { MainModule.highlight("Newspaper"); }
+      else { Queued = true; }
    }
 });
 
@@ -192,6 +199,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
+      MainModule = module;
       module.addPage
          ("Newspaper"
          , webForm
@@ -203,6 +211,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            }
          , function () { CurrentWindow = false; } // onHome
          );
+
+      if (Queued) { Queued = false; module.highlight("Newspaper"); }
    }
 });
 

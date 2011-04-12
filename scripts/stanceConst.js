@@ -87,6 +87,14 @@ var dmz =
       , AdvisorImageCountHandle: dmz.defs.createNamedHandle("advisor_image_count")
       , ExitImageHandle: dmz.defs.createNamedHandle("exit_image")
       , ResourceImageHandle: dmz.defs.createNamedHandle("resource_image")
+      , VoteImageHandle: dmz.defs.createNamedHandle("vote_image")
+      , ViewedQuestionHandle: dmz.defs.createNamedHandle("viewed_question")
+      , Advisor0Handle: dmz.defs.createNamedHandle("advisor_0_data")
+      , Advisor1Handle: dmz.defs.createNamedHandle("advisor_1_data")
+      , Advisor2Handle: dmz.defs.createNamedHandle("advisor_2_data")
+      , Advisor3Handle: dmz.defs.createNamedHandle("advisor_3_data")
+      , Advisor4Handle: dmz.defs.createNamedHandle("advisor_4_data")
+      , PinCountHandle: dmz.defs.createNamedHandle("pin_count")
       }
 
    , Functions =

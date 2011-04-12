@@ -41,6 +41,8 @@ var dmz =
 , NewSource = false
 , SourceList = [] // { handle, source }
 , CurrentWindow = false
+, MainModule = false
+, VideoQueue = false
 
 // Function decls
 , playCurrent
@@ -164,6 +166,7 @@ setUserPlayList = function (userHandle) {
 
    SourceList = []
    NewSource = true;
+   if (activeList) { MainModule.highlight("Video"); }
    if (activeList && viewedList) { list = activeList.concat(viewedList); }
    else { list = activeList ? activeList : viewedList; }
 
@@ -191,31 +194,36 @@ setUserPlayList = function (userHandle) {
 dmz.object.link.observe(self, dmz.stance.ActiveVideoHandle,
 function (objHandle, attrHandle, userHandle, videoHandle) {
 
-   if (CurrentWindow && (userHandle === dmz.object.hil())) {
+   if (userHandle === dmz.object.hil()) {
 
-      SourceList.unshift (
-         { handle: videoHandle
-         , source: dmz.object.text(videoHandle, dmz.stance.TextHandle)
+      if (CurrentWindow) {
+
+         SourceList.unshift (
+            { handle: videoHandle
+            , source: dmz.object.text(videoHandle, dmz.stance.TextHandle)
+            });
+
+         CurrentIndex += 1;
+         totalLabel.text(SourceList.length);
+         pauseCurrent();
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Info
+            , text: "A new video clip has just been added!"
+            , informativeText: "Click <b>Ok</b> to switch to that video. Click <b>Cancel</b> to resume your current video."
+            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Cancel
+            }
+            , videoForm
+         ).open(self, function (value) {
+
+            if (value) { CurrentIndex = 0; NewSource = true; }
+            currLabel.text(CurrentIndex + 1);
+            playCurrent();
          });
-
-      CurrentIndex += 1;
-      totalLabel.text(SourceList.length);
-      pauseCurrent();
-
-      dmz.ui.messageBox.create(
-         { type: dmz.ui.messageBox.Info
-         , text: "A new video clip has just been added!"
-         , informativeText: "Click <b>Ok</b> to switch to that video. Click <b>Cancel</b> to resume your current video."
-         , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-         , defaultButton: dmz.ui.messageBox.Cancel
-         }
-         , videoForm
-      ).open(self, function (value) {
-
-         if (value) { CurrentIndex = 0; NewSource = true; }
-         currLabel.text(CurrentIndex + 1);
-         playCurrent();
-      });
+      }
+      else if (MainModule) { MainModule.highlight("Video"); }
+      else { VideoQueue = true; }
    }
 });
 
@@ -229,6 +237,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
+      MainModule = module;
       module.addPage
          ("Video"
          , videoForm
@@ -241,6 +250,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            }
          , function () { CurrentWindow = false; stopCurrent(); } // onHome
          );
+
+      if (VideoQueue) { VideoQueue = false; module.highlight("Video"); }
    }
 });
 
