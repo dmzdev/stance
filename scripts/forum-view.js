@@ -40,7 +40,7 @@ var dmz =
 
    // Functions
    , toDate = dmz.util.timeStampToDate
-   , _htmlLink
+//   , _htmlLink
    , _setupView
    , _updatePostedBy
    , _updatePostedAt
@@ -58,7 +58,7 @@ var dmz =
 (function () {
 
    var content = _scrollArea.widget()
-     , photo = _view.lookup("avatarLabel")
+     , avatar = _view.lookup("avatarLabel")
      ;
 
    if (content) {
@@ -67,10 +67,10 @@ var dmz =
       _mainLayout.addStretch(1);
    }
 
-   if (photo) { photo.pixmap(AvatarDefault); }
+   if (avatar) { avatar.pixmap(AvatarDefault); }
 }());
 
-_htmlLink = function (text) { return "<a href=\"javascript://\">"+ text + "</a>"; };
+//_htmlLink = function (text) { return "<a href=\"javascript://\">"+ text + "</a>"; };
 
 _addPost = function (postHandle) {
 
@@ -189,8 +189,8 @@ _addCommentClicked = function (postHandle) {
 
       _commentAdd.form = dmz.ui.loader.load("CommentAdd");
       _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
-      _commentAdd.photo = _commentAdd.form.lookup("avatarLabel");
-      _commentAdd.photo.pixmap(AvatarDefault);
+      _commentAdd.avatar = _commentAdd.form.lookup("avatarLabel");
+      _commentAdd.avatar.pixmap(AvatarDefault);
 
       _commentAdd.form.observe(self, "submitButton", "clicked", function () {
 
