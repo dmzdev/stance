@@ -74,12 +74,6 @@ playCurrent = function () {
          if (NewSource) { source.currentSource(video.source); NewSource = false; }
          if (source.hasVideo()) {
 
-//            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveVideoHandle, hil, video.handle);
-//            if (linkHandle) {
-
-//               dmz.object.unlink(linkHandle);
-//               dmz.object.link(dmz.stance.ViewedVideoHandle, hil, video.handle);
-//            }
             linkHandle = dmz.object.linkHandle(dmz.stance.ViewedVideoHandle, hil, video.handle);
             if (!linkHandle) {
 

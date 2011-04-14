@@ -582,6 +582,16 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
      , noHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteNoHandle)
      ;
 
+   if (dmz.object.linkHandle(dmz.stance.VoteYesHandle, voteHandle, userHandle) ||
+      dmz.object.linkHandle(dmz.stance.VoteNoHandle, voteHandle, userHandle)) {
+
+      dmz.object.unlink(
+         dmz.object.linkHandle(
+            dmz.stance.VoteUndecidedHandle,
+            voteHandle,
+            userHandle));
+   }
+
    if (voteHistoryWidgets[voteHandle]) {
 
       voteHistoryWidgets[voteHandle].text(2, yesHandleList ? yesHandleList.length : 0);
@@ -601,8 +611,8 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
      , game
      ;
 
-   self.log.warn("Undecided:", linkHandle);
-   if (linkHandle) { dmz.object.unlink(linkHandle); }
+   self.log.warn("No Undecided:", linkHandle);
+   if (linkHandle) { self.log.warn ("Unlinking: ", dmz.object.unlink(linkHandle)); }
 
    undecHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle);
    yesHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteYesHandle);
@@ -648,8 +658,8 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
      , game
      ;
 
-   self.log.warn("Undecided:", linkHandle);
-   if (linkHandle) { dmz.object.unlink(linkHandle); }
+   self.log.warn("Yes Undecided:", linkHandle);
+   if (linkHandle) { self.log.warn ("Unlinking: ", dmz.object.unlink(linkHandle)); }
 
    undecHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle);
    yesHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteYesHandle);

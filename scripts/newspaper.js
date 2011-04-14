@@ -67,17 +67,10 @@ loadCurrent = function () {
 
             webpage.page().mainFrame().load(item.source);
             NewSource = false;
-//            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveNewspaperHandle, hil, item.handle);
-//            if (linkHandle) {
-
-//               dmz.object.unlink(linkHandle);
-//               self.log.warn ("Unlink news: ", dmz.object.unlink(linkHandle), linkHandle);
-//               dmz.object.link(dmz.stance.ViewedNewspaperHandle, hil, item.handle);
-//            }
-            linkHandle = dmz.object.linkHandle(dmz.stance.ViewedNewspaperHandle, hil, video.handle);
+            linkHandle = dmz.object.linkHandle(dmz.stance.ViewedNewspaperHandle, hil, item.handle);
             if (!linkHandle) {
 
-               dmz.object.link(dmz.stance.ViewedNewspaperHandle, hil, video.handle);
+               dmz.object.link(dmz.stance.ViewedNewspaperHandle, hil, item.handle);
             }
          }
       }
@@ -120,7 +113,7 @@ skipBackward = function () {
 nextButton.observe(self, "clicked", skipForward);
 prevButton.observe(self, "clicked", skipBackward);
 
-setUserPlayList = function (userHandle) {
+setUserPlayList = function (userHandle, clickWindow) {
 
    var activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveNewspaperHandle)
      , viewedList = dmz.object.subLinks(userHandle, dmz.stance.ViewedNewspaperHandle)
@@ -129,9 +122,7 @@ setUserPlayList = function (userHandle) {
 
    SourceList = []
    NewSource = true;
-   self.log.warn ("news active:", activeList);
-   self.log.warn ("news viewed:", viewedList);
-   if (activeList) { self.log.error ("SUPL active highlight"); MainModule.highlight("Newspaper"); }
+   if (activeList && clickWindow) { MainModule.highlight("Newspaper"); }
    if (activeList && viewedList) { list = activeList.concat(viewedList); }
    else { list = activeList ? activeList : viewedList; }
 
@@ -161,8 +152,6 @@ function (objHandle, attrHandle, userHandle, newspaperHandle) {
 
    if (userHandle === dmz.object.hil()) {
 
-      self.log.warn ("Newspaper:", newspaperHandle);
-      self.log.error ("ActiveNewspaper highlight:", attrHandle, dmz.stance.ActiveNewspaperHandle, dmz.stance.ActiveMemoHandle);
       if (MainModule) { MainModule.highlight("Newspaper"); }
       else { Queued = true; }
    }
@@ -171,7 +160,7 @@ function (objHandle, attrHandle, userHandle, newspaperHandle) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   if (value) { setUserPlayList(objHandle); }
+   if (value) { setUserPlayList(objHandle, true); }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {

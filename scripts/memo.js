@@ -68,23 +68,12 @@ loadCurrent = function () {
 
             webpage.page().mainFrame().load(item.source);
             NewSource = false;
-//            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveMemoHandle, hil, item.handle);
-//            if (linkHandle) {
-
-//               dmz.object.unlink(linkHandle);
-//               self.log.warn ("Unlink memo: ", dmz.object.unlink(linkHandle), linkHandle);
-//               dmz.object.link(dmz.stance.ViewedMemoHandle, hil, item.handle);
-//            }
-            linkHandle = dmz.object.linkHandle(dmz.stance.ViewedMemoHandle, hil, video.handle);
+            linkHandle = dmz.object.linkHandle(dmz.stance.ViewedMemoHandle, hil, item.handle);
             if (!linkHandle) {
 
-               dmz.object.link(dmz.stance.ViewedMemoHandle, hil, video.handle);
+               dmz.object.link(dmz.stance.ViewedMemoHandle, hil, item.handle);
             }
          }
-      }
-      else {
-
-         self.log.error("Media error for object", SourceList[CurrentIndex].handle);
       }
    }
 };
@@ -121,7 +110,7 @@ skipBackward = function () {
 nextButton.observe(self, "clicked", skipForward);
 prevButton.observe(self, "clicked", skipBackward);
 
-setUserPlayList = function (userHandle) {
+setUserPlayList = function (userHandle, clickWindow) {
 
    var activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveMemoHandle)
      , viewedList = dmz.object.subLinks(userHandle, dmz.stance.ViewedMemoHandle)
@@ -130,9 +119,7 @@ setUserPlayList = function (userHandle) {
 
    SourceList = []
    NewSource = true;
-   self.log.warn ("memo active:", activeList);
-   self.log.warn ("memo viewd:", viewedList);
-   if (activeList) { MainModule.highlight("Memo"); }
+   if (activeList && clickWindow) { MainModule.highlight("Memo"); }
    if (activeList && viewedList) { list = activeList.concat(viewedList); }
    else { list = activeList ? activeList : viewedList; }
 
@@ -162,8 +149,6 @@ function (objHandle, attrHandle, userHandle, memoHandle) {
 
    if (userHandle === dmz.object.hil()) {
 
-      self.log.warn ("Memo:", memoHandle);
-      self.log.error ("ActiveMemo highlight:", attrHandle, dmz.stance.ActiveNewspaperHandle, dmz.stance.ActiveMemoHandle);
       if (MainModule) { MainModule.highlight("Memo"); }
       else { Queued = true; }
    }
@@ -172,7 +157,7 @@ function (objHandle, attrHandle, userHandle, memoHandle) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   if (value) { setUserPlayList(objHandle); }
+   if (value) { setUserPlayList(objHandle, true); }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
