@@ -10,6 +10,7 @@
    <object-type name="email"/>
    <object-type name="forum"/>
    <object-type name="post"/>
+   <object-type name="comment"/>
    <object-type name="vote"/>
    <object-type name="intel"/>
    <object-type name="map_push_pin"/>

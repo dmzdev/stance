@@ -26,9 +26,8 @@ var dmz =
    , _commentAdd = {}
 
    // Object Lists
-   , _master = { posts: [], forums: [] }
+   , _master = { items: [], posts: [], comments: [], forums: [] }
    , _exports = {}
-   , _commentAddCache = []
    , _commentCache = []
    , _postCache = []
    , _postList = []
@@ -40,7 +39,7 @@ var dmz =
 
    // Functions
    , toDate = dmz.util.timeStampToDate
-   , _htmlLink
+//   , _htmlLink
    , _setupView
    , _updatePostedBy
    , _updatePostedAt
@@ -49,6 +48,7 @@ var dmz =
    , _addComment
    , _addCommentClicked
    , _createPost
+   , _createComment
    , _refresh
    , _reset
    , _load
@@ -58,7 +58,7 @@ var dmz =
 (function () {
 
    var content = _scrollArea.widget()
-     , photo = _view.lookup("avatarLabel")
+     , avatar = _view.lookup("avatarLabel")
      ;
 
    if (content) {
@@ -67,10 +67,10 @@ var dmz =
       _mainLayout.addStretch(1);
    }
 
-   if (photo) { photo.pixmap(AvatarDefault); }
+   if (avatar) { avatar.pixmap(AvatarDefault); }
 }());
 
-_htmlLink = function (text) { return "<a href=\"javascript://\">"+ text + "</a>"; };
+//_htmlLink = function (text) { return "<a href=\"javascript://\">"+ text + "</a>"; };
 
 _addPost = function (postHandle) {
 
@@ -189,8 +189,8 @@ _addCommentClicked = function (postHandle) {
 
       _commentAdd.form = dmz.ui.loader.load("CommentAdd");
       _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
-      _commentAdd.photo = _commentAdd.form.lookup("avatarLabel");
-      _commentAdd.photo.pixmap(AvatarDefault);
+      _commentAdd.avatar = _commentAdd.form.lookup("avatarLabel");
+      _commentAdd.avatar.pixmap(AvatarDefault);
 
       _commentAdd.form.observe(self, "submitButton", "clicked", function () {
 
@@ -205,7 +205,7 @@ _addCommentClicked = function (postHandle) {
             if (textEdit) {
 
                message = textEdit.text();
-               if (message) { _createPost(post.handle, message); }
+               if (message) { _createComment (post.handle, message); }
                textEdit.clear();
             }
 
@@ -214,6 +214,7 @@ _addCommentClicked = function (postHandle) {
          }
 
          form.hide();
+         _postTextEdit.setFocus();
       });
 
       _commentAdd.form.observe(self, "cancelButton", "clicked", function () {
@@ -222,6 +223,7 @@ _addCommentClicked = function (postHandle) {
          if (_commentAdd.post) { _commentAdd.post.layout.removeWidget(_commentAdd.form); }
          _commentAdd.post = false;
          _commentAdd.form.hide();
+         _postTextEdit.setFocus();
       });
    }
 
@@ -234,6 +236,8 @@ _addCommentClicked = function (postHandle) {
          _commentAdd.post = false;
          show = true;
       }
+      else { _commentAdd.textEdit.setFocus(); }
+
    }
    else { show = true; }
 
@@ -248,50 +252,66 @@ _addCommentClicked = function (postHandle) {
       dmz.time.setTimer(self, 0.1, function () {
 
          _scrollArea.ensureVisible(_commentAdd.form);
+         _commentAdd.textEdit.setFocus();
       });
    }
 };
 
 _updatePostedBy = function (handle) {
 
-   var item = _postList[handle];
-   if (!item) { item = _commentList[handle]; }
+   var item = _postList[handle]
+     , data = _master.posts[handle]
+     ;
 
-   if (item && item.postedBy) {
+   if (!item) {
 
-      item.postedBy.text ("<b>" + _master.posts[handle].postedBy + "</b>");
+      item = _commentList[handle];
+      data = _master.comments[handle];
+   }
+
+   if (item && item.postedBy && data && data.postedBy) {
+
+      item.postedBy.text ("<b>" + data.postedBy + "</b>");
    }
 };
 
 _updatePostedAt = function (handle) {
 
    var item = _postList[handle]
-     , html = "<span style=\"color:#939393;\">{{time}}</span>"
+     , data = _master.posts[handle];
      ;
 
-   if (!item) { item = _commentList[handle]; }
+   if (!item) {
 
-   if (item && item.postedAt) {
+      item = _commentList[handle];
+      data = _master.comments[handle];
+   }
 
-//      item.postedAt.text(_master.posts[handle].postedAt);
-      item.postedAt.text(html.replace("{{time}}", _master.posts[handle].postedAt));
+   if (item && item.postedAt && data && data.postedAt) {
+
+      item.postedAt.text("<span style=\"color:#939393;\">" + data.postedAt + "</span>");
    }
 };
 
 _updateMessage = function (handle) {
 
-   var item = _postList[handle];
-   if (!item) { item = _commentList[handle]; }
+   var item = _postList[handle]
+     , data = _master.posts[handle]
+     ;
 
-   if (item && item.message) {
+   if (!item) {
 
-      item.message.text(_master.posts[handle].message);
+      item = _commentList[handle];
+      data = _master.comments[handle];
    }
+
+   if (item && item.message && data && data.message) { item.message.text(data.message); }
 };
 
 _createPost = function (parent, message) {
 
    var post
+     , item
      , hil = dmz.object.hil()
      ;
 
@@ -300,13 +320,32 @@ _createPost = function (parent, message) {
       post = dmz.object.create(dmz.stance.PostType);
       dmz.object.text(post, dmz.stance.TextHandle, message);
       dmz.object.timeStamp(post, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
-      dmz.object.link(dmz.stance.PostVisitedHandle, hil, post);
       dmz.object.link(dmz.stance.ParentHandle, post, parent);
       dmz.object.link(dmz.stance.CreatedByHandle, post, hil);
       dmz.object.activate(post);
 
-      var item = _postList[post];
-      if (!item) { item = _commentList[post]; }
+      item = _postList[post];
+      if (item) { _scrollArea.ensureVisible (item.item); }
+   }
+};
+
+_createComment = function (parent, message) {
+
+   var comment
+     , item
+     , hil = dmz.object.hil()
+     ;
+
+   if (hil && parent && message) {
+
+      comment = dmz.object.create(dmz.stance.CommentType);
+      dmz.object.text(comment, dmz.stance.TextHandle, message);
+      dmz.object.timeStamp(comment, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
+      dmz.object.link(dmz.stance.ParentHandle, comment, parent);
+      dmz.object.link(dmz.stance.CreatedByHandle, comment, hil);
+      dmz.object.activate(comment);
+
+      item = _commentList[comment];
       if (item) { _scrollArea.ensureVisible (item.item); }
    }
 };
@@ -400,6 +439,7 @@ dmz.object.create.observe(self, function (handle, type) {
    if (type) {
 
       if (type.isOfType(dmz.stance.PostType)) { _master.posts[handle] = obj; }
+      else if (type.isOfType(dmz.stance.CommentType)) { _master.comments[handle] = obj; }
       else if (type.isOfType(dmz.stance.ForumType)) { _master.forums[handle] = obj; }
    }
 });
@@ -413,6 +453,7 @@ function (handle, attr, value) {
 //     , timeStamp = toDate(value).toString("MMM dd, yyyy - hh:mm tt")
      ;
 
+   if (!item) { item = _master.comments[handle]; }
    if (item) { item.postedAt = "-  " + timeStamp; }
 
    _updatePostedAt(handle);
@@ -421,6 +462,8 @@ function (handle, attr, value) {
 dmz.object.text.observe(self, dmz.stance.TextHandle, function (handle, attr, value) {
 
    var item = _master.posts[handle];
+
+   if (!item) { item = _master.comments[handle]; }
    if (item) { item.message = value; }
 
    _updateMessage(handle);
@@ -430,6 +473,8 @@ dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    var item = _master.posts[superHandle];
+
+   if (!item) { item = _master.comments[superHandle]; }
    if (item) { item.postedBy = dmz.stance.getDisplayName(subHandle); }
 
    _updatePostedBy(superHandle);
@@ -447,16 +492,31 @@ function (linkObjHandle, attrHandle, groupHandle, forumHandle) {
 dmz.object.link.observe(self, dmz.stance.ParentHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var post = _master.posts[superHandle]
+   var type = dmz.object.type(superHandle)
+     , item
+     , parent
      ;
 
-   if (post) {
+   if (type) {
 
-      if (_master.posts[subHandle]) { post.parent = subHandle; }
-      else if (_master.forums[subHandle]) { post.forum = subHandle; }
+      if (type.isOfType(dmz.stance.PostType)) {
 
-      if (subHandle == _forumHandle) { _addPost(superHandle); }
-      else { _addComment(subHandle, superHandle); }
+         item = _master.posts[superHandle];
+         parent = _master.forums[subHandle];
+
+         if (item && parent) { item.forum = subHandle; }
+
+         if (subHandle === _forumHandle) { _addPost(superHandle); }
+      }
+      else if (type.isOfType(dmz.stance.CommentType)) {
+
+         item = _master.comments[superHandle];
+         parent = _master.posts[subHandle];
+
+         if (item && parent) { item.post = subHandle; }
+
+         if (parent && (parent.forum === _forumHandle)) { _addComment(subHandle, superHandle); }
+      }
    }
 });
 

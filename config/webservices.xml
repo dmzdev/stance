@@ -9,7 +9,7 @@
 <web-services>
 <!--   <server host="localhost" port="5984">-->
 <!--   <server host="http://172.20.89.96:5984/" port="5984"/> -->
-<!--   <server host="dmz.couchone.com" port="80"> -->
+<!--   <server host="dmz.couchone.com" port="80">-->
    <server host="games.chds.us" port="443" path="/db/">
 <!--      <proxy host="localhost" port="8888"/>-->
    </server>
