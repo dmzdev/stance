@@ -18,6 +18,7 @@ var dmz =
       , NewspaperType: dmz.objectType.lookup("media-newspaper")
       , PinType: dmz.objectType.lookup("map_push_pin")
       , PostType: dmz.objectType.lookup("post")
+      , CommentType: dmz.objectType.lookup("comment")
       , QuestionType: dmz.objectType.lookup("question")
       , UserType: dmz.objectType.lookup("user")
       , VideoType: dmz.objectType.lookup("media-video")
