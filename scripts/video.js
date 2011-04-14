@@ -22,35 +22,42 @@ var dmz =
    , util: require("dmz/types/util")
    }
 
-// UI Elements
-, videoForm = dmz.ui.loader.load("VideoForm.ui")
-, playButton = videoForm.lookup("playButton")
-, pauseButton = videoForm.lookup("pauseButton")
-, stopButton = videoForm.lookup("stopButton")
-, nextButton = videoForm.lookup("nextButton")
-, prevButton = videoForm.lookup("prevButton")
-, currLabel = videoForm.lookup("currLabel")
-, totalLabel = videoForm.lookup("totalLabel")
-, video = dmz.ui.phonon.createVideoPlayer()
-, source = dmz.ui.phonon.createMediaObject()
-//, source = dmz.ui.phonon.createMediaObject("http://www.chds.us/media/viewpoints/mov/chds_viewpoints%2029_rodrigo_gomez.mov")
-//, source2 = dmz.ui.phonon.createMediaObject("http://www.chds.us/coursefiles/DA3210/videos/obsession/obsession_radical_islam.mov")
+   // UI Elements
+   , videoForm = dmz.ui.loader.load("VideoForm.ui")
+   , playButton = videoForm.lookup("playButton")
+   , pauseButton = videoForm.lookup("pauseButton")
+   , stopButton = videoForm.lookup("stopButton")
+   , nextButton = videoForm.lookup("nextButton")
+   , prevButton = videoForm.lookup("prevButton")
+   , currLabel = videoForm.lookup("currLabel")
+   , totalLabel = videoForm.lookup("totalLabel")
+   , video = dmz.ui.phonon.createVideoPlayer()
+   , source = dmz.ui.phonon.createMediaObject()
+   //, source = dmz.ui.phonon.createMediaObject("http://www.chds.us/media/viewpoints/mov/chds_viewpoints%2029_rodrigo_gomez.mov")
+   //, source2 = dmz.ui.phonon.createMediaObject("http://www.chds.us/coursefiles/DA3210/videos/obsession/obsession_radical_islam.mov")
 
-// Variables
-, CurrentIndex = 0
-, NewSource = false
-, SourceList = [] // { handle, source }
-, MainModule = false
-, VideoQueue = false
+   // Variables
+   , CurrentIndex = 0
+   , NewSource = false
+   , SourceList = [] // { handle, source }
+   , MainModule = false
+   , VideoQueue = false
 
-// Function decls
-, playCurrent
-, pauseCurrent
-, stopCurrent
-, skipForward
-, skipBackward
-, setUserPlayList
-;
+   // Function decls
+   , playCurrent
+   , pauseCurrent
+   , stopCurrent
+   , skipForward
+   , skipBackward
+   , setUserPlayList
+   ;
+
+dmz.object.link.observe(self, dmz.stance.ViewedVideoHandle,
+function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
+
+   var linkHandle = dmz.object.linkHandle(dmz.stance.ActiveVideoHandle, userHandle, mediaHandle);
+   if (linkHandle) { dmz.object.unlink(linkHandle); }
+});
 
 playCurrent = function () {
 
@@ -67,12 +74,18 @@ playCurrent = function () {
          if (NewSource) { source.currentSource(video.source); NewSource = false; }
          if (source.hasVideo()) {
 
-            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveVideoHandle, hil, video.handle);
-            if (linkHandle) {
+//            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveVideoHandle, hil, video.handle);
+//            if (linkHandle) {
 
-               dmz.object.unlink(linkHandle);
+//               dmz.object.unlink(linkHandle);
+//               dmz.object.link(dmz.stance.ViewedVideoHandle, hil, video.handle);
+//            }
+            linkHandle = dmz.object.linkHandle(dmz.stance.ViewedVideoHandle, hil, video.handle);
+            if (!linkHandle) {
+
                dmz.object.link(dmz.stance.ViewedVideoHandle, hil, video.handle);
             }
+
             source.play();
          }
          pauseButton.enabled(true);

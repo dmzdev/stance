@@ -44,6 +44,13 @@ var dmz =
    , setUserPlayList
    ;
 
+dmz.object.link.observe(self, dmz.stance.ViewedNewspaperHandle,
+function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
+
+   var linkHandle = dmz.object.linkHandle(dmz.stance.ActiveNewspaperHandle, userHandle, mediaHandle);
+   if (linkHandle) { dmz.object.unlink(linkHandle); }
+});
+
 loadCurrent = function () {
 
    var linkHandle
@@ -60,11 +67,17 @@ loadCurrent = function () {
 
             webpage.page().mainFrame().load(item.source);
             NewSource = false;
-            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveNewspaperHandle, hil, item.handle);
-            if (linkHandle) {
+//            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveNewspaperHandle, hil, item.handle);
+//            if (linkHandle) {
 
-               dmz.object.unlink(linkHandle);
-               dmz.object.link(dmz.stance.ViewedNewspaperHandle, hil, item.handle);
+//               dmz.object.unlink(linkHandle);
+//               self.log.warn ("Unlink news: ", dmz.object.unlink(linkHandle), linkHandle);
+//               dmz.object.link(dmz.stance.ViewedNewspaperHandle, hil, item.handle);
+//            }
+            linkHandle = dmz.object.linkHandle(dmz.stance.ViewedNewspaperHandle, hil, video.handle);
+            if (!linkHandle) {
+
+               dmz.object.link(dmz.stance.ViewedNewspaperHandle, hil, video.handle);
             }
          }
       }
@@ -116,7 +129,9 @@ setUserPlayList = function (userHandle) {
 
    SourceList = []
    NewSource = true;
-   if (activeList) { MainModule.highlight("Newspaper"); }
+   self.log.warn ("news active:", activeList);
+   self.log.warn ("news viewed:", viewedList);
+   if (activeList) { self.log.error ("SUPL active highlight"); MainModule.highlight("Newspaper"); }
    if (activeList && viewedList) { list = activeList.concat(viewedList); }
    else { list = activeList ? activeList : viewedList; }
 
@@ -146,6 +161,8 @@ function (objHandle, attrHandle, userHandle, newspaperHandle) {
 
    if (userHandle === dmz.object.hil()) {
 
+      self.log.warn ("Newspaper:", newspaperHandle);
+      self.log.error ("ActiveNewspaper highlight:", attrHandle, dmz.stance.ActiveNewspaperHandle, dmz.stance.ActiveMemoHandle);
       if (MainModule) { MainModule.highlight("Newspaper"); }
       else { Queued = true; }
    }

@@ -75,7 +75,7 @@ var dmz =
       , VoteAdvisorHandle: dmz.defs.createNamedHandle("vote_advisor")
       , VoteSubmittedHandle: dmz.defs.createNamedHandle("vote_submitted")
       , VoteApprovedHandle: dmz.defs.createNamedHandle("vote_approved")
-      , VoterTotalImageHandle: dmz.defs.createNamedHandle("voter_total")
+      , VoterTotalHandle: dmz.defs.createNamedHandle("voter_total")
       , BackgroundImageHandle: dmz.defs.createNamedHandle("background_image")
       , MapImageHandle: dmz.defs.createNamedHandle("map_image")
       , ComputerImageHandle: dmz.defs.createNamedHandle("computer_image")

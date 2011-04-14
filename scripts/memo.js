@@ -44,6 +44,14 @@ var dmz =
    , setUserPlayList
    ;
 
+
+dmz.object.link.observe(self, dmz.stance.ViewedMemoHandle,
+function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
+
+   var linkHandle = dmz.object.linkHandle(dmz.stance.ActiveMemoHandle, userHandle, mediaHandle);
+   if (linkHandle) { dmz.object.unlink(linkHandle); }
+});
+
 loadCurrent = function () {
 
    var linkHandle
@@ -60,11 +68,17 @@ loadCurrent = function () {
 
             webpage.page().mainFrame().load(item.source);
             NewSource = false;
-            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveMemoHandle, hil, item.handle);
-            if (linkHandle) {
+//            linkHandle = dmz.object.linkHandle(dmz.stance.ActiveMemoHandle, hil, item.handle);
+//            if (linkHandle) {
 
-               dmz.object.unlink(linkHandle);
-               dmz.object.link(dmz.stance.ViewedMemoHandle, hil, item.handle);
+//               dmz.object.unlink(linkHandle);
+//               self.log.warn ("Unlink memo: ", dmz.object.unlink(linkHandle), linkHandle);
+//               dmz.object.link(dmz.stance.ViewedMemoHandle, hil, item.handle);
+//            }
+            linkHandle = dmz.object.linkHandle(dmz.stance.ViewedMemoHandle, hil, video.handle);
+            if (!linkHandle) {
+
+               dmz.object.link(dmz.stance.ViewedMemoHandle, hil, video.handle);
             }
          }
       }
@@ -116,6 +130,8 @@ setUserPlayList = function (userHandle) {
 
    SourceList = []
    NewSource = true;
+   self.log.warn ("memo active:", activeList);
+   self.log.warn ("memo viewd:", viewedList);
    if (activeList) { MainModule.highlight("Memo"); }
    if (activeList && viewedList) { list = activeList.concat(viewedList); }
    else { list = activeList ? activeList : viewedList; }
@@ -146,6 +162,8 @@ function (objHandle, attrHandle, userHandle, memoHandle) {
 
    if (userHandle === dmz.object.hil()) {
 
+      self.log.warn ("Memo:", memoHandle);
+      self.log.error ("ActiveMemo highlight:", attrHandle, dmz.stance.ActiveNewspaperHandle, dmz.stance.ActiveMemoHandle);
       if (MainModule) { MainModule.highlight("Memo"); }
       else { Queued = true; }
    }
