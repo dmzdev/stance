@@ -37,6 +37,7 @@ var dmz =
    // Variables
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
+   , IsCurrentWindow = false
 
    // Functions
    , toDate = dmz.util.timeStampToDate
@@ -140,7 +141,8 @@ _addPost = function (postHandle) {
 
    count = dmz.object.scalar(dmz.object.hil(), dmz.stance.PostCountHandle);
    count = count ? count : 0;
-   if (count < (Object.keys(_postList).length + Object.keys(_commentList).length)) {
+   if ((count < (Object.keys(_postList).length + Object.keys(_commentList).length)) &&
+      !IsCurrentWindow) {
 
       MainModule.highlight("Forum");
    }
@@ -189,7 +191,8 @@ _addComment = function (postHandle, commentHandle) {
 
       count = dmz.object.scalar(dmz.object.hil(), dmz.stance.PostCountHandle);
       count = count ? count : 0;
-      if (count < (Object.keys(_postList).length + Object.keys(_commentList).length)) {
+      if ((count < (Object.keys(_postList).length + Object.keys(_commentList).length)) &&
+         !IsCurrentWindow) {
 
          MainModule.highlight("Forum");
       }
@@ -574,12 +577,14 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       module.addPage
          ( "Forum"
          , _view
-         , function () { // onClicked
+         , function () {
 
+              IsCurrentWindow = true;
               if (!_forumHandle) { _updateForumForUser(dmz.object.hil()); }
            }
          , function () { // onHome
 
+              IsCurrentWindow = false;
               if (_forumHandle) {
 
                  dmz.object.scalar

@@ -345,6 +345,18 @@ setupMainWindow = function () {
          }
       });
 
+//      mainGView.eventFilter(self, function (object, event) {
+
+//         var type = event.type()
+//           , x
+//           , y
+//           ;
+
+//         if (type == dmz.ui.event.Resize) {
+
+//         }
+//      });
+
 
       homeButton.observe(self, "clicked", function () {
 
@@ -437,6 +449,7 @@ function (objHandle, attrHandle, value) {
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
 function (objHandle, attrHandle, groupHandle, userHandle) {
 
+   self.log.warn ("GroupMembersHandle");
    if (userHandle === dmz.object.hil()) { updateGraphicsForGroup(groupHandle); }
 });
 

@@ -65,22 +65,13 @@
    </user-filter>
 </email>
 <archive>
+<!--
    <object type="game" uuid="73482562-b36f-45f1-9e1c-87a02269622a">
       <attributes name="name">
          <text value="Game"/>
       </attributes>
    </object>
-   <object type="user" uuid="d0891d33-2b9c-4343-a241-891d50c38072">
-      <attributes name="name">
-         <text value="Admin"/>
-      </attributes>
-      <attributes name="display_name">
-         <text value="Admin"/>
-      </attributes>
-      <attributes name="admin_user">
-         <flag value="true"/>
-      </attributes>
-   </object>
+-->
    <object type="user" uuid="12832b4e-5094-4636-b458-6cad452fccd1">
       <attributes name="name">
          <text value="sangster@me.com"/>
