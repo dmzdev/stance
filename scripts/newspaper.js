@@ -34,8 +34,7 @@ var dmz =
    , CurrentIndex = 0
    , NewSource = false
    , SourceList = [] // { handle, source }
-   , MainModule = false
-   , Queued = false
+   , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
 
    // Function decls
    , loadCurrent
@@ -165,8 +164,10 @@ function (objHandle, attrHandle, value) {
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
+   var list;
    if (Mode === dmz.module.Activate) {
 
+      list = MainModule.list;
       MainModule = module;
       module.addPage
          ("Newspaper"
@@ -178,7 +179,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            }
          );
 
-      if (Queued) { Queued = false; module.highlight("Newspaper"); }
+      if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
 

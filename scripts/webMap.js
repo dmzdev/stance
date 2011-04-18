@@ -65,7 +65,7 @@ var dmz =
    , PinGroupList = {}
    , GroupQueue = {}
    , PinData = {}
-   , MainModule = false
+   , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
 
    // Function decls
    , onPinAdded
@@ -487,37 +487,41 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    var mapClickFn
      , mapHomeFn
+     , list
      ;
 
-   mapClickFn = function () {
-
-      if (!HaveActivatedMap) {
-
-         HaveActivatedMap = true;
-         populateMapFromGroup(dmz.stance.getUserGroupHandle(dmz.object.hil()));
-      }
-   };
-
-   mapHomeFn = function () {
-
-      var hil = dmz.object.hil()
-        , hilGroup = dmz.stance.getUserGroupHandle(hil)
-        , list
-        ;
-
-      if (hilGroup) {
-
-         list = dmz.object.subLinks(hilGroup, groupPinHandle);
-         list = list ? list.length : 0;
-         dmz.object.scalar(hil, dmz.stance.PinCountHandle, list);
-      }
-   };
 
    if (Mode === dmz.module.Activate) {
 
+      mapClickFn = function () {
+
+         if (!HaveActivatedMap) {
+
+            HaveActivatedMap = true;
+            populateMapFromGroup(dmz.stance.getUserGroupHandle(dmz.object.hil()));
+         }
+      };
+
+      mapHomeFn = function () {
+
+         var hil = dmz.object.hil()
+           , hilGroup = dmz.stance.getUserGroupHandle(hil)
+           , list
+           ;
+
+         if (hilGroup) {
+
+            list = dmz.object.subLinks(hilGroup, groupPinHandle);
+            list = list ? list.length : 0;
+            dmz.object.scalar(hil, dmz.stance.PinCountHandle, list);
+         }
+      };
+
+      list = MainModule.list;
       MainModule = module;
       module.addPage("Map", map, mapClickFn, mapHomeFn);
       setWebViewMessage.send();
       map.page().mainFrame().load(self.config.string("url.name"));
+      if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });

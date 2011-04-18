@@ -40,8 +40,7 @@ var dmz =
    , CurrentIndex = 0
    , NewSource = false
    , SourceList = [] // { handle, source }
-   , MainModule = false
-   , VideoQueue = false
+   , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
 
    // Function decls
    , playCurrent
@@ -200,11 +199,7 @@ setUserPlayList = function (userHandle) {
 dmz.object.link.observe(self, dmz.stance.ActiveVideoHandle,
 function (objHandle, attrHandle, userHandle, videoHandle) {
 
-   if (userHandle === dmz.object.hil()) {
-
-      if (MainModule) { MainModule.highlight("Video"); }
-      else { VideoQueue = true; }
-   }
+   if (userHandle === dmz.object.hil()) { MainModule.highlight("Video"); }
 });
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
@@ -215,8 +210,10 @@ function (objHandle, attrHandle, value) {
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
+   var list;
    if (Mode === dmz.module.Activate) {
 
+      list = MainModule.list;
       MainModule = module;
       module.addPage
          ("Video"
@@ -230,7 +227,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , stopCurrent // onHome
          );
 
-      if (VideoQueue) { VideoQueue = false; module.highlight("Video"); }
+      if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
 

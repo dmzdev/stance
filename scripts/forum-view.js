@@ -36,6 +36,7 @@ var dmz =
 
    // Variables
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
+   , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
 
    // Functions
    , toDate = dmz.util.timeStampToDate
@@ -79,6 +80,7 @@ _addPost = function (postHandle) {
      , layout
      , label
      , form
+     , count
      ;
 
    post.layout = dmz.ui.layout.createGridLayout();
@@ -135,6 +137,13 @@ _addPost = function (postHandle) {
    _updatePostedBy(postHandle);
    _updatePostedAt(postHandle);
    _updateMessage(postHandle);
+
+   count = dmz.object.scalar(dmz.object.hil(), dmz.stance.PostCountHandle);
+   count = count ? count : 0;
+   if (count < (Object.keys(_postList).length + Object.keys(_commentList).length)) {
+
+      MainModule.highlight("Forum");
+   }
 };
 
 _addComment = function (postHandle, commentHandle) {
@@ -142,6 +151,7 @@ _addComment = function (postHandle, commentHandle) {
    var post = _postList[postHandle]
      , comment = {}
      , text
+     , count
      ;
 
    if (post) {
@@ -176,6 +186,13 @@ _addComment = function (postHandle, commentHandle) {
       _updatePostedBy(commentHandle);
       _updatePostedAt(commentHandle);
       _updateMessage(commentHandle);
+
+      count = dmz.object.scalar(dmz.object.hil(), dmz.stance.PostCountHandle);
+      count = count ? count : 0;
+      if (count < (Object.keys(_postList).length + Object.keys(_commentList).length)) {
+
+         MainModule.highlight("Forum");
+      }
    }
 };
 
@@ -520,6 +537,16 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    }
 });
 
+dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
+function (linkObjHandle, attrHandle, groupHandle, userHandle) {
+
+   if ((dmz.object.hil() === userHandle) &&
+      (!_forumHandle || dmz.object.flag(userHandle, dmz.stance.AdminHandle))) {
+
+      _updateForumForUser(userHandle);
+   }
+});
+
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
@@ -539,11 +566,30 @@ function (objHandle, attrHandle, value) {
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
+   var list;
    if (Mode === dmz.module.Activate) {
 
-      module.addPage ("Forum", _view, function () {
+      list = MainModule.list;
+      MainModule = module;
+      module.addPage
+         ( "Forum"
+         , _view
+         , function () { // onClicked
 
-         if (!_forumHandle) { _updateForumForUser(dmz.object.hil()); }
-      });
+              if (!_forumHandle) { _updateForumForUser(dmz.object.hil()); }
+           }
+         , function () { // onHome
+
+              if (_forumHandle) {
+
+                 dmz.object.scalar
+                    ( dmz.object.hil()
+                    , dmz.stance.PostCountHandle
+                    , Object.keys(_postList).length + Object.keys(_commentList).length
+                    );
+              }
+           }
+         );
+      if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });

@@ -44,9 +44,7 @@ var dmz =
    , voteHistoryWidgets = {}
    , questionHistoryWidgets = {}
    , MaxMessageLength = 144
-   , MainModule = false
-   , VoteQueued = false
-   , AdvisorQueued = false
+   , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , advisorAttr =
         [ dmz.stance.Advisor0Handle
         , dmz.stance.Advisor1Handle
@@ -744,11 +742,10 @@ function (objHandle, attr, value, prev) {
    }
 
    advisor = dmz.object.superLinks(objHandle, dmz.stance.VoteAdvisorHandle);
-   if (!dmz.object.flag(hil, dmz.stance.AdminHandle) && advisor && advisor[0] &&
+   if (value && !dmz.object.flag(hil, dmz.stance.AdminHandle) && advisor && advisor[0] &&
       groupAdvisors[hilGroup] && (groupAdvisors[hilGroup].indexOf(advisor[0]) !== -1)) {
 
-      if (MainModule) { MainModule.highlight("Vote"); }
-      else { VoteQueued = true; }
+      MainModule.highlight("Vote");
    }
 });
 
@@ -861,9 +858,7 @@ function (objHandle, attr, value, prev) {
       if (dmz.object.flag(hil, dmz.stance.AdminHandle) && hilGroup &&
          dmz.object.linkHandle(dmz.stance.GroupActiveVoteHandle, hilGroup, objHandle)) {
 
-         if (MainModule) { MainModule.highlight("Vote"); }
-         else { VoteQueued = true; }
-//         approveVote(objHandle);
+         MainModule.highlight("Vote");
       }
    }
 });
@@ -880,8 +875,7 @@ function (linkObjHandle, attrHandle, groupHandle, voteHandle) {
       if (dmz.object.flag(hil, dmz.stance.AdminHandle) && vote && vote[0] &&
          dmz.object.flag(vote[0], dmz.stance.VoteSubmittedHandle)) {
 
-         if (MainModule) { MainModule.highlight("Vote"); }
-         else { VoteQueued = true; }
+         MainModule.highlight("Vote");
       }
       advisorWidgets.forEach(function (widget) {
 
@@ -899,11 +893,7 @@ function (linkObjHandle, attrHandle, groupHandle, voteHandle) {
 dmz.object.unlink.observe(self, dmz.stance.GroupMembersHandle,
 function (linkObjHandle, attrHandle, groupHandle, userHandle) {
 
-   if (userHandle === dmz.object.hil()) {
-
-      VoteQueued = false;
-      AdvisorQueued = false;
-   }
+   if ((userHandle === dmz.object.hil()) && MainModule.list) { MainModule.list = {}; }
 });
 
 dmz.object.unlink.observe(self, dmz.stance.GroupActiveVoteHandle,
@@ -948,8 +938,7 @@ function (objHandle, attrHandle, value) {
 
    if (value && hilGroup) {
 
-      AdvisorQueued = false;
-      VoteQueued = false;
+      if (MainModule.list) { MainModule.list = {}; }
 
       // Vote tree visibility
       list = dmz.object.subLinks(hilGroup, dmz.stance.GroupCompletedVotesHandle);
@@ -1049,8 +1038,7 @@ function (objHandle, attrHandle, value) {
                undecHandleList && (undecHandleList.indexOf(objHandle) !== -1))
             ) {
 
-               if (MainModule) { MainModule.highlight("Vote"); }
-               else { VoteQueued = true; }
+               MainModule.highlight("Vote");
             }
       }
    }
@@ -1070,8 +1058,7 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
       vote = dmz.object.subLinks(groupHandle, dmz.stance.GroupActiveVoteHandle);
       if (vote && vote[0] && dmz.object.flag(vote[0], dmz.stance.VoteSubmittedHandle)) {
 
-         if (MainModule) { MainModule.highlight("Vote"); }
-         else { VoteQueued = true; }
+         MainModule.highlight("Vote");
       }
    }
 });
@@ -1394,9 +1381,11 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
    var idx
      , str
+     , list
      ;
    if (Mode === dmz.module.Activate) {
 
+      list = MainModule.list;
       MainModule = module;
       for (idx = 0; idx < advisorCount; idx += 1) { updateAdvisor(module, idx); }
       module.addPage ("Vote", false, function () {
@@ -1457,7 +1446,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             }
          }
       });
-      if (VoteQueued) { VoteQueued = false; module.highlight("Vote"); }
+      if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
 

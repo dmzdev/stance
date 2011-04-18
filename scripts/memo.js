@@ -34,8 +34,7 @@ var dmz =
    , CurrentIndex = 0
    , NewSource = false
    , SourceList = [] // { handle, source }
-   , MainModule = false
-   , Queued = false
+   , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
 
    // Function decls
    , loadCurrent
@@ -147,11 +146,7 @@ setUserPlayList = function (userHandle, clickWindow) {
 dmz.object.link.observe(self, dmz.stance.ActiveMemoHandle,
 function (objHandle, attrHandle, userHandle, memoHandle) {
 
-   if (userHandle === dmz.object.hil()) {
-
-      if (MainModule) { MainModule.highlight("Memo"); }
-      else { Queued = true; }
-   }
+   if (userHandle === dmz.object.hil()) { MainModule.highlight("Memo"); }
 });
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
@@ -162,8 +157,10 @@ function (objHandle, attrHandle, value) {
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
+   var list;
    if (Mode === dmz.module.Activate) {
 
+      list = MainModule.list;
       MainModule = module;
       module.addPage
          ("Memo"
@@ -175,7 +172,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            }
          );
 
-      if (Queued) { Queued = false; module.highlight("Memo"); }
+      if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
 
