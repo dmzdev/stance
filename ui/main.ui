@@ -20,8 +20,17 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QGraphicsView" name="graphicsView">
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="transformationAnchor">
+          <enum>QGraphicsView::NoAnchor</enum>
          </property>
         </widget>
        </item>
