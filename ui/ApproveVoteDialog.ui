@@ -39,6 +39,29 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Duration:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="durationSpinBox">
+       <property name="suffix">
+        <string>h</string>
+       </property>
+       <property name="minimum">
+        <number>12</number>
+       </property>
+       <property name="maximum">
+        <number>72</number>
+       </property>
+       <property name="singleStep">
+        <number>12</number>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

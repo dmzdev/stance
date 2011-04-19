@@ -406,7 +406,6 @@ _exports.highlight = function (name) {
    var children;
    if (name && PageLink[name]) {
 
-      self.log.warn("Highlight:", name);
       children = PageLink[name].childItems();
       if (children) { children.forEach(function (item) { item.show(); }) }
    }
