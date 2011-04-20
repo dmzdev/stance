@@ -37,6 +37,7 @@ var dmz =
       , CreatedAtServerTimeHandle: dmz.defs.createNamedHandle("created_at_server_time")
       , CreatedAtGameTimeHandle: dmz.defs.createNamedHandle("created_at_game_time")
       , DisplayNameHandle: dmz.defs.createNamedHandle("display_name")
+      , DurationHandle: dmz.defs.createNamedHandle("duration")
       , ForumLink: dmz.defs.createNamedHandle("group_forum_link")
       , GameGroupHandle: dmz.defs.createNamedHandle("game_group")
       , GameForumsHandle: dmz.defs.createNamedHandle("game_forums")

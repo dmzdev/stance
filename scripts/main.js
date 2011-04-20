@@ -281,11 +281,14 @@ setupMainWindow = function () {
      , highlight
      , file
      , pixmap
+     , rect
      ;
 
    if (main && stackedWidget && mainGView) {
 
-      gscene = dmz.ui.graph.createScene(0, 0, sceneHeight, sceneWidth);
+//      rect = mainGView.sceneRect
+//      gscene = dmz.ui.graph.createScene(0, 0, sceneHeight, sceneWidth);
+      gscene = dmz.ui.graph.createScene();
       mainGView.scene(gscene);
       stackedWidget.remove(1); // Get rid of Qt Designer-forced second page
 
@@ -345,7 +348,6 @@ setupMainWindow = function () {
          }
       });
 
-
       homeButton.observe(self, "clicked", function () {
 
          var item = LastWindow
@@ -363,6 +365,25 @@ setupMainWindow = function () {
       stackedWidget.currentIndex(0);
       gscene.eventFilter(self, mouseEvent);
       dmz.ui.mainWindow.centralWidget(main);
+      mainGView.eventFilter(self, function (object, event) {
+
+         var type = event.type()
+           , size
+           , oldSize
+           ;
+
+         if (type == dmz.ui.event.Resize) {
+
+            size = event.size();
+            oldSize = event.oldSize();
+            if (!oldSize || !((oldSize.width > 0) && (oldSize.height > 0))) {
+
+               oldSize = mainGView.sceneRect();
+            }
+
+            mainGView.scale(size.width / oldSize.width, size.height / oldSize.height);
+         }
+      });
    }
 };
 
@@ -385,7 +406,6 @@ _exports.highlight = function (name) {
    var children;
    if (name && PageLink[name]) {
 
-      self.log.warn("Highlight:", name);
       children = PageLink[name].childItems();
       if (children) { children.forEach(function (item) { item.show(); }) }
    }
@@ -437,6 +457,7 @@ function (objHandle, attrHandle, value) {
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
 function (objHandle, attrHandle, groupHandle, userHandle) {
 
+   self.log.warn ("GroupMembersHandle");
    if (userHandle === dmz.object.hil()) { updateGraphicsForGroup(groupHandle); }
 });
 

@@ -66,7 +66,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 dmz.object.link.observe(self, dmz.stance.ActiveLobbyistHandle,
 function (objHandle, attrHandle, groupHandle, lobbyistHandle) {
 
-   if (dmz.stance.getUserGroupHandle(dmz.object.hil()) === groupHandle) {
+   var hil = dmz.object.hil();
+   if (!dmz.object.flag(hil, dmz.stance.AdminHandle) &&
+      (dmz.stance.getUserGroupHandle(hil) === groupHandle)) {
 
       MainModule.highlight("Lobbyist");
    }
