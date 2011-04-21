@@ -1,3 +1,5 @@
+require("datejs/date"); // www.datejs.com - an open-source JavaScript Date Library.
+
 var dmz =
    { ui:
       { consts: require('dmz/ui/consts')
@@ -20,6 +22,8 @@ var dmz =
    , resources: require("dmz/runtime/resources")
    , stance: require("stanceConst")
    , vector: require("dmz/types/vector")
+   , time: require("dmz/runtime/time")
+   , util: require("dmz/types/util")
    }
 
    // UI Elements
@@ -58,6 +62,9 @@ var dmz =
         , Lobbyist: false
         , Vote: false
         }
+   , Calendar = false
+   , CalendarTimer = false
+   , GameTimeModule = false
    , groupAdvisors = {}
    , advisorPicture = {}
 
@@ -286,8 +293,6 @@ setupMainWindow = function () {
 
    if (main && stackedWidget && mainGView) {
 
-//      rect = mainGView.sceneRect
-//      gscene = dmz.ui.graph.createScene(0, 0, sceneHeight, sceneWidth);
       gscene = dmz.ui.graph.createScene();
       mainGView.scene(gscene);
       stackedWidget.remove(1); // Get rid of Qt Designer-forced second page
@@ -467,5 +472,40 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
    groupBox.enabled(false);
    setupMainWindow();
 }());
+
+dmz.module.subscribe(self, "game-time", function (Mode, module) {
+
+   var timeStamp
+     , date
+     ;
+   if (Mode === dmz.module.Activate) {
+
+      Calendar = gscene.addText("05/06/07");
+      if (Calendar) {
+
+         Calendar.pos(800, 400);
+         Calendar.font(
+            { font: "Times"
+            , size: 22
+            , weight: 75
+            });
+
+         date = dmz.util.timeStampToDate(module.gameTime());
+         date = date ? date.toString("MM/dd/yy") : "NULLTIME";
+         Calendar.plainText(date);
+
+         dmz.time.setRepeatingTimer(self, 300, function () {
+
+            var date;
+            if (dmz.object.hil() && Calendar) {
+
+               date = dmz.util.timeStampToDate(module.gameTime());
+               date = date ? date.toString("MM/dd/yy") : "NULLTIME";
+               Calendar.plainText(date);
+            }
+         });
+      }
+   }
+});
 
 dmz.module.publish(self, _exports);

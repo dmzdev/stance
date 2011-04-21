@@ -55,7 +55,7 @@ dmz.object.data.observe(self, GameStartTime, function (handle, attr, value) {
 
 _exports.gameTime = function (serverTime) {
 
-   var timeStamp = serverTime || _export.serverTime()
+   var timeStamp = serverTime || _exports.serverTime()
      , result
      , now
      , time = {}
