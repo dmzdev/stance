@@ -6,6 +6,7 @@ mkdir $DEPTH/STANCE.app/Contents/Frameworks/Qt
 mkdir $DEPTH/STANCE.app/Contents/Frameworks/Qt/plugins
 mkdir $DEPTH/STANCE.app/Contents/Frameworks/Qt/plugins/imageformats
 mkdir $DEPTH/STANCE.app/Contents/Frameworks/v8/
+mkdir $DEPTH/STANCE.app/Contents/Frameworks/Qt/plugins/phonon_backend
 cp $DEPTH/depend/Qt/QtCore $DEPTH/STANCE.app/Contents/Frameworks/Qt
 cp $DEPTH/depend/Qt/QtGui $DEPTH/STANCE.app/Contents/Frameworks/Qt
 cp $DEPTH/depend/Qt/QtXml $DEPTH/STANCE.app/Contents/Frameworks/Qt
@@ -18,6 +19,7 @@ cp $DEPTH/depend/Qt/imageformats/libqgif.dylib $DEPTH/STANCE.app/Contents/Framew
 cp $DEPTH/depend/Qt/imageformats/libqjpeg.dylib $DEPTH/STANCE.app/Contents/Frameworks/Qt/plugins/imageformats
 cp $DEPTH/depend/Qt/imageformats/libqtiff.dylib $DEPTH/STANCE.app/Contents/Frameworks/Qt/plugins/imageformats
 cp $DEPTH/depend/Qt/imageformats/libqsvg.dylib $DEPTH/STANCE.app/Contents/Frameworks/Qt/plugins/imageformats
+cp $DEPTH/depend/Qt/phonon_backend/libphonon_qt7.dylib $DEPTH/STANCE.app/Contents/Frameworks/Qt/plugins/phonon_backend/
 if [ -d $DEPTH/depend/QtGui.framework/Versions/4/Resources/qt_menu.nib ] ; then
 cp -R $DEPTH/depend/QtGui.framework/Versions/4/Resources/qt_menu.nib $DEPTH/STANCE.app/Contents/Resources
 fi
