@@ -19,10 +19,10 @@
    <path value="./ui"/>
    <instance name="main"/>
    <instance name="email"/>
-   <instance name="devtools"/>
+<!--   <instance name="devtools"/> -->
    <instance name="gameCreation"/>
    <instance name="webMap"/>
-<!--   <instance name="forum"/>-->
+<!--   <instance name="forum"/> -->
    <instance name="forum-view"/>
    <instance name="login"/>
    <instance name="game-time"/>
