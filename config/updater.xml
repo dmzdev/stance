@@ -4,7 +4,7 @@
    <plugin name="dmzQtPluginAppUpdater" scope="updater"/>
 </plugin-list>
 <updater>
-   <force-update value="true"/>
+   <!-- <force-update value="true"/> -->
    <!-- <download-to-temp value="false"/> -->
    <release channel="devel"/>
    <update
