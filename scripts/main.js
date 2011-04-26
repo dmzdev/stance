@@ -462,7 +462,6 @@ function (objHandle, attrHandle, value) {
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
 function (objHandle, attrHandle, groupHandle, userHandle) {
 
-   self.log.warn ("GroupMembersHandle");
    if (userHandle === dmz.object.hil()) { updateGraphicsForGroup(groupHandle); }
 });
 

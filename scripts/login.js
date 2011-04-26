@@ -25,10 +25,12 @@ var dmz =
     , _userName
     , _userHandle
     , _admin = false
+    , _loginQueue = false
     // Fuctions
     , toTimeStamp = dmz.util.dateToTimeStamp
     , toDate = dmz.util.timeStampToDate
     , _activateUser
+    , _login
     ;
 
 self.shutdown = function () {
@@ -39,11 +41,9 @@ self.shutdown = function () {
 _activateUser = function (name) {
 
    var handle;
-
    if (_userName && (name === _userName)) {
 
       handle = _userList[_userName];
-
       if (handle) {
 
          if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
@@ -53,31 +53,34 @@ _activateUser = function (name) {
    }
 }
 
-LoginSuccessMessage.subscribe(self, function (data) {
+_login = function (data) {
 
    var timeStamp;
 
    if (data && dmz.data.isTypeOf(data)) {
 
-      if (_gameHandle) {
+      _window.title(_title);
+      _admin = data.boolean("admin");
+      _userName = data.string(dmz.stance.NameHandle);
 
-         _window.title(_title);
-         _admin = data.boolean("admin");
-         _userName = data.string(dmz.stance.NameHandle);
+      if (_timeMod) {
 
-         if (_timeMod) {
+         timeStamp = data.number(TimeStampAttr);
+         _timeMod.serverTime(timeStamp);
 
-            timeStamp = data.number(TimeStampAttr);
-            _timeMod.serverTime(timeStamp);
-
-            self.log.warn("Server Time: " + toDate(timeStamp));
-            self.log.warn("  Game Time: " + toDate(_timeMod.gameTime(timeStamp)));
-         }
-         else { self.log.error("Failed to to set server time"); }
-
-         _activateUser(_userName);
+         self.log.warn("Server Time: " + toDate(timeStamp));
+         self.log.warn("  Game Time: " + toDate(_timeMod.gameTime(timeStamp)));
       }
+      else { self.log.error("Failed to to set server time"); }
+
+      _activateUser(_userName);
    }
+}
+
+LoginSuccessMessage.subscribe(self, function (data) {
+
+   if (_gameHandle) { _login (data); }
+   else { _loginQueue = data; }
 });
 
 LogoutMessage.subscribe(self, function () {
@@ -89,7 +92,15 @@ dmz.object.create.observe(self, function (handle, type) {
 
    if (type.isOfType(dmz.stance.GameType)) {
 
-      if (!_gameHandle) { _gameHandle = handle; }
+      if (!_gameHandle) {
+
+         _gameHandle = handle;
+         if (_loginQueue) {
+
+            _login (_loginQueue);
+            _loginQueue = false;
+         }
+      }
    }
 });
 
