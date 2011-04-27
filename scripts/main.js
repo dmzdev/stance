@@ -19,6 +19,7 @@ var dmz =
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
    , module: require("dmz/runtime/module")
+   , message: require("dmz/runtime/messaging")
    , resources: require("dmz/runtime/resources")
    , stance: require("stanceConst")
    , vector: require("dmz/types/vector")
@@ -63,10 +64,14 @@ var dmz =
         , Vote: false
         }
    , Calendar = false
-   , CalendarTimer = false
+   , LoggedIn = false
    , GameTimeModule = false
    , groupAdvisors = {}
    , advisorPicture = {}
+
+   // Messages
+   , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
+   , LoginFailedMessage = dmz.message.create("Login_Failed_Message")
 
    // Function decls
    , setupMainWindow
@@ -169,6 +174,8 @@ updateGraphicsForGroup = function (groupHandle) {
             setPixmapFromResource(PageLink[key], dmz.object.text(groupHandle, attr));
          }
       });
+
+      if (LoggedIn) { stackedWidget.currentIndex(0); }
    }
 };
 
@@ -295,7 +302,10 @@ setupMainWindow = function () {
 
       gscene = dmz.ui.graph.createScene();
       mainGView.scene(gscene);
-      stackedWidget.remove(1); // Get rid of Qt Designer-forced second page
+
+      file = dmz.resources.findFile(self.config.string("splash.name"));
+      if (file) { main.lookup("splashLabel").pixmap(dmz.ui.graph.createPixmap(file)); }
+      stackedWidget.currentIndex(1);
 
       file = dmz.resources.findFile(self.config.string("set.background"));
       highlight = dmz.resources.findFile(self.config.string("set.highlight"));
@@ -367,7 +377,6 @@ setupMainWindow = function () {
          }
       });
 
-      stackedWidget.currentIndex(0);
       gscene.eventFilter(self, mouseEvent);
       dmz.ui.mainWindow.centralWidget(main);
       mainGView.eventFilter(self, function (object, event) {
@@ -470,7 +479,17 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
    groupBox.hide();
    groupBox.enabled(false);
    setupMainWindow();
+   if (!self.config.number("login.value", 0)) {
+
+      dmz.time.setTimer(self, 3, function () {
+
+         if (!LoggedIn && stackedWidget) { stackedWidget.currentIndex(0); LoggedIn = true; }
+      });
+   }
 }());
+
+LoginSuccessMessage.subscribe(self, function () { LoggedIn = true; });
+LoginFailedMessage.subscribe(self, function () { LoggedIn = true; });
 
 dmz.module.subscribe(self, "game-time", function (Mode, module) {
 

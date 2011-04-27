@@ -6,6 +6,9 @@
 <!--   <plugin name="dmzQtPluginLoginDialog" scope="login-dialog"/>-->
    <plugin name="dmzQtPluginLoginChds" scope="chds-login"/>
 </plugin-list>
+<main>
+   <login value="1"/>
+</main>
 <web-services>
 <!--   <server host="localhost" port="5984">-->
 <!--   <server host="http://172.20.89.96:5984/" port="5984"/> -->
