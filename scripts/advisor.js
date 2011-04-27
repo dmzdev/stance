@@ -217,7 +217,7 @@ getVoteStatus = function (voteHandle) {
               , button = widget.lookup("submitQuestionButton")
               ;
 
-            button.enabled((button.text() === "Submit Question") && (length < MaxMessageLength));
+            button.enabled((button.text() === "Submit Question") && (length <= MaxMessageLength));
             if (length > MaxMessageLength) { color = "red"; }
             else if (length > (MaxMessageLength / 2)) { color = "blue"; }
             else if (length > (MaxMessageLength / 4)) { color = "green"; }
@@ -233,7 +233,7 @@ getVoteStatus = function (voteHandle) {
               , button = widget.lookup("submitTaskButton")
               ;
 
-            button.enabled((button.text() === "Submit Task") && (length < MaxMessageLength));
+            button.enabled((button.text() === "Submit Task") && (length <= MaxMessageLength));
             if (length > MaxMessageLength) { color = "red"; }
             else if (length > (MaxMessageLength / 2)) { color = "blue"; }
             else if (length > (MaxMessageLength / 4)) { color = "green"; }

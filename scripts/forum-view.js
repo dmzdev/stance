@@ -38,6 +38,7 @@ var dmz =
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , IsCurrentWindow = false
+   , MaxMessageLength = 144
 
    // Functions
    , toDate = dmz.util.timeStampToDate
@@ -70,6 +71,23 @@ var dmz =
    }
 
    if (avatar) { avatar.pixmap(AvatarDefault); }
+
+   _view.lookup("totalCharAmt").text(MaxMessageLength);
+   _view.lookup("currentCharAmt").text(MaxMessageLength);
+   _view.observe(self, "postTextEdit", "textChanged", function (textWidget) {
+
+      var length = textWidget.text().length
+        , diff = MaxMessageLength - length
+        , color = "black"
+        , button = _view.lookup("postSubmitButton")
+        ;
+
+      button.enabled(length <= MaxMessageLength);
+      if (length > MaxMessageLength) { color = "red"; }
+      else if (length > (MaxMessageLength / 2)) { color = "blue"; }
+      else if (length > (MaxMessageLength / 4)) { color = "green"; }
+      _view.lookup("currentCharAmt").text("<font color="+color+">"+diff+"</font>");
+   });
 }());
 
 //_htmlLink = function (text) { return "<a href=\"javascript://\">"+ text + "</a>"; };
@@ -211,6 +229,23 @@ _addCommentClicked = function (postHandle) {
       _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
       _commentAdd.avatar = _commentAdd.form.lookup("avatarLabel");
       _commentAdd.avatar.pixmap(AvatarDefault);
+
+      _commentAdd.form.lookup("totalCharAmt").text(MaxMessageLength);
+      _commentAdd.form.lookup("currentCharAmt").text(MaxMessageLength);
+      _commentAdd.textEdit.observe(self, "textChanged", function (textWidget) {
+
+         var length = textWidget.text().length
+           , diff = MaxMessageLength - length
+           , color = "black"
+           , button = _commentAdd.form.lookup("submitButton")
+           ;
+
+         button.enabled(length <= MaxMessageLength);
+         if (length > MaxMessageLength) { color = "red"; }
+         else if (length > (MaxMessageLength / 2)) { color = "blue"; }
+         else if (length > (MaxMessageLength / 4)) { color = "green"; }
+         _commentAdd.form.lookup("currentCharAmt").text("<font color="+color+">"+diff+"</font>");
+      });
 
       _commentAdd.form.observe(self, "submitButton", "clicked", function () {
 

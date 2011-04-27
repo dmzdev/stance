@@ -30,6 +30,9 @@ var dmz =
    , titleEdit = newPinDialog.lookup("titleEdit")
    , groupFLayout = newPinDialog.lookup("groupFLayout")
 
+   , browserDialog = dmz.ui.loader.load("BrowserDialog")
+   , backButton = browserDialog.lookup("backButton")
+
    // Handles
 
    , pinIDHandle = dmz.defs.createNamedHandle(self.config.string("pin-handles.id.name"))
@@ -268,61 +271,65 @@ onPinRemoved = function (data) {
    map.name(self.config.string("webview.name"));
    map.eventFilter(self, function (object, event) {
 
-      var type = event.type()
+      var type
         , x
         , y
         ;
 
-      if (type == dmz.ui.event.MouseButtonPress) {
+      if (event) {
 
-         if (event.button() === dmz.ui.consts.RightButton) {
+         type = event.type();
+         if (type == dmz.ui.event.MouseButtonPress) {
 
-            if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
+            if (event.button() === dmz.ui.consts.RightButton) {
 
-               x = event.x();
-               y = event.y();
-               newPinDialog.open(self, function (value, dialog) {
+               if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
 
-                  var data
-                    , title
-                    , desc
-                    , count = groupFLayout.rowCount()
-                    , widget
-                    , idx
-                    , indexCounter
-                    ;
+                  x = event.x();
+                  y = event.y();
+                  newPinDialog.open(self, function (value, dialog) {
 
-                  if (value) {
+                     var data
+                       , title
+                       , desc
+                       , count = groupFLayout.rowCount()
+                       , widget
+                       , idx
+                       , indexCounter
+                       ;
 
-                     title = titleEdit.text();
-                     desc = descEdit.text();
+                     if (value) {
 
-                     data = dmz.data.create();
-                     data.number(pinPositionHandle, 0, x);
-                     data.number(pinPositionHandle, 1, y);
-                     data.string(pinTitleHandle, 0, title ? title : " ");
-                     data.string(pinDescHandle, 0, desc ? desc : " ");
-                     data.string(pinFileHandle, 0, PinIconList[typeList.currentIndex()].webfile);
-                     data.number(pinObjectHandle, 0, 0);
+                        title = titleEdit.text();
+                        desc = descEdit.text();
 
-                     for (idx = 0, indexCounter = 0; idx < count; idx += 1) {
+                        data = dmz.data.create();
+                        data.number(pinPositionHandle, 0, x);
+                        data.number(pinPositionHandle, 1, y);
+                        data.string(pinTitleHandle, 0, title ? title : " ");
+                        data.string(pinDescHandle, 0, desc ? desc : " ");
+                        data.string(pinFileHandle, 0, PinIconList[typeList.currentIndex()].webfile);
+                        data.number(pinObjectHandle, 0, 0);
 
-                        if (groupFLayout.at(idx, 1).isChecked()) {
+                        for (idx = 0, indexCounter = 0; idx < count; idx += 1) {
 
-                           data.number(groupPinHandle, indexCounter++, GroupHandleList[idx]);
+                           if (groupFLayout.at(idx, 1).isChecked()) {
+
+                              data.number(groupPinHandle, indexCounter++, GroupHandleList[idx]);
+                           }
                         }
+
+                        addPinMessage.send(data);
                      }
 
-                     addPinMessage.send(data);
-                  }
+                     titleEdit.clear();
+                     descEdit.clear();
+                     for (idx = 0; idx < count; idx += 1) {
 
-                  titleEdit.clear();
-                  descEdit.clear();
-                  for (idx = 0; idx < count; idx += 1) {
-
-                     groupFLayout.at(idx, 1).setChecked(false);
-                  }
-               });
+                        groupFLayout.at(idx, 1).setChecked(false);
+                     }
+                  });
+               }
             }
          }
       }
@@ -488,6 +495,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
    var mapClickFn
      , mapHomeFn
      , list
+     , page
+     , browser
      ;
 
 
@@ -521,7 +530,20 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       MainModule = module;
       module.addPage("Map", map, mapClickFn, mapHomeFn);
       setWebViewMessage.send();
-      map.page().mainFrame().load(self.config.string("url.name"));
+      page = map.page();
+      page.mainFrame().load(self.config.string("url.name"));
+      page.linkDelegation(dmz.ui.webview.DelegateAllLinks);
+
+      browser = dmz.ui.webview.create();
+      browserDialog.lookup("verticalLayout").addWidget(browser);
+      browserDialog.observe(self, "backButton", "clicked", browser.back);
+      browserDialog.observe(self, "forwardButton", "clicked", browser.forward);
+      map.observe(self, "linkClicked", function (urlString) {
+
+         // Open browser dialog.
+         browser.page().mainFrame().load(urlString);
+         browserDialog.open(self, function () {});
+      });
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
