@@ -84,6 +84,9 @@
       <attributes name="display_name">
          <text value="Ben"/>
       </attributes>
+      <attributes name="picture">
+         <text value="Avatar0"/>
+      </attributes>      
       <attributes name="admin_user">
          <flag value="true"/>
       </attributes>
