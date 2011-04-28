@@ -57,6 +57,10 @@
       <picture name="lob_2"/>
       <picture name="lob_3"/>
    </lobbyist-pictures>
+   <avatar-list>
+      <avatar name="Avatar0"/>
+      <avatar name="Avatar1"/>
+   </avatar-list>
 </gameCreation>
 <email>
    <user-filter>

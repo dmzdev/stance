@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>537</width>
-    <height>453</height>
+    <width>623</width>
+    <height>423</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_13">
       <attribute name="title">
@@ -32,6 +32,12 @@
             <layout class="QVBoxLayout" name="verticalLayout_38">
              <item>
               <widget class="QPushButton" name="gameStateButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Start Game</string>
                </property>
@@ -89,20 +95,31 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_40">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_29">
+        <layout class="QHBoxLayout" name="horizontalLayout_31">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_43">
+           <item>
+            <widget class="QPushButton" name="createPlayerButton">
+             <property name="text">
+              <string>Create Player</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="removePlayerButton">
+             <property name="text">
+              <string>Remove Selected Player</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_41">
            <item>
             <widget class="QPushButton" name="addGroupButton">
              <property name="text">
               <string>Add Group</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="removeGroupButton">
-             <property name="text">
-              <string>Remove Current Group</string>
              </property>
             </widget>
            </item>
@@ -168,35 +185,6 @@
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_31">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_43">
-           <item>
-            <widget class="QPushButton" name="createPlayerButton">
-             <property name="text">
-              <string>Create Player</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="removePlayerButton">
-             <property name="text">
-              <string>Remove Selected Player</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QPushButton" name="importStudentListButton">
-           <property name="text">
-            <string>Import Student List</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
       </layout>
      </widget>

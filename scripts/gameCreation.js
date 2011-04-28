@@ -58,6 +58,10 @@ var dmz =
    , timeInfoText = timeInfoLabel.text()
 
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
+   , avatarList = createStudentDialog.lookup("avatarList")
+   , avatarLabel = createStudentDialog.lookup("avatarLabel")
+   , studentUserNameEdit = createStudentDialog.lookup("userName")
+   , studentDisplayNameEdit = createStudentDialog.lookup("displayName")
 
    , instructorDialog = dmz.ui.loader.load("InstructorWindowDialog")
    , scenarioList = instructorDialog.lookup("scenarioList")
@@ -110,6 +114,7 @@ var dmz =
    , TemplateList = []
    , TemplateBackgroundPixmaps = []
    , AdvisorCount = 5
+   , AvatarPixmapList = {}
 
    // Function decls
    , toTimeStamp = dmz.util.dateToTimeStamp
@@ -117,6 +122,7 @@ var dmz =
    , createNewUser
    , userToGroup
    , userFromGroup
+   , editUser
    , setup
    , groupToForum
    , groupFromForum
@@ -650,7 +656,30 @@ setup = function () {
      , advisors
      , lobbyists
      , forums
+     , avatars
      ;
+
+   AvatarPixmapList["Default"] = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"));
+   avatarList.addItem("Default");
+   avatarLabel.pixmap(AvatarPixmapList["Default"]);
+   avatars = self.config.get("avatar-list.avatar");
+   avatars.forEach(function (avatarConfig) {
+
+      var name = avatarConfig.string("name");
+      if (name) {
+
+         AvatarPixmapList[name] = dmz.ui.graph.createPixmap(dmz.resources.findFile(name));
+         avatarList.addItem(name);
+      }
+   });
+
+   avatarList.observe(self, "currentTextChanged", function (text) {
+
+      if (avatarLabel) {
+
+         avatarLabel.pixmap(AvatarPixmapList[text] ? AvatarPixmapList[text] : AvatarPixmapList["Default"]);
+      }
+   });
 
    gameStateButton.observe(self, "clicked", function () {
 
@@ -820,8 +849,37 @@ editScenarioWidget.observe(self, "removeStudentButton", "clicked", function () {
    userFromGroup(groupStudentList.currentItem());
 });
 
-groupStudentList.observe(self, "itemActivated", userFromGroup);
-ungroupedStudentList.observe(self, "itemActivated", userToGroup);
+editUser = function (item) {
+
+   var objHandle
+     , avatar
+     ;
+
+   if (item) {
+
+      objHandle = item.data();
+      studentDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
+      studentUserNameEdit.text(dmz.object.text(objHandle, dmz.stance.NameHandle));
+      avatar = dmz.object.text(objHandle, dmz.stance.PictureHandle);
+      avatarList.currentText(AvatarPixmapList[avatar] ? avatar : "Default");
+      studentUserNameEdit.readOnly(true);
+      createStudentDialog.open(self, function (value, dialog) {
+
+         if (value) {
+
+            dmz.object.text(objHandle, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
+            dmz.object.text(objHandle, dmz.stance.PictureHandle, avatarList.currentText());
+         }
+         studentDisplayNameEdit.clear();
+         studentUserNameEdit.clear();
+         avatarList.currentText("Default");
+         studentUserNameEdit.readOnly(false);
+      });
+   }
+};
+
+groupStudentList.observe(self, "itemActivated", editUser);
+ungroupedStudentList.observe(self, "itemActivated", editUser);
 
 editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
 
@@ -931,21 +989,22 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
-      var displayName = dialog.lookup("displayName")
-        , userName = dialog.lookup("userName")
-        , student
-        ;
+      var user;
+      if (value) {
 
-      if (value && displayName && userName) {
+         user = dmz.object.create(dmz.stance.UserType);
+         dmz.object.text(user, dmz.stance.NameHandle, studentUserNameEdit.text());
+         dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
+         dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
+         dmz.object.activate(user);
+         if (user) {
 
-         student = createNewUser(userName.text(), displayName.text());
-         if (student) {
-
-            dmz.object.link(dmz.stance.GameUngroupedUsersHandle, CurrentGameHandle, student);
+            dmz.object.link(dmz.stance.GameUngroupedUsersHandle, CurrentGameHandle, user);
          }
       }
-      displayName.clear();
-      userName.clear();
+      studentDisplayNameEdit.clear();
+      studentUserNameEdit.clear();
+      avatarList.currentText("Default");
    });
 });
 
@@ -979,40 +1038,40 @@ editScenarioWidget.observe(self, "deleteGameButton", "clicked", function () {
    });
 });
 
-editScenarioWidget.observe(self, "removeGroupButton", "clicked", function () {
+//editScenarioWidget.observe(self, "removeGroupButton", "clicked", function () {
 
-   var index = groupComboBox.currentIndex()
-     , groupHandle = groupList[index]
-     , groupMembers
-     , count
-     , idx
-     , item
-     ;
+//   var index = groupComboBox.currentIndex()
+//     , groupHandle = groupList[index]
+//     , groupMembers
+//     , count
+//     , idx
+//     , item
+//     ;
 
-   groupMembers = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
-   if (groupMembers) {
+//   groupMembers = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
+//   if (groupMembers) {
 
-      groupMembers.forEach(function (user) {
+//      groupMembers.forEach(function (user) {
 
-         var item = userList[user];
-         if (item) { userFromGroup(item); }
-      });
-   }
+//         var item = userList[user];
+//         if (item) { userFromGroup(item); }
+//      });
+//   }
 
-   groupList.splice (index, 1);
-   groupComboBox.removeIndex(index);
-   advisorGroupComboBox.removeIndex(index);
-   lobbyistGroupList.removeIndex(index);
-   MediaGroupFLayout.takeAt(index);
+//   groupList.splice (index, 1);
+//   groupComboBox.removeIndex(index);
+//   advisorGroupComboBox.removeIndex(index);
+//   lobbyistGroupList.removeIndex(index);
+//   MediaGroupFLayout.takeAt(index);
 
-   groupMembers = dmz.object.subLinks(groupHandle, dmz.stance.AdvisorGroupHandle);
-   if (groupMembers) {
+//   groupMembers = dmz.object.subLinks(groupHandle, dmz.stance.AdvisorGroupHandle);
+//   if (groupMembers) {
 
-      groupMembers.forEach(function (advisorHandle) { dmz.object.destroy(advisorHandle); });
-   }
+//      groupMembers.forEach(function (advisorHandle) { dmz.object.destroy(advisorHandle); });
+//   }
 
-   dmz.object.destroy(groupHandle);
-});
+//   dmz.object.destroy(groupHandle);
+//});
 
 editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 
@@ -1130,18 +1189,6 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
 });
 
 editScenarioWidget.observe(self, "removePlayerButton", "clicked", function () {
-
-   dmz.ui.messageBox.create(
-      { type: dmz.ui.messageBox.Info
-      , text: "This feature has not yet been implemented."
-      , standardButtons: [dmz.ui.messageBox.Ok]
-      , defaultButton: dmz.ui.messageBox.Ok
-      }
-      , editScenarioWidget
-   ).open(self, function (value) {});
-});
-
-editScenarioWidget.observe(self, "importStudentListButton", "clicked", function () {
 
    dmz.ui.messageBox.create(
       { type: dmz.ui.messageBox.Info
