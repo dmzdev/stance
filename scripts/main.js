@@ -68,6 +68,8 @@ var dmz =
    , GameTimeModule = false
    , groupAdvisors = {}
    , advisorPicture = {}
+   , HomeIndex = 0
+   , SplashIndex = 1
 
    // Messages
    , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
@@ -175,7 +177,7 @@ updateGraphicsForGroup = function (groupHandle) {
          }
       });
 
-      if (LoggedIn) { stackedWidget.currentIndex(0); }
+      if (LoggedIn) { stackedWidget.currentIndex(HomeIndex); }
    }
 };
 
@@ -240,6 +242,7 @@ groupBox.observe(self, "currentIndexChanged", function (index) {
       dmz.object.flag(hil, dmz.object.HILAttribute, false);
       dmz.object.flag(hil, dmz.object.HILAttribute, true);
    }
+   else if (!index && stackedWidget) { stackedWidget.currentIndex(SplashIndex); }
 });
 
 
@@ -305,7 +308,7 @@ setupMainWindow = function () {
 
       file = dmz.resources.findFile(self.config.string("splash.name"));
       if (file) { main.lookup("splashLabel").pixmap(dmz.ui.graph.createPixmap(file)); }
-      stackedWidget.currentIndex(1);
+      stackedWidget.currentIndex(SplashIndex);
 
       file = dmz.resources.findFile(self.config.string("set.background"));
       highlight = dmz.resources.findFile(self.config.string("set.highlight"));
@@ -369,7 +372,7 @@ setupMainWindow = function () {
            , func
            ;
 
-         stackedWidget.currentIndex (0);
+         stackedWidget.currentIndex (HomeIndex);
          if (item) {
 
            func = item.data(2);
@@ -483,12 +486,17 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
 
       dmz.time.setTimer(self, 3, function () {
 
-         if (!LoggedIn && stackedWidget) { stackedWidget.currentIndex(0); LoggedIn = true; }
+         if (!LoggedIn && stackedWidget) { stackedWidget.currentIndex(HomeIndex); LoggedIn = true; }
       });
    }
 }());
 
-LoginSuccessMessage.subscribe(self, function () { LoggedIn = true; });
+LoginSuccessMessage.subscribe(self, function () {
+
+   self.log.warn ("Login Success, logged in");
+   LoggedIn = true;
+});
+
 LoginFailedMessage.subscribe(self, function () { LoggedIn = true; });
 
 dmz.module.subscribe(self, "game-time", function (Mode, module) {

@@ -7,6 +7,8 @@
    </search>
    <resource name="Splash" file="STANCE_splash.png"/>
    <resource name="PushNotify" file="PushNotify.png"/>
+   <resource name="Avatar0" file="avatar1_50x50.jpg"/>
+   <resource name="Avatar1" file="avatar2_50x50.jpg"/>
    <resource name="Generic" file="GenericMarker-sm.png">
       <webMap file="GenericMarker.png"/>
    </resource>

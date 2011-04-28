@@ -56,6 +56,7 @@ var dmz =
    , _reset
    , _load
    , _updateForumForUser
+   , _setUserAvatar
    ;
 
 (function () {
@@ -91,6 +92,24 @@ var dmz =
 }());
 
 //_htmlLink = function (text) { return "<a href=\"javascript://\">"+ text + "</a>"; };
+
+_setUserAvatar = function (userHandle, labelWidget) {
+
+   var avatar = AvatarDefault
+     , resource
+     ;
+
+   if (labelWidget) {
+
+      if (userHandle) {
+
+         resource = dmz.object.text(userHandle, dmz.stance.PictureHandle);
+         resource = dmz.resources.findFile(resource);
+         if (resource) { avatar = dmz.ui.graph.createPixmap(resource); }
+      }
+      labelWidget.pixmap(avatar);
+   }
+};
 
 _addPost = function (postHandle) {
 
@@ -327,6 +346,7 @@ _updatePostedBy = function (handle) {
    if (item && item.postedBy && data && data.postedBy) {
 
       item.postedBy.text ("<b>" + data.postedBy + "</b>");
+      _setUserAvatar(data.authorHandle, item.avatar);
    }
 };
 
@@ -459,10 +479,12 @@ _updateForumForUser = function (userHandle) {
      , forumList
      , forum
      , group
+     , avatar = _view.lookup("avatarLabel")
      ;
 
    group = dmz.stance.getUserGroupHandle(userHandle);
 
+   if (avatar) { _setUserAvatar(userHandle, avatar); }
    forumList = _master.forums.filter(function (element, index) {
 
       return element.group === group;
@@ -530,7 +552,11 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    var item = _master.posts[superHandle];
 
    if (!item) { item = _master.comments[superHandle]; }
-   if (item) { item.postedBy = dmz.stance.getDisplayName(subHandle); }
+   if (item) {
+
+      item.postedBy = dmz.stance.getDisplayName(subHandle);
+      item.authorHandle = subHandle;
+   }
 
    _updatePostedBy(superHandle);
 });
