@@ -424,8 +424,7 @@ _exports.addPage = function (name, widget, func, onHome) {
    if (name && stackedWidget && PageLink[name]) {
 
       stackedWidget.remove(PageLink[name].data(0));
-//      stackedWidget.add(widget);
-      if (widget) { widget.show(); }
+      stackedWidget.add(widget);
       PageLink[name].data(0, widget);
       PageLink[name].data(1, func);
       PageLink[name].data(2, onHome);

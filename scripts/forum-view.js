@@ -346,7 +346,6 @@ _updatePostedAt = function (handle) {
       item.postedAt.text("<span style=\"color:#939393;\">" + data.postedAt + "</span>");
       count = dmz.object.timeStamp(hil, dmz.stance.ForumTimeHandle);
       time = dmz.object.timeStamp(handle, dmz.stance.CreatedAtGameTimeHandle);
-      self.log.warn ("count:", count, "time:", time);
       if (count && (count > time)) { item.unread.hide(); }
       else {
 
