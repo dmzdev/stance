@@ -37,6 +37,7 @@ var dmz =
    // Variables
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
+   , TimeModule = { gameTime: dmz.time.getFrameTime }
    , IsCurrentWindow = false
    , MaxMessageLength = 144
 
@@ -130,6 +131,9 @@ _addPost = function (postHandle) {
 
    post.avatar = post.item.lookup("avatarLabel");
    post.avatar.pixmap(AvatarDefault);
+   post.unread = post.item.lookup("unreadLabel");
+   post.unread.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
+   post.unread.hide();
 
    post.postedBy = post.item.lookup("postedByLabel");
    post.postedAt = post.item.lookup("postedAtLabel");
@@ -167,14 +171,6 @@ _addPost = function (postHandle) {
    _updatePostedBy(postHandle);
    _updatePostedAt(postHandle);
    _updateMessage(postHandle);
-
-   count = dmz.object.scalar(dmz.object.hil(), dmz.stance.PostCountHandle);
-   count = count ? count : 0;
-   if ((count < (Object.keys(_postList).length + Object.keys(_commentList).length)) &&
-      !IsCurrentWindow) {
-
-      MainModule.highlight("Forum");
-   }
 };
 
 _addComment = function (postHandle, commentHandle) {
@@ -199,6 +195,9 @@ _addComment = function (postHandle, commentHandle) {
       comment.postedBy = comment.item.lookup("postedByLabel");
       comment.postedAt = comment.item.lookup("postedAtLabel");
       comment.message = comment.item.lookup("messageLabel");
+      comment.unread = comment.item.lookup("unreadLabel");
+      comment.unread.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
+      comment.unread.hide();
 
       post.commentList.push(comment);
       post.layout.addWidget(comment.item, post.layout.rowCount(), 1);
@@ -217,14 +216,6 @@ _addComment = function (postHandle, commentHandle) {
       _updatePostedBy(commentHandle);
       _updatePostedAt(commentHandle);
       _updateMessage(commentHandle);
-
-      count = dmz.object.scalar(dmz.object.hil(), dmz.stance.PostCountHandle);
-      count = count ? count : 0;
-      if ((count < (Object.keys(_postList).length + Object.keys(_commentList).length)) &&
-         !IsCurrentWindow) {
-
-         MainModule.highlight("Forum");
-      }
    }
 };
 
@@ -338,7 +329,10 @@ _updatePostedBy = function (handle) {
 _updatePostedAt = function (handle) {
 
    var item = _postList[handle]
-     , data = _master.posts[handle];
+     , data = _master.posts[handle]
+     , hil = dmz.object.hil()
+     , count
+     , time
      ;
 
    if (!item) {
@@ -350,6 +344,15 @@ _updatePostedAt = function (handle) {
    if (item && item.postedAt && data && data.postedAt) {
 
       item.postedAt.text("<span style=\"color:#939393;\">" + data.postedAt + "</span>");
+      count = dmz.object.timeStamp(hil, dmz.stance.ForumTimeHandle);
+      time = dmz.object.timeStamp(handle, dmz.stance.CreatedAtGameTimeHandle);
+      self.log.warn ("count:", count, "time:", time);
+      if (count && (count > time)) { item.unread.hide(); }
+      else {
+
+         item.unread.show();
+         if (!IsCurrentWindow) { MainModule.highlight("Forum"); }
+      }
    }
 };
 
@@ -626,21 +629,53 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , function () {
 
               IsCurrentWindow = true;
+              dmz.object.timeStamp
+                 ( dmz.object.hil()
+                 , dmz.stance.ForumTimeHandle
+                 , TimeModule.gameTime()
+                 );
               if (!_forumHandle) { _updateForumForUser(dmz.object.hil()); }
            }
          , function () { // onHome
 
+              var posts;
               IsCurrentWindow = false;
               if (_forumHandle) {
 
-                 dmz.object.scalar
+                 dmz.object.timeStamp
                     ( dmz.object.hil()
-                    , dmz.stance.PostCountHandle
-                    , Object.keys(_postList).length + Object.keys(_commentList).length
+                    , dmz.stance.ForumTimeHandle
+                    , TimeModule.gameTime()
                     );
+
+                 posts = dmz.object.superLinks(_forumHandle, dmz.stance.ParentHandle);
+                 if (posts) {
+
+                    posts.forEach(function (postHandle) {
+
+                       _postList[postHandle].unread.hide();
+                       var comments = dmz.object.superLinks(postHandle, dmz.stance.ParentHandle);
+                       if (comments) {
+
+                          comments.forEach(function (commentHandle) {
+
+                             if (_commentList[commentHandle]) {
+
+                                _commentList[commentHandle].unread.hide();
+                             }
+                          });
+                       }
+                    });
+                 }
               }
            }
          );
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
+});
+
+dmz.module.subscribe(self, "game-time", function (Mode, module) {
+
+   var list;
+   if (Mode === dmz.module.Activate) { TimeModule = module; }
 });
