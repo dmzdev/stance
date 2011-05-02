@@ -104,12 +104,14 @@ var dmz =
       , getAuthorName: false
       , getAuthorHandle: false
       , getUserGroupHandle: false
+      , addUITextLimit: false
       }
 
    , getDisplayName
    , getAuthorHandle
    , getAuthorName
    , getUserGroupHandle
+   , addUITextLimit
    ;
 
 
@@ -147,10 +149,32 @@ getUserGroupHandle = function (userHandle) {
    return retval;
 };
 
+addUITextLimit = function (script, maxLength, target, submitButton, current, total) {
+
+   if (script && maxLength && target && current && total) {
+
+      total.text(maxLength);
+      current.text(maxLength);
+      target.observe(script, "textChanged", function (textWidget) {
+
+         var length = textWidget.text().length
+           , color = "black"
+           ;
+
+         submitButton.enabled(length <= maxLength);
+         if (length > maxLength) { color = "red"; }
+         else if (length > (maxLength / 2)) { color = "blue"; }
+         else if (length > (maxLength / 4)) { color = "green"; }
+         current.text("<font color="+color+">"+(maxLength - length)+"</font>");
+      });
+   }
+};
+
 Functions.getDisplayName = getDisplayName;
 Functions.getAuthorHandle = getAuthorHandle;
 Functions.getAuthorName = getAuthorName;
 Functions.getUserGroupHandle = getUserGroupHandle;
+Functions.addUITextLimit = addUITextLimit;
 
 (function () {
 

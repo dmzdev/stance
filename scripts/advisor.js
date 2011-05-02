@@ -205,40 +205,59 @@ getVoteStatus = function (voteHandle) {
 
             }
          }
+
+
          widget.observe(self, "voteHistoryTree", "currentItemChanged", historyItemChanged);
          widget.observe(self, "questionHistoryTree", "currentItemChanged", historyItemChanged);
+         dmz.stance.addUITextLimit
+            ( self
+            , MaxMessageLength
+            , widget.lookup("questionText")
+            , widget.lookup("submitQuestionButton")
+            , widget.lookup("qCurrentCharAmt")
+            , widget.lookup("qTotalCharAmt")
+            );
 
-         widget.lookup("questionCharRemAmt").text(MaxMessageLength);
-         widget.observe(self, "questionText", "textChanged", function (textWidget) {
+         dmz.stance.addUITextLimit
+            ( self
+            , MaxMessageLength
+            , widget.lookup("taskingText")
+            , widget.lookup("submitTaskButton")
+            , widget.lookup("tCurrentCharAmt")
+            , widget.lookup("tTotalCharAmt")
+            );
 
-            var length = textWidget.text().length
-              , diff = MaxMessageLength - length
-              , color = "black"
-              , button = widget.lookup("submitQuestionButton")
-              ;
+//         widget.lookup("questionCharRemAmt").text(MaxMessageLength);
+//         widget.observe(self, "questionText", "textChanged", function (textWidget) {
 
-            button.enabled((button.text() === "Submit Question") && (length <= MaxMessageLength));
-            if (length > MaxMessageLength) { color = "red"; }
-            else if (length > (MaxMessageLength / 2)) { color = "blue"; }
-            else if (length > (MaxMessageLength / 4)) { color = "green"; }
-            widget.lookup("questionCharRemAmt").text("<font color="+color+">"+diff+"</font>");
-         });
+//            var length = textWidget.text().length
+//              , diff = MaxMessageLength - length
+//              , color = "black"
+//              , button = widget.lookup("submitQuestionButton")
+//              ;
 
-         widget.lookup("taskCharRemAmt").text(MaxMessageLength);
-         widget.observe(self, "taskingText", "textChanged", function (textWidget) {
+//            button.enabled((button.text() === "Submit Question") && (length <= MaxMessageLength));
+//            if (length > MaxMessageLength) { color = "red"; }
+//            else if (length > (MaxMessageLength / 2)) { color = "blue"; }
+//            else if (length > (MaxMessageLength / 4)) { color = "green"; }
+//            widget.lookup("questionCharRemAmt").text("<font color="+color+">"+diff+"</font>");
+//         });
 
-            var length = textWidget.text().length
-              , diff = MaxMessageLength - length
-              , color = "black"
-              , button = widget.lookup("submitTaskButton")
-              ;
+//         widget.lookup("taskCharRemAmt").text(MaxMessageLength);
+//         widget.observe(self, "taskingText", "textChanged", function (textWidget) {
 
-            button.enabled((button.text() === "Submit Task") && (length <= MaxMessageLength));
-            if (length > MaxMessageLength) { color = "red"; }
-            else if (length > (MaxMessageLength / 2)) { color = "blue"; }
-            else if (length > (MaxMessageLength / 4)) { color = "green"; }
-            widget.lookup("taskCharRemAmt").text("<font color="+color+">"+diff+"</font>");
-         });
+//            var length = textWidget.text().length
+//              , diff = MaxMessageLength - length
+//              , color = "black"
+//              , button = widget.lookup("submitTaskButton")
+//              ;
+
+//            button.enabled((button.text() === "Submit Task") && (length <= MaxMessageLength));
+//            if (length > MaxMessageLength) { color = "red"; }
+//            else if (length > (MaxMessageLength / 2)) { color = "blue"; }
+//            else if (length > (MaxMessageLength / 4)) { color = "green"; }
+//            widget.lookup("taskCharRemAmt").text("<font color="+color+">"+diff+"</font>");
+//         });
       }(advisorWidgets[idx]));
    }
 }());

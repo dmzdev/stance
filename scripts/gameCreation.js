@@ -1188,17 +1188,17 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
    });
 });
 
-editScenarioWidget.observe(self, "removePlayerButton", "clicked", function () {
+//editScenarioWidget.observe(self, "removePlayerButton", "clicked", function () {
 
-   dmz.ui.messageBox.create(
-      { type: dmz.ui.messageBox.Info
-      , text: "This feature has not yet been implemented."
-      , standardButtons: [dmz.ui.messageBox.Ok]
-      , defaultButton: dmz.ui.messageBox.Ok
-      }
-      , editScenarioWidget
-   ).open(self, function (value) {});
-});
+//   dmz.ui.messageBox.create(
+//      { type: dmz.ui.messageBox.Info
+//      , text: "This feature has not yet been implemented."
+//      , standardButtons: [dmz.ui.messageBox.Ok]
+//      , defaultButton: dmz.ui.messageBox.Ok
+//      }
+//      , editScenarioWidget
+//   ).open(self, function (value) {});
+//});
 
 editScenarioWidget.observe(self, "generateReportButton", "clicked", function () {
 

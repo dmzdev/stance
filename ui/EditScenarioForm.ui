@@ -106,34 +106,27 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="removePlayerButton">
-             <property name="text">
-              <string>Remove Selected Player</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_41">
-           <item>
             <widget class="QPushButton" name="addGroupButton">
              <property name="text">
               <string>Add Group</string>
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="allGroupButton">
-             <property name="text">
-              <string>Show All Group Assignments</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </item>
          <item>
-          <widget class="QComboBox" name="groupComboBox"/>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QPushButton" name="allGroupButton">
+             <property name="text">
+              <string>Show All Groups</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="groupComboBox"/>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>

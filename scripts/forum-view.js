@@ -73,22 +73,14 @@ var dmz =
 
    if (avatar) { avatar.pixmap(AvatarDefault); }
 
-   _view.lookup("totalCharAmt").text(MaxMessageLength);
-   _view.lookup("currentCharAmt").text(MaxMessageLength);
-   _view.observe(self, "postTextEdit", "textChanged", function (textWidget) {
-
-      var length = textWidget.text().length
-        , diff = MaxMessageLength - length
-        , color = "black"
-        , button = _view.lookup("postSubmitButton")
-        ;
-
-      button.enabled(length <= MaxMessageLength);
-      if (length > MaxMessageLength) { color = "red"; }
-      else if (length > (MaxMessageLength / 2)) { color = "blue"; }
-      else if (length > (MaxMessageLength / 4)) { color = "green"; }
-      _view.lookup("currentCharAmt").text("<font color="+color+">"+diff+"</font>");
-   });
+   dmz.stance.addUITextLimit
+      ( self
+      , MaxMessageLength
+      , _view.lookup("postTextEdit")
+      , _view.lookup("postSubmitButton")
+      , _view.lookup("currentCharAmt")
+      , _view.lookup("totalCharAmt")
+      );
 }());
 
 //_htmlLink = function (text) { return "<a href=\"javascript://\">"+ text + "</a>"; };
@@ -247,24 +239,17 @@ _addCommentClicked = function (postHandle) {
       _commentAdd.form = dmz.ui.loader.load("CommentAdd");
       _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
       _commentAdd.avatar = _commentAdd.form.lookup("avatarLabel");
-      _commentAdd.avatar.pixmap(AvatarDefault);
+//      _commentAdd.avatar.pixmap(AvatarDefault);
+      _setUserAvatar(dmz.object.hil(), _commentAdd.avatar);
 
-      _commentAdd.form.lookup("totalCharAmt").text(MaxMessageLength);
-      _commentAdd.form.lookup("currentCharAmt").text(MaxMessageLength);
-      _commentAdd.textEdit.observe(self, "textChanged", function (textWidget) {
-
-         var length = textWidget.text().length
-           , diff = MaxMessageLength - length
-           , color = "black"
-           , button = _commentAdd.form.lookup("submitButton")
-           ;
-
-         button.enabled(length <= MaxMessageLength);
-         if (length > MaxMessageLength) { color = "red"; }
-         else if (length > (MaxMessageLength / 2)) { color = "blue"; }
-         else if (length > (MaxMessageLength / 4)) { color = "green"; }
-         _commentAdd.form.lookup("currentCharAmt").text("<font color="+color+">"+diff+"</font>");
-      });
+      dmz.stance.addUITextLimit
+         ( self
+         , MaxMessageLength
+         , _commentAdd.textEdit
+         , _commentAdd.form.lookup("submitButton")
+         , _commentAdd.form.lookup("currentCharAmt")
+         , _commentAdd.form.lookup("totalCharAmt")
+         );
 
       _commentAdd.form.observe(self, "submitButton", "clicked", function () {
 
