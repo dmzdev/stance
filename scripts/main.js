@@ -25,6 +25,7 @@ var dmz =
    , vector: require("dmz/types/vector")
    , time: require("dmz/runtime/time")
    , util: require("dmz/types/util")
+   , sys: require("sys")
    }
 
    // UI Elements
@@ -62,6 +63,7 @@ var dmz =
         , Advisor4: false
         , Lobbyist: false
         , Vote: false
+        , Exit: false
         }
    , Calendar = false
    , LoggedIn = false
@@ -365,6 +367,21 @@ setupMainWindow = function () {
                }
             }
          }
+      });
+
+      _exports.addPage("Exit", false, function () {
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Warning
+            , text: "Are you sure you wish to exit?"
+            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Cancel
+            }
+            , main
+         ).open(self, function (value) {
+
+            if (value === dmz.ui.messageBox.Ok) { dmz.sys.requestExit(); }
+         });
       });
 
       homeButton.observe(self, "clicked", function () {

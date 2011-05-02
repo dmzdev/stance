@@ -597,7 +597,7 @@ editScenarioWidget.observe(self, "deleteForumButton", "clicked", function () {
       var handle
         , index
         ;
-      if (value) {
+      if (value === dmz.ui.messageBox.Ok) {
 
          index = forumComboBox.currentIndex();
          handle = forumList[index];
@@ -1020,7 +1020,7 @@ editScenarioWidget.observe(self, "deleteGameButton", "clicked", function () {
       , editScenarioWidget
    ).open(self, function (value) {
 
-      if (value) {
+      if (value === dmz.ui.messageBox.Ok) {
 
          dmz.ui.messageBox.create(
             { type: dmz.ui.messageBox.Critical
@@ -1032,7 +1032,7 @@ editScenarioWidget.observe(self, "deleteGameButton", "clicked", function () {
             , editScenarioWidget
          ).open(self, function (value) {
 
-            if (value) { dmz.object.destroy(CurrentGameHandle); }
+            if (value === dmz.ui.messageBox.Ok) { dmz.object.destroy(CurrentGameHandle); }
          });
       }
    });
