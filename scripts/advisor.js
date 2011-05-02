@@ -226,38 +226,6 @@ getVoteStatus = function (voteHandle) {
             , widget.lookup("tCurrentCharAmt")
             , widget.lookup("tTotalCharAmt")
             );
-
-//         widget.lookup("questionCharRemAmt").text(MaxMessageLength);
-//         widget.observe(self, "questionText", "textChanged", function (textWidget) {
-
-//            var length = textWidget.text().length
-//              , diff = MaxMessageLength - length
-//              , color = "black"
-//              , button = widget.lookup("submitQuestionButton")
-//              ;
-
-//            button.enabled((button.text() === "Submit Question") && (length <= MaxMessageLength));
-//            if (length > MaxMessageLength) { color = "red"; }
-//            else if (length > (MaxMessageLength / 2)) { color = "blue"; }
-//            else if (length > (MaxMessageLength / 4)) { color = "green"; }
-//            widget.lookup("questionCharRemAmt").text("<font color="+color+">"+diff+"</font>");
-//         });
-
-//         widget.lookup("taskCharRemAmt").text(MaxMessageLength);
-//         widget.observe(self, "taskingText", "textChanged", function (textWidget) {
-
-//            var length = textWidget.text().length
-//              , diff = MaxMessageLength - length
-//              , color = "black"
-//              , button = widget.lookup("submitTaskButton")
-//              ;
-
-//            button.enabled((button.text() === "Submit Task") && (length <= MaxMessageLength));
-//            if (length > MaxMessageLength) { color = "red"; }
-//            else if (length > (MaxMessageLength / 2)) { color = "blue"; }
-//            else if (length > (MaxMessageLength / 4)) { color = "green"; }
-//            widget.lookup("taskCharRemAmt").text("<font color="+color+">"+diff+"</font>");
-//         });
       }(advisorWidgets[idx]));
    }
 }());
@@ -770,7 +738,6 @@ function (objHandle, attr, value, prev) {
 
    if (groupHandle) {
 
-//      dmz.object.unlink(dmz.object.linkHandle(dmz.stance.GroupActiveVoteHandle, groupHandle, objHandle));
       dmz.object.link(dmz.stance.GroupCompletedVotesHandle, groupHandle, objHandle);
    }
 });
@@ -848,8 +815,6 @@ function (objHandle, attr, value, prev) {
 
          if (!value && prev) {
 
-//            dmz.object.unlink(
-//               dmz.object.linkHandle(dmz.stance.AdvisorActiveQuestionHandle, advisorHandle[0], objHandle));
             dmz.object.link(dmz.stance.AdvisorAnsweredQuestionHandle, advisorHandle[0], objHandle);
          }
       }

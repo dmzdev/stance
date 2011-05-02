@@ -70,6 +70,7 @@ var dmz =
    , advisorPicture = {}
    , HomeIndex = 0
    , SplashIndex = 1
+   , LastGViewSize = false
 
    // Messages
    , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
@@ -392,12 +393,9 @@ setupMainWindow = function () {
          if (type == dmz.ui.event.Resize) {
 
             size = event.size();
-            oldSize = event.oldSize();
-            if (!oldSize || !((oldSize.width > 0) && (oldSize.height > 0))) {
-
-               oldSize = mainGView.sceneRect();
-            }
-
+            if (!LastGViewSize) { oldSize = mainGView.sceneRect(); }
+            else { oldSize = LastGViewSize; }
+            LastGViewSize = size;
             mainGView.scale(size.width / oldSize.width, size.height / oldSize.height);
          }
       });
@@ -484,7 +482,7 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
    setupMainWindow();
    if (!self.config.number("login.value", 0)) {
 
-      dmz.time.setTimer(self, 3, function () {
+      dmz.time.setTimer(self, 2, function () {
 
          if (!LoggedIn && stackedWidget) { stackedWidget.currentIndex(HomeIndex); LoggedIn = true; }
       });
