@@ -39,8 +39,8 @@ var dmz =
    // Variables
    , GroupList = [-1]
    , AdvisorCount = 5
-   , sceneWidth = self.config.number("scene.width", 1280)
-   , sceneHeight = self.config.number("scene.height", 800)
+   , windowWidth = self.config.number("window.width", 1280)
+   , windowHeight = self.config.number("window.height", 800)
    , advisors = []
    , map
    , newspaper
@@ -424,7 +424,8 @@ _exports.addPage = function (name, widget, func, onHome) {
    if (name && stackedWidget && PageLink[name]) {
 
       stackedWidget.remove(PageLink[name].data(0));
-      stackedWidget.add(widget);
+//      stackedWidget.add(widget);
+      if (widget) { widget.show(); }
       PageLink[name].data(0, widget);
       PageLink[name].data(1, func);
       PageLink[name].data(2, onHome);
