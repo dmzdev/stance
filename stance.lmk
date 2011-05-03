@@ -1,5 +1,5 @@
 require "qtshell"
 
 qtshell.set_up ("stance")
---lmk.add_files ({"mbra.rc"},{win32 = true})
+lmk.add_files ({"stance.rc"},{win32 = true})
 
