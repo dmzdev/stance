@@ -76,6 +76,9 @@ var dmz =
    , populateMapFromGroup
    ;
 
+
+self.shutdown = function () { if (map) { map.removeEventFilter(); } }
+
 dmz.object.create.observe(self, function (objHandle, objType) {
 
    var id

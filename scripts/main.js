@@ -95,6 +95,9 @@ self.shutdown = function () {
 
       dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
    }
+
+   if (mainGView) { mainGView.removeEventFilter(); }
+   if (gscene) { gscene.removeEventFilter(); }
 };
 
 setPixmapFromResource = function (graphicsItem, resourceName) {
