@@ -49,6 +49,11 @@ var dmz =
    , setUserPlayList
    ;
 
+self.shutdown = function () {
+
+   dmz.ui.phonon.clearPaths();
+};
+
 dmz.object.link.observe(self, dmz.stance.ViewedVideoHandle,
 function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
 
