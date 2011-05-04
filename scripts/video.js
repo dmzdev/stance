@@ -32,7 +32,7 @@ var dmz =
    , currLabel = videoForm.lookup("currLabel")
    , totalLabel = videoForm.lookup("totalLabel")
    , video = dmz.ui.phonon.createVideoPlayer()
-//   , source = dmz.ui.phonon.createMediaObject()
+   , source = dmz.ui.phonon.createMediaObject()
 
    // Variables
    , CurrentIndex = 0
@@ -149,7 +149,7 @@ skipBackward = function () {
    stopButton.standardIcon(dmz.ui.button.MediaStop);
    nextButton.standardIcon(dmz.ui.button.MediaSkipForward);
    prevButton.standardIcon(dmz.ui.button.MediaSkipBackward);
-//   dmz.ui.phonon.createPath(source, video);
+   dmz.ui.phonon.createPath(source, video);
 
 }());
 
