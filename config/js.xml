@@ -21,15 +21,15 @@
    <instance name="email"/>
 <!--   <instance name="devtools"/> -->
    <instance name="gameCreation"/>
-   <instance name="webMap"/>
+<!--   <instance name="webMap"/> -->
 <!--   <instance name="forum"/> -->
    <instance name="forum-view"/>
    <instance name="login"/>
    <instance name="game-time"/>
    <instance name="advisor"/>
    <instance name="video"/>
-   <instance name="newspaper"/>
-   <instance name="memo"/>
+<!--   <instance name="newspaper"/>
+   <instance name="memo"/> -->
    <instance name="lobbyist"/>
 </javascript>
 <login>
