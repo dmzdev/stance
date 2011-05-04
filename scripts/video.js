@@ -32,9 +32,7 @@ var dmz =
    , currLabel = videoForm.lookup("currLabel")
    , totalLabel = videoForm.lookup("totalLabel")
    , video = dmz.ui.phonon.createVideoPlayer()
-   , source = dmz.ui.phonon.createMediaObject()
-   //, source = dmz.ui.phonon.createMediaObject("http://www.chds.us/media/viewpoints/mov/chds_viewpoints%2029_rodrigo_gomez.mov")
-   //, source2 = dmz.ui.phonon.createMediaObject("http://www.chds.us/coursefiles/DA3210/videos/obsession/obsession_radical_islam.mov")
+//   , source = dmz.ui.phonon.createMediaObject()
 
    // Variables
    , CurrentIndex = 0
@@ -160,7 +158,7 @@ pauseButton.observe(self, "clicked", pauseCurrent);
 stopButton.observe(self, "clicked", stopCurrent);
 nextButton.observe(self, "clicked", skipForward);
 prevButton.observe(self, "clicked", skipBackward);
-source.observe(self, "finished", skipForward);
+//source.observe(self, "finished", skipForward);
 
 setUserPlayList = function (userHandle) {
 
