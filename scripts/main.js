@@ -64,10 +64,11 @@ var dmz =
         , Lobbyist: false
         , Vote: false
         , Exit: false
+//        , Calendar: false
         }
    , Calendar = false
+   , CalendarText = { month: false, day: false, year: false }
    , LoggedIn = false
-   , GameTimeModule = false
    , groupAdvisors = {}
    , advisorPicture = {}
    , HomeIndex = 0
@@ -111,18 +112,9 @@ setPixmapFromResource = function (graphicsItem, resourceName) {
    if (graphicsItem && config && file) {
 
       loc = config.vector("loc");
-      if (dmz.vector.isTypeOf(loc)) {
-
-         if (dmz.vector.isTypeOf(loc)) {
-
-            pixmap = dmz.ui.graph.createPixmap(file);
-            if (pixmap) {
-
-               graphicsItem.pixmap(pixmap);
-               graphicsItem.pos(loc.x, loc.y);
-            }
-         }
-      }
+      pixmap = dmz.ui.graph.createPixmap(file);
+      if (pixmap) { graphicsItem.pixmap(pixmap); }
+      if (dmz.vector.isTypeOf(loc)) { graphicsItem.pos(loc.x, loc.y); }
    }
 };
 
@@ -138,6 +130,8 @@ updateGraphicsForGroup = function (groupHandle) {
 
       setPixmapFromResource(
          Background, dmz.object.text(groupHandle, dmz.stance.BackgroundImageHandle));
+      setPixmapFromResource(
+         Calendar, dmz.object.text(groupHandle, dmz.stance.CalendarImageHandle));
 
       data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
       count = dmz.object.scalar(groupHandle, dmz.stance.AdvisorImageCountHandle);
@@ -174,6 +168,7 @@ updateGraphicsForGroup = function (groupHandle) {
          case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
          case "Resource": attr = dmz.stance.ResourceImageHandle; break;
          case "Vote": attr = dmz.stance.VoteImageHandle; break;
+//         case "Calendar": attr = dmz.stance.CalendarImageHandle; break;
          default: self.log.warn ("Key ("+key+") has no associated handle."); break;
          }
 
@@ -272,8 +267,12 @@ function (objHandle, attrHandle, value) {
 
       Object.keys(PageLink).forEach(function (item) {
 
-         var children = PageLink[item].childItems();
-         if (children) { children.forEach(function (item) { item.hide(); }); }
+         var children;
+         if (PageLink[item]) {
+
+            children = PageLink[item].childItems();
+            if (children) { children.forEach(function (item) { item.hide(); }); }
+         }
       });
    }
 });
@@ -283,10 +282,15 @@ function (linkObjHandle, attrHandle, groupHandle, userHandle) {
 
    if (userHandle === dmz.object.hil()) {
 
+      var children;
       Object.keys(PageLink).forEach(function (item) {
 
-         var children = PageLink[item].childItems();
-         if (children) { children.forEach(function (item) { item.hide(); }); }
+         var children;
+         if (PageLink[item]) {
+
+            children = PageLink[item].childItems();
+            if (children) { children.forEach(function (item) { item.hide(); }); }
+         }
       });
    }
 });
@@ -354,17 +358,21 @@ setupMainWindow = function () {
 
                      pixmap = gscene.addPixmap(pixmap);
                      pixmap.pos(loc.x, loc.y);
-                     widget = dmz.ui.label.create(name);
-                     pixmap.data(0, widget);
-                     stackedWidget.add(widget);
-                     PageLink[name] = pixmap;
-                     if (highlight) {
+                     if (name === "Calendar") { Calendar = pixmap; }
+                     else {
 
-                        pixmap = dmz.ui.graph.createPixmap(highlight);
-                        pixmap = dmz.ui.graph.createPixmapItem(pixmap, PageLink[name]);
-                        offset = config.vector("offset")
-                        if (dmz.vector.isTypeOf(offset)) { pixmap.pos(offset.x, offset.y); }
-                        pixmap.hide();
+                        widget = dmz.ui.label.create(name);
+                        pixmap.data(0, widget);
+                        stackedWidget.add(widget);
+                        PageLink[name] = pixmap;
+                        if (highlight) {
+
+                           pixmap = dmz.ui.graph.createPixmap(highlight);
+                           pixmap = dmz.ui.graph.createPixmapItem(pixmap, PageLink[name]);
+                           offset = config.vector("offset");
+                           if (dmz.vector.isTypeOf(offset)) { pixmap.pos(offset.x, offset.y); }
+                           pixmap.hide();
+                        }
                      }
                   }
                }
@@ -464,10 +472,6 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
             dmz.resources.findFile(dmz.object.text(advisorHandle, dmz.stance.PictureHandle));
       }
    }
-   if (dmz.stance.getUserGroupHandle(dmz.object.hil()) === groupHandle) {
-
-//      updateGraphicsForGroup(groupHandle);
-   }
 });
 
 dmz.object.flag.observe(self, dmz.stance.AdminHandle,
@@ -520,35 +524,54 @@ LoginFailedMessage.subscribe(self, function () { LoggedIn = true; });
 dmz.module.subscribe(self, "game-time", function (Mode, module) {
 
    var timeStamp
-     , date
+     , month
+     , day
+     , year
+     , loc
      ;
+
    if (Mode === dmz.module.Activate) {
 
-      Calendar = gscene.addText("05/06/07");
-      if (Calendar) {
+      self.log.warn ("Game-Time module:", Calendar);
+      timeStamp = dmz.util.timeStampToDate(module.gameTime());
+      if (!Calendar) {
 
-         Calendar.pos(800, 400);
-         Calendar.font(
+         CalendarText.month = gscene.addText(timeStamp.toString("MMM"));
+         CalendarText.month.pos(800, 400);
+      }
+      else { CalendarText.month = dmz.ui.graph.createTextItem(timeStamp.toString("MMM"), Calendar); }
+      CalendarText.day = dmz.ui.graph.createTextItem(timeStamp.toString("dd"), CalendarText.month);
+      CalendarText.year = dmz.ui.graph.createTextItem(timeStamp.toString("yyyy"), CalendarText.day);
+      CalendarText.month.pos(55, 15);
+      CalendarText.day.pos(10, 30);
+      CalendarText.year.pos(-15, 30);
+
+//      CalendarText.month.scenePos(10, 10);
+//      CalendarText.day.pos(0, 10);
+//      CalendarText.year.pos(0, 10);
+
+      Object.keys(CalendarText).forEach(function (name) {
+
+//         CalendarText[name].pos(0, 20);
+         CalendarText[name].font(
             { font: "Times"
-            , size: 22
+            , size: 30
             , weight: 75
             });
+         self.log.warn ("name:", name, CalendarText[name].scenePos());
 
-         date = dmz.util.timeStampToDate(module.gameTime());
-         date = date ? date.toString("MM/dd/yy") : "NULLTIME";
-         Calendar.plainText(date);
+      });
+      dmz.time.setRepeatingTimer(self, 1, function () {
 
-         dmz.time.setRepeatingTimer(self, 300, function () {
+         var date;
+         if (dmz.object.hil()) {
 
-            var date;
-            if (dmz.object.hil() && Calendar) {
-
-               date = dmz.util.timeStampToDate(module.gameTime());
-               date = date ? date.toString("MM/dd/yy") : "NULLTIME";
-               Calendar.plainText(date);
-            }
-         });
-      }
+            date = dmz.util.timeStampToDate(module.gameTime());
+            CalendarText.month.plainText(date.toString("MMM"));
+            CalendarText.day.plainText(date.toString("dd"));
+            CalendarText.year.plainText(date.toString("yyyy"));
+         }
+      });
    }
 });
 

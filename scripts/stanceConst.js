@@ -90,6 +90,7 @@ var dmz =
       , ExitImageHandle: dmz.defs.createNamedHandle("exit_image")
       , ResourceImageHandle: dmz.defs.createNamedHandle("resource_image")
       , VoteImageHandle: dmz.defs.createNamedHandle("vote_image")
+      , CalendarImageHandle: dmz.defs.createNamedHandle("calendar_image")
       , ViewedQuestionHandle: dmz.defs.createNamedHandle("viewed_question")
       , Advisor0Handle: dmz.defs.createNamedHandle("advisor_0_data")
       , Advisor1Handle: dmz.defs.createNamedHandle("advisor_1_data")

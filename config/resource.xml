@@ -4,12 +4,18 @@
 <resource-map>
    <search>
       <path value="./assets/"/>
+      <path value="./assets/map/"/>
+      <path value="./assets/avatars/"/>
    </search>
    <resource name="Splash" file="STANCE_splash.png"/>
 <!--   <resource name="PushNotify" file="PushNotify.png"/> -->
    <resource name="PushNotify" file="stanceNotify.png"/>
+<!--  AVATARS -->
+   <resource name="AvatarBox" file="AvatarBox.png"/>
+   <resource name="AvatarDefault" file="AvatarDefault.png"/>
    <resource name="Avatar0" file="avatar1_50x50.jpg"/>
    <resource name="Avatar1" file="avatar2_50x50.jpg"/>
+<!-- MAP ICONS -->
    <resource name="Generic" file="GenericMarker-sm.png">
       <webMap file="GenericMarker.png"/>
    </resource>
@@ -49,114 +55,238 @@
    <resource name="Riot" file="Riot-sm.png">
       <webMap file="Riot.png"/>
    </resource>
-   <resource name="default_exit" file="exit.png">
+<!-- GROUP OFFICE IMAGES -->
+<!-- DEFAULT IMAGES -->
+   <resource name="default_exit" file="default/exit.png">
       <loc x="227" y="38"/>
    </resource>
-   <resource name="default_resources" file="resources.png">
+   <resource name="default_resources" file="default/resources.png">
       <loc x="4" y="44"/>
    </resource>
-   <resource name="default_adv0" file="ad01.png">
+   <resource name="default_adv0" file="default/ad01.png">
       <loc x="351" y="57"/>
    </resource>
-   <resource name="default_adv1" file="ad02.png">
+   <resource name="default_adv1" file="default/ad02.png">
       <loc x="470" y="57"/>
    </resource>
-   <resource name="default_adv2" file="ad03.png">
+   <resource name="default_adv2" file="default/ad03.png">
       <loc x="590" y="57"/>
    </resource>
-   <resource name="default_adv3" file="ad04.png">
+   <resource name="default_adv3" file="default/ad04.png">
       <loc x="706" y="57"/>
    </resource>
-   <resource name="default_adv4" file="ad05.png">
+   <resource name="default_adv4" file="default/ad05.png">
       <loc x="820" y="57"/>
    </resource>
-   <resource name="default_map" file="map.png">
+   <resource name="default_map" file="default/map.png">
       <loc x="1049" y="44"/>
       <offset x="10" y="10"/>
    </resource>
-   <resource name="default_computer" file="computer.png">
+   <resource name="default_computer" file="default/computer.png">
       <loc x="476" y="266"/>
       <offset x="23" y="0"/>
    </resource>
-   <resource name="default_newspaper" file="newspaper.png">
+   <resource name="default_newspaper" file="default/newspaper.png">
       <loc x="109" y="489"/>
       <offset x="-5" y="20"/>
    </resource>
-   <resource name="default_videophone" file="vidphone.png">
+   <resource name="default_videophone" file="default/vidphone.png">
       <loc x="125" y="401"/>
    </resource>
-   <resource name="default_tv" file="tv.png">
+   <resource name="default_tv" file="default/tv.png">
       <loc x="245" y="309"/>
       <offset x="0" y="10"/>
    </resource>
-   <resource name="default_vote" file="vote.png">
+   <resource name="default_vote" file="default/vote.png">
       <loc x="907" y="345"/>
       <offset x="30" y="0"/>
    </resource>
-   <resource name="default_memos" file="memos.png">
+   <resource name="default_memos" file="default/memos.png">
       <loc x="974" y="467"/>
       <offset x="0" y="35"/>
    </resource>
-   <resource name="default_background" file="office08.png">
+   <resource name="default_background" file="default/office08.png">
       <loc x="0" y="0"/>
    </resource>
-   <resource name="bw_exit" file="bw-exit.png">
+<!-- BLACK&WHITE IMAGES -->
+   <resource name="bw_exit" file="bw/bw-exit.png">
       <loc x="227" y="38"/>
    </resource>
-   <resource name="bw_resources" file="bw-resources.png">
+   <resource name="bw_resources" file="bw/bw-resources.png">
       <loc x="4" y="44"/>
    </resource>
-   <resource name="bw_adv0" file="bw-ad01.png">
+   <resource name="bw_adv0" file="bw/bw-ad01.png">
       <loc x="351" y="57"/>
+      <alt name="bw_adv0"/>
    </resource>
-   <resource name="bw_adv1" file="bw-ad02.png">
+   <resource name="bw_adv1" file="bw/bw-ad02.png">
       <loc x="470" y="57"/>
+      <alt name="bw_adv1"/>
    </resource>
-   <resource name="bw_adv2" file="bw-ad03.png">
+   <resource name="bw_adv2" file="bw/bw-ad03.png">
       <loc x="590" y="57"/>
+      <alt name="bw_adv2"/>
    </resource>
-   <resource name="bw_adv3" file="bw-ad04.png">
+   <resource name="bw_adv3" file="bw/bw-ad04.png">
       <loc x="706" y="57"/>
+      <alt name="bw_adv3"/>
    </resource>
-   <resource name="bw_adv4" file="bw-ad05.png">
+   <resource name="bw_adv4" file="bw/bw-ad05.png">
       <loc x="820" y="57"/>
+      <alt name="bw_adv4"/>
    </resource>
-   <resource name="bw_map" file="bw-map.png">
+   <resource name="bw_map" file="bw/bw-map.png">
       <loc x="1049" y="44"/>
    </resource>
-   <resource name="bw_computer" file="bw-computer.png">
+   <resource name="bw_computer" file="bw/bw-computer.png">
       <loc x="476" y="266"/>
    </resource>
-   <resource name="bw_newspaper" file="bw-newspaper.png">
+   <resource name="bw_newspaper" file="bw/bw-newspaper.png">
       <loc x="109" y="489"/>
    </resource>
-   <resource name="bw_videophone" file="bw-vidphone.png">
+   <resource name="bw_videophone" file="bw/bw-vidphone.png">
       <loc x="125" y="401"/>
    </resource>
-   <resource name="bw_tv" file="bw-tv.png">
+   <resource name="bw_tv" file="bw/bw-tv.png">
       <loc x="245" y="309"/>
    </resource>
-   <resource name="bw_vote" file="bw-vote.png">
+   <resource name="bw_vote" file="bw/bw-vote.png">
       <loc x="907" y="345"/>
    </resource>
-   <resource name="bw_memos" file="bw-memos.png">
+   <resource name="bw_memos" file="bw/bw-memos.png">
       <loc x="974" y="467"/>
    </resource>
-   <resource name="bw_background" file="office08.png">
+   <resource name="bw_background" file="bw/office08.png">
       <loc x="0" y="0"/>
    </resource>
-<!--   <resource name="adv_" file=""/> -->
-   <resource name="adv_0" file="sad200.jpg"/>
-   <resource name="adv_1" file="silly200.png"/>
-   <resource name="adv_2" file="firefox200.jpg"/>
-   <resource name="adv_3" file="handi200.jpg"/>
-<!--   <resource name="lob_" file=""/> -->
+<!-- BIG BUSINESS IMAGES -->
+   <resource name="Business_adv0" file="Business/Business_ad01.png">
+      <loc x="375" y="54"/>
+      <alt name="Business_adv0_alt"/>
+   </resource>
+   <resource name="Business_adv1" file="Business/Business_ad02.png">
+      <loc x="483" y="54"/>
+      <alt name="Business_adv1_alt"/>
+   </resource>
+   <resource name="Business_adv2" file="Business/Business_ad03.png">
+      <loc x="589" y="54"/>
+      <alt name="Business_adv2_alt"/>
+   </resource>
+   <resource name="Business_adv3" file="Business/Business_ad04.png">
+      <loc x="695" y="54"/>
+      <alt name="Business_adv3_alt"/>
+   </resource>
+   <resource name="Business_adv4" file="Business/Business_ad05.png">
+      <loc x="799" y="54"/>
+      <alt name="Business_adv4_alt"/>
+   </resource>
+   <resource name="Business_calendar" file="Business/Business_calendar.png">
+      <loc x="849" y="266"/>
+   </resource>
+   <resource name="Business_computer" file="Business/Business_computer.png">
+      <loc x="526" y="266"/>
+   </resource>
+   <resource name="Business_exit" file="Business/Business_exit.png">
+      <loc x="222" y="7"/>
+   </resource>
+   <resource name="Business_map" file="Business/Business_map.png">
+      <loc x="1086" y="29"/>
+   </resource>
+   <resource name="Business_memos" file="Business/Business_memos.png">
+      <loc x="982" y="458"/>
+   </resource>
+   <resource name="Business_newspaper" file="Business/Business_newspaper.png">
+      <loc x="256" y="508"/>
+   </resource>
+<!--
+   <resource name="Business_resources" file="Business/Business_resources.png">
+      <loc x="4" y="44"/>
+   </resource>
+-->
+   <resource name="Business_tv" file="Business/Business_tv.png">
+      <loc x="250" y="315"/>
+   </resource>
+   <resource name="Business_videophone" file="Business/Business_vidphone.png">
+      <loc x="12" y="418"/>
+   </resource>
+   <resource name="Business_vote" file="Business/Business_vote.png">
+      <loc x="1027" y="252"/>
+   </resource>
+   <resource name="Business_background" file="Business/Business_Full.png">
+      <loc x="0" y="0"/>
+   </resource>
+   <resource name="Business_adv0_alt" file="Business/Business_ad01_small.png"/>
+   <resource name="Business_adv1_alt" file="Business/Business_ad02_small.png"/>
+   <resource name="Business_adv2_alt" file="Business/Business_ad03_small.png"/>
+   <resource name="Business_adv3_alt" file="Business/Business_ad04_small.png"/>
+   <resource name="Business_adv4_alt" file="Business/Business_ad05_small.png"/>
+<!-- CARTEL 1 IMAGES -->
+   <resource name="Cartel1_adv0" file="Cartel1/Cartel1_ad01.png">
+      <loc x="360" y="70"/>
+      <alt name="Cartel1_adv0_alt"/>
+   </resource>
+   <resource name="Cartel1_adv1" file="Cartel1/Cartel1_ad02.png">
+      <loc x="497" y="70"/>
+      <alt name="Cartel1_adv1_alt"/>
+   </resource>
+   <resource name="Cartel1_adv2" file="Cartel1/Cartel1_ad03.png">
+      <loc x="595" y="70"/>
+      <alt name="Cartel1_adv2_alt"/>
+   </resource>
+   <resource name="Cartel1_adv3" file="Cartel1/Cartel1_ad04.png">
+      <loc x="692" y="70"/>
+      <alt name="Cartel1_adv3_alt"/>
+   </resource>
+   <resource name="Cartel1_adv4" file="Cartel1/Cartel1_ad05.png">
+      <loc x="825" y="70"/>
+      <alt name="Cartel1_adv4_alt"/>
+   </resource>
+   <resource name="Cartel1_calendar" file="Cartel1/Cartel1_calendar.png">
+      <loc x="792" y="303"/>
+   </resource>
+   <resource name="Cartel1_computer" file="Cartel1/Cartel1_computer.png">
+      <loc x="501" y="283"/>
+   </resource>
+   <resource name="Cartel1_exit" file="Cartel1/Cartel1_exit.png">
+      <loc x="215" y="19"/>
+   </resource>
+   <resource name="Cartel1_map" file="Cartel1/Cartel1_map.png">
+      <loc x="1085" y="85"/>
+   </resource>
+   <resource name="Cartel1_memos" file="Cartel1/Cartel1_memos.png">
+      <loc x="1034" y="487"/>
+   </resource>
+   <resource name="Cartel1_newspaper" file="Cartel1/Cartel1_newspaper.png">
+      <loc x="239" y="525"/>
+   </resource>
+<!--
+   <resource name="Cartel1_resources" file="Cartel1/Cartel1_resources.png">
+      <loc x="4" y="44"/>
+   </resource>
+-->
+   <resource name="Cartel1_tv" file="Cartel1/Cartel1_tv.png">
+      <loc x="234" y="333"/>
+   </resource>
+   <resource name="Cartel1_videophone" file="Cartel1/Cartel1_vidphone.png">
+      <loc x="0" y="420"/>
+   </resource>
+   <resource name="Cartel1_vote" file="Cartel1/Cartel1_vote.png">
+      <loc x="1005" y="305"/>
+   </resource>
+   <resource name="Cartel1_background" file="Cartel1/Cartel1_Final.png">
+      <loc x="0" y="0"/>
+   </resource>
+   <resource name="Cartel1_adv0_alt" file="Cartel1/Cartel1_ad01_small.png"/>
+   <resource name="Cartel1_adv1_alt" file="Cartel1/Cartel1_ad02_small.png"/>
+   <resource name="Cartel1_adv2_alt" file="Cartel1/Cartel1_ad03_small.png"/>
+   <resource name="Cartel1_adv3_alt" file="Cartel1/Cartel1_ad04_small.png"/>
+   <resource name="Cartel1_adv4_alt" file="Cartel1/Cartel1_ad05_small.png"/>
+<!-- LOBBYIST IMAGES -->
    <resource name="lob_0" file="sad200.jpg"/>
    <resource name="lob_1" file="silly200.png"/>
    <resource name="lob_2" file="firefox200.jpg"/>
    <resource name="lob_3" file="handi200.jpg"/>
-   <resource name="AvatarBox" file="AvatarBox.png"/>
-   <resource name="AvatarDefault" file="AvatarDefault.png"/>
+<!--   <resource name="lob_" file=""/> -->
 </resource-map>
 </runtime>
 </dmz>

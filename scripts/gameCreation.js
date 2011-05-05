@@ -220,6 +220,7 @@ setGroupTemplate = function (groupHandle, templateIndex) {
             case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
             case "Resource": attr = dmz.stance.ResourceImageHandle; break;
             case "Vote": attr = dmz.stance.VoteImageHandle; break;
+            case "Calendar": attr = dmz.stance.CalendarImageHandle; break;
             default: self.log.warn ("Key ("+key+") has no associated handle."); break;
             }
 
@@ -233,7 +234,6 @@ setGroupTemplate = function (groupHandle, templateIndex) {
 
                data.string(dmz.stance.AdvisorImageHandle, idx, advisorImages[idx]);
             }
-
 
             dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle, data);
             dmz.object.scalar(groupHandle, dmz.stance.AdvisorImageCountHandle, idx);
@@ -446,8 +446,6 @@ userToGroup = function (item) {
       currentIndex = groupComboBox.currentIndex();
       if (objHandle && (currentIndex < groupList.length)) {
 
-//         dmz.object.unlink(
-//            dmz.object.linkHandle(dmz.stance.GameUngroupedUsersHandle, CurrentGameHandle, objHandle));
          dmz.object.link(dmz.stance.GroupMembersHandle, groupList[currentIndex], objHandle);
          ungroupedStudentList.removeItem(item);
          groupStudentList.addItem(item);
@@ -469,8 +467,6 @@ userFromGroup = function (item) {
       currentIndex = groupComboBox.currentIndex();
       if (objHandle && (currentIndex < groupList.length)) {
 
-//         dmz.object.unlink(
-//            dmz.object.linkHandle(dmz.stance.GroupMembersHandle, groupList[currentIndex], objHandle));
          dmz.object.link(dmz.stance.GameUngroupedUsersHandle, CurrentGameHandle, objHandle);
          groupStudentList.removeItem(item);
          ungroupedStudentList.addItem(item);

@@ -15,6 +15,7 @@
       <image name="Advisor2" resource="default_adv2"/>
       <image name="Advisor3" resource="default_adv3"/>
       <image name="Advisor4" resource="default_adv4"/>
+      <image name="Calendar" resource="Cartel1_calendar"/>
       <image name="Vote" resource="default_vote"/>
    </set>
 </main>
@@ -48,7 +49,39 @@
          <image name="Advisor" resource="bw_adv2"/>
          <image name="Advisor" resource="bw_adv3"/>
          <image name="Advisor" resource="bw_adv4"/>
-         <image name="Vote" resource="bw-vote"/>
+         <image name="Vote" resource="bw_vote"/>
+      </set>
+      <set name="Business" background="Business_background" highlight="PushNotify">
+         <image name="Advisor" resource="Business_adv0"/>
+         <image name="Advisor" resource="Business_adv1"/>
+         <image name="Advisor" resource="Business_adv2"/>
+         <image name="Advisor" resource="Business_adv3"/>
+         <image name="Advisor" resource="Business_adv4"/>
+         <image name="Calendar" resource="Business_calendar"/>
+         <image name="Exit" resource="Business_exit"/>
+         <image name="Forum" resource="Business_computer"/>
+         <image name="Lobbyist" resource="Business_videophone"/>
+         <image name="Map" resource="Business_map"/>
+         <image name="Memo" resource="Business_memos"/>
+         <image name="Newspaper" resource="Business_newspaper"/>
+         <image name="Video" resource="Business_tv"/>
+         <image name="Vote" resource="Business_vote"/>
+      </set>
+      <set name="Cartel1" background="Cartel1_background" highlight="PushNotify">
+         <image name="Advisor" resource="Cartel1_adv0"/>
+         <image name="Advisor" resource="Cartel1_adv1"/>
+         <image name="Advisor" resource="Cartel1_adv2"/>
+         <image name="Advisor" resource="Cartel1_adv3"/>
+         <image name="Advisor" resource="Cartel1_adv4"/>
+         <image name="Calendar" resource="Cartel1_calendar"/>
+         <image name="Exit" resource="Cartel1_exit"/>
+         <image name="Forum" resource="Cartel1_computer"/>
+         <image name="Lobbyist" resource="Cartel1_videophone"/>
+         <image name="Map" resource="Cartel1_map"/>
+         <image name="Memo" resource="Cartel1_memos"/>
+         <image name="Newspaper" resource="Cartel1_newspaper"/>
+         <image name="Video" resource="Cartel1_tv"/>
+         <image name="Vote" resource="Cartel1_vote"/>
       </set>
    </group-picture-set>
    <lobbyist-pictures>
@@ -86,7 +119,7 @@
       </attributes>
       <attributes name="picture">
          <text value="Avatar0"/>
-      </attributes>      
+      </attributes>
       <attributes name="admin_user">
          <flag value="true"/>
       </attributes>
