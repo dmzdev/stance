@@ -64,7 +64,6 @@ var dmz =
         , Lobbyist: false
         , Vote: false
         , Exit: false
-//        , Calendar: false
         }
    , Calendar = false
    , CalendarText = { month: false, day: false, year: false }
@@ -158,7 +157,6 @@ updateGraphicsForGroup = function (groupHandle) {
          case "Advisor2":
          case "Advisor3":
          case "Advisor4": break; // Handled above
-   //         case "background": attr = dmz.stance.BackgroundImageHandle; break;
          case "Exit": attr = dmz.stance.ExitImageHandle; break;
          case "Forum": attr = dmz.stance.ComputerImageHandle; break;
          case "Map": attr = dmz.stance.MapImageHandle; break;
@@ -168,7 +166,6 @@ updateGraphicsForGroup = function (groupHandle) {
          case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
          case "Resource": attr = dmz.stance.ResourceImageHandle; break;
          case "Vote": attr = dmz.stance.VoteImageHandle; break;
-//         case "Calendar": attr = dmz.stance.CalendarImageHandle; break;
          default: self.log.warn ("Key ("+key+") has no associated handle."); break;
          }
 
@@ -457,7 +454,6 @@ _exports.highlight = function (name) {
 dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
 function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 
-   var file;
    if (!groupAdvisors[groupHandle]) { groupAdvisors[groupHandle] = []; }
    if (groupAdvisors[groupHandle].length <= AdvisorCount) {
 
@@ -476,10 +472,6 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 
 dmz.object.flag.observe(self, dmz.stance.AdminHandle,
 function (objHandle, attrHandle, value) {
-
-   var groupHandle = dmz.stance.getUserGroupHandle(objHandle)
-     , index = -1
-     ;
 
    if (value && (objHandle === dmz.object.hil())) {
 
@@ -523,16 +515,9 @@ LoginFailedMessage.subscribe(self, function () { LoggedIn = true; });
 
 dmz.module.subscribe(self, "game-time", function (Mode, module) {
 
-   var timeStamp
-     , month
-     , day
-     , year
-     , loc
-     ;
-
+   var timeStamp;
    if (Mode === dmz.module.Activate) {
 
-      self.log.warn ("Game-Time module:", Calendar);
       timeStamp = dmz.util.timeStampToDate(module.gameTime());
       if (!Calendar) {
 
@@ -546,22 +531,15 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
       CalendarText.day.pos(10, 30);
       CalendarText.year.pos(-15, 30);
 
-//      CalendarText.month.scenePos(10, 10);
-//      CalendarText.day.pos(0, 10);
-//      CalendarText.year.pos(0, 10);
-
       Object.keys(CalendarText).forEach(function (name) {
 
-//         CalendarText[name].pos(0, 20);
          CalendarText[name].font(
             { font: "Times"
             , size: 30
             , weight: 75
             });
-         self.log.warn ("name:", name, CalendarText[name].scenePos());
-
       });
-      dmz.time.setRepeatingTimer(self, 1, function () {
+      dmz.time.setRepeatingTimer(self, 60, function () {
 
          var date;
          if (dmz.object.hil()) {
