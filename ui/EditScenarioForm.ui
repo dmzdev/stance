@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_13">
       <attribute name="title">
@@ -181,102 +181,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_15">
-      <attribute name="title">
-       <string>Forums</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_44">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_32">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_45">
-           <item>
-            <widget class="QPushButton" name="createForumButton">
-             <property name="text">
-              <string>Add Forum</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="deleteForumButton">
-             <property name="text">
-              <string>Remove Forum</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QComboBox" name="forumList"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_33">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_46">
-           <item>
-            <widget class="QLabel" name="label_11">
-             <property name="text">
-              <string>Groups:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QListWidget" name="forumGroupList">
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_47">
-           <item>
-            <widget class="QToolButton" name="addForumGroupButton">
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="arrowType">
-              <enum>Qt::RightArrow</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QToolButton" name="removeForumGroupButton">
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="arrowType">
-              <enum>Qt::LeftArrow</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_48">
-           <item>
-            <widget class="QLabel" name="label_12">
-             <property name="text">
-              <string>Associated Groups:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QListWidget" name="forumAssocList">
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="tab_16">
       <attribute name="title">
        <string>Time</string>
@@ -337,6 +241,13 @@
          </item>
          <item row="1" column="2">
           <widget class="QDateEdit" name="serverEndDateEdit">
+           <property name="date">
+            <date>
+             <year>2010</year>
+             <month>2</month>
+             <day>1</day>
+            </date>
+           </property>
            <property name="minimumDate">
             <date>
              <year>2010</year>
@@ -352,13 +263,6 @@
            </property>
            <property name="calendarPopup">
             <bool>true</bool>
-           </property>
-           <property name="date">
-            <date>
-             <year>2010</year>
-             <month>2</month>
-             <day>1</day>
-            </date>
            </property>
           </widget>
          </item>
@@ -381,6 +285,13 @@
          </item>
          <item row="2" column="1">
           <widget class="QDateEdit" name="gameStartDateEdit">
+           <property name="date">
+            <date>
+             <year>2010</year>
+             <month>1</month>
+             <day>1</day>
+            </date>
+           </property>
            <property name="currentSection">
             <enum>QDateTimeEdit::MonthSection</enum>
            </property>
@@ -389,13 +300,6 @@
            </property>
            <property name="calendarPopup">
             <bool>true</bool>
-           </property>
-           <property name="date">
-            <date>
-             <year>2010</year>
-             <month>1</month>
-             <day>1</day>
-            </date>
            </property>
           </widget>
          </item>
@@ -404,6 +308,13 @@
            <property name="readOnly">
             <bool>true</bool>
            </property>
+           <property name="date">
+            <date>
+             <year>2010</year>
+             <month>1</month>
+             <day>1</day>
+            </date>
+           </property>
            <property name="currentSection">
             <enum>QDateTimeEdit::MonthSection</enum>
            </property>
@@ -412,13 +323,6 @@
            </property>
            <property name="calendarPopup">
             <bool>true</bool>
-           </property>
-           <property name="date">
-            <date>
-             <year>2010</year>
-             <month>1</month>
-             <day>1</day>
-            </date>
            </property>
           </widget>
          </item>

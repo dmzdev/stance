@@ -522,9 +522,12 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
       if (!Calendar) {
 
          CalendarText.month = gscene.addText(timeStamp.toString("MMM"));
-         CalendarText.month.pos(800, 400);
+         CalendarText.month.pos(810, 345);
       }
-      else { CalendarText.month = dmz.ui.graph.createTextItem(timeStamp.toString("MMM"), Calendar); }
+      else {
+
+         CalendarText.month = dmz.ui.graph.createTextItem(timeStamp.toString("MMM"), Calendar);
+      }
       CalendarText.day = dmz.ui.graph.createTextItem(timeStamp.toString("dd"), CalendarText.month);
       CalendarText.year = dmz.ui.graph.createTextItem(timeStamp.toString("yyyy"), CalendarText.day);
       CalendarText.month.pos(55, 15);

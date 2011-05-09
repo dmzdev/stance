@@ -30,9 +30,6 @@ var dmz =
    , ungroupedStudentList = editScenarioWidget.lookup("ungroupedStudentList")
    , groupComboBox = editScenarioWidget.lookup("groupComboBox")
    , gameStateButton = editScenarioWidget.lookup("gameStateButton")
-   , forumComboBox = editScenarioWidget.lookup("forumList")
-   , forumAssocList = editScenarioWidget.lookup("forumAssocList")
-   , forumGroupList = editScenarioWidget.lookup("forumGroupList")
    , advisorGroupComboBox = editScenarioWidget.lookup("advisorGroupComboBox")
    , groupAdvisorList = editScenarioWidget.lookup("groupAdvisorList")
 
@@ -101,8 +98,6 @@ var dmz =
    , advisorPictureObjects = {}
    , lobbyistPictureObjects = []
    , advisorList = []
-   , forumList = []
-   , forumGroupWidgets = {}
    , advisorWidgets = {}
    , CurrentGameHandle = false
    , MediaTypes =
@@ -124,8 +119,6 @@ var dmz =
    , userFromGroup
    , editUser
    , setup
-   , groupToForum
-   , groupFromForum
    , updateTimePage
    , readGroupTemplates
    , setGroupTemplate
@@ -263,12 +256,6 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    advisorGroupComboBox.addItem(name);
    lobbyistGroupList.addItem(name);
    MediaGroupFLayout.addRow(name, dmz.ui.button.createCheckBox());
-
-   forumGroupWidgets[subHandle] =
-      { assoc: forumAssocList.addItem(name, subHandle)
-      , unassoc: forumGroupList.addItem(name, subHandle)
-      };
-   forumGroupWidgets[subHandle].assoc.hidden(true);
 });
 
 dmz.object.unlink.observe(self, dmz.stance.GameGroupHandle,
@@ -287,58 +274,6 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
    if (index !== -1) { advisorGroupComboBox.removeIndex(index); }
    index = lobbyistGroupList.findText(name);
    if (index !== -1) { lobbyistGroupList.removeIndex(index); }
-
-   index = forumGroupWidgets[subHandle];
-   if (index && index.assoc && index.unassoc) {
-
-      forumAssocList.removeItem(index.assoc);
-      forumGroupList.removeItem(index.unassoc);
-      delete forumGroupWidgets[subHandle];
-   }
-});
-
-dmz.object.link.observe(self, dmz.stance.GameForumsHandle,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-   var name = dmz.stance.getDisplayName(subHandle);
-
-   forumComboBox.addItem(name);
-   forumList.push(subHandle);
-});
-
-dmz.object.unlink.observe(self, dmz.stance.GameGroupHandle,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-   var name = dmz.stance.getDisplayName(subHandle)
-     , index
-     ;
-
-   index = forumComboBox.findText(name);
-   if (index !== -1) {
-
-      forumComboBox.removeIndex(index);
-      forumList.splice(index, 1);
-   }
-});
-
-dmz.object.link.observe(self, dmz.stance.ForumLink,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-   if (forumGroupWidgets[superHandle]) {
-
-      forumGroupWidgets[superHandle].unassoc.hidden(true);
-      forumGroupWidgets[superHandle].assoc.hidden(false);
-   }
-});
-
-dmz.object.unlink.observe(self, dmz.stance.ForumLink,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-   if (forumGroupWidgets[superHandle]) {
-
-      forumGroupWidgets[superHandle].unassoc.hidden(false);
-      forumGroupWidgets[superHandle].assoc.hidden(true);
-   }
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
@@ -474,135 +409,6 @@ userFromGroup = function (item) {
    }
 };
 
-groupToForum = function (item) {
-
-   var groupHandle
-     , forumHandle
-     , currentIndex
-     , count = forumComboBox.count()
-     , linkHandle
-     ;
-
-   if (item && count) {
-
-      groupHandle = item.data();
-      currentIndex = forumComboBox.currentIndex();
-      if (currentIndex < forumList.length) { forumHandle = forumList[currentIndex]; }
-      else { forumHandle = false; }
-
-      if (groupHandle && forumHandle) {
-
-         dmz.object.link(dmz.stance.ForumLink, groupHandle, forumHandle);
-      }
-   }
-};
-
-
-groupFromForum = function (item) {
-
-   var groupHandle
-     , forumHandle
-     , currentIndex
-     , count = forumComboBox.count()
-     , linkHandle
-     ;
-
-   if (item && count) {
-
-      groupHandle = item.data();
-      currentIndex = forumComboBox.currentIndex();
-      if (currentIndex < forumList.length) { forumHandle = forumList[currentIndex]; }
-      else { forumHandle = false; }
-
-      if (groupHandle && forumHandle) {
-
-         dmz.object.unlink(
-            dmz.object.linkHandle(dmz.stance.ForumLink, groupHandle, forumHandle));
-
-      }
-   }
-};
-
-editScenarioWidget.observe(self, "addForumGroupButton", "clicked", function () {
-
-   groupToForum(forumGroupList.currentItem());
-});
-
-editScenarioWidget.observe(self, "removeForumGroupButton", "clicked", function () {
-
-   groupFromForum(forumAssocList.currentItem());
-});
-
-forumComboBox.observe(self, "currentIndexChanged", function (index) {
-
-   var listHandle = forumList[index]
-     , forumGroups
-     ;
-
-   if (listHandle) {
-
-      forumGroups = dmz.object.superLinks(listHandle, dmz.stance.ForumLink);
-      Object.keys(forumGroupWidgets).forEach(function (groupHandle) {
-
-         var hide;
-         groupHandle = parseInt(groupHandle);
-         hide = forumGroups && (forumGroups.indexOf(groupHandle) !== -1);
-         forumGroupWidgets[groupHandle].unassoc.hidden(hide);
-         forumGroupWidgets[groupHandle].assoc.hidden(!hide);
-      });
-   }
-
-});
-
-forumAssocList.observe(self, "itemActivated", groupFromForum);
-forumGroupList.observe(self, "itemActivated", groupToForum);
-
-editScenarioWidget.observe(self, "createForumButton", "clicked", function () {
-
-   dmz.ui.inputDialog.create(
-      { title: "Create Forum"
-      , label: "Forum Name:"
-      , text: ""
-      }
-      , editScenarioWidget
-      ).open(self, function (value, name) {
-
-         var handle;
-         if (value && (name.length > 0)) {
-
-				handle = dmz.object.create(dmz.stance.ForumType);
-			dmz.object.activate(handle);
-				dmz.object.text(handle, dmz.stance.NameHandle, name);
-				dmz.object.link(dmz.stance.GameForumsHandle, CurrentGameHandle, handle);
-			}
-		});
-});
-
-editScenarioWidget.observe(self, "deleteForumButton", "clicked", function () {
-
-   dmz.ui.messageBox.create(
-      { type: dmz.ui.messageBox.Warning
-      , text: "Are you sure you want to delete this forum?"
-      , informativeText: "Clicking <b>Ok</b> will cause all forum data to be permanently erased!"
-      , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-      , defaultButton: dmz.ui.messageBox.Cancel
-      }
-      , editScenarioWidget
-   ).open(self, function (value) {
-
-      var handle
-        , index
-        ;
-      if (value === dmz.ui.messageBox.Ok) {
-
-         index = forumComboBox.currentIndex();
-         handle = forumList[index];
-         if (handle) { dmz.object.destroy(handle); }
-         forumComboBox.remove(index);
-      }
-   });
-});
-
 dmz.object.flag.observe(self, dmz.stance.AdminHandle, function (handle, attr, value) {
 
    var adminList = dmz.object.subLinks(CurrentGameHandle, dmz.stance.AdminHandle);
@@ -618,7 +424,7 @@ dmz.object.flag.observe(self, dmz.stance.AdminHandle, function (handle, attr, va
       dmz.object.unlink(
          dmz.object.linkHandle(dmz.stance.AdminHandle, CurrentGameHandle, handle));
    }
-})
+});
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
 
@@ -651,7 +457,6 @@ setup = function () {
      , directory
      , advisors
      , lobbyists
-     , forums
      , avatars
      ;
 
@@ -892,7 +697,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
 
       var group
         , idx
-        , advisorHandle
+        , handle
         , name
         , str
         ;
@@ -909,13 +714,17 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
          for (idx = 0; idx < AdvisorCount; idx += 1) {
 
             str = name + ": Advisor" + idx;
-            advisorHandle = dmz.object.create(dmz.stance.AdvisorType);
-            dmz.object.text(advisorHandle, dmz.stance.NameHandle, str);
-            dmz.object.scalar(advisorHandle, dmz.stance.AdvisorImageHandle, idx);
-            dmz.object.activate(advisorHandle);
-            dmz.object.link(dmz.stance.AdvisorGroupHandle, group, advisorHandle);
+            handle = dmz.object.create(dmz.stance.AdvisorType);
+            dmz.object.text(handle, dmz.stance.NameHandle, str);
+            dmz.object.scalar(handle, dmz.stance.AdvisorImageHandle, idx);
+            dmz.object.activate(handle);
+            dmz.object.link(dmz.stance.AdvisorGroupHandle, group, handle);
          }
 
+         handle = dmz.object.create(dmz.stance.ForumType);
+         dmz.object.text(handle, dmz.stance.NameHandle, name);
+         dmz.object.activate(handle);
+         dmz.object.link(dmz.stance.ForumLink, group, handle);
       }
    });
 });
