@@ -1310,6 +1310,7 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 
    var file
      , data
+     , resource
      ;
    if (!groupAdvisors[groupHandle]) { groupAdvisors[groupHandle] = []; }
    if (groupAdvisors[groupHandle].length <= advisorCount) {
@@ -1329,7 +1330,10 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
          file = dmz.object.scalar(advisorHandle, dmz.stance.AdvisorImageHandle);
          if (data) {
 
-            file = dmz.resources.findFile(data.string(dmz.stance.AdvisorImageHandle, file));
+            resource = data.string(dmz.stance.AdvisorImageHandle, file);
+            file = dmz.resources.lookupConfig(resource);
+            if (file) { file = dmz.resources.findFile(file.string("alt.name")); }
+            if (!file) { file = dmz.resources.findFile(resource); }
             if (file) { advisorData[advisorHandle].picture = dmz.ui.graph.createPixmap(file); }
          }
       }

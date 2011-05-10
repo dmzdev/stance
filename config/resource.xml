@@ -281,6 +281,67 @@
    <resource name="Cartel1_adv2_alt" file="Cartel1/Cartel1_ad03_small.png"/>
    <resource name="Cartel1_adv3_alt" file="Cartel1/Cartel1_ad04_small.png"/>
    <resource name="Cartel1_adv4_alt" file="Cartel1/Cartel1_ad05_small.png"/>
+<!-- WHC IMAGES -->
+   <resource name="WHC_adv0" file="WHC/WHC_ad01.png">
+      <loc x="360" y="70"/>
+      <alt name="WHC_outreach_alt"/>
+   </resource>
+   <resource name="WHC_adv1" file="WHC/WHC_ad02.png">
+      <loc x="497" y="70"/>
+      <alt name="WHC_population_alt"/>
+   </resource>
+   <resource name="WHC_adv2" file="WHC/WHC_ad03.png">
+      <loc x="595" y="70"/>
+      <alt name="WHC_pr_alt"/>
+   </resource>
+   <resource name="WHC_adv3" file="WHC/WHC_ad04.png">
+      <loc x="692" y="70"/>
+      <alt name="WHC_security_alt"/>
+   </resource>
+   <resource name="WHC_adv4" file="WHC/WHC_ad05.png">
+      <loc x="825" y="70"/>
+      <alt name="WHC_trade_alt"/>
+   </resource>
+   <resource name="WHC_calendar" file="WHC/WHC_calendar.png">
+      <loc x="792" y="303"/>
+   </resource>
+   <resource name="WHC_computer" file="WHC/WHC_computer.png">
+      <loc x="501" y="283"/>
+   </resource>
+   <resource name="WHC_exit" file="WHC/WHC_exit.png">
+      <loc x="215" y="19"/>
+   </resource>
+   <resource name="WHC_map" file="WHC/WHC_map.png">
+      <loc x="1085" y="85"/>
+   </resource>
+   <resource name="WHC_memos" file="WHC/WHC_memos.png">
+      <loc x="1034" y="487"/>
+   </resource>
+   <resource name="WHC_newspaper" file="WHC/WHC_newspaper.png">
+      <loc x="239" y="525"/>
+   </resource>
+<!--
+   <resource name="WHC_resources" file="WHC/WHC_resources.png">
+      <loc x="4" y="44"/>
+   </resource>
+-->
+   <resource name="WHC_tv" file="WHC/WHC_tv.png">
+      <loc x="234" y="333"/>
+   </resource>
+   <resource name="WHC_videophone" file="WHC/WHC_vidphone.png">
+      <loc x="0" y="420"/>
+   </resource>
+   <resource name="WHC_vote" file="WHC/WHC_vote.png">
+      <loc x="1005" y="305"/>
+   </resource>
+   <resource name="WHC_background" file="WHC/WHC_Final.png">
+      <loc x="0" y="0"/>
+   </resource>
+   <resource name="WHC_outreach_alt" file="WHC/WHC_Advisor_outreach.png"/>
+   <resource name="WHC_population_alt" file="WHC/WHC_Advisor_population.png"/>
+   <resource name="WHC_pr_alt" file="WHC/WHC_Advisor_pr.png"/>
+   <resource name="WHC_security_alt" file="WHC/WHC_Advisor_security.png"/>
+   <resource name="WHC_trade_alt" file="WHC/WHC_Advisor_trade.png"/>
 <!-- LOBBYIST IMAGES -->
    <resource name="lob_0" file="sad200.jpg"/>
    <resource name="lob_1" file="silly200.png"/>

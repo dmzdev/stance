@@ -83,6 +83,22 @@
          <image name="Video" resource="Cartel1_tv"/>
          <image name="Vote" resource="Cartel1_vote"/>
       </set>
+      <set name="WHC" background="WHC_background" highlight="PushNotify">
+         <image name="Advisor" resource="WHC_adv0"/>
+         <image name="Advisor" resource="WHC_adv1"/>
+         <image name="Advisor" resource="WHC_adv2"/>
+         <image name="Advisor" resource="WHC_adv3"/>
+         <image name="Advisor" resource="WHC_adv4"/>
+         <image name="Calendar" resource="WHC_calendar"/>
+         <image name="Exit" resource="WHC_exit"/>
+         <image name="Forum" resource="WHC_computer"/>
+         <image name="Lobbyist" resource="WHC_videophone"/>
+         <image name="Map" resource="WHC_map"/>
+         <image name="Memo" resource="WHC_memos"/>
+         <image name="Newspaper" resource="WHC_newspaper"/>
+         <image name="Video" resource="WHC_tv"/>
+         <image name="Vote" resource="WHC_vote"/>
+      </set>
    </group-picture-set>
    <lobbyist-pictures>
       <picture name="lob_0"/>
