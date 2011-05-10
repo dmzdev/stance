@@ -2,11 +2,11 @@ require("datejs/date"); // www.datejs.com - an open-source JavaScript Date Libra
 
 var dmz =
    { ui:
-      { consts: require('dmz/ui/consts')
+      { consts: require("dmz/ui/consts")
       , layout: require("dmz/ui/layout")
-      , loader: require('dmz/ui/uiLoader')
-      , mainWindow: require('dmz/ui/mainWindow')
-      , messageBox: require('dmz/ui/messageBox')
+      , loader: require("dmz/ui/uiLoader")
+      , mainWindow: require("dmz/ui/mainWindow")
+      , messageBox: require("dmz/ui/messageBox")
       , stackedWidget: require("dmz/ui/stackedWidget")
       , graph: require("dmz/ui/graph")
       , widget: require("dmz/ui/widget")
@@ -15,6 +15,7 @@ var dmz =
       , webview: require("dmz/ui/webView")
       , inputDialog: require("dmz/ui/inputDialog")
       }
+   , config: require("dmz/runtime/config")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
@@ -83,6 +84,8 @@ var dmz =
    , mouseEvent
    , updateGraphicsForGroup
    , setPixmapFromResource
+   , setGItemPos
+   , getConfigFont
 
    // API
    , _exports = {}
@@ -100,12 +103,42 @@ self.shutdown = function () {
    if (gscene) { gscene.removeEventFilter(); }
 };
 
+setGItemPos = function (item, vector) {
+
+   if (item && dmz.vector.isTypeOf(vector)) { item.pos(vector.x, vector.y); }
+};
+
+getConfigFont = function (config) {
+
+   var result = false
+     , font
+     ;
+
+   if (config && dmz.config.isTypeOf(config)) {
+
+      font = config.get("font");
+      font = (font && font.length) ? font[0] : false;
+      self.log.warn ("getFont:", font);
+      if (font) {
+
+         result =
+            { font: font.string("name", "Times")
+            , size: font.number("size", 25)
+            , weight: font.number("weight", 75)
+            };
+      }
+      else { result = { font: "Times", size: 25, weight: 75 }; }
+   }
+   return result;
+};
+
 setPixmapFromResource = function (graphicsItem, resourceName) {
 
    var file = dmz.resources.findFile(resourceName)
      , config = dmz.resources.lookupConfig(resourceName)
      , loc
      , pixmap
+     , font
      ;
 
    if (graphicsItem && config && file) {
@@ -114,6 +147,16 @@ setPixmapFromResource = function (graphicsItem, resourceName) {
       pixmap = dmz.ui.graph.createPixmap(file);
       if (pixmap) { graphicsItem.pixmap(pixmap); }
       if (dmz.vector.isTypeOf(loc)) { graphicsItem.pos(loc.x, loc.y); }
+      if (graphicsItem === Calendar) {
+
+         font = getConfigFont(config);
+         Object.keys(CalendarText).forEach(function (key) {
+
+            setGItemPos (CalendarText[key], config.vector(key))
+            if (font) { CalendarText[key].font(font); }
+         });
+
+      }
    }
 };
 
@@ -336,6 +379,7 @@ setupMainWindow = function () {
            , file
            , config
            , loc
+           , font
            , offset
            , pixmap
            , widget
@@ -355,7 +399,20 @@ setupMainWindow = function () {
 
                      pixmap = gscene.addPixmap(pixmap);
                      pixmap.pos(loc.x, loc.y);
-                     if (name === "Calendar") { Calendar = pixmap; }
+                     if (name === "Calendar") {
+
+                        Calendar = pixmap;
+                        CalendarText.month = dmz.ui.graph.createTextItem("Mmm", Calendar);
+                        CalendarText.day = dmz.ui.graph.createTextItem("dd", CalendarText.month);
+                        CalendarText.year = dmz.ui.graph.createTextItem("yyyy", CalendarText.day);
+
+                        font = getConfigFont(config);
+                        Object.keys(CalendarText).forEach(function (key) {
+
+                           setGItemPos (CalendarText[key], config.vector(key))
+                           if (font) { CalendarText[key].font(font); }
+                        });
+                     }
                      else {
 
                         widget = dmz.ui.label.create(name);
@@ -498,7 +555,7 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
    setupMainWindow();
    if (!self.config.number("login.value", 0)) {
 
-      dmz.time.setTimer(self, 2, function () {
+      dmz.time.setTimer(self, /*2*/0, function () {
 
          if (!LoggedIn && stackedWidget) { stackedWidget.currentIndex(HomeIndex); LoggedIn = true; }
       });
@@ -519,29 +576,6 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
    if (Mode === dmz.module.Activate) {
 
       timeStamp = dmz.util.timeStampToDate(module.gameTime());
-      if (!Calendar) {
-
-         CalendarText.month = gscene.addText(timeStamp.toString("MMM"));
-         CalendarText.month.pos(810, 345);
-      }
-      else {
-
-         CalendarText.month = dmz.ui.graph.createTextItem(timeStamp.toString("MMM"), Calendar);
-      }
-      CalendarText.day = dmz.ui.graph.createTextItem(timeStamp.toString("dd"), CalendarText.month);
-      CalendarText.year = dmz.ui.graph.createTextItem(timeStamp.toString("yyyy"), CalendarText.day);
-      CalendarText.month.pos(55, 15);
-      CalendarText.day.pos(10, 30);
-      CalendarText.year.pos(-15, 30);
-
-      Object.keys(CalendarText).forEach(function (name) {
-
-         CalendarText[name].font(
-            { font: "Times"
-            , size: 30
-            , weight: 75
-            });
-      });
       dmz.time.setRepeatingTimer(self, 60, function () {
 
          var date;

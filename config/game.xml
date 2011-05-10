@@ -15,7 +15,7 @@
       <image name="Advisor2" resource="default_adv2"/>
       <image name="Advisor3" resource="default_adv3"/>
       <image name="Advisor4" resource="default_adv4"/>
-      <image name="Calendar" resource="Cartel1_calendar"/>
+      <image name="Calendar" resource="default_calendar"/>
       <image name="Vote" resource="default_vote"/>
    </set>
 </main>
@@ -34,6 +34,7 @@
          <image name="Advisor" resource="default_adv2"/>
          <image name="Advisor" resource="default_adv3"/>
          <image name="Advisor" resource="default_adv4"/>
+         <image name="Calendar" resource="default_calendar"/>
          <image name="Vote" resource="default_vote"/>
       </set>
       <set name="bw" background="bw_background" highlight="PushNotify">
@@ -49,6 +50,7 @@
          <image name="Advisor" resource="bw_adv2"/>
          <image name="Advisor" resource="bw_adv3"/>
          <image name="Advisor" resource="bw_adv4"/>
+         <image name="Calendar" resource="bw_calendar"/>
          <image name="Vote" resource="bw_vote"/>
       </set>
       <set name="Business" background="Business_background" highlight="PushNotify">
@@ -82,6 +84,22 @@
          <image name="Newspaper" resource="Cartel1_newspaper"/>
          <image name="Video" resource="Cartel1_tv"/>
          <image name="Vote" resource="Cartel1_vote"/>
+      </set>
+      <set name="WHC" background="WHC_background" highlight="PushNotify">
+         <image name="Advisor" resource="WHC_adv0"/>
+         <image name="Advisor" resource="WHC_adv1"/>
+         <image name="Advisor" resource="WHC_adv2"/>
+         <image name="Advisor" resource="WHC_adv3"/>
+         <image name="Advisor" resource="WHC_adv4"/>
+         <image name="Calendar" resource="WHC_calendar"/>
+         <image name="Exit" resource="WHC_exit"/>
+         <image name="Forum" resource="WHC_computer"/>
+         <image name="Lobbyist" resource="WHC_videophone"/>
+         <image name="Map" resource="WHC_map"/>
+         <image name="Memo" resource="WHC_memos"/>
+         <image name="Newspaper" resource="WHC_newspaper"/>
+         <image name="Video" resource="WHC_tv"/>
+         <image name="Vote" resource="WHC_vote"/>
       </set>
    </group-picture-set>
    <lobbyist-pictures>
@@ -126,16 +144,3 @@
    </object>
 </archive>
 </dmz>
-
-<!--
-
-      <group name="Congress">
-         <student-list>
-            <student name="First Last" email="name@place.com"/>
-         </student-list>
-         <advisor-list>
-            <advisor name="" info="" picfile=""/>
-         </advisor-list>
-      </group>
-
--->
