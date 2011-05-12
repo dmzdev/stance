@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dmz>
 <main>
+   <help-list>
+      <email address="techsupport@chds.us"/>
+      <email address="benjamin.e.sangster@gmail.com"/>
+   </help-list>
    <splash name="Splash"/>
    <set name="default" background="default_background" highlight="PushNotify">
       <image name="Exit" resource="default_exit"/>

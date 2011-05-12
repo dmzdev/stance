@@ -37,6 +37,10 @@ var dmz =
    , gscene
    , homeButton = main.lookup("homeButton")
 
+   , helpDialog = dmz.ui.loader.load("HelpEmailDialog.ui")
+   , helpSubject = helpDialog.lookup("subjectLine")
+   , helpText = helpDialog.lookup("descriptionText")
+
    // Variables
    , GroupList = [-1]
    , AdvisorCount = 5
@@ -74,6 +78,14 @@ var dmz =
    , HomeIndex = 0
    , SplashIndex = 1
    , LastGViewSize = false
+   , EmailMod =
+        { list: []
+        , sendMail: function (a, b, c) { this.list.push([a, b, c]); }
+        , techList: []
+        , sendTechEmail: function (a, b) { this.techList.push([a,b]); }
+        }
+   , TimeModule = { gameTime: dmz.time.getFrameTime }
+
 
    // Messages
    , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
@@ -118,7 +130,6 @@ getConfigFont = function (config) {
 
       font = config.get("font");
       font = (font && font.length) ? font[0] : false;
-      self.log.warn ("getFont:", font);
       if (font) {
 
          result =
@@ -409,7 +420,7 @@ setupMainWindow = function () {
                         font = getConfigFont(config);
                         Object.keys(CalendarText).forEach(function (key) {
 
-                           setGItemPos (CalendarText[key], config.vector(key))
+                           setGItemPos(CalendarText[key], config.vector(key))
                            if (font) { CalendarText[key].font(font); }
                         });
                      }
@@ -455,7 +466,7 @@ setupMainWindow = function () {
            , func
            ;
 
-         stackedWidget.currentIndex (HomeIndex);
+         stackedWidget.currentIndex(HomeIndex);
          if (item) {
 
            func = item.data(2);
@@ -495,7 +506,7 @@ _exports.addPage = function (name, widget, func, onHome) {
       PageLink[name].data(2, onHome);
       PageLink[name].cursor(dmz.ui.consts.PointingHandCursor);
    }
-   else { self.log.error (name, widget, stackedWidget, PageLink[name]); }
+   else { self.log.error(name, widget, stackedWidget, PageLink[name]); }
 };
 
 _exports.highlight = function (name) {
@@ -550,12 +561,58 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
 
 (function () {
 
+   var list = self.config.get("help-list.email")
+     , helpEmailList = []
+     ;
+
+   if (list) {
+
+      list.forEach(function (emailConfig) {
+
+         var addr = emailConfig.string("address");
+         if (addr) { helpEmailList.push(addr); }
+      });
+   }
+
+   self.log.warn ("help-list:", helpEmailList);
+   dmz.ui.mainWindow.addMenu(self, "&Help", "Report a Problem", function () {
+
+      helpDialog.open(self, function (value) {
+
+         var subjectText
+           , descText
+           ;
+
+         self.log.warn ("Value:", value);
+         if (value) {
+
+            self.log.error("helpDialog");
+            subjectText = helpSubject.text();
+            descText = helpText.text();
+
+            subjectText =
+               "STANCE HELP: " +
+                  ((subjectText && subjectText.length) ? subjectText : "No subject");
+
+            descText =
+               "Username: " + "" + "\n" + // Username
+               "Timestamp:" + "" + "\n" + // Timestamp
+               "\n" + ((descText && descText.length) ? descText : "No text");
+
+            self.log.warn ("EmailMod:", EmailMod.list, helpEmailList, subjectText, descText);
+            EmailMod.sendTechEmail(helpEmailList, subjectText, descText);
+         }
+         helpSubject.text("");
+         helpText.text("");
+      });
+   });
+
    groupBox.hide();
    groupBox.enabled(false);
    setupMainWindow();
    if (!self.config.number("login.value", 0)) {
 
-      dmz.time.setTimer(self, /*2*/0, function () {
+      dmz.time.setTimer(self, 1, function () {
 
          if (!LoggedIn && stackedWidget) { stackedWidget.currentIndex(HomeIndex); LoggedIn = true; }
       });
@@ -575,6 +632,7 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
    var timeStamp;
    if (Mode === dmz.module.Activate) {
 
+      TimeModule = module;
       timeStamp = dmz.util.timeStampToDate(module.gameTime());
       dmz.time.setRepeatingTimer(self, 60, function () {
 
@@ -587,6 +645,29 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
             CalendarText.year.plainText(date.toString("yyyy"));
          }
       });
+   }
+});
+
+dmz.module.subscribe(self, "email", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) {
+
+      if (EmailMod.list && EmailMod.list.length) {
+
+         EmailMod.list.forEach(function (email) {
+
+            module.sendMail(email[0], email[1], email[2]);
+         });
+      }
+      if (EmailMod.techList && EmailMod.techList.length) {
+
+         EmailMod.techList.forEach(function (email) {
+
+            module.sendTechMail(email[0], email[1]);
+         });
+      }
+
+      EmailMod = module;
    }
 });
 

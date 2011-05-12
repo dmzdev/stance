@@ -44,6 +44,31 @@ _exports.sendEmail = function (targets, title, text) {
    }
 };
 
+_exports.sendTechEmail = function (targets, title, text) {
+
+   var userListStr = ""
+     , title = (title && title.length) ? title : "No subject."
+     , text = (text && text.length) ? text : "No text."
+     , email
+     ;
+
+   if (targets && targets.length) {
+
+      targets.forEach(function (emailAddr) { userListStr = userListStr.concat(emailAddr + ","); });
+
+      if (userListStr.length) {
+
+         email = dmz.object.create(dmz.stance.EmailType);
+         dmz.object.text(email, dmz.stance.EmailRecipientHandle, userListStr);
+         dmz.object.text(email, dmz.stance.TitleHandle, title);
+         dmz.object.text(email, dmz.stance.TextHandle, text);
+         dmz.object.flag(email, dmz.stance.SentHandle, false);
+         dmz.object.activate(email);
+      }
+   }
+};
+
+
 (function () {
 
    var list = self.config.get("user-filter.user");
