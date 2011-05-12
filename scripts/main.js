@@ -574,7 +574,6 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
       });
    }
 
-   self.log.warn ("help-list:", helpEmailList);
    dmz.ui.mainWindow.addMenu(self, "&Help", "Report a Problem", function () {
 
       helpDialog.open(self, function (value) {
@@ -583,10 +582,8 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
            , descText
            ;
 
-         self.log.warn ("Value:", value);
          if (value) {
 
-            self.log.error("helpDialog");
             subjectText = helpSubject.text();
             descText = helpText.text();
 
@@ -595,11 +592,10 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
                   ((subjectText && subjectText.length) ? subjectText : "No subject");
 
             descText =
-               "Username: " + "" + "\n" + // Username
-               "Timestamp:" + "" + "\n" + // Timestamp
+               "Username: " + dmz.stance.getDisplayName(dmz.object.hil()) + "\n" +
+               "Timestamp:" + dmz.util.timeStampToDate(TimeModule.serverTime()) + "\n" +
                "\n" + ((descText && descText.length) ? descText : "No text");
 
-            self.log.warn ("EmailMod:", EmailMod.list, helpEmailList, subjectText, descText);
             EmailMod.sendTechEmail(helpEmailList, subjectText, descText);
          }
          helpSubject.text("");
