@@ -31,7 +31,8 @@
    </cleanup>
 </cleanup>
 <webMap>
-   <url name="http://dev.chds.us/?dystopia:map2"/>
+<!--   <url name="http://dev.chds.us/?dystopia:stance"/> -->
+   <url name="http://www.chds.us/?dystopia:stance"/>
    <module>
       <js>
          <windowObject name="dmz"/>
