@@ -115,6 +115,41 @@
    <avatar-list>
       <avatar name="Avatar0"/>
       <avatar name="Avatar1"/>
+      <avatar name="AvatarACLU1"/>
+      <avatar name="AvatarACLU2"/>
+      <avatar name="AvatarACLU3"/>
+      <avatar name="AvatarACLU4"/>
+      <avatar name="AvatarACLU5"/>
+      <avatar name="AvatarBusiness1"/>
+      <avatar name="AvatarBusiness2"/>
+      <avatar name="AvatarBusiness3"/>
+      <avatar name="AvatarBusiness4"/>
+      <avatar name="AvatarBusiness5"/>
+      <avatar name="AvatarCBP1"/>
+      <avatar name="AvatarCBP2"/>
+      <avatar name="AvatarCBP3"/>
+      <avatar name="AvatarCBP4"/>
+      <avatar name="AvatarCBP5"/>
+      <avatar name="AvatarLaBarbie1"/>
+      <avatar name="AvatarLaBarbie2"/>
+      <avatar name="AvatarLaBarbie3"/>
+      <avatar name="AvatarLaBarbie4"/>
+      <avatar name="AvatarLaBarbie5"/>
+      <avatar name="AvatarMexGov1"/>
+      <avatar name="AvatarMexGov2"/>
+      <avatar name="AvatarMexGov3"/>
+      <avatar name="AvatarMexGov4"/>
+      <avatar name="AvatarMexGov5"/>
+      <avatar name="AvatarWhiteHouse1"/>
+      <avatar name="AvatarWhiteHouse2"/>
+      <avatar name="AvatarWhiteHouse3"/>
+      <avatar name="AvatarWhiteHouse4"/>
+      <avatar name="AvatarWhiteHouse5"/>
+      <avatar name="AvatarZambada1"/>
+      <avatar name="AvatarZambada2"/>
+      <avatar name="AvatarZambada3"/>
+      <avatar name="AvatarZambada4"/>
+      <avatar name="AvatarZambada5"/>
    </avatar-list>
 </gameCreation>
 <email>

@@ -15,6 +15,41 @@
    <resource name="AvatarDefault" file="AvatarDefault.png"/>
    <resource name="Avatar0" file="avatar1_50x50.jpg"/>
    <resource name="Avatar1" file="avatar2_50x50.jpg"/>
+   <resource name="AvatarACLU1" file="avatar_aclu_1.jpg"/>
+   <resource name="AvatarACLU2" file="avatar_aclu_2.jpg"/>
+   <resource name="AvatarACLU3" file="avatar_aclu_3.jpg"/>
+   <resource name="AvatarACLU4" file="avatar_aclu_4.jpg"/>
+   <resource name="AvatarACLU5" file="avatar_aclu_5.jpg"/>
+   <resource name="AvatarBusiness1" file="avatar_business_1.jpg"/>
+   <resource name="AvatarBusiness2" file="avatar_business_2.jpg"/>
+   <resource name="AvatarBusiness3" file="avatar_business_3.jpg"/>
+   <resource name="AvatarBusiness4" file="avatar_business_4.jpg"/>
+   <resource name="AvatarBusiness5" file="avatar_business_5.jpg"/>
+   <resource name="AvatarCBP1" file="avatar_cbp_1.jpg"/>
+   <resource name="AvatarCBP2" file="avatar_cbp_2.jpg"/>
+   <resource name="AvatarCBP3" file="avatar_cbp_3.jpg"/>
+   <resource name="AvatarCBP4" file="avatar_cbp_4.jpg"/>
+   <resource name="AvatarCBP5" file="avatar_cbp_5.jpg"/>
+   <resource name="AvatarLaBarbie1" file="avatar_labarbie_1.jpg"/>
+   <resource name="AvatarLaBarbie2" file="avatar_labarbie_2.jpg"/>
+   <resource name="AvatarLaBarbie3" file="avatar_labarbie_3.jpg"/>
+   <resource name="AvatarLaBarbie4" file="avatar_labarbie_4.jpg"/>
+   <resource name="AvatarLaBarbie5" file="avatar_labarbie_5.jpg"/>
+   <resource name="AvatarMexGov1" file="avatar_mexgov_1.jpg"/>
+   <resource name="AvatarMexGov2" file="avatar_mexgov_2.jpg"/>
+   <resource name="AvatarMexGov3" file="avatar_mexgov_3.jpg"/>
+   <resource name="AvatarMexGov4" file="avatar_mexgov_4.jpg"/>
+   <resource name="AvatarMexGov5" file="avatar_mexgov_5.jpg"/>
+   <resource name="AvatarWhiteHouse1" file="avatar_whitehouse_1.jpg"/>
+   <resource name="AvatarWhiteHouse2" file="avatar_whitehouse_2.jpg"/>
+   <resource name="AvatarWhiteHouse3" file="avatar_whitehouse_3.jpg"/>
+   <resource name="AvatarWhiteHouse4" file="avatar_whitehouse_4.jpg"/>
+   <resource name="AvatarWhiteHouse5" file="avatar_whitehouse_5.jpg"/>
+   <resource name="AvatarZambada1" file="avatar_zambada_1.jpg"/>
+   <resource name="AvatarZambada2" file="avatar_zambada_2.jpg"/>
+   <resource name="AvatarZambada3" file="avatar_zambada_3.jpg"/>
+   <resource name="AvatarZambada4" file="avatar_zambada_4.jpg"/>
+   <resource name="AvatarZambada5" file="avatar_zambada_5.jpg"/>
 <!-- MAP ICONS -->
    <resource name="Generic" file="GenericMarker-sm.png">
       <webMap file="GenericMarker.png"/>

@@ -13,7 +13,7 @@
 <!--   <server host="localhost" port="5984">-->
 <!--   <server host="http://172.20.89.96:5984/" port="5984"/> -->
 <!--   <server host="dmz.couchone.com" port="80">-->
-   <server host="games.chds.us" path="/db/" login="admin" password="papagayo">
+   <server host="games.chds.us" port="443" path="/db/" login="stance_default_user" password="GLOck26">
 <!--      <proxy host="localhost" port="8888"/>-->
    </server>
 <!--   <login-target name="dmzQtPluginLoginDialog"/>-->
@@ -29,6 +29,9 @@
       </attribute>
       <attribute name="visible">
          <mask name="flag"/>
+      </attribute>
+      <attribute name="name">
+         <mask name="text"/>
       </attribute>
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
