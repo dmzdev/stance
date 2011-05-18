@@ -11,6 +11,7 @@ var dmz =
       , inputDialog: require("dmz/ui/inputDialog")
       , groupBox: require("dmz/ui/groupBox")
       , graph: require("dmz/ui/graph")
+      , crypto: require("dmz/ui/crypto")
       }
    , stance: require("stanceConst")
    , data: require("dmz/runtime/data")
@@ -794,11 +795,16 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
-      var user;
+      var user
+        , name
+        ;
       if (value) {
 
          user = dmz.object.create(dmz.stance.UserType);
-         dmz.object.text(user, dmz.stance.NameHandle, studentUserNameEdit.text());
+         dmz.object.text(
+            user,
+            dmz.stance.NameHandle,
+            dmz.ui.crypto.hash(studentUserNameEdit.text(), dmz.ui.crypto.Sha1));
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.activate(user);
