@@ -30,9 +30,6 @@
       <attribute name="visible">
          <mask name="flag"/>
       </attribute>
-      <attribute name="name">
-         <mask name="text"/>
-      </attribute>
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>

@@ -3,7 +3,6 @@
 <main>
    <help-list>
       <email address="techsupport@chds.us"/>
-      <email address="benjamin.e.sangster@gmail.com"/>
    </help-list>
    <splash name="Splash"/>
    <set name="default" background="default_background" highlight="PushNotify">
@@ -169,7 +168,7 @@
 -->
    <object type="user" uuid="12832b4e-5094-4636-b458-6cad452fccd1">
       <attributes name="name">
-         <text value="sangster@me.com"/>
+         <text value="b99dd12817cdd21400a9fb489376eb2ba76858ab"/>
       </attributes>
       <attributes name="display_name">
          <text value="Ben"/>
