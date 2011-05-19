@@ -8,8 +8,7 @@
 <!--   <plugin name="dmzArchivePluginUndo"/>-->
 </plugin-list>
 <archive-module>
-   <archive version="5" clear-old="true"/>
-   <archive-clear-message name="ArchiveClearMessage"/>
+   <archive version="0" clear-old="false"/>
 </archive-module>
 <archive-object>
    <filter>
@@ -25,7 +24,6 @@
    </filter>
 </archive-object>
 <archive-auto-cache>
-   <archive-clear-message name="ArchiveClearMessage"/>
 <!--   <auto-restore value="false"/>-->
 <!--   <save file="cache.xml"/>-->
 <!--   <archive-updated-message name="Archive_Updated_Message"/>-->

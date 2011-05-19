@@ -13,7 +13,8 @@
 <!--   <server host="localhost" port="5984">-->
 <!--   <server host="http://172.20.89.96:5984/" port="5984"/> -->
 <!--   <server host="dmz.couchone.com" port="80">-->
-   <server host="games.chds.us" port="443" path="/db/" login="stance_default_user" password="GLOck26">
+<!--   <server host="games.chds.us" port="443" path="/db/" login="stance_default_user" password="GLOck26">-->
+   <server host="205.155.65.16" port="443" path="/db/" login="stance_default_user" password="GLOck26">
 <!--      <proxy host="localhost" port="8888"/>-->
    </server>
 <!--   <login-target name="dmzQtPluginLoginDialog"/>-->
@@ -33,7 +34,7 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-   <db app="stance_clean_game"/>
+   <db app="stance_alpha"/>
 </web-services-object>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>
