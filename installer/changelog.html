@@ -40,6 +40,29 @@
 <hr noshade size='1'>
 -->
 
+<h2>Version 0.3.0 (2011-05-23)</h2>
+
+<h3>New Features</h3>
+<ul>
+   <li>When creating users, admin can now select a custom avatar.</li>
+   <li>Added "Help" menu with option to email tech from inside app.</li>
+</ul>
+
+<h3>Changes</h3>
+<ul>
+   <li>Email addresses are no longer stored anywhere in the app or CouchDB. SHA1 hashes have replaced them.</li>
+   <li>As a result, the last email address used to log in to the app is also no longer stored, and must be retyped every time on login.</li>
+   <li>Switched over to new data server.</li>
+   <li>Added archive versioning so that updates which modify object structure can clear local cache to prevent server data corruption.</li>
+</ul>
+
+<h3>Bugs fixed</h3>
+<ul>
+   <li></li>
+</ul>
+
+<hr noshade size='1'>
+
 <h2>Version 0.2.4 (2011-05-04)</h2>
 
 <h3>New Features</h3>

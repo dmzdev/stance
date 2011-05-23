@@ -8,7 +8,7 @@
 <!--   <plugin name="dmzArchivePluginUndo"/>-->
 </plugin-list>
 <archive-module>
-   <archive version="0" clear-old="false"/>
+   <archive version="1" clear-old="true"/>
 </archive-module>
 <archive-object>
    <filter>
