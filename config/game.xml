@@ -120,6 +120,22 @@
          <image name="Calendar" resource="MexicanGov_calendar"/>
          <image name="Vote" resource="MexicanGov_vote"/>
       </set>
+      <set name="Cartel2" background="Cartel2_background" highlight="PushNotify">
+         <image name="Exit" resource="Cartel2_exit"/>
+         <image name="Forum" resource="Cartel2_computer"/>
+         <image name="Map" resource="Cartel2_map"/>
+         <image name="Video" resource="Cartel2_tv"/>
+         <image name="Newspaper" resource="Cartel2_newspaper"/>
+         <image name="Memo" resource="Cartel2_memos"/>
+         <image name="Lobbyist" resource="Cartel2_videophone"/>
+         <image name="Advisor" resource="Cartel2_adv0"/>
+         <image name="Advisor" resource="Cartel2_adv1"/>
+         <image name="Advisor" resource="Cartel2_adv2"/>
+         <image name="Advisor" resource="Cartel2_adv3"/>
+         <image name="Advisor" resource="Cartel2_adv4"/>
+         <image name="Calendar" resource="Cartel2_calendar"/>
+         <image name="Vote" resource="Cartel2_vote"/>
+      </set>
    </group-picture-set>
    <lobbyist-pictures>
       <picture name="lob_0"/>
