@@ -26,7 +26,7 @@ var dmz =
     , _userHandle
     , _admin = false
     , _loginQueue = false
-    // Fuctions
+    // Functions
     , toTimeStamp = dmz.util.dateToTimeStamp
     , toDate = dmz.util.timeStampToDate
     , _activateUser

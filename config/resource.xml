@@ -408,6 +408,71 @@
    <resource name="WHC_pr_alt" file="WHC_Advisor_pr.png"/>
    <resource name="WHC_security_alt" file="WHC_Advisor_security.png"/>
    <resource name="WHC_trade_alt" file="WHC_Advisor_trade.png"/>
+<!-- MEXGOV IMAGES -->
+   <resource name="MexicanGov_adv0" file="MexicanGov_ad01.png">
+      <loc x="346" y="61"/>
+      <alt name="MexicanGov_adv0_alt"/>
+   </resource>
+   <resource name="MexicanGov_adv1" file="MexicanGov_ad02.png">
+      <loc x="467" y="61"/>
+      <alt name="MexicanGov_adv1_alt"/>
+   </resource>
+   <resource name="MexicanGov_adv2" file="MexicanGov_ad03.png">
+      <loc x="589" y="61"/>
+      <alt name="MexicanGov_adv2_alt"/>
+   </resource>
+   <resource name="MexicanGov_adv3" file="MexicanGov_ad04.png">
+      <loc x="708" y="61"/>
+      <alt name="MexicanGov_adv3_alt"/>
+   </resource>
+   <resource name="MexicanGov_adv4" file="MexicanGov_ad05.png">
+      <loc x="826" y="61"/>
+      <alt name="MexicanGov_adv4_alt"/>
+   </resource>
+   <resource name="MexicanGov_calendar" file="MexicanGov_calendar.png">
+      <loc x="831" y="315"/>
+      <month x="28" y="12"/>
+      <day x="10" y="30"/>
+      <year x="-15" y="30"/>
+      <font name="Times" size="27" weight="75"/>
+   </resource>
+   <resource name="MexicanGov_computer" file="MexicanGov_computer.png">
+      <loc x="475" y="244"/>
+   </resource>
+   <resource name="MexicanGov_exit" file="MexicanGov_exit.png">
+      <loc x="200" y="10"/>
+   </resource>
+   <resource name="MexicanGov_map" file="MexicanGov_map.png">
+      <loc x="1098" y="0"/>
+   </resource>
+   <resource name="MexicanGov_memos" file="MexicanGov_memos.png">
+      <loc x="963" y="489"/>
+   </resource>
+   <resource name="MexicanGov_newspaper" file="MexicanGov_newspaper.png">
+      <loc x="312" y="521"/>
+   </resource>
+<!--
+   <resource name="MexicanGov_resources" file="MexicanGov_resources.png">
+      <loc x="4" y="44"/>
+   </resource>
+-->
+   <resource name="MexicanGov_tv" file="MexicanGov_tv.png">
+      <loc x="197" y="326"/>
+   </resource>
+   <resource name="MexicanGov_videophone" file="MexicanGov_vidphone.png">
+      <loc x="0" y="475"/>
+   </resource>
+   <resource name="MexicanGov_vote" file="MexicanGov_vote.png">
+      <loc x="973" y="289"/>
+   </resource>
+   <resource name="MexicanGov_background" file="MexicanGov_full.png">
+      <loc x="0" y="0"/>
+   </resource>
+   <resource name="MexicanGov_adv0_alt" file="MexicanGov_ad01_sm.png"/>
+   <resource name="MexicanGov_adv1_alt" file="MexicanGov_ad02_sm.png"/>
+   <resource name="MexicanGov_adv2_alt" file="MexicanGov_ad03_sm.png"/>
+   <resource name="MexicanGov_adv3_alt" file="MexicanGov_ad04_sm.png"/>
+   <resource name="MexicanGov_adv4_alt" file="MexicanGov_ad05_sm.png"/>
 <!-- LOBBYIST IMAGES -->
    <resource name="lob_0" file="sad200.jpg"/>
    <resource name="lob_1" file="silly200.png"/>

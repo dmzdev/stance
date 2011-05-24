@@ -104,6 +104,22 @@
          <image name="Calendar" resource="WHC_calendar"/>
          <image name="Vote" resource="WHC_vote"/>
       </set>
+      <set name="MexicanGov" background="MexicanGov_background" highlight="PushNotify">
+         <image name="Exit" resource="MexicanGov_exit"/>
+         <image name="Forum" resource="MexicanGov_computer"/>
+         <image name="Map" resource="MexicanGov_map"/>
+         <image name="Video" resource="MexicanGov_tv"/>
+         <image name="Newspaper" resource="MexicanGov_newspaper"/>
+         <image name="Memo" resource="MexicanGov_memos"/>
+         <image name="Lobbyist" resource="MexicanGov_videophone"/>
+         <image name="Advisor" resource="MexicanGov_adv0"/>
+         <image name="Advisor" resource="MexicanGov_adv1"/>
+         <image name="Advisor" resource="MexicanGov_adv2"/>
+         <image name="Advisor" resource="MexicanGov_adv3"/>
+         <image name="Advisor" resource="MexicanGov_adv4"/>
+         <image name="Calendar" resource="MexicanGov_calendar"/>
+         <image name="Vote" resource="MexicanGov_vote"/>
+      </set>
    </group-picture-set>
    <lobbyist-pictures>
       <picture name="lob_0"/>
