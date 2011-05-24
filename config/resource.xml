@@ -236,7 +236,7 @@
    </resource>
    <resource name="Business_calendar" file="Business_calendar.png">
       <loc x="849" y="266"/>
-      <month x="45" y="15"/>
+      <month x="45" y="5"/>
       <day x="10" y="30"/>
       <year x="-15" y="30"/>
       <font name="Times" size="30" weight="75"/>
@@ -301,10 +301,10 @@
    </resource>
    <resource name="Cartel1_calendar" file="Cartel1_calendar.png">
       <loc x="792" y="303"/>
-      <month x="55" y="15"/>
+      <month x="50" y="10"/>
       <day x="10" y="30"/>
       <year x="-15" y="30"/>
-      <font name="Times" size="30" weight="75"/>
+      <font name="Times" size="25" weight="75"/>
    </resource>
    <resource name="Cartel1_computer" file="Cartel1_computer.png">
       <loc x="501" y="283"/>
