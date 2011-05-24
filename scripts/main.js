@@ -636,9 +636,9 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
          if (dmz.object.hil()) {
 
             date = dmz.util.timeStampToDate(module.gameTime());
-            CalendarText.month.plainText(date.toString("MMM"));
-            CalendarText.day.plainText(date.toString("dd"));
-            CalendarText.year.plainText(date.toString("yyyy"));
+            if (CalendarText.month) { CalendarText.month.plainText(date.toString("MMM")); }
+            if (CalendarText.day) { CalendarText.day.plainText(date.toString("dd")); }
+            if (CalendarText.year) { CalendarText.year.plainText(date.toString("yyyy")); }
          }
       });
    }
