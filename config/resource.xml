@@ -344,47 +344,47 @@
    <resource name="Cartel1_adv3_alt" file="Cartel1_ad04_small.png"/>
    <resource name="Cartel1_adv4_alt" file="Cartel1_ad05_small.png"/>
 <!-- WHC IMAGES -->
-   <resource name="WHC_adv0" file="WHC_ad01.png">
-      <loc x="360" y="70"/>
-      <alt name="WHC_outreach_alt"/>
-   </resource>
-   <resource name="WHC_adv1" file="WHC_ad02.png">
-      <loc x="497" y="70"/>
-      <alt name="WHC_population_alt"/>
-   </resource>
-   <resource name="WHC_adv2" file="WHC_ad03.png">
-      <loc x="595" y="70"/>
+   <resource name="WHC_adv0" file="WHC_ad01_pr.png">
+      <loc x="355" y="60"/>
       <alt name="WHC_pr_alt"/>
    </resource>
-   <resource name="WHC_adv3" file="WHC_ad04.png">
-      <loc x="692" y="70"/>
+   <resource name="WHC_adv1" file="WHC_ad02_population.png">
+      <loc x="474" y="60"/>
+      <alt name="WHC_population_alt"/>
+   </resource>
+   <resource name="WHC_adv2" file="WHC_ad03_security.png">
+      <loc x="594" y="60"/>
       <alt name="WHC_security_alt"/>
    </resource>
-   <resource name="WHC_adv4" file="WHC_ad05.png">
-      <loc x="825" y="70"/>
+   <resource name="WHC_adv3" file="WHC_ad04_outreach.png">
+      <loc x="710" y="60"/>
+      <alt name="WHC_outreach_alt"/>
+   </resource>
+   <resource name="WHC_adv4" file="WHC_ad05_trade.png">
+      <loc x="823" y="60"/>
       <alt name="WHC_trade_alt"/>
    </resource>
    <resource name="WHC_calendar" file="WHC_calendar.png">
-      <loc x="792" y="303"/>
-      <month x="55" y="15"/>
+      <loc x="819" y="376"/>
+      <month x="28" y="12"/>
       <day x="10" y="30"/>
       <year x="-15" y="30"/>
-      <font name="Times" size="30" weight="75"/>
+      <font name="Times" size="27" weight="75"/>
    </resource>
    <resource name="WHC_computer" file="WHC_computer.png">
-      <loc x="501" y="283"/>
+      <loc x="464" y="215"/>
    </resource>
    <resource name="WHC_exit" file="WHC_exit.png">
-      <loc x="215" y="19"/>
+      <loc x="222" y="36"/>
    </resource>
    <resource name="WHC_map" file="WHC_map.png">
-      <loc x="1085" y="85"/>
+      <loc x="1060" y="44"/>
    </resource>
    <resource name="WHC_memos" file="WHC_memos.png">
-      <loc x="1034" y="487"/>
+      <loc x="1010" y="495"/>
    </resource>
    <resource name="WHC_newspaper" file="WHC_newspaper.png">
-      <loc x="239" y="525"/>
+      <loc x="81" y="507"/>
    </resource>
 <!--
    <resource name="WHC_resources" file="WHC_resources.png">
@@ -392,15 +392,15 @@
    </resource>
 -->
    <resource name="WHC_tv" file="WHC_tv.png">
-      <loc x="234" y="333"/>
+      <loc x="222" y="312"/>
    </resource>
    <resource name="WHC_videophone" file="WHC_vidphone.png">
-      <loc x="0" y="420"/>
+      <loc x="103" y="418"/>
    </resource>
    <resource name="WHC_vote" file="WHC_vote.png">
-      <loc x="1005" y="305"/>
+      <loc x="943" y="324"/>
    </resource>
-   <resource name="WHC_background" file="WHC_Final.png">
+   <resource name="WHC_background" file="WHC_office.png">
       <loc x="0" y="0"/>
    </resource>
    <resource name="WHC_outreach_alt" file="WHC_Advisor_outreach.png"/>
