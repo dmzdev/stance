@@ -70,6 +70,13 @@ var dmz =
         , Vote: false
         , Exit: false
         }
+   , DataIndex =
+        { widget: 0
+        , func: 1
+        , onHome: 2
+        , highlight: 3
+        }
+
    , Calendar = false
    , CalendarText = { month: false, day: false, year: false }
    , LoggedIn = false
@@ -254,9 +261,10 @@ mouseEvent = function (object, event) {
             object.items(pos, dmz.ui.consts.IntersectsItemShape, dmz.ui.consts.DescendingOrder);
          items.forEach(function (item) {
 
-            var widget = item.data(0)
-              , onChangeFunction = item.data(1)
-              , children = item.childItems()
+            var widget = item.data(DataIndex.widget)
+              , onChangeFunction = item.data(DataIndex.func)
+//              , children = item.childItems()
+              , highlight = item.data(DataIndex.highlight)
               ;
 
             if (stackedWidget && widget) {
@@ -264,8 +272,15 @@ mouseEvent = function (object, event) {
                stackedWidget.currentWidget(widget);
                LastWindow = item;
             }
+
             if (onChangeFunction) { onChangeFunction(); }
-            if (children) { children.forEach (function (child) { child.hide(); }); }
+            if (highlight) { highlight.hide(); }
+//            if (children &&
+//               (item !== Calendar) && (item !== CalendarText.month) &&
+//                  (item !== CalendarText.day) && (CalendarText.year)) {
+
+//               children.forEach (function (child) { child.hide(); });
+//            }
          });
 
       }
@@ -318,12 +333,19 @@ function (objHandle, attrHandle, value) {
 
       Object.keys(PageLink).forEach(function (item) {
 
-         var children;
+         var highlight;
          if (PageLink[item]) {
 
-            children = PageLink[item].childItems();
-            if (children) { children.forEach(function (item) { item.hide(); }); }
+            highlight = PageLink[item].data(DataIndex.highlight);
+            if (highlight) { highlight.hide(); }
          }
+
+//         var children;
+//         if (PageLink[item]) {
+
+//            children = PageLink[item].childItems();
+//            if (children) { children.forEach(function (item) { item.hide(); }); }
+//         }
       });
    }
 });
@@ -333,15 +355,21 @@ function (linkObjHandle, attrHandle, groupHandle, userHandle) {
 
    if (userHandle === dmz.object.hil()) {
 
-      var children;
       Object.keys(PageLink).forEach(function (item) {
 
-         var children;
+         var highlight;
          if (PageLink[item]) {
 
-            children = PageLink[item].childItems();
-            if (children) { children.forEach(function (item) { item.hide(); }); }
+            highlight = PageLink[item].data(DataIndex.highlight);
+            if (highlight) { highlight.hide(); }
          }
+//         var children;
+//         if (PageLink[item]) {
+
+//            children = PageLink[item].childItems();
+//            if (children) { children.forEach(function (item) { item.hide(); }); }
+//         }
+
       });
    }
 });
@@ -427,13 +455,14 @@ setupMainWindow = function () {
                      else {
 
                         widget = dmz.ui.label.create(name);
-                        pixmap.data(0, widget);
+                        pixmap.data(DataIndex.widget, widget);
                         stackedWidget.add(widget);
                         PageLink[name] = pixmap;
                         if (highlight) {
 
                            pixmap = dmz.ui.graph.createPixmap(highlight);
                            pixmap = dmz.ui.graph.createPixmapItem(pixmap, PageLink[name]);
+                           PageLink[name].data(DataIndex.highlight, pixmap);
                            offset = config.vector("offset");
                            if (dmz.vector.isTypeOf(offset)) { pixmap.pos(offset.x, offset.y); }
                            pixmap.hide();
@@ -469,7 +498,7 @@ setupMainWindow = function () {
          stackedWidget.currentIndex(HomeIndex);
          if (item) {
 
-           func = item.data(2);
+           func = item.data(DataIndex.onHome);
            if (func) { func(); }
          }
       });
@@ -499,11 +528,11 @@ _exports.addPage = function (name, widget, func, onHome) {
 
    if (name && stackedWidget && PageLink[name]) {
 
-      stackedWidget.remove(PageLink[name].data(0));
+      stackedWidget.remove(PageLink[name].data(DataIndex.widget));
       stackedWidget.add(widget);
-      PageLink[name].data(0, widget);
-      PageLink[name].data(1, func);
-      PageLink[name].data(2, onHome);
+      PageLink[name].data(DataIndex.widget, widget);
+      PageLink[name].data(DataIndex.func, func);
+      PageLink[name].data(DataIndex.onHome, onHome);
       PageLink[name].cursor(dmz.ui.consts.PointingHandCursor);
    }
    else { self.log.error(name, widget, stackedWidget, PageLink[name]); }
@@ -511,11 +540,13 @@ _exports.addPage = function (name, widget, func, onHome) {
 
 _exports.highlight = function (name) {
 
-   var children;
+   var highlight;
    if (name && PageLink[name]) {
 
-      children = PageLink[name].childItems();
-      if (children) { children.forEach(function (item) { item.show(); }) }
+      highlight = PageLink[name].data(DataIndex.highlight);
+      if (highlight) { highlight.show(); }
+//      children = PageLink[name].childItems();
+//      if (children) { children.forEach(function (item) { item.show(); }) }
    }
 };
 
