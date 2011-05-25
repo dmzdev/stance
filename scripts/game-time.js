@@ -15,10 +15,20 @@ var dmz =
     , _exports = {}
     , _game = {}
     , _server = {}
+    , _haveSetServerTime = false
     // Fuctions
     , toDate = dmz.util.timeStampToDate
     , toTimeStamp = dmz.util.dateToTimeStamp
     ;
+
+
+dmz.time.setRepeatingTimer(self, 60, function () {
+
+   if (_haveSetServerTime) {
+
+      dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastOnlineHandle, dmz.time.getFrameTime());
+   }
+});
 
 dmz.object.create.observe(self, function (handle, type) {
 
@@ -87,7 +97,7 @@ _exports.gameTime = function (serverTime) {
    return result;
 }
 
-_exports.serverTime = function (timeStamp) {
+_exports.serverTime = function (timeStamp, oldTime) {
 
    var result = dmz.time.getFrameTime();
 
@@ -99,6 +109,8 @@ _exports.serverTime = function (timeStamp) {
 
       self.log.info("Server Time: " + toDate(timeStamp));
       self.log.info("  Game Time: " + toDate(_exports.gameTime(timeStamp)));
+
+      _haveSetServerTime = oldTime ? false : true;
    }
 
    return result;

@@ -99,6 +99,7 @@ var dmz =
       , Advisor4Handle: dmz.defs.createNamedHandle("advisor_4_data")
       , PinCountHandle: dmz.defs.createNamedHandle("pin_count")
       , ForumTimeHandle: dmz.defs.createNamedHandle("forum_time")
+      , LastOnlineHandle: dmz.defs.createNamedHandle("last_online")
       }
 
    , Functions =

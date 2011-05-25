@@ -538,6 +538,71 @@
    <resource name="Cartel2_adv2_alt" file="Cartel2_ad03_small.png"/>
    <resource name="Cartel2_adv3_alt" file="Cartel2_ad04_small.png"/>
    <resource name="Cartel2_adv4_alt" file="Cartel2_ad05_small.png"/>
+<!-- ACLU IMAGES -->
+   <resource name="ACLU_adv0" file="ACLU_ad01.png">
+      <loc x="342" y="34"/>
+      <alt name="ACLU_adv0_alt"/>
+   </resource>
+   <resource name="ACLU_adv1" file="ACLU_ad02.png">
+      <loc x="465" y="34"/>
+      <alt name="ACLU_adv1_alt"/>
+   </resource>
+   <resource name="ACLU_adv2" file="ACLU_ad03.png">
+      <loc x="588" y="34"/>
+      <alt name="ACLU_adv2_alt"/>
+   </resource>
+   <resource name="ACLU_adv3" file="ACLU_ad04.png">
+      <loc x="707" y="34"/>
+      <alt name="ACLU_adv3_alt"/>
+   </resource>
+   <resource name="ACLU_adv4" file="ACLU_ad05.png">
+      <loc x="826" y="34"/>
+      <alt name="ACLU_adv4_alt"/>
+   </resource>
+   <resource name="ACLU_calendar" file="ACLU_calendar.png">
+      <loc x="805" y="287"/>
+      <month x="50" y="10"/>
+      <day x="10" y="30"/>
+      <year x="-15" y="30"/>
+      <font name="Times" size="25" weight="75"/>
+   </resource>
+   <resource name="ACLU_computer" file="ACLU_computer.png">
+      <loc x="487" y="269"/>
+   </resource>
+   <resource name="ACLU_exit" file="ACLU_exit.png">
+      <loc x="229" y="14"/>
+   </resource>
+   <resource name="ACLU_map" file="ACLU_map.png">
+      <loc x="1072" y="33"/>
+   </resource>
+   <resource name="ACLU_memos" file="ACLU_memos.png">
+      <loc x="961" y="494"/>
+   </resource>
+   <resource name="ACLU_newspaper" file="ACLU_newspaper.png">
+      <loc x="308" y="513"/>
+   </resource>
+<!--
+   <resource name="ACLU_resources" file="ACLU_resources.png">
+      <loc x="4" y="44"/>
+   </resource>
+-->
+   <resource name="ACLU_tv" file="ACLU_tv.png">
+      <loc x="197" y="317"/>
+   </resource>
+   <resource name="ACLU_videophone" file="ACLU_vidphone.png">
+      <loc x="0" y="454"/>
+   </resource>
+   <resource name="ACLU_vote" file="ACLU_vote.png">
+      <loc x="987" y="285"/>
+   </resource>
+   <resource name="ACLU_background" file="ACLU_full.png">
+      <loc x="0" y="0"/>
+   </resource>
+   <resource name="ACLU_adv0_alt" file="ACLU_ad01_sm.png"/>
+   <resource name="ACLU_adv1_alt" file="ACLU_ad02_sm.png"/>
+   <resource name="ACLU_adv2_alt" file="ACLU_ad03_sm.png"/>
+   <resource name="ACLU_adv3_alt" file="ACLU_ad04_sm.png"/>
+   <resource name="ACLU_adv4_alt" file="ACLU_ad05_sm.png"/>
 <!-- LOBBYIST IMAGES -->
    <resource name="lob_0" file="sad200.jpg"/>
    <resource name="lob_1" file="silly200.png"/>

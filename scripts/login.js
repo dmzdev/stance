@@ -26,6 +26,7 @@ var dmz =
     , _userHandle
     , _admin = false
     , _loginQueue = false
+    , _haveSetServerTime = false
     // Functions
     , toTimeStamp = dmz.util.dateToTimeStamp
     , toDate = dmz.util.timeStampToDate
@@ -70,6 +71,7 @@ _login = function (data) {
 
          self.log.warn("Server Time: " + toDate(timeStamp));
          self.log.warn("  Game Time: " + toDate(_timeMod.gameTime(timeStamp)));
+         _haveSetServerTime = true;
       }
       else { self.log.error("Failed to to set server time"); }
 
@@ -119,6 +121,7 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
    var type = dmz.object.type(handle)
      , name
      , unverified = "*"
+     , timeStamp
      ;
 
    if (handle === _userHandle) {
@@ -134,6 +137,17 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
    if (value && type && type.isOfType(dmz.stance.UserType)) {
 
       _userHandle = handle;
+
+      if (!_haveSetServerTime && _timeMod) {
+
+         timeStamp = dmz.object.timeStamp(handle, dmz.stance.LastOnlineHandle);
+         if (timeStamp) {
+
+            _timeMod.serverTime(timeStamp, true);
+            self.log.warn("Last Server Time: " + toDate(timeStamp));
+            self.log.warn("  Last Game Time: " + toDate(_timeMod.gameTime(timeStamp)));
+         }
+      }
 
       name = dmz.object.text(_userHandle, dmz.stance.NameHandle);
       if (name === _userName) { unverified = ""; }

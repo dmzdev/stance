@@ -136,6 +136,22 @@
          <image name="Calendar" resource="Cartel2_calendar"/>
          <image name="Vote" resource="Cartel2_vote"/>
       </set>
+      <set name="ACLU" background="ACLU_background" highlight="PushNotify">
+         <image name="Exit" resource="ACLU_exit"/>
+         <image name="Forum" resource="ACLU_computer"/>
+         <image name="Map" resource="ACLU_map"/>
+         <image name="Video" resource="ACLU_tv"/>
+         <image name="Newspaper" resource="ACLU_newspaper"/>
+         <image name="Memo" resource="ACLU_memos"/>
+         <image name="Lobbyist" resource="ACLU_videophone"/>
+         <image name="Advisor" resource="ACLU_adv0"/>
+         <image name="Advisor" resource="ACLU_adv1"/>
+         <image name="Advisor" resource="ACLU_adv2"/>
+         <image name="Advisor" resource="ACLU_adv3"/>
+         <image name="Advisor" resource="ACLU_adv4"/>
+         <image name="Calendar" resource="ACLU_calendar"/>
+         <image name="Vote" resource="ACLU_vote"/>
+      </set>
    </group-picture-set>
    <lobbyist-pictures>
       <picture name="lob_0"/>
