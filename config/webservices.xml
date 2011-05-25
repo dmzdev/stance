@@ -28,6 +28,9 @@
       <attribute name="Object_Human_In_The_Loop">
          <mask name="flag"/>
       </attribute>
+      <attribute name="last_online">
+         <mask name="timeStamp"/>
+      </attribute>      
       <attribute name="visible">
          <mask name="flag"/>
       </attribute>
