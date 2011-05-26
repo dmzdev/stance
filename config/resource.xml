@@ -533,11 +533,11 @@
    <resource name="Cartel2_background" file="Cartel2_full.png">
       <loc x="0" y="0"/>
    </resource>
-   <resource name="Cartel2_adv0_alt" file="Cartel2_ad01_small.png"/>
-   <resource name="Cartel2_adv1_alt" file="Cartel2_ad02_small.png"/>
-   <resource name="Cartel2_adv2_alt" file="Cartel2_ad03_small.png"/>
-   <resource name="Cartel2_adv3_alt" file="Cartel2_ad04_small.png"/>
-   <resource name="Cartel2_adv4_alt" file="Cartel2_ad05_small.png"/>
+   <resource name="Cartel2_adv0_alt" file="Cartel2_ad01_sm.png"/>
+   <resource name="Cartel2_adv1_alt" file="Cartel2_ad02_sm.png"/>
+   <resource name="Cartel2_adv2_alt" file="Cartel2_ad03_sm.png"/>
+   <resource name="Cartel2_adv3_alt" file="Cartel2_ad04_sm.png"/>
+   <resource name="Cartel2_adv4_alt" file="Cartel2_ad05_sm.png"/>
 <!-- ACLU IMAGES -->
    <resource name="ACLU_adv0" file="ACLU_ad01.png">
       <loc x="342" y="34"/>
