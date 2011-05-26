@@ -150,9 +150,6 @@ addVote = function (voteHandle) {
    if (vote && !vote.item) {
 
       vote.item = dmz.ui.treeWidget.createItem(["ID", "Status", "Yes", "No", "Undec", "Time"]);
-      vote.yes = 0;
-      vote.no = 0;
-      vote.undec = 0;
       if (vote.item) {
 
          vote.item.data(0, voteHandle);
@@ -175,7 +172,6 @@ addQuestion = function (questionHandle) {
    if (question && !question.item) {
 
       question.item = dmz.ui.treeWidget.createItem(["ID", "", "Author", "Time"]);
-      question.read = "";
       if (question.item) {
 
          question.item.data(0, questionHandle);
@@ -207,6 +203,7 @@ updateYesVotes = function (handle) {
 
    var item = master.questions[handle];
    if (!item) { item = master.votes[handle]; }
+   self.log.warn ("UpdateYesVotes:", handle, item.yes);
    if (item && item.item) { item.item.text(TreeItemIndex[item.type].yes, item.yes); }
 };
 
@@ -214,6 +211,7 @@ updateUndecVotes = function (handle) {
 
    var item = master.questions[handle];
    if (!item) { item = master.votes[handle]; }
+   self.log.warn ("UpdateUndecVotes:", handle, item.undec);
    if (item && item.item) { item.item.text(TreeItemIndex[item.type].undec, item.undec); }
 };
 
@@ -221,6 +219,7 @@ updateNoVotes = function (handle) {
 
    var item = master.questions[handle];
    if (!item) { item = master.votes[handle]; }
+   self.log.warn ("UpdateNoVotes:", handle, item.no);
    if (item && item.item) { item.item.text(TreeItemIndex[item.type].no, item.no); }
 };
 
@@ -263,11 +262,15 @@ dmz.object.create.observe(self, function (handle, type) {
       if (type.isOfType(dmz.stance.QuestionType)) {
 
          obj.type = "question";
+         obj.read = ""
          master.questions[handle] = obj;
       }
       else if (type.isOfType(dmz.stance.VoteType)) {
 
          obj.type = "vote";
+         obj.yes = 0;
+         obj.no = 0;
+         obj.undec = 0;
          master.votes[handle] = obj;
       }
       else if (type.isOfType(dmz.stance.AdvisorType)) {
