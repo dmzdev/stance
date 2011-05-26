@@ -53,6 +53,12 @@ var dmz =
         , dmz.stance.Advisor4Handle
         ]
    , EmailMod = false
+   , master = { questions: {}, votes: {}, advisors: {} }
+   , TreeItemIndex =
+        { vote: { id: 0, status: 1, yes: 2, no: 3, undec: 4, time: 5 }
+        , question: { id: 0, read: 1, author: 2, time: 3 }
+        , advisor: {}
+        }
 
    // Function decls
    , updateAdvisor
@@ -64,25 +70,246 @@ var dmz =
    , getVoteStatus
    , answeredQuestionCount
    , isVoteExpired
+   , addVote
+   , addQuestion
+   , updateID
+   , updateStatus
+   , updateYesVotes
+   , updateNoVotes
+   , updateUndecVotes
+   , updateTime
+   , updateRead
+   , updateAuthor
+   , updateVisibility
+   , resetTree
+   , setTreeForAdvisor
    ;
+
+
+setTreeForAdvisor = function (advisorHandle, voteTree, questionTree) {
+
+   var item = master.advisors[advisorHandle]
+     ;
+
+   resetTree(voteTree);
+   resetTree(questionTree);
+   if (item) {
+
+      if (voteTree) {
+
+         Object.keys(item.votes).forEach(function (voteHandle) {
+
+            var voteItem = master.votes[voteHandle] ? master.votes[voteHandle].item : false
+              ;
+
+            if (voteItem) {
+
+               if (voteItem.treeWidget() !== voteTree) { voteTree.add(voteItem); }
+               voteItem.hidden(false);
+            }
+         });
+      }
+
+      if (questionTree) {
+
+         Object.keys(item.questions).forEach(function (questionHandle) {
+
+            var questionItem = master.questions[questionHandle] ? master.questions[questionHandle].item : false
+              ;
+
+            if (questionItem) {
+
+               if (questionItem.treeWidget() !== questionTree) { questionTree.add(questionItem); }
+               questionItem.hidden(false);
+            }
+         });
+      }
+   }
+};
+
+resetTree = function (treeWidget) {
+
+   var child
+     , root = treeWidget ? treeWidget.root() : false
+     , count
+     , idx
+     ;
+   if (root) {
+
+      count = root.childCount();
+      for (idx = 0; count && (idx < count); idx += 1) {
+
+         child = root.child(idx);
+         if (child) { child.hidden(true); }
+      }
+   }
+};
+
+addVote = function (voteHandle) {
+
+   var vote = master.votes[voteHandle]
+     ;
+
+   if (vote) {
+
+      vote.item = dmz.ui.treeWidget.createItem(["ID", "Status", "Yes", "No", "Undec", "Time"]);
+      if (vote.item) {
+
+         vote.item.data(voteHandle, 0);
+         vote.item.hidden(true);
+         updateID(voteHandle);
+         updateStatus(voteHandle);
+         updateYesVotes(voteHandle);
+         updateNoVotes(voteHandle);
+         updateUndecVotes(voteHandle);
+         updateTime(voteHandle);
+         updateVisibility(voteHandle);
+      }
+   }
+};
+
+addQuestion = function (questionHandle) {
+
+   var question = master.questions[questionHandle]
+     ;
+
+   if (question) {
+
+      question.item = dmz.ui.treeWidget.createItem(["ID", "", "Author", "Time"]);
+      question.read = "";
+      if (question.item) {
+
+         question.item.data(questionHandle, 0);
+         question.item.hidden(true);
+         updateID(questionHandle);
+         updateRead(questionHandle);
+         updateAuthor(questionHandle);
+         updateTime(questionHandle);
+         updateVisibility(questionHandle);
+      }
+   }
+};
+
+updateID = function (handle) {
+
+   var item = master.questions[handle]
+     ;
+
+   if (!item) { item = master.votes[handle]; }
+   if (item) { item.item.text(item.id, TreeItemIndex[item.type].id); }
+};
+
+updateStatus = function (handle) {
+
+   var item = master.questions[handle]
+     ;
+
+   if (!item) { item = master.votes[handle]; }
+   if (item) { item.item.text(item.status, TreeItemIndex[item.type].status); }
+};
+
+updateYesVotes = function (handle) {
+
+   var item = master.questions[handle]
+     ;
+
+   if (!item) { item = master.votes[handle]; }
+   if (item) { item.item.text(item.yes, TreeItemIndex[item.type].yes); }
+};
+
+updateUndecVotes = function (handle) {
+
+   var item = master.questions[handle]
+     ;
+
+   if (!item) { item = master.votes[handle]; }
+   if (item) { item.item.text(item.undec, TreeItemIndex[item.type].undec); }
+};
+
+updateNoVotes = function (handle) {
+
+   var item = master.questions[handle]
+     ;
+
+   if (!item) { item = master.votes[handle]; }
+   if (item) { item.item.text(item.no, TreeItemIndex[item.type].no); }
+};
+
+updateTime = function (handle) {
+
+   var item = master.questions[handle]
+     ;
+
+   if (!item) { item = master.votes[handle]; }
+   if (item) { item.item.text(item.time, TreeItemIndex[item.type].time); }
+};
+
+updateRead = function (handle) {
+
+   var item = master.questions[handle]
+     ;
+
+   if (!item) { item = master.votes[handle]; }
+   if (item) { item.item.text(item.read, TreeItemIndex[item.type].read); }
+};
+
+updateAuthor = function (handle) {
+
+   var item = master.questions[handle]
+     ;
+
+   if (!item) { item = master.votes[handle]; }
+   if (item) { item.item.text(item.author, TreeItemIndex[item.type].author); }
+};
+
+dmz.object.create.observe(self, function (handle, type) {
+
+   var obj = { handle: handle }
+
+   if (type) {
+
+      if (type.isOfType(dmz.stance.QuestionType)) {
+
+         obj.type = "question";
+         master.questions[handle] = obj;
+      }
+      else if (type.isOfType(dmz.stance.VoteType)) {
+
+         obj.type = "vote";
+         master.votes[handle] = obj;
+      }
+      else if (type.isOfType(dmz.stance.AdvisorType)) {
+
+         obj.questions = [];
+         obj.votes = [];
+         obj.type = "advisor";
+         obj.index = -1;
+         master.votes[handle] = obj;
+      }
+   }
+});
 
 dmz.object.scalar.observe(self, dmz.stance.ID, function (objHandle, attr, value) {
 
-   if (voteHistoryWidgets[objHandle]) { voteHistoryWidgets[objHandle].text(0, value); }
-   else if (questionHistoryWidgets[objHandle]) { questionHistoryWidgets[objHandle].text(0, value); }
+   var item = master.questions[objHandle]
+     ;
+
+   if (!item) { item = master.votes[objHandle]; }
+   if (item) { item.id = value; }
+
+   updateID(objHandle);
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtGameTimeHandle,
 function (objHandle, attr, value) {
 
-   if (voteHistoryWidgets[objHandle]) {
+   var item = master.questions[objHandle]
+     ;
 
-      voteHistoryWidgets[objHandle].text(5, dmz.util.timeStampToDate(value));
-   }
-   else if (questionHistoryWidgets[objHandle]) {
+   if (!item) { item = master.votes[objHandle]; }
+   if (item) { item.time = dmz.util.timeStampToDate(value); }
 
-      questionHistoryWidgets[objHandle].text(3, dmz.util.timeStampToDate(value));
-   }
+   updateTime(objHandle);
 });
 
 isVoteExpired = function (voteHandle) {
@@ -323,7 +550,10 @@ updateAdvisor = function (module, idx) {
         , question
         , count
         , voteHandle
+        , voteTree
+        , questionTree
         ;
+
 
       if (hil && hilGroup && groupAdvisors[hilGroup] && (idx < groupAdvisors[hilGroup].length)) {
 
@@ -333,6 +563,10 @@ updateAdvisor = function (module, idx) {
          if (advisorHandle) {
 
             data = advisorData[advisorHandle];
+            voteTree = advisorWidgets[idx].lookup("voteHistoryTree");
+            questionTree = advisorWidgets[idx].lookup("questionHistoryTree");
+            setAdvisorData(advisorHandle, voteTree, questionTree);
+
             advisorWidgets[idx].lookup("bioText").text(data.bio ? data.bio: "No bio.");
             advisorWidgets[idx].lookup("nameLabel").text(data.name ? data.name : "No name");
             if (data.picture) { advisorWidgets[idx].lookup("pictureLabel").pixmap(data.picture); }
@@ -503,101 +737,102 @@ fillList = function (uiList, handleList) {
    }
 };
 
-dmz.object.text.observe(self, dmz.stance.TextHandle, function (handle, attr, value) {
+// When text is updated, iterate through advisor widgets to see if that widget is
+// being displayed and update the text if so.
 
-   var type = dmz.object.type(handle)
-     , treeName
-     , index
-     ;
+//dmz.object.text.observe(self, dmz.stance.TextHandle, function (handle, attr, value) {
 
-   if (type.isOfType(dmz.stance.VoteType)) {
+//   var type = dmz.object.type(handle)
+//     , treeName
+//     , index
+//     ;
 
-      treeName = "voteHistoryTree";
-      index = 1;
-   }
-   else if (type.isOfType(dmz.stance.QuestionType)) {
+//   if (type.isOfType(dmz.stance.VoteType)) {
 
-      treeName = "questionHistoryTree";
-      index = 0;
-   }
+//      treeName = "voteHistoryTree";
+//      index = 1;
+//   }
+//   else if (type.isOfType(dmz.stance.QuestionType)) {
 
-   if (treeName && treeName.length) {
+//      treeName = "questionHistoryTree";
+//      index = 0;
+//   }
 
-      advisorWidgets.forEach(function (widget) {
+//   if (treeName && treeName.length) {
 
-         var curr = widget.lookup(treeName)
-           , data
-           ;
+//      advisorWidgets.forEach(function (widget) {
 
-         if (curr) {
+//         var curr = widget.lookup(treeName)
+//           , data
+//           ;
 
-            curr = curr.currentItem();
-            if (curr) { data = curr.data(0); }
-            if ((handle === data) &&
-               (widget.lookup("tabWidget").currentIndex() === index)) {
+//         if (curr) {
 
-               widget.lookup("selectedText").text(value);
-            }
-         }
-      });
-   }
-});
+//            curr = curr.currentItem();
+//            if (curr) { data = curr.data(0); }
+//            if ((handle === data) &&
+//               (widget.lookup("tabWidget").currentIndex() === index)) {
 
-dmz.object.text.observe(self, dmz.stance.CommentHandle, function (handle, attr, value) {
+//               widget.lookup("selectedText").text(value);
+//            }
+//         }
+//      });
+//   }
+//});
 
-   var type = dmz.object.type(handle)
-     , treeName
-     , index
-     ;
+//dmz.object.text.observe(self, dmz.stance.CommentHandle, function (handle, attr, value) {
 
-   if (type.isOfType(dmz.stance.VoteType)) {
+//   var type = dmz.object.type(handle)
+//     , treeName
+//     , index
+//     ;
 
-      treeName = "voteHistoryTree";
-      index = 1;
-   }
-   else if (type.isOfType(dmz.stance.QuestionType)) {
+//   if (type.isOfType(dmz.stance.VoteType)) {
 
-      treeName = "questionHistoryTree";
-      index = 0;
-   }
+//      treeName = "voteHistoryTree";
+//      index = 1;
+//   }
+//   else if (type.isOfType(dmz.stance.QuestionType)) {
 
-   if (treeName && treeName.length) {
+//      treeName = "questionHistoryTree";
+//      index = 0;
+//   }
 
-      advisorWidgets.forEach(function (widget) {
+//   if (treeName && treeName.length) {
 
-         var curr = widget.lookup(treeName)
-           , data
-           ;
+//      advisorWidgets.forEach(function (widget) {
 
-         if (curr) {
+//         var curr = widget.lookup(treeName)
+//           , data
+//           ;
 
-            curr = curr.currentItem();
-            if (curr) { data = curr.data(0); }
-            if ((handle === data) &&
-               (widget.lookup("tabWidget").currentIndex() === index)) {
+//         if (curr) {
 
-               widget.lookup("selectedOpinion").text(value);
-            }
-         }
-      });
-   }
-});
+//            curr = curr.currentItem();
+//            if (curr) { data = curr.data(0); }
+//            if ((handle === data) &&
+//               (widget.lookup("tabWidget").currentIndex() === index)) {
+
+//               widget.lookup("selectedOpinion").text(value);
+//            }
+//         }
+//      });
+//   }
+//});
 
 dmz.object.link.observe(self, dmz.stance.ViewedQuestionHandle,
 function (linkObjHandle, attrHandle, userHandle, questionHandle) {
 
-   if ((userHandle === dmz.object.hil()) && questionHistoryWidgets[questionHandle]) {
-
-      questionHistoryWidgets[questionHandle].text(1, "x");
-   }
+   var item = master.questions[questionHandle];
+   if (item) { item.read = "x"; }
+   updateRead(questionHandle);
 });
 
 dmz.object.link.observe(self, dmz.stance.VoteUndecidedHandle,
 function (linkObjHandle, attrHandle, voteHandle, userHandle) {
 
-   var undecHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle)
-     , yesHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteYesHandle)
-     , noHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteNoHandle)
+   var item = master.votes[voteHandle]
+     , undecHandleList
      ;
 
    if (dmz.object.linkHandle(dmz.stance.VoteYesHandle, voteHandle, userHandle) ||
@@ -610,12 +845,9 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
             userHandle));
    }
 
-   if (voteHistoryWidgets[voteHandle]) {
-
-      voteHistoryWidgets[voteHandle].text(2, yesHandleList ? yesHandleList.length : 0);
-      voteHistoryWidgets[voteHandle].text(3, noHandleList ? noHandleList.length : 0);
-      voteHistoryWidgets[voteHandle].text(4, undecHandleList ? undecHandleList.length : 0);
-   }
+   undecHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle);
+   if (item) { item.undec = undecHandleList.length; }
+   updateUndecVotes(voteHandle);
 });
 
 dmz.object.link.observe(self, dmz.stance.VoteYesHandle,
@@ -624,21 +856,21 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
    var linkHandle = dmz.object.linkHandle(dmz.stance.VoteUndecidedHandle, voteHandle, userHandle)
      , undecHandleList
      , yesHandleList
-     , noHandleList
      , game
+     , item = master.votes[voteHandle]
      ;
 
-   if (linkHandle) { dmz.object.unlink(linkHandle); }
+   if (linkHandle) {
 
-   undecHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle);
-   yesHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteYesHandle);
-   noHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteNoHandle);
-   if (voteHistoryWidgets[voteHandle]) {
-
-      voteHistoryWidgets[voteHandle].text(2, yesHandleList ? yesHandleList.length : 0);
-      voteHistoryWidgets[voteHandle].text(3, noHandleList ? noHandleList.length : 0);
-      voteHistoryWidgets[voteHandle].text(4, undecHandleList ? undecHandleList.length : 0);
+      dmz.object.unlink(linkHandle);
+      undecHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle);
+      if (item) { item.undec = undecHandleList ? undecHandleList.length : 0; }
+      updateUndecVotes(voteHandle);
    }
+
+   yesHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteYesHandle);
+   if (item) { item.yes = yesHandleList.length;}
+   updateYesVotes(voteHandle);
 
    if (dmz.object.flag(voteHandle, dmz.stance.ActiveHandle) && yesHandleList &&
       (yesHandleList.length >
@@ -669,23 +901,21 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
 
    var linkHandle = dmz.object.linkHandle(dmz.stance.VoteUndecidedHandle, voteHandle, userHandle)
      , undecHandleList
-     , yesHandleList
      , noHandleList
      , game
+     , item = master.votes[voteHandle]
      ;
 
    if (linkHandle) { dmz.object.unlink(linkHandle); }
-
    undecHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle);
-   yesHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteYesHandle);
    noHandleList = dmz.object.subLinks(voteHandle, dmz.stance.VoteNoHandle);
+   if (item) {
 
-   if (voteHistoryWidgets[voteHandle]) {
-
-      voteHistoryWidgets[voteHandle].text(2, yesHandleList ? yesHandleList.length : 0);
-      voteHistoryWidgets[voteHandle].text(3, noHandleList ? noHandleList.length : 0);
-      voteHistoryWidgets[voteHandle].text(4, undecHandleList ? undecHandleList.length : 0);
+      item.undec = undecHandleList ? undecHandleList.length : 0;
+      item.no = noHandleList.length;
    }
+   updateUndecVotes(voteHandle);
+   updateNoVotes(voteHandle);
 
    if (dmz.object.flag(voteHandle, dmz.stance.ActiveHandle)) {
 
@@ -729,12 +959,11 @@ function (objHandle, attr, value, prev) {
    var groupHandle = getVoteGroupHandle(objHandle)
      , link
      , game
+     , item = master.votes[objHandle]
      ;
 
-   if (voteHistoryWidgets[objHandle]) {
-
-      voteHistoryWidgets[objHandle].text(1, getVoteStatus(objHandle));
-   }
+   if (item) { item.status = getVoteStatus(objHandle); }
+   updateStatus(objHandle);
 
    if (groupHandle) {
 
@@ -748,12 +977,11 @@ function (objHandle, attr, value, prev) {
    var hil = dmz.object.hil()
      , hilGroup = dmz.stance.getUserGroupHandle(hil)
      , advisor
+     , item = master.votes[objHandle]
      ;
 
-   if (voteHistoryWidgets[objHandle]) {
-
-      voteHistoryWidgets[objHandle].text(1, getVoteStatus(objHandle));
-   }
+   if (item) { item.status = getVoteStatus(objHandle); }
+   updateStatus(objHandle);
 
    advisor = dmz.object.superLinks(objHandle, dmz.stance.VoteAdvisorHandle);
    if (value && !dmz.object.flag(hil, dmz.stance.AdminHandle) && advisor && advisor[0] &&
@@ -778,12 +1006,11 @@ function (objHandle, attr, value, prev) {
      , index
      , str
      , admin
+     , item = master.votes[objHandle]
      ;
 
-   if (voteHistoryWidgets[objHandle]) {
-
-      voteHistoryWidgets[objHandle].text(1, getVoteStatus(objHandle));
-   }
+   if (item) { item.status = getVoteStatus(objHandle); }
+   updateStatus(objHandle);
 
    if (type && type.isOfType(dmz.stance.VoteType)) {
 
@@ -858,12 +1085,11 @@ function (objHandle, attr, value, prev) {
 
    var hil = dmz.object.hil()
      , hilGroup = dmz.stance.getUserGroupHandle(hil)
+     , item = master.votes[objHandle]
      ;
 
-   if (voteHistoryWidgets[objHandle]) {
-
-      voteHistoryWidgets[objHandle].text(1, getVoteStatus(objHandle));
-   }
+   if (item) { item.status = getVoteStatus(objHandle); }
+   updateStatus(objHandle);
 
    if (value) {
 
@@ -967,6 +1193,7 @@ function (objHandle, attrHandle, value) {
       list = groupAdvisors[hilGroup];
       if (list) {
 
+         self.log.warn ("List: ", list);
          for (idx = 0; idx < list.length; idx += 1) {
 
             var advisorHandle = list[idx]
@@ -976,6 +1203,9 @@ function (objHandle, attrHandle, value) {
               , count = dmz.object.scalar(objHandle, advisorAttr[idx])
               ;
 
+            self.log.warn ("advisorHandle:", dmz.stance.getDisplayName(advisorHandle));
+            self.log.warn ("---active:", active);
+            self.log.warn ("---completed", completed);
             if (active) {
 
                questionHandleList = questionHandleList.concat(active);
@@ -988,6 +1218,7 @@ function (objHandle, attrHandle, value) {
             if (completed) {
 
                count = count ? count : 0;
+               self.log.warn ("questionHandleList:", questionHandleList, completed);
                questionHandleList = questionHandleList.concat(completed);
                if (count < completed.length) {
 
@@ -995,26 +1226,29 @@ function (objHandle, attrHandle, value) {
                   MainModule.highlight(str);
                }
             }
+            self.log.warn ("--questionHL:", questionHandleList);
          }
 
          list.forEach(function (advisorHandle) {
 
          });
       }
-      list = dmz.object.subLinks(hilGroup, dmz.stance.AdvisorGroupHandle);
-      if (list) {
+//      list = dmz.object.subLinks(hilGroup, dmz.stance.AdvisorGroupHandle);
+//      if (list) {
 
-         list.forEach(function (advisorHandle) {
+//         list.forEach(function (advisorHandle) {
 
-            var active = dmz.object.subLinks(advisorHandle, dmz.stance.AdvisorActiveQuestionHandle)
-              , completed = dmz.object.subLinks(advisorHandle, dmz.stance.AdvisorAnsweredQuestionHandle)
-              ;
+//            var active = dmz.object.subLinks(advisorHandle, dmz.stance.AdvisorActiveQuestionHandle)
+//              , completed = dmz.object.subLinks(advisorHandle, dmz.stance.AdvisorAnsweredQuestionHandle)
+//              ;
 
-            if (active) { questionHandleList = questionHandleList.concat(active); }
-            if (completed) { questionHandleList = questionHandleList.concat(completed); }
-         });
-      }
+//            if (active) { questionHandleList = questionHandleList.concat(active); }
+//            if (completed) { questionHandleList = questionHandleList.concat(completed); }
+//            self.log.warn ("questionHandleList: ["+questionHandleList+"]");
+//         });
+//      }
 
+      self.log.warn ("qHW:", Object.keys(questionHistoryWidgets));
       Object.keys(questionHistoryWidgets).forEach(function (questionHandle) {
 
          var str = ""
@@ -1022,6 +1256,7 @@ function (objHandle, attrHandle, value) {
            , advisorHandle
            ;
          questionHandle = parseInt(questionHandle);
+         self.log.warn ("question:", questionHandle, (questionHandleList && questionHandleList.indexOf(questionHandle) !== -1));
          dmz.object.flag(
             questionHandle,
             dmz.stance.VisibleHandle,
@@ -1112,10 +1347,10 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
 dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
 function (linkObjHandle, attrHandle, creationHandle, authorHandle) {
 
-   if (questionHistoryWidgets[creationHandle]) {
-
-      questionHistoryWidgets[creationHandle].text(2, dmz.stance.getDisplayName(authorHandle));
-   }
+   var item = master.questions[objHandle];
+   if (!item) { item = master.votes[objHandle]; }
+   if (item) { item.author = dmz.stance.getDisplayName(authorHandle); }
+   updateAuthor(creationHandle);
 });
 
 dmz.object.link.observe(self, dmz.stance.AdvisorActiveQuestionHandle,
@@ -1157,29 +1392,6 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
                textEdit.text("");
             }
          }
-
-         tree = widget.lookup("questionHistoryTree");
-         if (tree && !questionHistoryWidgets[questionHandle]) {
-
-            if (dmz.object.linkHandle(dmz.stance.ViewedQuestionHandle, hil, questionHandle)) {
-
-               str = "x";
-            }
-            else { str = ""; }
-
-            item = tree.add(
-               [ dmz.object.scalar(questionHandle, dmz.stance.ID)
-               , str
-               , dmz.stance.getAuthorName(questionHandle)
-               , dmz.util.timeStampToDate(dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtGameTimeHandle))
-               ]
-               , questionHandle
-               , 0
-               );
-
-            item.hidden(!dmz.object.flag(questionHandle, dmz.stance.VisibleHandle));
-            questionHistoryWidgets[questionHandle] = item;
-         }
       }
       dmz.object.flag(questionHandle, dmz.stance.VisibleHandle, isActive);
    }
@@ -1220,27 +1432,6 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
          }
 
          widget = advisorWidgets[index];
-         tree = widget.lookup("questionHistoryTree");
-         if (tree && !questionHistoryWidgets[questionHandle]) {
-
-            if (dmz.object.linkHandle(dmz.stance.ViewedQuestionHandle, hil, questionHandle)) {
-
-               str = "x";
-            }
-            else { str = ""; }
-            item = tree.add(
-               [ dmz.object.scalar(questionHandle, dmz.stance.ID)
-               , str
-               , dmz.stance.getAuthorName(questionHandle)
-               , dmz.util.timeStampToDate(dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtGameTimeHandle))
-               ]
-               , questionHandle
-               , 0
-               );
-
-            item.hidden(!dmz.object.flag(questionHandle, dmz.stance.VisibleHandle));
-            questionHistoryWidgets[questionHandle] = item;
-         }
          dmz.object.flag(questionHandle, dmz.stance.VisibleHandle, isActive);
       }
    }
@@ -1259,50 +1450,8 @@ function (linkObjHandle, attrHandle, advisorHandle, voteHandle) {
      , index
      ;
 
-   if (groupHandle && groupAdvisors[groupHandle] && groupAdvisors[groupHandle].length) {
-
-      index = groupAdvisors[groupHandle].indexOf(advisorHandle);
-      if (index !== -1) {
-
-         widget = advisorWidgets[index];
-         tree = widget.lookup("voteHistoryTree");
-         if (tree && !voteHistoryWidgets[voteHandle]) {
-
-            item = tree.add(
-               [ dmz.object.scalar(voteHandle, dmz.stance.ID)
-               , getVoteStatus(voteHandle)
-               , yesHandleList ? yesHandleList.length : 0
-               , noHandleList ? noHandleList.length : 0
-               , undecHandleList ? undecHandleList.length : 0
-               , dmz.util.timeStampToDate(dmz.object.timeStamp(voteHandle, dmz.stance.CreatedAtGameTimeHandle))
-               ]
-               , voteHandle
-               , 0
-               );
-
-            item.hidden(!dmz.object.flag(voteHandle, dmz.stance.VisibleHandle));
-            if (advisorData[advisorHandle]) {
-
-               advisorData[advisorHandle].voteWidgets.push(item);
-            }
-            voteHistoryWidgets[voteHandle] = item;
-         }
-         dmz.object.flag(
-            voteHandle,
-            dmz.stance.VisibleHandle,
-            (dmz.stance.getUserGroupHandle(dmz.object.hil()) === groupHandle));
-      }
-   }
-});
-
-dmz.object.flag.observe(self, dmz.stance.VisibleHandle,
-function (objHandle, attr, value, prev) {
-
-   if (voteHistoryWidgets[objHandle]) { voteHistoryWidgets[objHandle].hidden(!value); }
-   else if (questionHistoryWidgets[objHandle]) {
-
-      questionHistoryWidgets[objHandle].hidden(!value);
-   }
+   addVote(voteHandle);
+   master.advisors[advisorHandle].votes.push(voteHandle);
 });
 
 dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
