@@ -203,7 +203,6 @@ updateYesVotes = function (handle) {
 
    var item = master.questions[handle];
    if (!item) { item = master.votes[handle]; }
-   self.log.warn ("UpdateYesVotes:", handle, item.yes);
    if (item && item.item) { item.item.text(TreeItemIndex[item.type].yes, item.yes); }
 };
 
@@ -211,7 +210,6 @@ updateUndecVotes = function (handle) {
 
    var item = master.questions[handle];
    if (!item) { item = master.votes[handle]; }
-   self.log.warn ("UpdateUndecVotes:", handle, item.undec);
    if (item && item.item) { item.item.text(TreeItemIndex[item.type].undec, item.undec); }
 };
 
@@ -219,7 +217,6 @@ updateNoVotes = function (handle) {
 
    var item = master.questions[handle];
    if (!item) { item = master.votes[handle]; }
-   self.log.warn ("UpdateNoVotes:", handle, item.no);
    if (item && item.item) { item.item.text(TreeItemIndex[item.type].no, item.no); }
 };
 
