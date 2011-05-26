@@ -522,9 +522,18 @@ p, li { white-space: pre-wrap; }
            <property name="alternatingRowColors">
             <bool>true</bool>
            </property>
+           <property name="autoExpandDelay">
+            <number>0</number>
+           </property>
            <property name="sortingEnabled">
             <bool>true</bool>
            </property>
+           <attribute name="headerCascadingSectionResizes">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="headerDefaultSectionSize">
+            <number>100</number>
+           </attribute>
            <column>
             <property name="text">
              <string>#</string>
@@ -552,7 +561,12 @@ p, li { white-space: pre-wrap; }
            </column>
            <column>
             <property name="text">
-             <string>Date</string>
+             <string>Start Date</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>End Date</string>
             </property>
            </column>
           </widget>

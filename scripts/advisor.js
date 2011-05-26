@@ -55,7 +55,7 @@ var dmz =
    , EmailMod = false
    , master = { questions: {}, votes: {}, advisors: {} }
    , TreeItemIndex =
-        { vote: { id: 0, status: 1, yes: 2, no: 3, undec: 4, time: 5 }
+        { vote: { id: 0, status: 1, yes: 2, no: 3, undec: 4, time: 5, end: 6}
         , question: { id: 0, read: 1, author: 2, time: 3 }
         , advisor: {}
         }
@@ -78,6 +78,7 @@ var dmz =
    , updateNoVotes
    , updateUndecVotes
    , updateTime
+   , updateEnd
    , updateRead
    , updateAuthor
    , updateVisibility
@@ -149,7 +150,7 @@ addVote = function (voteHandle) {
    var vote = master.votes[voteHandle];
    if (vote && !vote.item) {
 
-      vote.item = dmz.ui.treeWidget.createItem(["ID", "Status", "Yes", "No", "Undec", "Time"]);
+      vote.item = dmz.ui.treeWidget.createItem(["ID", "Status", "Yes", "No", "Undec", "Time", "End"]);
       if (vote.item) {
 
          vote.item.data(0, voteHandle);
@@ -160,6 +161,7 @@ addVote = function (voteHandle) {
          updateNoVotes(voteHandle);
          updateUndecVotes(voteHandle);
          updateTime(voteHandle);
+         updateEnd(voteHandle);
          updateVisibility(voteHandle);
 
       }
@@ -225,6 +227,13 @@ updateTime = function (handle) {
    var item = master.questions[handle];
    if (!item) { item = master.votes[handle]; }
    if (item && item.item) { item.item.text(TreeItemIndex[item.type].time, item.time); }
+};
+
+updateEnd = function (handle) {
+
+   var item = master.questions[handle];
+   if (!item) { item = master.votes[handle]; }
+   if (item && item.item) { item.item.text(TreeItemIndex[item.type].end, item.end); }
 };
 
 updateRead = function (handle) {
@@ -298,6 +307,16 @@ function (objHandle, attr, value) {
 
    if (!item) { item = master.votes[objHandle]; }
    if (item) { item.time = dmz.util.timeStampToDate(value); updateTime(objHandle); }
+});
+
+dmz.object.timeStamp.observe(self, dmz.stance.DurationHandle,
+function (objHandle, attr, value) {
+
+   var item = master.questions[objHandle]
+     ;
+
+   if (!item) { item = master.votes[objHandle]; }
+   if (item) { item.end = dmz.util.timeStampToDate(value); updateEnd(objHandle); }
 });
 
 isVoteExpired = function (voteHandle) {
@@ -420,7 +439,6 @@ getVoteStatus = function (voteHandle) {
 
             }
          }
-
 
          widget.observe(self, "voteHistoryTree", "currentItemChanged", historyItemChanged);
          widget.observe(self, "questionHistoryTree", "currentItemChanged", historyItemChanged);
@@ -553,6 +571,8 @@ updateAdvisor = function (module, idx) {
             voteTree = advisorWidgets[idx].lookup("voteHistoryTree");
             questionTree = advisorWidgets[idx].lookup("questionHistoryTree");
             setTreeForAdvisor(advisorHandle, voteTree, questionTree);
+            voteTree.resizeColumnToContents(TreeItemIndex.vote.time);
+            voteTree.resizeColumnToContents(TreeItemIndex.vote.end);
 
             advisorWidgets[idx].lookup("bioText").text(data.bio ? data.bio: "No bio.");
             advisorWidgets[idx].lookup("nameLabel").text(data.name ? data.name : "No name");
