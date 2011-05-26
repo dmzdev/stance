@@ -1,3 +1,4 @@
+require ("datejs/date");
 var dmz =
        { object: require("dmz/components/object")
        , data: require("dmz/runtime/data")
@@ -56,7 +57,9 @@ _activateUser = function (name) {
 
 _login = function (data) {
 
-   var timeStamp;
+   var timeStamp
+     , date
+     ;
 
    if (data && dmz.data.isTypeOf(data)) {
 
@@ -67,6 +70,9 @@ _login = function (data) {
       if (_timeMod) {
 
          timeStamp = data.number(TimeStampAttr);
+         date = toDate(timeStamp);
+         date.add(-date.getTimezoneOffset("PST", date.isDaylightSavingTime())).minutes();
+         timeStamp = toTimeStamp(date);
          _timeMod.serverTime(timeStamp);
 
          self.log.warn("Server Time: " + toDate(timeStamp));
