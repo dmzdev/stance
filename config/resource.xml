@@ -273,11 +273,11 @@
    <resource name="Business_background" file="Business_Full.png">
       <loc x="0" y="0"/>
    </resource>
-   <resource name="Business_adv0_alt" file="Business_ad01_small.png"/>
-   <resource name="Business_adv1_alt" file="Business_ad02_small.png"/>
-   <resource name="Business_adv2_alt" file="Business_ad03_small.png"/>
-   <resource name="Business_adv3_alt" file="Business_ad04_small.png"/>
-   <resource name="Business_adv4_alt" file="Business_ad05_small.png"/>
+   <resource name="Business_adv0_alt" file="Business_ad01_pr.png"/>
+   <resource name="Business_adv1_alt" file="Business_ad02_security.png"/>
+   <resource name="Business_adv2_alt" file="Business_ad03_trade.png"/>
+   <resource name="Business_adv3_alt" file="Business_ad04_strategicIntel.png"/>
+   <resource name="Business_adv4_alt" file="Business_ad05_lobby.png"/>
 <!-- CARTEL 1 IMAGES -->
    <resource name="Cartel1_adv0" file="Cartel1_ad01.png">
       <loc x="360" y="70"/>
@@ -338,11 +338,11 @@
    <resource name="Cartel1_background" file="Cartel1_Final.png">
       <loc x="0" y="0"/>
    </resource>
-   <resource name="Cartel1_adv0_alt" file="Cartel1_ad01_small.png"/>
-   <resource name="Cartel1_adv1_alt" file="Cartel1_ad02_small.png"/>
-   <resource name="Cartel1_adv2_alt" file="Cartel1_ad03_small.png"/>
-   <resource name="Cartel1_adv3_alt" file="Cartel1_ad04_small.png"/>
-   <resource name="Cartel1_adv4_alt" file="Cartel1_ad05_small.png"/>
+   <resource name="Cartel1_adv0_alt" file="Cartel1_ad01_political.png"/>
+   <resource name="Cartel1_adv1_alt" file="Cartel1_ad02_distribution.png"/>
+   <resource name="Cartel1_adv2_alt" file="Cartel1_ad03_enforcement.png"/>
+   <resource name="Cartel1_adv3_alt" file="Cartel1_ad04_information.png"/>
+   <resource name="Cartel1_adv4_alt" file="Cartel1_ad05_political.png"/>
 <!-- WHC IMAGES -->
    <resource name="WHC_adv0" file="WHC_ad01_pr.png">
       <loc x="355" y="60"/>
@@ -468,11 +468,11 @@
    <resource name="MexicanGov_background" file="MexicanGov_full.png">
       <loc x="0" y="0"/>
    </resource>
-   <resource name="MexicanGov_adv0_alt" file="MexicanGov_ad01_sm.png"/>
-   <resource name="MexicanGov_adv1_alt" file="MexicanGov_ad02_sm.png"/>
-   <resource name="MexicanGov_adv2_alt" file="MexicanGov_ad03_sm.png"/>
-   <resource name="MexicanGov_adv3_alt" file="MexicanGov_ad04_sm.png"/>
-   <resource name="MexicanGov_adv4_alt" file="MexicanGov_ad05_sm.png"/>
+   <resource name="MexicanGov_adv0_alt" file="MexicanGov_ad01_outreach.png"/>
+   <resource name="MexicanGov_adv1_alt" file="MexicanGov_ad02_diplomatic.png"/>
+   <resource name="MexicanGov_adv2_alt" file="MexicanGov_ad03_domesticGovernance.png"/>
+   <resource name="MexicanGov_adv3_alt" file="MexicanGov_ad04_pr.png"/>
+   <resource name="MexicanGov_adv4_alt" file="MexicanGov_ad05_militaryAndSecurity.png"/>
 <!-- CARTEL 2 IMAGES -->
    <resource name="Cartel2_adv0" file="Cartel2_ad01.png">
       <loc x="393" y="45"/>
@@ -496,7 +496,7 @@
    </resource>
    <resource name="Cartel2_calendar" file="Cartel2_calendar.png">
       <loc x="824" y="312"/>
-      <month x="50" y="10"/>
+      <month x="70" y="20"/>
       <day x="10" y="30"/>
       <year x="-15" y="30"/>
       <font name="Times" size="25" weight="75"/>
@@ -533,11 +533,11 @@
    <resource name="Cartel2_background" file="Cartel2_full.png">
       <loc x="0" y="0"/>
    </resource>
-   <resource name="Cartel2_adv0_alt" file="Cartel2_ad01_sm.png"/>
-   <resource name="Cartel2_adv1_alt" file="Cartel2_ad02_sm.png"/>
-   <resource name="Cartel2_adv2_alt" file="Cartel2_ad03_sm.png"/>
-   <resource name="Cartel2_adv3_alt" file="Cartel2_ad04_sm.png"/>
-   <resource name="Cartel2_adv4_alt" file="Cartel2_ad05_sm.png"/>
+   <resource name="Cartel2_adv0_alt" file="Cartel2_ad01_information.png"/>
+   <resource name="Cartel2_adv1_alt" file="Cartel2_ad02_enforcement.png"/>
+   <resource name="Cartel2_adv2_alt" file="Cartel2_ad03_business.png"/>
+   <resource name="Cartel2_adv3_alt" file="Cartel2_ad04_political.png"/>
+   <resource name="Cartel2_adv4_alt" file="Cartel2_ad05_distribution.png"/>
 <!-- ACLU IMAGES -->
    <resource name="ACLU_adv0" file="ACLU_ad01.png">
       <loc x="342" y="34"/>
@@ -598,11 +598,11 @@
    <resource name="ACLU_background" file="ACLU_full.png">
       <loc x="0" y="0"/>
    </resource>
-   <resource name="ACLU_adv0_alt" file="ACLU_ad01_sm.png"/>
-   <resource name="ACLU_adv1_alt" file="ACLU_ad02_sm.png"/>
-   <resource name="ACLU_adv2_alt" file="ACLU_ad03_sm.png"/>
-   <resource name="ACLU_adv3_alt" file="ACLU_ad04_sm.png"/>
-   <resource name="ACLU_adv4_alt" file="ACLU_ad05_sm.png"/>
+   <resource name="ACLU_adv0_alt" file="ACLU_ad01_legal.png"/>
+   <resource name="ACLU_adv1_alt" file="ACLU_ad02_laRaza.png"/>
+   <resource name="ACLU_adv2_alt" file="ACLU_ad03_pr.png"/>
+   <resource name="ACLU_adv3_alt" file="ACLU_ad04_outreach.png"/>
+   <resource name="ACLU_adv4_alt" file="ACLU_ad05_security.png"/>
 <!-- CBP IMAGES -->
    <resource name="CBP_adv0" file="CBP_ad01.png">
       <loc x="345" y="72"/>
@@ -663,11 +663,11 @@
    <resource name="CBP_background" file="CBP_main.png">
       <loc x="0" y="0"/>
    </resource>
-   <resource name="CBP_adv0_alt" file="CBP_ad01_sm.png"/>
-   <resource name="CBP_adv1_alt" file="CBP_ad02_sm.png"/>
-   <resource name="CBP_adv2_alt" file="CBP_ad03_sm.png"/>
-   <resource name="CBP_adv3_alt" file="CBP_ad04_sm.png"/>
-   <resource name="CBP_adv4_alt" file="CBP_ad05_sm.png"/>
+   <resource name="CBP_adv0_alt" file="CBP_ad01_outreach.png"/>
+   <resource name="CBP_adv1_alt" file="CBP_ad02_publicrelations.png"/>
+   <resource name="CBP_adv2_alt" file="CBP_ad03_borderpatrol.png"/>
+   <resource name="CBP_adv3_alt" file="CBP_ad04_customs.png"/>
+   <resource name="CBP_adv4_alt" file="CBP_ad05_infrastructure.png"/>
 <!-- LOBBYIST IMAGES -->
    <resource name="lob_0" file="sad200.jpg"/>
    <resource name="lob_1" file="silly200.png"/>
