@@ -76,6 +76,7 @@ var dmz =
         , onHome: 2
         , highlight: 3
         }
+   , DefaultCalendarFormats = { month: "MMM", day: "dd", year: "yyyy" }
 
    , Calendar = false
    , CalendarText = { month: false, day: false, year: false }
@@ -170,6 +171,12 @@ setPixmapFromResource = function (graphicsItem, resourceName) {
          font = getConfigFont(config);
          Object.keys(CalendarText).forEach(function (key) {
 
+            var format = config.get(key);
+            format =
+               (format && format.length && format[0]) ?
+                  format[0].string("format") :
+                  DefaultCalendarFormats[key];
+            CalendarText[key].data(0, format ? format : DefaultCalendarFormats[key]);
             setGItemPos (CalendarText[key], config.vector(key))
             if (font) { CalendarText[key].font(font); }
          });
@@ -422,6 +429,7 @@ setupMainWindow = function () {
            , offset
            , pixmap
            , widget
+           , prev
            ;
 
          if (name && resource) {
@@ -441,15 +449,20 @@ setupMainWindow = function () {
                      if (name === "Calendar") {
 
                         Calendar = pixmap;
-                        CalendarText.month = dmz.ui.graph.createTextItem("Mmm", Calendar);
-                        CalendarText.day = dmz.ui.graph.createTextItem("dd", CalendarText.month);
-                        CalendarText.year = dmz.ui.graph.createTextItem("yyyy", CalendarText.day);
-
+                        prev = Calendar;
                         font = getConfigFont(config);
                         Object.keys(CalendarText).forEach(function (key) {
 
-                           setGItemPos(CalendarText[key], config.vector(key))
+                           var format = config.get(key);
+                           format =
+                              (format && format.length && format[0]) ?
+                                 format[0].string("format") :
+                                 DefaultCalendarFormats[key];
+                           CalendarText[key] = dmz.ui.graph.createTextItem(format ? format : DefaultCalendarFormats[key], prev);
+                           CalendarText[key].data(0, format ? format : DefaultCalendarFormats[key]);
+                           setGItemPos(CalendarText[key], config.vector(key));
                            if (font) { CalendarText[key].font(font); }
+                           prev = CalendarText[key];
                         });
                      }
                      else {
@@ -661,15 +674,21 @@ dmz.module.subscribe(self, "game-time", function (Mode, module) {
 
       TimeModule = module;
       timeStamp = dmz.util.timeStampToDate(module.gameTime());
-      dmz.time.setRepeatingTimer(self, 60, function () {
+      dmz.time.setRepeatingTimer(self, 5, function () {
 
          var date;
          if (dmz.object.hil()) {
 
             date = dmz.util.timeStampToDate(module.gameTime());
-            if (CalendarText.month) { CalendarText.month.plainText(date.toString("MMM")); }
-            if (CalendarText.day) { CalendarText.day.plainText(date.toString("dd")); }
-            if (CalendarText.year) { CalendarText.year.plainText(date.toString("yyyy")); }
+            Object.keys(CalendarText).forEach(function (key) {
+
+               var data;
+               if (CalendarText[key]) {
+
+                  data = CalendarText[key].data(0);
+                  CalendarText[key].plainText(date.toString(data));
+               }
+            });
          }
       });
    }

@@ -981,10 +981,8 @@ editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
             dmz.object.activate(media);
             dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, media);
             linkAttr = MediaTypes[type].attr;
-            self.log.warn ("media:", dmz.object.type(media), MediaTypes[type].attr);
             userList.forEach(function (userHandle) {
 
-               self.log.warn ("Linking:", MediaTypes[type].attr, userHandle, media);
                dmz.object.link(MediaTypes[type].attr, userHandle, media);
             });
          }

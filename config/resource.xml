@@ -603,6 +603,71 @@
    <resource name="ACLU_adv2_alt" file="ACLU_ad03_sm.png"/>
    <resource name="ACLU_adv3_alt" file="ACLU_ad04_sm.png"/>
    <resource name="ACLU_adv4_alt" file="ACLU_ad05_sm.png"/>
+<!-- CBP IMAGES -->
+   <resource name="CBP_adv0" file="CBP_ad01.png">
+      <loc x="345" y="72"/>
+      <alt name="CBP_adv0_alt"/>
+   </resource>
+   <resource name="CBP_adv1" file="CBP_ad02.png">
+      <loc x="466" y="85"/>
+      <alt name="CBP_adv1_alt"/>
+   </resource>
+   <resource name="CBP_adv2" file="CBP_ad03.png">
+      <loc x="588" y="68"/>
+      <alt name="CBP_adv2_alt"/>
+   </resource>
+   <resource name="CBP_adv3" file="CBP_ad04.png">
+      <loc x="705" y="110"/>
+      <alt name="CBP_adv3_alt"/>
+   </resource>
+   <resource name="CBP_adv4" file="CBP_ad05.png">
+      <loc x="821" y="84"/>
+      <alt name="CBP_adv4_alt"/>
+   </resource>
+   <resource name="CBP_calendar" file="CBP_calendar.png">
+      <loc x="795" y="375"/>
+      <month x="20" y="10"/>
+      <day x="0" y="25"/>
+      <year x="38" y="0" format="yy"/>
+      <font name="Times" size="25" weight="75"/>
+   </resource>
+   <resource name="CBP_computer" file="CBP_computer.png">
+      <loc x="491" y="296"/>
+   </resource>
+   <resource name="CBP_exit" file="CBP_exit.png">
+      <loc x="211" y="0"/>
+   </resource>
+   <resource name="CBP_map" file="CBP_map.png">
+      <loc x="1052" y="76"/>
+   </resource>
+   <resource name="CBP_memos" file="CBP_memos.png">
+      <loc x="1012" y="495"/>
+   </resource>
+   <resource name="CBP_newspaper" file="CBP_newspaper.png">
+      <loc x="286" y="487"/>
+   </resource>
+<!--
+   <resource name="CBP_resources" file="CBP_resources.png">
+      <loc x="0" y="75"/>
+   </resource>
+-->
+   <resource name="CBP_tv" file="CBP_tv.png">
+      <loc x="284" y="247"/>
+   </resource>
+   <resource name="CBP_videophone" file="CBP_vidphone.png">
+      <loc x="72" y="364"/>
+   </resource>
+   <resource name="CBP_vote" file="CBP_vote.png">
+      <loc x="932" y="371"/>
+   </resource>
+   <resource name="CBP_background" file="CBP_main.png">
+      <loc x="0" y="0"/>
+   </resource>
+   <resource name="CBP_adv0_alt" file="CBP_ad01_sm.png"/>
+   <resource name="CBP_adv1_alt" file="CBP_ad02_sm.png"/>
+   <resource name="CBP_adv2_alt" file="CBP_ad03_sm.png"/>
+   <resource name="CBP_adv3_alt" file="CBP_ad04_sm.png"/>
+   <resource name="CBP_adv4_alt" file="CBP_ad05_sm.png"/>
 <!-- LOBBYIST IMAGES -->
    <resource name="lob_0" file="sad200.jpg"/>
    <resource name="lob_1" file="silly200.png"/>

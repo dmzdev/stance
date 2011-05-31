@@ -152,6 +152,22 @@
          <image name="Calendar" resource="ACLU_calendar"/>
          <image name="Vote" resource="ACLU_vote"/>
       </set>
+      <set name="CBP" background="CBP_background" highlight="PushNotify">
+         <image name="Exit" resource="CBP_exit"/>
+         <image name="Forum" resource="CBP_computer"/>
+         <image name="Map" resource="CBP_map"/>
+         <image name="Video" resource="CBP_tv"/>
+         <image name="Newspaper" resource="CBP_newspaper"/>
+         <image name="Memo" resource="CBP_memos"/>
+         <image name="Lobbyist" resource="CBP_videophone"/>
+         <image name="Advisor" resource="CBP_adv0"/>
+         <image name="Advisor" resource="CBP_adv1"/>
+         <image name="Advisor" resource="CBP_adv2"/>
+         <image name="Advisor" resource="CBP_adv3"/>
+         <image name="Advisor" resource="CBP_adv4"/>
+         <image name="Calendar" resource="CBP_calendar"/>
+         <image name="Vote" resource="CBP_vote"/>
+      </set>
    </group-picture-set>
    <lobbyist-pictures>
       <picture name="lob_0"/>
