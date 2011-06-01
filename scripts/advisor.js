@@ -1,3 +1,5 @@
+require("datejs/date"); // www.datejs.com - an open-source JavaScript Date Library.
+
 var dmz =
    { ui:
       { consts: require('dmz/ui/consts')
@@ -59,6 +61,7 @@ var dmz =
         , question: { id: 0, read: 1, author: 2, time: 3 }
         , advisor: {}
         }
+   , TimeFormatString = "MMM-dd-yyyy H:mm:ss"
 
    // Function decls
    , updateAdvisor
@@ -226,14 +229,20 @@ updateTime = function (handle) {
 
    var item = master.questions[handle];
    if (!item) { item = master.votes[handle]; }
-   if (item && item.item) { item.item.text(TreeItemIndex[item.type].time, item.time); }
+   if (item && item.item) {
+
+      item.item.text(TreeItemIndex[item.type].time, item.time);
+   }
 };
 
 updateEnd = function (handle) {
 
    var item = master.questions[handle];
    if (!item) { item = master.votes[handle]; }
-   if (item && item.item) { item.item.text(TreeItemIndex[item.type].end, item.end); }
+   if (item && item.item) {
+
+      item.item.text(TreeItemIndex[item.type].end, item.end);
+   }
 };
 
 updateRead = function (handle) {
@@ -306,7 +315,14 @@ function (objHandle, attr, value) {
      ;
 
    if (!item) { item = master.votes[objHandle]; }
-   if (item) { item.time = dmz.util.timeStampToDate(value); updateTime(objHandle); }
+   if (item) {
+
+      item.time = dmz.util.timeStampToDate(value);
+      item.time =
+         item.time.toString(TimeFormatString) +
+         (item.time.isDaylightSavingTime() ? " PDT" : " PST");
+      updateTime(objHandle);
+   }
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.DurationHandle,
@@ -316,7 +332,14 @@ function (objHandle, attr, value) {
      ;
 
    if (!item) { item = master.votes[objHandle]; }
-   if (item) { item.end = dmz.util.timeStampToDate(value); updateEnd(objHandle); }
+   if (item) {
+
+      item.end = dmz.util.timeStampToDate(value);
+      item.end =
+         item.end.toString(TimeFormatString) +
+         (item.end.isDaylightSavingTime() ? " PDT" : " PST");
+      updateEnd(objHandle);
+   }
 });
 
 isVoteExpired = function (voteHandle) {
