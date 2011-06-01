@@ -660,21 +660,28 @@ editUser = function (item) {
 
       objHandle = item.data();
       studentDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
-      studentUserNameEdit.text(dmz.object.text(objHandle, dmz.stance.NameHandle));
+      studentUserNameEdit.clear();
       avatar = dmz.object.text(objHandle, dmz.stance.PictureHandle);
       avatarList.currentText(AvatarPixmapList[avatar] ? avatar : "Default");
-      studentUserNameEdit.readOnly(true);
       createStudentDialog.open(self, function (value, dialog) {
 
+         var text;
          if (value) {
 
             dmz.object.text(objHandle, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
             dmz.object.text(objHandle, dmz.stance.PictureHandle, avatarList.currentText());
+            text = studentUserNameEdit.text();
+            if (text) {
+
+               dmz.object.text(
+                  objHandle,
+                  dmz.stance.NameHandle,
+                  dmz.ui.crypto.hash(studentUserNameEdit.text(), dmz.ui.crypto.Sha1));
+            }
          }
          studentDisplayNameEdit.clear();
          studentUserNameEdit.clear();
          avatarList.currentText("Default");
-         studentUserNameEdit.readOnly(false);
       });
    }
 };
