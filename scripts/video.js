@@ -47,7 +47,6 @@ var dmz =
    , skipForward
    , skipBackward
    , setUserPlayList
-   , onVideo
    ;
 
 self.shutdown = function () {
@@ -62,31 +61,33 @@ function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
    if (linkHandle) { dmz.object.unlink(linkHandle); }
 });
 
-onVideo = function (hasVideo, source) {
-
-   var linkHandle
-     , hil = dmz.object.hil()
-     ;
-   if (hasVideo) {
-
-      linkHandle = dmz.object.linkHandle(dmz.stance.ViewedVideoHandle, hil, video.handle);
-      if (!linkHandle) {
-
-         dmz.object.link(dmz.stance.ViewedVideoHandle, hil, video.handle);
-      }
-
-      source.play();
-   }
-};
-
 playCurrent = function () {
 
-   var video;
+   var video
+     , onVideo
+     ;
 
    if (CurrentIndex < SourceList.length) {
 
       video = SourceList[CurrentIndex];
       if (video.source) {
+
+         onVideo = function (hasVideo, source) {
+
+            var linkHandle
+              , hil = dmz.object.hil()
+              ;
+            if (hasVideo) {
+
+               linkHandle = dmz.object.linkHandle(dmz.stance.ViewedVideoHandle, hil, video.handle);
+               if (!linkHandle) {
+
+                  dmz.object.link(dmz.stance.ViewedVideoHandle, hil, video.handle);
+               }
+
+               source.play();
+            }
+         };
 
          if (NewSource) {
 
