@@ -77,6 +77,8 @@ playCurrent = function () {
             var linkHandle
               , hil = dmz.object.hil()
               ;
+
+            self.log.warn ("onVideo:", hasVideo, source);
             if (hasVideo) {
 
                linkHandle = dmz.object.linkHandle(dmz.stance.ViewedVideoHandle, hil, video.handle);
@@ -91,9 +93,9 @@ playCurrent = function () {
 
          if (NewSource) {
 
+            source.observe(self, "hasVideoChanged", onVideo);
             source.currentSource(video.source);
             NewSource = false;
-            source.observe(self, "hasVideoChanged", onVideo);
          }
 
          if (source.hasVideo()) { onVideo(true, source); }
