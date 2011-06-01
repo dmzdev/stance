@@ -47,6 +47,7 @@ var dmz =
    , skipForward
    , skipBackward
    , setUserPlayList
+   , onVideo
    ;
 
 self.shutdown = function () {
@@ -61,29 +62,40 @@ function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
    if (linkHandle) { dmz.object.unlink(linkHandle); }
 });
 
-playCurrent = function () {
+onVideo = function (hasVideo, source) {
 
    var linkHandle
      , hil = dmz.object.hil()
-     , video
      ;
+   if (hasVideo) {
+
+      linkHandle = dmz.object.linkHandle(dmz.stance.ViewedVideoHandle, hil, video.handle);
+      if (!linkHandle) {
+
+         dmz.object.link(dmz.stance.ViewedVideoHandle, hil, video.handle);
+      }
+
+      source.play();
+   }
+};
+
+playCurrent = function () {
+
+   var video;
 
    if (CurrentIndex < SourceList.length) {
 
       video = SourceList[CurrentIndex];
       if (video.source) {
 
-         if (NewSource) { source.currentSource(video.source); NewSource = false; }
-         if (source.hasVideo()) {
+         if (NewSource) {
 
-            linkHandle = dmz.object.linkHandle(dmz.stance.ViewedVideoHandle, hil, video.handle);
-            if (!linkHandle) {
-
-               dmz.object.link(dmz.stance.ViewedVideoHandle, hil, video.handle);
-            }
-
-            source.play();
+            source.currentSource(video.source);
+            NewSource = false;
+            source.observe(self, "hasVideoChanged", onVideo);
          }
+
+         if (source.hasVideo()) { onVideo(true, source); }
          pauseButton.enabled(true);
          playButton.enabled(false);
       }
