@@ -114,17 +114,30 @@ prevButton.observe(self, "clicked", skipBackward);
 
 setUserPlayList = function (userHandle, clickWindow) {
 
-   var activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveNewspaperHandle)
-     , viewedList = dmz.object.subLinks(userHandle, dmz.stance.ViewedNewspaperHandle)
-     , list = []
+   var list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
+     , activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveNewspaperHandle)
      ;
 
    SourceList = []
    NewSource = true;
-   if (activeList && clickWindow) { MainModule.highlight("Newspaper"); }
-   if (activeList && viewedList) { list = activeList.concat(viewedList); }
-   else { list = activeList ? activeList : viewedList; }
+   totalLabel.text("0");
+   currLabel.text("0");
+   CurrentIndex = 0;
+   if (list) {
 
+      list = list.filter(function (handle, index) {
+
+         var type = dmz.object.type(handle);
+         return type && type.isOfType(dmz.stance.NewspaperType);
+      });
+   }
+   if (list && activeList) {
+
+      activeList.forEach(function (activeHandle) {
+
+         if (list.indexOf(activeHandle) !== -1) { MainModule.highlight("Newspaper"); }
+      });
+   }
    if (list && list.length) {
 
       list.sort(function (obj1, obj2) {
@@ -149,10 +162,10 @@ setUserPlayList = function (userHandle, clickWindow) {
 dmz.object.link.observe(self, dmz.stance.ActiveNewspaperHandle,
 function (objHandle, attrHandle, userHandle, newspaperHandle) {
 
-   if (userHandle === dmz.object.hil()) {
+   if ((userHandle === dmz.object.hil()) &&
+      dmz.object.linkHandle(dmz.stance.GameMediaHandle, dmz.stance.getUserGroupHandle(userHandle), newspaperHandle)) {
 
-      if (MainModule) { MainModule.highlight("Newspaper"); }
-      else { Queued = true; }
+      MainModule.highlight("Newspaper");
    }
 });
 

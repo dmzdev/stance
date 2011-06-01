@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>623</width>
-    <height>423</height>
+    <width>521</width>
+    <height>252</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,60 +17,49 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_13">
       <attribute name="title">
        <string>Game</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_27">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_37">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_28">
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_38">
-             <item>
-              <widget class="QPushButton" name="gameStateButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Start Game</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="deleteGameButton">
-               <property name="text">
-                <string>Delete Game</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_39">
-             <item>
-              <widget class="QPushButton" name="generateReportButton">
-               <property name="text">
-                <string>Generate AAR</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="gameStatsButton">
-               <property name="text">
-                <string>Game Stats</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
+          <widget class="QPushButton" name="gameStateButton">
+           <property name="text">
+            <string>Start Game</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addLobbyistButton">
+           <property name="text">
+            <string>Add Lobbyist Inject</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addVideoInjectButton">
+           <property name="text">
+            <string>Add Video Inject</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addNewspaperInjectButton">
+           <property name="text">
+            <string>Add Newspaper Inject</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addMemoInjectButton">
+           <property name="text">
+            <string>Add Memo Inject</string>
+           </property>
+          </widget>
          </item>
          <item>
           <spacer name="verticalSpacer_9">
@@ -80,12 +69,25 @@
            <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
-             <height>40</height>
+             <height>171</height>
             </size>
            </property>
           </spacer>
          </item>
         </layout>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>122</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -424,61 +426,6 @@ Elapsed in game time will be {{gameDelta}} days.</string>
          </item>
          <item>
           <spacer name="verticalSpacer_11">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_18">
-      <attribute name="title">
-       <string>Intel</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_52">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_53">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QPushButton" name="addInjectButton">
-             <property name="text">
-              <string>Add Media Inject</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="addLobbyistButton">
-             <property name="text">
-              <string>Add Lobbyist Inject</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_12">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>

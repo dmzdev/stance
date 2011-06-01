@@ -39,7 +39,7 @@ var dmz =
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , TimeModule = { gameTime: dmz.time.getFrameTime }
    , IsCurrentWindow = false
-   , MaxMessageLength = 144
+   , MaxMessageLength = 500
 
    // Functions
    , toDate = dmz.util.timeStampToDate

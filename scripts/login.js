@@ -155,8 +155,8 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
          }
       }
 
-      name = dmz.object.text(_userHandle, dmz.stance.NameHandle);
-      if (name === _userName) { unverified = ""; }
+      name = dmz.stance.getDisplayName(_userHandle);
+      if (dmz.object.text(_userHandle, dmz.stance.NameHandle) === _userName) { unverified = ""; }
 
       _window.title(_title + " (" + name + ")" + unverified);
 

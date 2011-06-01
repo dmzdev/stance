@@ -111,16 +111,30 @@ prevButton.observe(self, "clicked", skipBackward);
 
 setUserPlayList = function (userHandle, clickWindow) {
 
-   var activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveMemoHandle)
-     , viewedList = dmz.object.subLinks(userHandle, dmz.stance.ViewedMemoHandle)
-     , list = []
+   var list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
+     , activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveMemoHandle)
      ;
 
    SourceList = []
    NewSource = true;
-   if (activeList && clickWindow) { MainModule.highlight("Memo"); }
-   if (activeList && viewedList) { list = activeList.concat(viewedList); }
-   else { list = activeList ? activeList : viewedList; }
+   totalLabel.text("0");
+   currLabel.text("0");
+   CurrentIndex = 0;
+   if (list) {
+
+      list = list.filter(function (handle, index) {
+
+         var type = dmz.object.type(handle);
+         return type && type.isOfType(dmz.stance.MemoType);
+      });
+   }
+   if (list && activeList) {
+
+      activeList.forEach(function (activeHandle) {
+
+         if (list.indexOf(activeHandle) !== -1) { MainModule.highlight("Memo"); }
+      });
+   }
 
    if (list && list.length) {
 
@@ -146,7 +160,11 @@ setUserPlayList = function (userHandle, clickWindow) {
 dmz.object.link.observe(self, dmz.stance.ActiveMemoHandle,
 function (objHandle, attrHandle, userHandle, memoHandle) {
 
-   if (userHandle === dmz.object.hil()) { MainModule.highlight("Memo"); }
+   if ((userHandle === dmz.object.hil()) &&
+      dmz.object.linkHandle(dmz.stance.GameMediaHandle, dmz.stance.getUserGroupHandle(userHandle), memoHandle)) {
+
+      MainModule.highlight("Memo");
+   }
 });
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,

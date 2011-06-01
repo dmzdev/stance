@@ -154,7 +154,7 @@ skipBackward = function () {
    stopButton.standardIcon(dmz.ui.button.MediaStop);
    nextButton.standardIcon(dmz.ui.button.MediaSkipForward);
    prevButton.standardIcon(dmz.ui.button.MediaSkipBackward);
-//   dmz.ui.phonon.createPath(source, video);
+   dmz.ui.phonon.createPath(source, video);
 
 }());
 
@@ -163,20 +163,35 @@ pauseButton.observe(self, "clicked", pauseCurrent);
 stopButton.observe(self, "clicked", stopCurrent);
 nextButton.observe(self, "clicked", skipForward);
 prevButton.observe(self, "clicked", skipBackward);
-//source.observe(self, "finished", skipForward);
+source.observe(self, "finished", skipForward);
 
 setUserPlayList = function (userHandle) {
 
-   var activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveVideoHandle)
-     , viewedList = dmz.object.subLinks(userHandle, dmz.stance.ViewedVideoHandle)
-     , list = []
+   var list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
+     , activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveVideoHandle)
      ;
 
    SourceList = []
    NewSource = true;
-   if (activeList) { MainModule.highlight("Video"); }
-   if (activeList && viewedList) { list = activeList.concat(viewedList); }
-   else { list = activeList ? activeList : viewedList; }
+   totalLabel.text("0");
+   currLabel.text("0");
+   CurrentIndex = 0;
+   if (list) {
+
+      list = list.filter(function (handle, index) {
+
+         var type = dmz.object.type(handle);
+         return type && type.isOfType(dmz.stance.VideoType);
+      });
+   }
+   if (list && activeList) {
+
+
+      activeList.forEach(function (activeHandle) {
+
+         if (list.indexOf(activeHandle) !== -1) { MainModule.highlight("Video"); }
+      });
+   }
 
    if (list && list.length) {
 
@@ -202,7 +217,11 @@ setUserPlayList = function (userHandle) {
 dmz.object.link.observe(self, dmz.stance.ActiveVideoHandle,
 function (objHandle, attrHandle, userHandle, videoHandle) {
 
-   if (userHandle === dmz.object.hil()) { MainModule.highlight("Video"); }
+   if ((userHandle === dmz.object.hil()) &&
+      dmz.object.linkHandle(dmz.stance.GameMediaHandle, dmz.stance.getUserGroupHandle(userHandle), videoHandle)) {
+
+      MainModule.highlight("Video");
+   }
 });
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,

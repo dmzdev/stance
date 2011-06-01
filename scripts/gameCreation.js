@@ -80,7 +80,6 @@ var dmz =
    , lobbyistName = editLobbyistDialog.lookup("nameEdit")
 
    , CreateMediaInjectDialog = dmz.ui.loader.load("MediaInjectDialog.ui")
-   , MediaTypeList = CreateMediaInjectDialog.lookup("mediaType")
    , MediaTitleText = CreateMediaInjectDialog.lookup("titleText")
    , MediaUrlText = CreateMediaInjectDialog.lookup("urlText")
    , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupLayout")
@@ -102,9 +101,9 @@ var dmz =
    , advisorWidgets = {}
    , CurrentGameHandle = false
    , MediaTypes =
-        { Video: { type: dmz.stance.VideoType, attr: dmz.stance.ActiveVideoHandle }
-        , Memo: { type: dmz.stance.MemoType, attr: dmz.stance.ActiveMemoHandle }
-        , Newspaper: { type: dmz.stance.NewspaperType, attr: dmz.stance.ActiveNewspaperHandle }
+        { Video: { type: dmz.stance.VideoType, attr: dmz.stance.ActiveVideoHandle, button: "addVideoInjectButton" }
+        , Memo: { type: dmz.stance.MemoType, attr: dmz.stance.ActiveMemoHandle, button: "addMemoInjectButton" }
+        , Newspaper: { type: dmz.stance.NewspaperType, attr: dmz.stance.ActiveNewspaperHandle, button: "addNewspaperInjectButton" }
         }
    , inUpdate = false
    , TemplateList = []
@@ -819,71 +818,6 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
    });
 });
 
-editScenarioWidget.observe(self, "deleteGameButton", "clicked", function () {
-
-   dmz.ui.messageBox.create(
-      { type: dmz.ui.messageBox.Warning
-      , text: "Are you sure you want to delete this game?"
-      , informativeText: "Clicking <b>Ok</b> will cause all game data to be permanently erased!"
-      , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-      , defaultButton: dmz.ui.messageBox.Cancel
-      }
-      , editScenarioWidget
-   ).open(self, function (value) {
-
-      if (value === dmz.ui.messageBox.Ok) {
-
-         dmz.ui.messageBox.create(
-            { type: dmz.ui.messageBox.Critical
-            , text: "This action will result in the permanent loss of all game data!"
-            , informativeText: "Clicking <b>Ok</b> will cause all game data to be permanently erased!"
-            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-            , defaultButton: dmz.ui.messageBox.Cancel
-            }
-            , editScenarioWidget
-         ).open(self, function (value) {
-
-            if (value === dmz.ui.messageBox.Ok) { dmz.object.destroy(CurrentGameHandle); }
-         });
-      }
-   });
-});
-
-//editScenarioWidget.observe(self, "removeGroupButton", "clicked", function () {
-
-//   var index = groupComboBox.currentIndex()
-//     , groupHandle = groupList[index]
-//     , groupMembers
-//     , count
-//     , idx
-//     , item
-//     ;
-
-//   groupMembers = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
-//   if (groupMembers) {
-
-//      groupMembers.forEach(function (user) {
-
-//         var item = userList[user];
-//         if (item) { userFromGroup(item); }
-//      });
-//   }
-
-//   groupList.splice (index, 1);
-//   groupComboBox.removeIndex(index);
-//   advisorGroupComboBox.removeIndex(index);
-//   lobbyistGroupList.removeIndex(index);
-//   MediaGroupFLayout.takeAt(index);
-
-//   groupMembers = dmz.object.subLinks(groupHandle, dmz.stance.AdvisorGroupHandle);
-//   if (groupMembers) {
-
-//      groupMembers.forEach(function (advisorHandle) { dmz.object.destroy(advisorHandle); });
-//   }
-
-//   dmz.object.destroy(groupHandle);
-//});
-
 editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 
    var groupListDialog = dmz.ui.loader.load("GroupListDialog.ui")
@@ -937,101 +871,139 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
    });
 });
 
-editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
+// Media inject buttons
+(function () {
 
-   CreateMediaInjectDialog.open(self, function (value, dialog) {
+   var generateMediaInjectFunction = function (type, attr) {
 
-      var idx
-        , count = MediaGroupFLayout.rowCount()
-        , media = false
-        , type = MediaTypeList.currentText()
-        , groupMembers
-        , links
-        , linkAttr = false
-        , userList = []
-        ;
+      return function () {
 
-      if (value && MediaTypes[type]) {
+         CreateMediaInjectDialog.open(self, function (value, dialog) {
 
-         for (idx = 0; idx < count; idx += 1) {
+            var idx
+              , count = MediaGroupFLayout.rowCount()
+              , media = false
+              , groupMembers
+              , links
+              , userList = []
+              ;
 
-            if (MediaGroupFLayout.at(idx, 1).isChecked()) {
+            if (value && type) {
 
-               groupMembers = dmz.object.subLinks(groupList[idx], dmz.stance.GroupMembersHandle);
-               if (groupMembers) {
+               for (idx = 0; idx < count; idx += 1) {
 
-                  groupMembers.forEach(function (userHandle) {
+                  if (MediaGroupFLayout.at(idx, 1).isChecked()) {
 
-                     if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
+                     groupMembers = dmz.object.subLinks(groupList[idx], dmz.stance.GroupMembersHandle);
+                     if (groupMembers) {
 
-                        userList.push(userHandle);
+                        groupMembers.forEach(function (userHandle) { userList.push(userHandle); });
                      }
+                  }
+               }
+
+               if (userList.length) {
+
+                  media = dmz.object.create(type);
+                  dmz.object.text(media, dmz.stance.TitleHandle, MediaTitleText.text());
+                  dmz.object.text(media, dmz.stance.TextHandle, MediaUrlText.text());
+                  links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
+                  dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
+                  dmz.object.activate(media);
+                  dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, media);
+                  for (idx = 0; idx < count; idx += 1) {
+
+                     if (MediaGroupFLayout.at(idx, 1).isChecked()) {
+
+                        dmz.object.link(dmz.stance.GameMediaHandle, groupList[idx], media);
+                     }
+                  }
+                  userList.forEach(function (userHandle) {
+
+                     dmz.object.link(attr, userHandle, media);
                   });
                }
             }
-         }
 
-         if (userList.length) {
+            MediaTitleText.text("");
+            MediaUrlText.text("");
+            for (idx = 0; idx < count; idx += 1) {
 
-            media = dmz.object.create(MediaTypes[type].type);
-            dmz.object.text(media, dmz.stance.TitleHandle, MediaTitleText.text());
-            dmz.object.text(media, dmz.stance.TextHandle, MediaUrlText.text());
-            links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
-            dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
-            dmz.object.activate(media);
-            dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, media);
-            linkAttr = MediaTypes[type].attr;
-            userList.forEach(function (userHandle) {
+               MediaGroupFLayout.at(idx, 1).setChecked(false);
+            }
+         });
+      };
+   };
 
-               dmz.object.link(MediaTypes[type].attr, userHandle, media);
-            });
-         }
-      }
+   Object.keys(MediaTypes).forEach(function (type) {
 
-      MediaTitleText.text("");
-      MediaUrlText.text("");
-      for (idx = 0; idx < count; idx += 1) {
-
-         MediaGroupFLayout.at(idx, 1).setChecked(false);
-      }
+      editScenarioWidget.observe(
+         self,
+         MediaTypes[type].button,
+         "clicked",
+         generateMediaInjectFunction(MediaTypes[type].type, MediaTypes[type].attr));
    });
-});
+}());
 
-//editScenarioWidget.observe(self, "removePlayerButton", "clicked", function () {
+//editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
 
-//   dmz.ui.messageBox.create(
-//      { type: dmz.ui.messageBox.Info
-//      , text: "This feature has not yet been implemented."
-//      , standardButtons: [dmz.ui.messageBox.Ok]
-//      , defaultButton: dmz.ui.messageBox.Ok
+//   CreateMediaInjectDialog.open(self, function (value, dialog) {
+
+//      var idx
+//        , count = MediaGroupFLayout.rowCount()
+//        , media = false
+//        , type = MediaTypeList.currentText()
+//        , groupMembers
+//        , links
+//        , linkAttr = false
+//        , userList = []
+//        ;
+
+//      if (value && MediaTypes[type]) {
+
+//         for (idx = 0; idx < count; idx += 1) {
+
+//            if (MediaGroupFLayout.at(idx, 1).isChecked()) {
+
+//               groupMembers = dmz.object.subLinks(groupList[idx], dmz.stance.GroupMembersHandle);
+//               if (groupMembers) {
+
+//                  groupMembers.forEach(function (userHandle) {
+
+//                     if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
+
+//                        userList.push(userHandle);
+//                     }
+//                  });
+//               }
+//            }
+//         }
+
+//         if (userList.length) {
+
+//            media = dmz.object.create(MediaTypes[type].type);
+//            dmz.object.text(media, dmz.stance.TitleHandle, MediaTitleText.text());
+//            dmz.object.text(media, dmz.stance.TextHandle, MediaUrlText.text());
+//            links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
+//            dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
+//            dmz.object.activate(media);
+//            dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, media);
+//            linkAttr = MediaTypes[type].attr;
+//            userList.forEach(function (userHandle) {
+
+//               dmz.object.link(MediaTypes[type].attr, userHandle, media);
+//            });
+//         }
 //      }
-//      , editScenarioWidget
-//   ).open(self, function (value) {});
+
+//      MediaTitleText.text("");
+//      MediaUrlText.text("");
+//      for (idx = 0; idx < count; idx += 1) {
+
+//         MediaGroupFLayout.at(idx, 1).setChecked(false);
+//      }
+//   });
 //});
-
-editScenarioWidget.observe(self, "generateReportButton", "clicked", function () {
-
-   dmz.ui.messageBox.create(
-      { type: dmz.ui.messageBox.Info
-      , text: "This feature has not yet been implemented."
-      , standardButtons: [dmz.ui.messageBox.Ok]
-      , defaultButton: dmz.ui.messageBox.Ok
-      }
-      , editScenarioWidget
-   ).open(self, function (value) {});
-});
-
-editScenarioWidget.observe(self, "gameStatsButton", "clicked", function () {
-
-   dmz.ui.messageBox.create(
-      { type: dmz.ui.messageBox.Info
-      , text: "This feature has not yet been implemented."
-      , standardButtons: [dmz.ui.messageBox.Ok]
-      , defaultButton: dmz.ui.messageBox.Ok
-      }
-      , editScenarioWidget
-   ).open(self, function (value) {});
-});
 
 dmz.object.data.observe(self, dmz.stance.GameStartTimeHandle, function (handle, attr, value) {
 
