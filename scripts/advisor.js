@@ -37,6 +37,7 @@ var dmz =
    , UndecList = VoteDialog.lookup("undecList")
    , TaskText = VoteDialog.lookup("taskingText")
    , VoteCommentText = VoteDialog.lookup("opinionText")
+   , VoteExpirationTime = VoteDialog.lookup("expirationTime")
 
    // Variables
    , advisorWidgets = []
@@ -518,7 +519,8 @@ approveVote = function (voteHandle) {
                  dmz.object.text(voteHandle, dmz.stance.TextHandle) +
                  "\nYour advisor's response to the task was:\n" +
                  dmz.object.text(voteHandle, dmz.stance.CommentHandle) +
-                 "\nPlease go vote on this task as soon as possible!"
+                 "\nPlease go vote on this task as soon as possible! It expires at: " +
+                 time
             );
       }
 
@@ -1613,6 +1615,15 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
                      VoteCommentText.text(dmz.object.text(vote, dmz.stance.CommentHandle));
                      TaskText.text(dmz.object.text(vote, dmz.stance.TextHandle));
+                     str = dmz.util.timeStampToDate(dmz.object.timeStamp(vote, dmz.stance.DurationHandle));
+                     if (str && str instanceof Date) {
+
+                        str =
+                           str.toString(TimeFormatString) +
+                           (str.isDaylightSavingTime ? " PDT" : " PST");
+
+                        VoteExpirationTime.text(str);
+                     }
                      VoteDialog.open(self, function (value) {
 
                         if (!value) { MainModule.highlight("Vote"); }
