@@ -110,6 +110,7 @@ setTreeForAdvisor = function (advisorHandle, voteTree, questionTree) {
 
                if (voteItem.treeWidget() !== voteTree) { voteTree.add(voteItem); }
                voteItem.hidden(false);
+               voteTree.currentItem(voteItem);
             }
          });
       }
@@ -125,6 +126,7 @@ setTreeForAdvisor = function (advisorHandle, voteTree, questionTree) {
 
                if (questionItem.treeWidget() !== questionTree) { questionTree.add(questionItem); }
                questionItem.hidden(false);
+               questionTree.currentItem(questionItem);
             }
          });
       }
@@ -1358,6 +1360,7 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
 
             tree.add(item);
             item.hidden(false);
+            tree.currentItem(item);
          }
          if (isActive) {
 
@@ -1418,6 +1421,7 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
 
             tree.add(item);
             item.hidden(false);
+            tree.currentItem(item);
          }
          count = dmz.object.scalar(hil, advisorAttr[index]);
          count = count ? count : 0;
