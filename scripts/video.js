@@ -96,6 +96,10 @@ playCurrent = function () {
             source.observe(self, "hasVideoChanged", onVideo);
             source.currentSource(video.source);
             NewSource = false;
+            require("dmz/runtime/time").setTimer(self, 1, function () {
+
+               source.state();
+            });
          }
 
          if (source.hasVideo()) { onVideo(true, source); }
