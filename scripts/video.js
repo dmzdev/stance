@@ -82,11 +82,13 @@ playCurrent = function () {
             if (hasVideo) {
 
                linkHandle = dmz.object.linkHandle(dmz.stance.ViewedVideoHandle, hil, video.handle);
+               self.log.warn ("linkHandle:", linkHandle);
                if (!linkHandle) {
 
                   dmz.object.link(dmz.stance.ViewedVideoHandle, hil, video.handle);
                }
 
+               self.log.warn ("play");
                source.play();
             }
          };
@@ -94,7 +96,7 @@ playCurrent = function () {
          if (NewSource) {
 
             source.observe(self, "hasVideoChanged", onVideo);
-            source.currentSource(video.source);
+            self.log.warn(source.currentSource(video.source));
             NewSource = false;
             require("dmz/runtime/time").setTimer(self, 1, function () {
 
@@ -102,7 +104,7 @@ playCurrent = function () {
             });
          }
 
-         if (source.hasVideo()) { onVideo(true, source); }
+//         if (source.hasVideo()) { onVideo(true, source); }
          pauseButton.enabled(true);
          playButton.enabled(false);
       }
