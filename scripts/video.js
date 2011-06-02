@@ -89,7 +89,11 @@ playCurrent = function () {
                }
 
                self.log.warn ("play");
-               source.play();
+               require("dmz/runtime/time").setTimer(self, 1, function () {
+
+                  source.play();
+//               source.state();
+               });
             }
          };
 
