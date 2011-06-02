@@ -95,7 +95,7 @@ playCurrent = function () {
 
          if (NewSource) {
 
-            source.observe(self, "hasVideoChanged", onVideo);
+//            source.observe(self, "hasVideoChanged", onVideo);
             self.log.warn(source.currentSource(video.source));
             NewSource = false;
             require("dmz/runtime/time").setTimer(self, 1, function () {
@@ -104,7 +104,7 @@ playCurrent = function () {
             });
          }
 
-//         if (source.hasVideo()) { onVideo(true, source); }
+         if (source.hasVideo()) { onVideo(true, source); }
          pauseButton.enabled(true);
          playButton.enabled(false);
       }
