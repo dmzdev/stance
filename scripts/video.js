@@ -39,6 +39,8 @@ var dmz =
    , NewSource = false
    , SourceList = [] // { handle, source }
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
+   , MacVidExt = ".mov"
+   , WinVidExt = ".wmv"
 
    // Function decls
    , playCurrent
@@ -48,6 +50,8 @@ var dmz =
    , skipBackward
    , setUserPlayList
    ;
+
+(function () { self.log.error ("OS:", dmz.defs.operatingSystem, dmz.defs.Win32, dmz.defs.OSX); }());
 
 self.shutdown = function () {
 
@@ -78,22 +82,15 @@ playCurrent = function () {
               , hil = dmz.object.hil()
               ;
 
-            self.log.warn ("onVideo:", hasVideo, source);
             if (hasVideo) {
 
                linkHandle = dmz.object.linkHandle(dmz.stance.ViewedVideoHandle, hil, video.handle);
-               self.log.warn ("linkHandle:", linkHandle);
                if (!linkHandle) {
 
                   dmz.object.link(dmz.stance.ViewedVideoHandle, hil, video.handle);
                }
 
-               self.log.warn ("play");
-               require("dmz/runtime/time").setTimer(self, 1, function () {
-
-                  source.play();
-//               source.state();
-               });
+               dmz.time.setTimer(self, 1, function () { source.play(); });
             }
          };
 
@@ -102,10 +99,7 @@ playCurrent = function () {
             source.observe(self, "hasVideoChanged", onVideo);
             self.log.warn(source.currentSource(video.source));
             NewSource = false;
-            require("dmz/runtime/time").setTimer(self, 1, function () {
-
-               source.state();
-            });
+            dmz.time.setTimer(self, 1, function () { source.state(); });
          }
 
          if (source.hasVideo()) { onVideo(true, source); }
@@ -194,6 +188,7 @@ setUserPlayList = function (userHandle) {
 
    var list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
      , activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveVideoHandle)
+     , text
      ;
 
    SourceList = []
@@ -228,10 +223,13 @@ setUserPlayList = function (userHandle) {
       });
       list.forEach(function (handle) {
 
-         SourceList.push (
-            { handle: handle
-            , source: dmz.object.text(handle, dmz.stance.TextHandle)
-            });
+         text = dmz.object.text(handle, dmz.stance.TextHandle);
+         if (dmz.defs.OperatingSystem && (dmz.defs.OperatingSystem === dmz.defs.Win32)) {
+
+            text = text.replace(MacVidExt, WinVidExt);
+         }
+
+         SourceList.push ({ handle: handle, source: text });
       });
       totalLabel.text(list.length);
       currLabel.text("1");
