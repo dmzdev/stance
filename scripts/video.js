@@ -51,12 +51,7 @@ var dmz =
    , setUserPlayList
    ;
 
-(function () { self.log.error ("OS:", dmz.defs.operatingSystem, dmz.defs.Win32, dmz.defs.OSX); }());
-
-self.shutdown = function () {
-
-   dmz.ui.phonon.clearPaths();
-};
+self.shutdown = function () { dmz.ui.phonon.clearPaths(); };
 
 dmz.object.link.observe(self, dmz.stance.ViewedVideoHandle,
 function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
@@ -222,6 +217,7 @@ setUserPlayList = function (userHandle) {
          return result ? result : 0;
       });
       list.forEach(function (handle) {
+
 
          text = dmz.object.text(handle, dmz.stance.TextHandle);
          if (dmz.defs.OperatingSystem && (dmz.defs.OperatingSystem === dmz.defs.Win32)) {
