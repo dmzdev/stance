@@ -669,10 +669,7 @@
    <resource name="CBP_adv3_alt" file="CBP_ad04_customs.png"/>
    <resource name="CBP_adv4_alt" file="CBP_ad05_infrastructure.png"/>
 <!-- LOBBYIST IMAGES -->
-   <resource name="lob_0" file="sad200.jpg"/>
-   <resource name="lob_1" file="silly200.png"/>
-   <resource name="lob_2" file="firefox200.jpg"/>
-   <resource name="lob_3" file="handi200.jpg"/>
+   <resource name="lob_0" file="lobbyist_avatar.png"/>
 <!--   <resource name="lob_" file=""/> -->
 </resource-map>
 </runtime>

@@ -171,9 +171,6 @@
    </group-picture-set>
    <lobbyist-pictures>
       <picture name="lob_0"/>
-      <picture name="lob_1"/>
-      <picture name="lob_2"/>
-      <picture name="lob_3"/>
    </lobbyist-pictures>
    <avatar-list>
       <avatar name="Avatar0"/>
