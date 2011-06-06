@@ -984,7 +984,7 @@ p, li { white-space: pre-wrap; }
             <enum>QFrame::Sunken</enum>
            </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string/>
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1495,7 +1495,7 @@ p, li { white-space: pre-wrap; }
             <enum>QFrame::Sunken</enum>
            </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string/>
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>

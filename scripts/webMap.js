@@ -509,6 +509,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
          if (!HaveActivatedMap) {
 
+            page = map.page();
+            page.mainFrame().load(self.config.string("url.name"));
+            page.linkDelegation(dmz.ui.webview.DelegateAllLinks);
             HaveActivatedMap = true;
             populateMapFromGroup(dmz.stance.getUserGroupHandle(dmz.object.hil()));
          }

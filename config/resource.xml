@@ -15,6 +15,7 @@
 <!--   <resource name="PushNotify" file="PushNotify.png"/> -->
    <resource name="PushNotify" file="stanceNotify.png"/>
 <!--  AVATARS -->
+   <resource name="AvatarEye" file="avatar_AllSeeingEye.png"/>
    <resource name="AvatarBox" file="AvatarBox.png"/>
    <resource name="AvatarDefault" file="AvatarDefault.png"/>
    <resource name="Avatar0" file="avatar1_50x50.jpg"/>

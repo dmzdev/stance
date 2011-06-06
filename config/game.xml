@@ -173,6 +173,7 @@
       <picture name="lob_0"/>
    </lobbyist-pictures>
    <avatar-list>
+      <avatar name="AvatarEye"/>
       <avatar name="Avatar0"/>
       <avatar name="Avatar1"/>
       <avatar name="Jake"/>
