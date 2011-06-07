@@ -392,6 +392,11 @@ getVoteGroupHandle = function (voteHandle) {
    if (voteHandle) {
 
       voteGroupHandle = dmz.object.superLinks(voteHandle, dmz.stance.GroupActiveVoteHandle);
+      if (!voteGroupHandle || !voteGroupHandle[0]) {
+
+         voteGroupHandle = dmz.object.superLinks(voteHandle, dmz.stance.GroupCompletedVotesHandle);
+      }
+
       if (voteGroupHandle && voteGroupHandle[0]) { retval = voteGroupHandle[0]; }
    }
    return retval;
@@ -630,8 +635,11 @@ updateAdvisor = function (module, idx) {
             setTreeForAdvisor(advisorHandle, voteTree, questionTree);
             voteTree.resizeColumnToContents(TreeItemIndex.vote.time);
             voteTree.resizeColumnToContents(TreeItemIndex.vote.end);
-//            advisorWidgets[idx].lookup("selectedText").text("");
-//            advisorWidgets[idx].lookup("selectedOpinion").text("");
+            if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
+
+               advisorWidgets[idx].lookup("selectedText").text("");
+               advisorWidgets[idx].lookup("selectedOpinion").text("");
+            }
 
             advisorWidgets[idx].lookup("bioText").text(data.bio ? data.bio: "No bio.");
             advisorWidgets[idx].lookup("nameLabel").text(data.name ? data.name : "No name");
