@@ -652,7 +652,7 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
    setupMainWindow();
    if (!self.config.number("login.value", 0)) {
 
-      dmz.time.setTimer(self, 1, function () {
+      dmz.time.setTimer(self, 3, function () {
 
          if (!LoggedIn && stackedWidget) { stackedWidget.currentIndex(HomeIndex); LoggedIn = true; }
       });
