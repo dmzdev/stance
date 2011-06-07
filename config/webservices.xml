@@ -37,7 +37,7 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-   <db app="stance_clean_cohort"/>
+   <db app="ns4755_1001_1002"/>
 </web-services-object>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>
