@@ -215,7 +215,7 @@
    </avatar-list>
 </gameCreation>
 <email>
-   <user-filter>
+   <user-filter> <!-- Fake emails -->
       <user name="b99dd12817cdd21400a9fb489376eb2ba76858ab"/>
 <!--      <user name="sangster@me.com"/>-->
 <!--      <user name=""/> -->
@@ -243,5 +243,34 @@
          <flag value="true"/>
       </attributes>
    </object>
+   <object type="user" uuid="12832b4e-5094-4636-b458-6cad452fccd1">
+      <attributes name="name">
+         <text value="597845bb8573815e781924f77780f842ed2221e7"/>
+      </attributes>
+      <attributes name="display_name">
+         <text value="Watcher"/>
+      </attributes>
+      <attributes name="picture">
+         <text value="AvatarEye"/>
+      </attributes>
+      <attributes name="admin_user">
+         <flag value="true"/>
+      </attributes>
+   </object>
+   <object type="user" uuid="12832b4e-5094-4636-b458-6cad452fccd1">
+      <attributes name="name">
+         <text value="fc1c77233967e21ef485a3bb2c1d2a69230e0990"/>
+      </attributes>
+      <attributes name="display_name">
+         <text value="Admin_Kristin"/>
+      </attributes>
+      <attributes name="picture">
+         <text value="Avatar1"/>
+      </attributes>
+      <attributes name="admin_user">
+         <flag value="true"/>
+      </attributes>
+   </object>
+   -->
 </archive>
 </dmz>
