@@ -27,13 +27,6 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QPushButton" name="gameStateButton">
-           <property name="text">
-            <string>Start Game</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="addLobbyistButton">
            <property name="text">
             <string>Add Lobbyist Inject</string>
@@ -58,6 +51,13 @@
           <widget class="QPushButton" name="addMemoInjectButton">
            <property name="text">
             <string>Add Memo Inject</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="gameStateButton">
+           <property name="text">
+            <string>Start Game</string>
            </property>
           </widget>
          </item>
