@@ -67,6 +67,7 @@ namespace dmz {
          Message _pinSelectedMessage;
          Message _removePinMessage;
          Message _setWebViewMessage;
+         Message _clearPinsMessage;
 
          Handle _pinIDHandle;
          Handle _pinPositionHandle;
@@ -87,6 +88,7 @@ namespace dmz {
          Boolean _haveSetJSObject;
          QList<const Data *> _pinDataQueue;
 
+         QMap<int, int> _addPinMap;
          QList<int> _addPinList;
          QList<int> _removePinList;
          QList<int> _movePinList;

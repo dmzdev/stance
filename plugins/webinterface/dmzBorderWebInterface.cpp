@@ -90,6 +90,13 @@ dmz::BorderWebInterface::receive_message (
          if (!_removePinList.contains (id)) {
 
             _removePinList.append (id);
+            if (_addPinMap.contains (id)) {
+
+               int handle = _addPinMap[id];
+               _addPinMap.remove (id);
+               int index = _addPinList.indexOf (handle);
+               if (index != -1) { _addPinList.removeAt (index); }
+            }
             emit (removePin (id));
          }
       }
@@ -171,9 +178,7 @@ dmz::BorderWebInterface::pinWasAdded (
 
    data.store_int32 (_pinGroupCountHandle, 0, idx);
 
-
-//   int index = _addPinList.indexOf (objectHandle);
-//   if (index != -1) { _addPinList.removeAt (index); }
+   _addPinMap[id] = objectHandle;
    _pinAddedMessage.send (&data);
 }
 
