@@ -528,7 +528,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
                   MessageQueue.forEach(function (dataObj) {
 
-                     self.log.warn ("msg:", dataObj.msg, "data:", dataObj.data);
                      if (dataObj.msg && dataObj.data) { dataObj.msg.send(dataObj.data); }
                   });
                   HaveActivatedMap = true;
