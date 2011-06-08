@@ -624,6 +624,7 @@ setup = function () {
             dmz.object.text(lobbyistHandle, dmz.stance.NameHandle, lobbyistName.text());
             dmz.object.text(lobbyistHandle, dmz.stance.TitleHandle, lobbyistTitle.text());
             dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
+            dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
             dmz.object.link(dmz.stance.ActiveLobbyistHandle, groupList[groupIndex], lobbyistHandle);
 
          }
@@ -914,6 +915,7 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
                   media = dmz.object.create(type);
                   dmz.object.text(media, dmz.stance.TitleHandle, MediaTitleText.text());
                   dmz.object.text(media, dmz.stance.TextHandle, MediaUrlText.text());
+                  dmz.object.timeStamp(media, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
                   links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
                   dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
                   dmz.object.activate(media);

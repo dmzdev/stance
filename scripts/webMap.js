@@ -7,6 +7,7 @@ var dmz =
        , module: require("dmz/runtime/module")
        , message: require("dmz/runtime/messaging")
        , resources: require("dmz/runtime/resources")
+       , time: require("dmz/runtime/time")
        , ui:
           { consts: require('dmz/ui/consts')
           , event: require("dmz/ui/event")
@@ -69,6 +70,7 @@ var dmz =
    , GroupQueue = {}
    , PinData = {}
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
+   , MessageQueue = []
 
    // Function decls
    , onPinAdded
@@ -131,7 +133,8 @@ dmz.object.position.observe(self, pinPositionHandle, function (handle, attr, val
             data.number(pinIDHandle, 0, PinHandleList[handle].id);
             data.number(pinPositionHandle, 0, value.x);
             data.number(pinPositionHandle, 1, value.y);
-            movePinMessage.send(data);
+            if (HaveActivatedMap) { movePinMessage.send(data); }
+            else { MessageQueue.push({ msg: movePinMessage, data: data }); }
          }
       }
    }
@@ -193,6 +196,7 @@ onPinAdded = function (data) {
          dmz.object.text(pinHandle, pinDescHandle, description);
          dmz.object.text(pinHandle, pinFileHandle, file);
          dmz.object.flag(pinHandle, pinActiveHandle, true);
+         dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
          PinData[pinHandle] = data;
          list.forEach(function (handle) {
 
@@ -322,7 +326,8 @@ onPinRemoved = function (data) {
                            }
                         }
 
-                        addPinMessage.send(data);
+                        if (HaveActivatedMap) { addPinMessage.send(data); }
+                        else { MessageQueue.push({ msg: addPinMessage, data: data }); }
                      }
 
                      titleEdit.clear();
@@ -400,8 +405,8 @@ function (linkObjHandle, attrHandle, groupHandle, pinHandle) {
 
          MainModule.highlight("Map");
       }
-      if (!HaveActivatedMap) { PinQueue.push(data); }
-      else { addPinMessage.send(data); }
+      if (HaveActivatedMap) { addPinMessage.send(data); }
+      else { MessageQueue.push({ msg: addPinMessage, data: data }); }
    }
 });
 
@@ -420,10 +425,15 @@ dmz.object.flag.observe(self, dmz.stance.VisibleHandle, function (handle, attr, 
          hilGroup = dmz.stance.getUserGroupHandle(dmz.object.hil());
          if (dmz.object.linkHandle(groupPinHandle, hilGroup, handle)) {
 
-            addPinMessage.send(data);
+            if (HaveActivatedMap) { addPinMessage.send(data); }
+            else { MessageQueue.push({ msg: addPinMessage, data: data }); }
          }
       }
-      else { removePinMessage.send(data); }
+      else {
+
+         if (HaveActivatedMap) { removePinMessage.send(data); }
+         else { MessageQueue.push({ msg: removePinMessage, data: data }); }
+      }
    }
 });
 
@@ -512,8 +522,19 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             page = map.page();
             page.mainFrame().load(self.config.string("url.name"));
             page.linkDelegation(dmz.ui.webview.DelegateAllLinks);
-            HaveActivatedMap = true;
-            populateMapFromGroup(dmz.stance.getUserGroupHandle(dmz.object.hil()));
+            map.observe(self, "loadFinished", function (done) {
+
+               if (done) {
+
+                  MessageQueue.forEach(function (dataObj) {
+
+                     self.log.warn ("msg:", dataObj.msg, "data:", dataObj.data);
+                     if (dataObj.msg && dataObj.data) { dataObj.msg.send(dataObj.data); }
+                  });
+                  HaveActivatedMap = true;
+                  populateMapFromGroup(dmz.stance.getUserGroupHandle(dmz.object.hil()));
+               }
+            });
          }
       };
 
@@ -536,9 +557,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       MainModule = module;
       module.addPage("Map", map, mapClickFn, mapHomeFn);
       setWebViewMessage.send();
-      page = map.page();
-      page.mainFrame().load(self.config.string("url.name"));
-      page.linkDelegation(dmz.ui.webview.DelegateAllLinks);
+//      page = map.page();
+//      page.mainFrame().load(self.config.string("url.name"));
+//      page.linkDelegation(dmz.ui.webview.DelegateAllLinks);
 
       browser = dmz.ui.webview.create();
       browserDialog.lookup("verticalLayout").addWidget(browser);
