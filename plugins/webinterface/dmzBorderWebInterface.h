@@ -87,6 +87,10 @@ namespace dmz {
          Boolean _haveSetJSObject;
          QList<const Data *> _pinDataQueue;
 
+         QList<int> _addPinList;
+         QList<int> _removePinList;
+         QList<int> _movePinList;
+
       private:
          BorderWebInterface ();
          BorderWebInterface (const BorderWebInterface &);

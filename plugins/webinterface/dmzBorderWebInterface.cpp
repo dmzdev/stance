@@ -84,8 +84,15 @@ dmz::BorderWebInterface::receive_message (
    }
    else if (Type == _removePinMessage) {
 
-      int id;
-      if (InData->lookup_int32 (_pinIDHandle, 0, id)) { emit (removePin (id)); }
+      int id = -1;
+      if (InData->lookup_int32 (_pinIDHandle, 0, id)) {
+
+         if (!_removePinList.contains (id)) {
+
+            _removePinList.append (id);
+            emit (removePin (id));
+         }
+      }
    }
    else if (Type == _movePinMessage) {
 
@@ -96,7 +103,11 @@ dmz::BorderWebInterface::receive_message (
          InData->lookup_float64 (_pinPositionHandle, 0, x) &&
          InData->lookup_float64 (_pinPositionHandle, 1, y)) {
 
-         emit (movePin (id, x, y));
+         if (!_movePinList.contains (id)) {
+
+            _movePinList.append (id);
+            emit (movePin (id, x, y));
+         }
       }
    }
    else if (Type == _setWebViewMessage) {
@@ -160,6 +171,9 @@ dmz::BorderWebInterface::pinWasAdded (
 
    data.store_int32 (_pinGroupCountHandle, 0, idx);
 
+
+//   int index = _addPinList.indexOf (objectHandle);
+//   if (index != -1) { _addPinList.removeAt (index); }
    _pinAddedMessage.send (&data);
 }
 
@@ -171,6 +185,8 @@ dmz::BorderWebInterface::pinWasMoved (const int id, const float x, const float y
    data.store_int32 (_pinIDHandle, 0, id);
    data.store_float64 (_pinPositionHandle, 0, x);
    data.store_float64 (_pinPositionHandle, 1, y);
+   int index = _movePinList.indexOf (id);
+   if (index != -1) { _movePinList.removeAt (index); }
    _pinMovedMessage.send (&data);
 }
 
@@ -180,6 +196,8 @@ dmz::BorderWebInterface::pinWasRemoved (const int id) {
 
    Data data;
    data.store_int32 (_pinIDHandle, 0, id);
+   int index = _removePinList.indexOf (id);
+   if (index != -1) { _removePinList.removeAt (index); }
    _pinRemovedMessage.send (&data);
 }
 
@@ -211,15 +229,19 @@ dmz::BorderWebInterface::_addPin (const Data *InData) {
       int value, idx = 0;
       while (InData->lookup_int32 (_groupPinHandle, idx++, value)) { list.append (value); }
 
-      emit (
-         addPin (
-            x,
-            y,
-            title.get_buffer (),
-            description.get_buffer (),
-            filename.get_buffer (),
-            handle,
-            list));
+      if (!handle || !_addPinList.contains (handle)) {
+
+         _addPinList.append (handle);
+         emit (
+            addPin (
+               x,
+               y,
+               title.get_buffer (),
+               description.get_buffer (),
+               filename.get_buffer (),
+               handle,
+               list));
+      }
    }
 }
 
