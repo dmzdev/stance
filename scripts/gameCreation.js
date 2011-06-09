@@ -442,6 +442,7 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
       serverEndDateEdit.enabled(!value);
       gameStartDateEdit.enabled(!value);
       timeFactorSpinBox.enabled(!value);
+      editScenarioWidget.lookup("setTimeButton").enabled(!value);
    }
 });
 
@@ -631,7 +632,7 @@ setup = function () {
       });
    });
 
-   updateTimePage ();
+//   updateTimePage ();
 };
 
 dmz.object.link.observe(self, dmz.stance.PreviousLobbyistHandle,
@@ -1084,14 +1085,16 @@ updateTimePage = function () {
    }
 };
 
+editScenarioWidget.observe(self, "setTimeButton", "clicked", updateTimePage);
+
 serverStartDateEdit.observe(self, "dateTimeChanged", function (value) {
 
    serverEndDateEdit.minimum(value);
 });
 
-serverEndDateEdit.observe(self, "dateTimeChanged", updateTimePage);
-gameStartDateEdit.observe(self, "dateTimeChanged", updateTimePage);
-timeFactorSpinBox.observe(self, "valueChanged", updateTimePage);
+//serverEndDateEdit.observe(self, "dateTimeChanged", updateTimePage);
+//gameStartDateEdit.observe(self, "dateTimeChanged", updateTimePage);
+//timeFactorSpinBox.observe(self, "valueChanged", updateTimePage);
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
