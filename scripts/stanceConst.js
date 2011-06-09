@@ -100,6 +100,7 @@ var dmz =
       , PinCountHandle: dmz.defs.createNamedHandle("pin_count")
       , ForumTimeHandle: dmz.defs.createNamedHandle("forum_time")
       , LastOnlineHandle: dmz.defs.createNamedHandle("last_online")
+      , GroupPinHandle: dmz.defs.createNamedHandle
       }
 
    , Functions =

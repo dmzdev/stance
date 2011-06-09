@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<javascript>
+   <instance name="graph"/>
+</javascript>
+<runtime>
+   <message name="GenerateAAR"/>
+</runtime>
+<aargraph>
+   <message name="GenerateAAR"/>
+   <graph name="" type="time">
+      <interval name="days"/>
+      <object-type name="">
+         <handle value=""/>
+      </object-type>
+   </graph>
+</aargraph>
+<gameCreation>
+   <aarmessage name="GenerateAAR"/>
+</gameCreation>
+</dmz>
