@@ -77,13 +77,16 @@ var dmz =
    , createVLine
 
    , getGroupFromCreatedBy
+   , getUserFromCreatedBy
    , getMediaGroups
+   , getAllGroupUsers
    , createBoxObj
 
    , updateName
 
    , updateUserList
    , updateGraph
+   , setGraph
 
    ;
 
@@ -197,6 +200,43 @@ updateName = function (handle) {
    }
 };
 
+setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDate, nextInterval) {
+
+   var objTypeCnt
+     , interval = []
+     ;
+// Iterate through all objects, save { handle, createdAt, links (users/groups) }
+// Sort by timestamp
+// objTypeCntr = {}; objTypeCnt[type] = 0; objTypeCnt[type] += 1
+
+   while (currDate < endDate) {
+
+      nextDate = nextInterval(currDate);
+      objTypeCnt = {};
+      item = stack.pop();
+      while (item && (item.timestamp < nextDate)) {
+
+         if (item.date < nextDate) {
+
+            if (!objTypeCnt[item.type]) { objTypeCnt[item.type] = []; }
+            objTypeCnt[item.type].push(item.handle);
+
+         }
+      }
+
+      Object.keys(objTypeCnt).forEach(function (type) {
+
+         if (objTypeCnt[type].length > 0) {
+
+            // Add box of correct type at next location for current interval with correct count
+            // Add one box for each group / user line
+            // On click, add dialog with correct info for handle
+         }
+      });
+      currDate = nextDate;
+   }
+
+};
 
 updateGraph = function () {
 
@@ -209,8 +249,8 @@ updateGraph = function () {
      , dataList = false
      , intervalfnc = function (date) { return date.add(interval).days(); }
      , gameTime = dmz.object.data(masterData.game, dmz.stance.GameStartTimeHandle)
-     , gameStart = gameTime.number("server", 0)
-     , gameEnd = gameTime.number("server", 1)
+     , gameStart = dmz.util.timeStampToDate(gameTime.number("server", 0))
+     , gameEnd = dmz.util.timeStampToDate(gameTime.number("server", 1))
 
      ;
 
@@ -239,6 +279,8 @@ updateGraph = function () {
       + "  gameEnd: " + dmz.util.timeStampToDate(gameEnd) + "\n"
       );
 
+   setGraph(graphType, activeTypes, activeLineHandles, gameStart, gameEnd, intervalfnc);
+
 };
 
 getGroupFromCreatedBy = function (handle) {
@@ -253,6 +295,18 @@ getMediaGroups = function (handle) {
    var groupList = dmz.object.superLinks(handle, dmz.stance.GameMediaHandle);
    return groupList ? groupList : [];
 }
+
+getAllGroupUsers = function (groupHandle) {
+
+   var users = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
+   return users ? users : [];
+};
+
+getUserFromCreatedBy = function (handle) {
+
+   var userHandle = dmz.object.subLinks(handle, dmz.stance.CreatedByHandle);
+   return userHandle ? userHandle : [];
+};
 
 (function () {
 
@@ -301,6 +355,7 @@ getMediaGroups = function (handle) {
       { name: "Questions"
       , brush: dmz.ui.graph.createBrush({ r: 0.8, g: 0.8, b: 0.3 })
       , getGroups: getGroupFromCreatedBy
+      , getUsers: getUserFromCreatedBy
       };
 
    ObjectTypeData[dmz.stance.VideoType] =
@@ -313,12 +368,14 @@ getMediaGroups = function (handle) {
       { name: "Tasks"
       , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
       , getGroups: getGroupFromCreatedBy
+      , getUsers: getUserFromCreatedBy
       };
 
    data =
       { name: "Forum post"
       , brush: dmz.ui.graph.createBrush({ r: 1, g: 0.8, b: 0.8 })
       , getGroups: getGroupFromCreatedBy
+      , getUsers: getUserFromCreatedBy
       };
 
    ObjectTypeData[dmz.stance.CommentType] = data;
@@ -335,6 +392,19 @@ getMediaGroups = function (handle) {
          data.selected = false;
          data.itemLabel.observe(self, "toggled", function (checked) { data.selected = checked; });
       }
+      if (!data.getUsers) {
+
+         data.getUsers = function (handle) {
+
+            var ret = [];
+            data.getGroups().forEach(function (handle) {
+
+               ret = ret.concat(getAllGroupUsers(handle));
+            });
+            return ret;
+         };
+      }
+
       objectTypeLayout.insertWidget(1, data.itemLabel);
       data.itemLabel.setChecked(true);
    });
