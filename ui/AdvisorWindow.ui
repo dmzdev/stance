@@ -524,6 +524,12 @@ p, li { white-space: pre-wrap; }
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>80</height>
+            </size>
+           </property>
            <property name="palette">
             <palette>
              <active>
@@ -1034,6 +1040,12 @@ p, li { white-space: pre-wrap; }
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>80</height>
+            </size>
            </property>
            <property name="palette">
             <palette>
