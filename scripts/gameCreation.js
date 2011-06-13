@@ -90,7 +90,10 @@ var dmz =
    , groupTemplateComboBox = AddGroupDialog.lookup("templateComboBox")
    , groupNameEdit = AddGroupDialog.lookup("nameEdit")
 
+   , groupLayout = editScenarioWidget.lookup("groupLayout")
+
    // Variables
+   , GroupButtonList = {}
    , EmailMod = false
    , groupList = []
    , userList = {}
@@ -250,11 +253,28 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var name = dmz.stance.getDisplayName(subHandle);
+   var name = dmz.stance.getDisplayName(subHandle)
+     , button = dmz.ui.button.createRadioButton(name)
+     ;
+
    groupList.push(subHandle);
    groupComboBox.addItem(name);
    advisorGroupComboBox.addItem(name);
    lobbyistGroupList.addItem(name);
+   GroupButtonList[subHandle] = button;
+   button.observe(self, "toggled", function (selected) {
+
+      var hil;
+      if (selected) {
+
+         hil = dmz.object.hil();
+         dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
+         dmz.object.link(dmz.stance.GroupMembersHandle, subHandle, hil);
+         dmz.object.flag(hil, dmz.object.HILAttribute, false);
+         dmz.object.flag(hil, dmz.object.HILAttribute, true);
+      }
+   });
+   groupLayout.insertWidget(0, button);
    MediaGroupFLayout.addRow(name, dmz.ui.button.createCheckBox());
 });
 
@@ -279,7 +299,9 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
 function (linkObjHandle, attrHandle, groupHandle, studentHandle) {
 
-   var links = dmz.object.superLinks(studentHandle, dmz.stance.GameUngroupedUsersHandle);
+   var links = dmz.object.superLinks(studentHandle, dmz.stance.GameUngroupedUsersHandle)
+     , hil = dmz.object.hil
+     ;
    if (links) {
 
       dmz.object.unlinkSuperObjects(studentHandle, dmz.stance.GameUngroupedUsersHandle);
@@ -1099,12 +1121,15 @@ serverStartDateEdit.observe(self, "dateTimeChanged", function (value) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
+   var button;
    if (value) {
 
       if (dmz.object.flag(objHandle, dmz.stance.AdminHandle)) {
 
          editScenarioWidget.lookup("tabWidget").show();
          dock.enabled(true);
+         button = GroupButtonList[dmz.stance.getUserGroupHandle(objHandle)];
+         if (button && !button.isChecked()) { button.click(true); }
       }
       else {
 

@@ -646,6 +646,7 @@
    </resource>
    <resource name="CBP_newspaper" file="CBP_newspaper.png">
       <loc x="286" y="487"/>
+      <offset x="0" y="40"/>      
    </resource>
 <!--
    <resource name="CBP_resources" file="CBP_resources.png">

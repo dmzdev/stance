@@ -31,7 +31,7 @@ var dmz =
 
    // UI Elements
    , main = dmz.ui.loader.load("main")
-   , groupBox = main.lookup("groupBox")
+//   , groupBox = main.lookup("groupBox")
    , stackedWidget = main.lookup("stackedWidget")
    , mainGView = main.lookup("graphicsView")
    , gscene
@@ -158,6 +158,7 @@ setPixmapFromResource = function (graphicsItem, resourceName) {
      , loc
      , pixmap
      , font
+     , highlight
      ;
 
    if (graphicsItem && config && file) {
@@ -166,6 +167,12 @@ setPixmapFromResource = function (graphicsItem, resourceName) {
       pixmap = dmz.ui.graph.createPixmap(file);
       if (pixmap) { graphicsItem.pixmap(pixmap); }
       if (dmz.vector.isTypeOf(loc)) { graphicsItem.pos(loc.x, loc.y); }
+      loc = config.vector("offset");
+      if (dmz.vector.isTypeOf(loc)) {
+
+         highlight = graphicsItem.data(DataIndex.highlight);
+         if (highlight) { highlight.pos(loc.x, loc.y); }
+      }
       if (graphicsItem === Calendar) {
 
          font = getConfigFont(config);
@@ -302,22 +309,22 @@ dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
 function (objHandle, attrHandle, gameHandle, groupHandle) {
 
    GroupList.push(groupHandle);
-   groupBox.addItem(dmz.stance.getDisplayName(groupHandle));
+//   groupBox.addItem(dmz.stance.getDisplayName(groupHandle));
 });
 
-groupBox.observe(self, "currentIndexChanged", function (index) {
+//groupBox.observe(self, "currentIndexChanged", function (index) {
 
-   var hil = dmz.object.hil();
+//   var hil = dmz.object.hil();
 
-   dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
-   if (index && (index < GroupList.length)) {
+//   dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
+//   if (index && (index < GroupList.length)) {
 
-      dmz.object.link(dmz.stance.GroupMembersHandle, GroupList[index], hil);
-      dmz.object.flag(hil, dmz.object.HILAttribute, false);
-      dmz.object.flag(hil, dmz.object.HILAttribute, true);
-   }
-   else if (!index && stackedWidget) { stackedWidget.currentIndex(SplashIndex); }
-});
+//      dmz.object.link(dmz.stance.GroupMembersHandle, GroupList[index], hil);
+//      dmz.object.flag(hil, dmz.object.HILAttribute, false);
+//      dmz.object.flag(hil, dmz.object.HILAttribute, true);
+//   }
+//   else if (!index && stackedWidget) { stackedWidget.currentIndex(SplashIndex); }
+//});
 
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
@@ -325,16 +332,16 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
-      if (dmz.object.flag(objHandle, dmz.stance.AdminHandle)) {
+//      if (dmz.object.flag(objHandle, dmz.stance.AdminHandle)) {
 
-         groupBox.show();
-         groupBox.enabled(true);
-      }
-      else {
+//         groupBox.show();
+//         groupBox.enabled(true);
+//      }
+//      else {
 
-         groupBox.hide();
-         groupBox.enabled(false);
-      }
+//         groupBox.hide();
+//         groupBox.enabled(false);
+//      }
 
       updateGraphicsForGroup(dmz.stance.getUserGroupHandle(objHandle));
 
@@ -585,16 +592,16 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 dmz.object.flag.observe(self, dmz.stance.AdminHandle,
 function (objHandle, attrHandle, value) {
 
-   if (value && (objHandle === dmz.object.hil())) {
+//   if (value && (objHandle === dmz.object.hil())) {
 
-      groupBox.show();
-      groupBox.enabled(true);
-   }
-   else {
+//      groupBox.show();
+//      groupBox.enabled(true);
+//   }
+//   else {
 
-      groupBox.hide();
-      groupBox.enabled(false);
-   }
+//      groupBox.hide();
+//      groupBox.enabled(false);
+//   }
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
@@ -647,8 +654,8 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
       });
    });
 
-   groupBox.hide();
-   groupBox.enabled(false);
+//   groupBox.hide();
+//   groupBox.enabled(false);
    setupMainWindow();
    if (!self.config.number("login.value", 0)) {
 
