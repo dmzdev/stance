@@ -37,9 +37,9 @@ var dmz =
    , gscene
    , homeButton = main.lookup("homeButton")
 
-   , helpDialog = dmz.ui.loader.load("HelpEmailDialog.ui")
-   , helpSubject = helpDialog.lookup("subjectLine")
-   , helpText = helpDialog.lookup("descriptionText")
+//   , helpDialog = dmz.ui.loader.load("HelpEmailDialog.ui")
+//   , helpSubject = helpDialog.lookup("subjectLine")
+//   , helpText = helpDialog.lookup("descriptionText")
 
    // Variables
    , GroupList = [-1]
@@ -625,34 +625,34 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
       });
    }
 
-   dmz.ui.mainWindow.addMenu(self, "&Help", "Report a Problem", function () {
+//   dmz.ui.mainWindow.addMenu(self, "&Help", "Report a Problem", function () {
 
-      helpDialog.open(self, function (value) {
+//      helpDialog.open(self, function (value) {
 
-         var subjectText
-           , descText
-           ;
+//         var subjectText
+//           , descText
+//           ;
 
-         if (value) {
+//         if (value) {
 
-            subjectText = helpSubject.text();
-            descText = helpText.text();
+//            subjectText = helpSubject.text();
+//            descText = helpText.text();
 
-            subjectText =
-               "STANCE HELP: " +
-                  ((subjectText && subjectText.length) ? subjectText : "No subject");
+//            subjectText =
+//               "STANCE HELP: " +
+//                  ((subjectText && subjectText.length) ? subjectText : "No subject");
 
-            descText =
-               "Username: " + dmz.stance.getDisplayName(dmz.object.hil()) + "\n" +
-               "Timestamp:" + dmz.util.timeStampToDate(TimeModule.serverTime()) + "\n" +
-               "\n" + ((descText && descText.length) ? descText : "No text");
+//            descText =
+//               "Username: " + dmz.stance.getDisplayName(dmz.object.hil()) + "\n" +
+//               "Timestamp:" + dmz.util.timeStampToDate(TimeModule.serverTime()) + "\n" +
+//               "\n" + ((descText && descText.length) ? descText : "No text");
 
-            EmailMod.sendTechEmail(helpEmailList, subjectText, descText);
-         }
-         helpSubject.text("");
-         helpText.text("");
-      });
-   });
+//            EmailMod.sendTechEmail(helpEmailList, subjectText, descText);
+//         }
+//         helpSubject.text("");
+//         helpText.text("");
+//      });
+//   });
 
 //   groupBox.hide();
 //   groupBox.enabled(false);
