@@ -28,5 +28,6 @@
    <message name="SetInterfaceWebViewMessage"/>
    <message name="AppUpdaterUpdateMessage"/>
    <message name="AppUpdaterChannelMessage"/>
+   <message name="ToggledGroupMessage"/>
 </runtime>
 </dmz>

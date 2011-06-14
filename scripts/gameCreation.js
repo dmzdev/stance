@@ -21,6 +21,7 @@ var dmz =
    , time: require("dmz/runtime/time")
    , util: require("dmz/types/util")
    , resources: require("dmz/runtime/resources")
+   , message: require("dmz/runtime/messaging")
    , module: require("dmz/runtime/module")
    }
    , DateJs = require("datejs/time")
@@ -113,6 +114,7 @@ var dmz =
    , TemplateBackgroundPixmaps = []
    , AdvisorCount = 5
    , AvatarPixmapList = {}
+   , ToggledMessage = dmz.message.create("ToggledGroupMessage")
 
    // Function decls
    , toTimeStamp = dmz.util.dateToTimeStamp
@@ -269,6 +271,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
          hil = dmz.object.hil();
          dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
+         ToggledMessage.send();
          dmz.object.link(dmz.stance.GroupMembersHandle, subHandle, hil);
          dmz.object.flag(hil, dmz.object.HILAttribute, false);
          dmz.object.flag(hil, dmz.object.HILAttribute, true);
@@ -1128,8 +1131,8 @@ function (objHandle, attrHandle, value) {
 
          editScenarioWidget.lookup("tabWidget").show();
          dock.enabled(true);
-         button = GroupButtonList[dmz.stance.getUserGroupHandle(objHandle)];
-         if (button && !button.isChecked()) { button.click(true); }
+//         button = GroupButtonList[dmz.stance.getUserGroupHandle(objHandle)];
+//         if (button && !button.isChecked()) { button.click(true); }
       }
       else {
 

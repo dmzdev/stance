@@ -26,6 +26,8 @@ var dmz =
    , ApproveVoteDialog = dmz.ui.loader.load("ApproveVoteDialog.ui")
    , VoteTextArea = ApproveVoteDialog.lookup("taskingText")
    , VoteOpinionArea = ApproveVoteDialog.lookup("opinionText")
+   , ApproveVoteAdvisorLabel = ApproveVoteDialog.lookup("advisorLabel")
+   , ApproveVoteAdvisorTitle = ApproveVoteDialog.lookup("advisorTitle")
 
    , AnswerQuestionDialog = dmz.ui.loader.load("AnswerQuestionDialog.ui")
    , QuestionTextArea = AnswerQuestionDialog.lookup("questionText")
@@ -38,6 +40,9 @@ var dmz =
    , TaskText = VoteDialog.lookup("taskingText")
    , VoteCommentText = VoteDialog.lookup("opinionText")
    , VoteExpirationTime = VoteDialog.lookup("expirationTime")
+   , YesButton = VoteDialog.lookup("yesButton")
+   , NoButton = VoteDialog.lookup("noButton")
+   , VoteAdvisorLabel = VoteDialog.lookup("advisorLabel")
 
    // Variables
    , advisorWidgets = []
@@ -525,7 +530,11 @@ getVoteStatus = function (voteHandle) {
 
 approveVote = function (voteHandle) {
 
+   var advisorHandle = dmz.object.superLinks(voteHandle, dmz.stance.VoteAdvisorHandle);
+   advisorHandle = (advisorHandle && advisorHandle.length) ? advisorHandle[0] : -1;
    VoteTextArea.text(dmz.object.text(voteHandle, dmz.stance.TextHandle));
+   ApproveVoteAdvisorLabel.text(dmz.stance.getDisplayName(advisorHandle));
+   ApproveVoteAdvisorTitle.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
    ApproveVoteDialog.open(self, function (result, dialog) {
 
       var text
@@ -705,11 +714,11 @@ updateAdvisor = function (module, idx) {
                if (text.length) {
 
                   vote = dmz.object.create(dmz.stance.VoteType);
+                  dmz.object.activate(vote);
                   dmz.object.flag(vote, dmz.stance.ActiveHandle, true);
                   dmz.object.flag(vote, dmz.stance.VoteSubmittedHandle, true);
                   dmz.object.timeStamp(vote, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
                   dmz.object.text(vote, dmz.stance.TextHandle, text);
-                  dmz.object.activate(vote);
                   dmz.object.link(dmz.stance.CreatedByHandle, vote, hil);
                   list = dmz.object.subLinks(hilGroup, dmz.stance.GroupMembersHandle);
                   if (list && list.length) {
@@ -1479,8 +1488,38 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
 dmz.object.link.observe(self, dmz.stance.VoteAdvisorHandle,
 function (linkObjHandle, attrHandle, advisorHandle, voteHandle) {
 
-   addVote(voteHandle);
-   master.advisors[advisorHandle].votes.push(voteHandle);
+   var tree
+     , groupHandle = getAdvisorGroupHandle(advisorHandle)
+     , hil = dmz.object.hil()
+     , index
+     , widget
+     , item
+     , isActive = (dmz.stance.getUserGroupHandle(hil) === groupHandle)
+     ;
+
+   if (master.advisors[advisorHandle].votes.indexOf(voteHandle) === -1) {
+
+      addVote(voteHandle);
+      master.advisors[advisorHandle].votes.push(voteHandle);
+   }
+   if (groupHandle && groupAdvisors[groupHandle] && groupAdvisors[groupHandle].length) {
+
+      index = groupAdvisors[groupHandle].indexOf(advisorHandle);
+      if (index !== -1) {
+
+         widget = advisorWidgets[index];
+         item = master.votes[voteHandle].item;
+         tree = widget.lookup("voteHistoryTree");
+         if (tree && item && (item.treeWidget() !== tree)) {
+
+            tree.add(item);
+            item.hidden(false);
+            tree.currentItem(item);
+         }
+
+         dmz.object.flag(voteHandle, dmz.stance.VisibleHandle, isActive);
+      }
+   }
 });
 
 dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
@@ -1588,13 +1627,17 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            , hil = dmz.object.hil()
            , hilGroup = dmz.stance.getUserGroupHandle(hil)
            , undecHandleList
+           , doHighlight = true
+           , advisorHandle
            ;
 
          // Vote dialog
          vote = dmz.object.subLinks(hilGroup, dmz.stance.GroupActiveVoteHandle);
+         self.log.warn ("Vote:", vote);
          if (vote && vote[0]) {
 
             vote = vote[0];
+            self.log.warn ("Vote:", vote, isVoteExpired(vote));
             if (isVoteExpired(vote)) {
 
                dmz.ui.messageBox.create(
@@ -1607,23 +1650,36 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             }
             else {
 
+               self.log.warn ("Active:", dmz.object.flag(vote, dmz.stance.ActiveHandle));
                undecHandleList = dmz.object.subLinks(vote, dmz.stance.VoteUndecidedHandle);
                dmz.object.flag(vote, dmz.stance.VisibleHandle, true);
                if (dmz.object.flag(vote, dmz.stance.ActiveHandle)) {
 
-                  if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
+                  if (dmz.object.flag(hil, dmz.stance.AdminHandle) && dmz.object.flag(vote, dmz.stance.VoteSubmittedHandle)) {
 
-                     if (dmz.object.flag(vote, dmz.stance.VoteSubmittedHandle)) {
+//                     if (dmz.object.flag(vote, dmz.stance.VoteSubmittedHandle)) {
 
                         approveVote(vote);
-                     }
+//                     }
                   }
-                  else if ((dmz.object.flag(vote, dmz.stance.VoteApprovedHandle) === true) &&
-                          undecHandleList && (undecHandleList.indexOf(hil) !== -1)) {
+                  else if ((dmz.object.flag(vote, dmz.stance.VoteApprovedHandle) === true)/* &&
+                          undecHandleList && (undecHandleList.indexOf(hil) !== -1)*/) {
 
                      fillList(YesList, dmz.object.subLinks(vote, dmz.stance.VoteYesHandle));
                      fillList(NoList, dmz.object.subLinks(vote, dmz.stance.VoteNoHandle));
                      fillList(UndecList, undecHandleList);
+
+                     if (undecHandleList && (undecHandleList.indexOf(hil) === -1)) {
+
+                        doHighlight = false;
+                        YesButton.enabled(false);
+                        NoButton.enabled(false);
+                     }
+                     else {
+
+                        YesButton.enabled(true);
+                        NoButton.enabled(true);
+                     }
 
                      VoteDialog.observe(self, "yesButton", "clicked", function () {
 
@@ -1657,6 +1713,10 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
                      VoteCommentText.text(dmz.object.text(vote, dmz.stance.CommentHandle));
                      TaskText.text(dmz.object.text(vote, dmz.stance.TextHandle));
+                     advisorHandle = dmz.object.superLinks(vote, dmz.stance.VoteAdvisorHandle);
+                     VoteAdvisorLabel.text(
+                        dmz.stance.getDisplayName(
+                           advisorHandle && advisorHandle.length ? advisorHandle[0] : 0));
                      str = dmz.util.timeStampToDate(dmz.object.timeStamp(vote, dmz.stance.DurationHandle));
                      if (str && str instanceof Date) {
 
@@ -1668,7 +1728,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
                      }
                      VoteDialog.open(self, function (value) {
 
-                        if (!value) { MainModule.highlight("Vote"); }
+                        if (!value && doHighlight) { MainModule.highlight("Vote"); }
+                        doHighlight = true;
                      });
                   }
                }

@@ -844,12 +844,12 @@ p, li { white-space: pre-wrap; }
        </column>
        <column>
         <property name="text">
-         <string>Start Date</string>
+         <string>Game Start Date</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string>End Date</string>
+         <string>Real End Date</string>
         </property>
        </column>
       </widget>

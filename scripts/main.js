@@ -37,11 +37,9 @@ var dmz =
    , gscene
    , homeButton = main.lookup("homeButton")
 
-//   , helpDialog = dmz.ui.loader.load("HelpEmailDialog.ui")
-//   , helpSubject = helpDialog.lookup("subjectLine")
-//   , helpText = helpDialog.lookup("descriptionText")
-
    // Variables
+   , ToggledGroupMessage = dmz.message.create("ToggledGroupMessage")
+   , HaveToggled = false
    , GroupList = [-1]
    , AdvisorCount = 5
    , windowWidth = self.config.number("window.width", 1280)
@@ -277,7 +275,6 @@ mouseEvent = function (object, event) {
 
             var widget = item.data(DataIndex.widget)
               , onChangeFunction = item.data(DataIndex.func)
-//              , children = item.childItems()
               , highlight = item.data(DataIndex.highlight)
               ;
 
@@ -289,12 +286,6 @@ mouseEvent = function (object, event) {
 
             if (onChangeFunction) { onChangeFunction(); }
             if (highlight) { highlight.hide(); }
-//            if (children &&
-//               (item !== Calendar) && (item !== CalendarText.month) &&
-//                  (item !== CalendarText.day) && (CalendarText.year)) {
-
-//               children.forEach (function (child) { child.hide(); });
-//            }
          });
 
       }
@@ -309,41 +300,18 @@ dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
 function (objHandle, attrHandle, gameHandle, groupHandle) {
 
    GroupList.push(groupHandle);
-//   groupBox.addItem(dmz.stance.getDisplayName(groupHandle));
 });
-
-//groupBox.observe(self, "currentIndexChanged", function (index) {
-
-//   var hil = dmz.object.hil();
-
-//   dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
-//   if (index && (index < GroupList.length)) {
-
-//      dmz.object.link(dmz.stance.GroupMembersHandle, GroupList[index], hil);
-//      dmz.object.flag(hil, dmz.object.HILAttribute, false);
-//      dmz.object.flag(hil, dmz.object.HILAttribute, true);
-//   }
-//   else if (!index && stackedWidget) { stackedWidget.currentIndex(SplashIndex); }
-//});
-
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
    if (value) {
 
-//      if (dmz.object.flag(objHandle, dmz.stance.AdminHandle)) {
+      if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) || HaveToggled) {
 
-//         groupBox.show();
-//         groupBox.enabled(true);
-//      }
-//      else {
+         updateGraphicsForGroup(dmz.stance.getUserGroupHandle(objHandle));
+      }
 
-//         groupBox.hide();
-//         groupBox.enabled(false);
-//      }
-
-      updateGraphicsForGroup(dmz.stance.getUserGroupHandle(objHandle));
 
       Object.keys(PageLink).forEach(function (item) {
 
@@ -353,13 +321,6 @@ function (objHandle, attrHandle, value) {
             highlight = PageLink[item].data(DataIndex.highlight);
             if (highlight) { highlight.hide(); }
          }
-
-//         var children;
-//         if (PageLink[item]) {
-
-//            children = PageLink[item].childItems();
-//            if (children) { children.forEach(function (item) { item.hide(); }); }
-//         }
       });
    }
 });
@@ -377,13 +338,6 @@ function (linkObjHandle, attrHandle, groupHandle, userHandle) {
             highlight = PageLink[item].data(DataIndex.highlight);
             if (highlight) { highlight.hide(); }
          }
-//         var children;
-//         if (PageLink[item]) {
-
-//            children = PageLink[item].childItems();
-//            if (children) { children.forEach(function (item) { item.hide(); }); }
-//         }
-
       });
    }
 });
@@ -565,8 +519,6 @@ _exports.highlight = function (name) {
 
       highlight = PageLink[name].data(DataIndex.highlight);
       if (highlight) { highlight.show(); }
-//      children = PageLink[name].childItems();
-//      if (children) { children.forEach(function (item) { item.show(); }) }
    }
 };
 
@@ -592,22 +544,20 @@ function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
 dmz.object.flag.observe(self, dmz.stance.AdminHandle,
 function (objHandle, attrHandle, value) {
 
-//   if (value && (objHandle === dmz.object.hil())) {
+   if ((objHandle === dmz.object.hil()) && stackedWidget) {
 
-//      groupBox.show();
-//      groupBox.enabled(true);
-//   }
-//   else {
-
-//      groupBox.hide();
-//      groupBox.enabled(false);
-//   }
+      stackedWidget.currentIndex(SplashIndex);
+   }
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
 function (objHandle, attrHandle, groupHandle, userHandle) {
 
-   if (userHandle === dmz.object.hil()) { updateGraphicsForGroup(groupHandle); }
+   if ((userHandle === dmz.object.hil()) &&
+      (!dmz.object.flag(userHandle, dmz.stance.AdminHandle) || HaveToggled)) {
+
+      updateGraphicsForGroup(groupHandle);
+   }
 });
 
 (function () {
@@ -625,37 +575,6 @@ function (objHandle, attrHandle, groupHandle, userHandle) {
       });
    }
 
-//   dmz.ui.mainWindow.addMenu(self, "&Help", "Report a Problem", function () {
-
-//      helpDialog.open(self, function (value) {
-
-//         var subjectText
-//           , descText
-//           ;
-
-//         if (value) {
-
-//            subjectText = helpSubject.text();
-//            descText = helpText.text();
-
-//            subjectText =
-//               "STANCE HELP: " +
-//                  ((subjectText && subjectText.length) ? subjectText : "No subject");
-
-//            descText =
-//               "Username: " + dmz.stance.getDisplayName(dmz.object.hil()) + "\n" +
-//               "Timestamp:" + dmz.util.timeStampToDate(TimeModule.serverTime()) + "\n" +
-//               "\n" + ((descText && descText.length) ? descText : "No text");
-
-//            EmailMod.sendTechEmail(helpEmailList, subjectText, descText);
-//         }
-//         helpSubject.text("");
-//         helpText.text("");
-//      });
-//   });
-
-//   groupBox.hide();
-//   groupBox.enabled(false);
    setupMainWindow();
    if (!self.config.number("login.value", 0)) {
 
@@ -723,5 +642,7 @@ dmz.module.subscribe(self, "email", function (Mode, module) {
       EmailMod = module;
    }
 });
+
+ToggledGroupMessage.subscribe(self, function (data) { HaveToggled = true; self.log.error ("Toggled"); });
 
 dmz.module.publish(self, _exports);

@@ -14,7 +14,7 @@
       <top right="true" left="true"/>
       <bottom right="true" left="true"/>
    </corners>
-   <window title="DMZ: Border Patrol Simulation"/>
+   <window title="STANCE"/>
    <!-- <central-widget name="canvas"/> -->
    <menu-bar>
       <menu text="&amp;File"/>
