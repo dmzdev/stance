@@ -13,7 +13,6 @@ var dmz =
       , event: require("dmz/ui/event")
       , label: require("dmz/ui/label")
       , webview: require("dmz/ui/webView")
-      , inputDialog: require("dmz/ui/inputDialog")
       }
    , config: require("dmz/runtime/config")
    , defs: require("dmz/runtime/definitions")
@@ -643,6 +642,6 @@ dmz.module.subscribe(self, "email", function (Mode, module) {
    }
 });
 
-ToggledGroupMessage.subscribe(self, function (data) { HaveToggled = true; self.log.error ("Toggled"); });
+ToggledGroupMessage.subscribe(self, function (data) { HaveToggled = true; });
 
 dmz.module.publish(self, _exports);

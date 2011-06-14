@@ -23,17 +23,17 @@ var dmz =
    }
 
    // UI Elements
-   , ApproveVoteDialog = dmz.ui.loader.load("ApproveVoteDialog.ui")
+   , ApproveVoteDialog = dmz.ui.loader.load("ApproveVoteDialog.ui", dmz.ui.mainWindow.centralWidget())
    , VoteTextArea = ApproveVoteDialog.lookup("taskingText")
    , VoteOpinionArea = ApproveVoteDialog.lookup("opinionText")
    , ApproveVoteAdvisorLabel = ApproveVoteDialog.lookup("advisorLabel")
    , ApproveVoteAdvisorTitle = ApproveVoteDialog.lookup("advisorTitle")
 
-   , AnswerQuestionDialog = dmz.ui.loader.load("AnswerQuestionDialog.ui")
+   , AnswerQuestionDialog = dmz.ui.loader.load("AnswerQuestionDialog.ui", dmz.ui.mainWindow.centralWidget())
    , QuestionTextArea = AnswerQuestionDialog.lookup("questionText")
    , QuestionAnswerArea = AnswerQuestionDialog.lookup("answerText")
 
-   , VoteDialog = dmz.ui.loader.load("VoteDialog.ui")
+   , VoteDialog = dmz.ui.loader.load("VoteDialog.ui", dmz.ui.mainWindow.centralWidget())
    , YesList = VoteDialog.lookup("yesList")
    , NoList = VoteDialog.lookup("noList")
    , UndecList = VoteDialog.lookup("undecList")

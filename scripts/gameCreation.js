@@ -56,22 +56,22 @@ var dmz =
    , timeInfoLabel = editScenarioWidget.lookup("timeInfoLabel")
    , timeInfoText = timeInfoLabel.text()
 
-   , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
+   , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui", editScenarioWidget)
    , avatarList = createStudentDialog.lookup("avatarList")
    , avatarLabel = createStudentDialog.lookup("avatarLabel")
    , studentUserNameEdit = createStudentDialog.lookup("userName")
-   , studentDisplayNameEdit = createStudentDialog.lookup("displayName")
+   , studentDisplayNameEdit = createStudentDialog.lookup("displayName", editScenarioWidget)
 
-   , instructorDialog = dmz.ui.loader.load("InstructorWindowDialog")
+   , instructorDialog = dmz.ui.loader.load("InstructorWindowDialog", editScenarioWidget)
    , scenarioList = instructorDialog.lookup("scenarioList")
 
-   , editAdvisorDialog = dmz.ui.loader.load("EditAdvisorDialog.ui")
+   , editAdvisorDialog = dmz.ui.loader.load("EditAdvisorDialog.ui", editScenarioWidget)
    , advisorBio = editAdvisorDialog.lookup("advisorBio")
    , pictureLabel = editAdvisorDialog.lookup("pictureLabel")
    , advisorSpecialty = editAdvisorDialog.lookup("specialtyEdit")
    , advisorName = editAdvisorDialog.lookup("nameEdit")
 
-   , editLobbyistDialog = dmz.ui.loader.load("EditLobbyistDialog.ui")
+   , editLobbyistDialog = dmz.ui.loader.load("EditLobbyistDialog.ui", editScenarioWidget)
    , lobbyistPictureLabel = editLobbyistDialog.lookup("pictureLabel")
    , lobbyistGroupList = editLobbyistDialog.lookup("groupList")
    , lobbyistBio = editLobbyistDialog.lookup("lobbyistBio")
@@ -80,12 +80,12 @@ var dmz =
    , lobbyistTitle = editLobbyistDialog.lookup("lobbyistTitle")
    , lobbyistName = editLobbyistDialog.lookup("nameEdit")
 
-   , CreateMediaInjectDialog = dmz.ui.loader.load("MediaInjectDialog.ui")
+   , CreateMediaInjectDialog = dmz.ui.loader.load("MediaInjectDialog.ui", editScenarioWidget)
    , MediaTitleText = CreateMediaInjectDialog.lookup("titleText")
    , MediaUrlText = CreateMediaInjectDialog.lookup("urlText")
    , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupLayout")
 
-   , AddGroupDialog = dmz.ui.loader.load("AddGroupDialog.ui")
+   , AddGroupDialog = dmz.ui.loader.load("AddGroupDialog.ui", editScenarioWidget)
    , groupButtonBox = AddGroupDialog.lookup("buttonBox")
    , groupTemplatePic = AddGroupDialog.lookup("pictureLabel")
    , groupTemplateComboBox = AddGroupDialog.lookup("templateComboBox")
@@ -98,7 +98,6 @@ var dmz =
    , EmailMod = false
    , groupList = []
    , userList = {}
-   , gameList = []
    , advisorPictureObjects = {}
    , lobbyistPictureObjects = []
    , advisorList = []
@@ -611,21 +610,6 @@ setup = function () {
 
                links.forEach(function (lobbyistHandle) {
 
-//                  var linkHandle =
-//                     dmz.object.linkHandle(
-//                        dmz.stance.ActiveLobbyistHandle,
-//                        groupList[groupIndex],
-//                        lobbyistHandle);
-
-//                  if (linkHandle) {
-
-//                     dmz.object.unlink(linkHandle);
-//                     dmz.object.link(
-//                        dmz.stance.PreviousLobbyistHandle,
-//                        groupList[groupIndex],
-//                        lobbyistHandle);
-//                  }
-
                   var linkHandle =
                      dmz.object.linkHandle(
                         dmz.stance.PreviousLobbyistHandle,
@@ -854,7 +838,7 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
 
 editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 
-   var groupListDialog = dmz.ui.loader.load("GroupListDialog.ui")
+   var groupListDialog = dmz.ui.loader.load("GroupListDialog.ui", editScenarioWidget)
      , listLayout = groupListDialog.lookup("vLayout")
      , groups
      , studentList
@@ -919,9 +903,11 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
               , media = false
               , groupMembers
               , links
-              , userList = []
+              , game
+              , userList = dmz.object.subLinks(CurrentGameHandle, dmz.stance.AdminHandle)
               ;
 
+            if (!userList) { userList = []; }
             if (value && type) {
 
                for (idx = 0; idx < count; idx += 1) {
