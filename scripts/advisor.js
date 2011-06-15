@@ -17,6 +17,7 @@ var dmz =
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
    , module: require("dmz/runtime/module")
+   , message: require("dmz/runtime/messaging")
    , resources: require("dmz/runtime/resources")
    , time: require("dmz/runtime/time")
    , util: require("dmz/types/util")
@@ -44,7 +45,20 @@ var dmz =
    , NoButton = VoteDialog.lookup("noButton")
    , VoteAdvisorLabel = VoteDialog.lookup("advisorLabel")
 
+   , _NoContentWarning =
+        dmz.ui.messageBox.create(
+           { type: dmz.ui.messageBox.Warning
+            , text: "You must log in to the server to interact with this!"
+            , informativeText: "If you want to interact with this, please restart STANCE and log in."
+            , standardButtons: [dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Ok
+            }
+            , dmz.ui.mainWindow.centralWidget()
+            )
+
    // Variables
+   , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
+   , LoginSkipped = false
    , advisorWidgets = []
    , advisorData = {}
    , groupAdvisors = {}
@@ -95,6 +109,7 @@ var dmz =
    , setTreeForAdvisor
    ;
 
+LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
 setTreeForAdvisor = function (advisorHandle, voteTree, questionTree) {
 
@@ -535,61 +550,69 @@ approveVote = function (voteHandle) {
    VoteTextArea.text(dmz.object.text(voteHandle, dmz.stance.TextHandle));
    ApproveVoteAdvisorLabel.text(dmz.stance.getDisplayName(advisorHandle));
    ApproveVoteAdvisorTitle.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
-   ApproveVoteDialog.open(self, function (result, dialog) {
+   if (LoginSkipped) { _NoContentWarning.open(self, function () {}); }
+   else {
 
-      var text
-        , time
-        , amt
-        ;
-      text = VoteOpinionArea.text();
-      if (!text || !text.length) { text = "I have no opinion on this matter."; }
-      dmz.object.text(voteHandle, dmz.stance.CommentHandle, text);
-      dmz.object.flag(voteHandle, dmz.stance.VoteApprovedHandle, result);
-      dmz.object.flag(voteHandle, dmz.stance.VoteSubmittedHandle, false);
-      if (!result) {
+      ApproveVoteDialog.open(self, function (result, dialog) {
 
-         dmz.object.flag(voteHandle, dmz.stance.ActiveHandle, false);
-         dmz.object.flag(voteHandle, dmz.stance.VoteResultHandle, false);
-         dmz.object.timeStamp(voteHandle, dmz.stance.DurationHandle, dmz.time.getFrameTime());
-      }
-      else {
+         var text
+           , time
+           , amt
+           ;
+         text = VoteOpinionArea.text();
+         if (!text || !text.length) { text = "I have no opinion on this matter."; }
+         dmz.object.text(voteHandle, dmz.stance.CommentHandle, text);
+         dmz.object.flag(voteHandle, dmz.stance.VoteApprovedHandle, result);
+         dmz.object.flag(voteHandle, dmz.stance.VoteSubmittedHandle, false);
+         if (!result) {
 
-         time = dmz.util.timeStampToDate(dmz.time.getFrameTime());
-         time.add(dialog.lookup("durationSpinBox").value()).hours();
-         EmailMod.sendEmail
-            ( dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle)
-            , "STANCE: Your group must vote on a new task!"
-            , "Student, \n" + "Your advisor has approved voting on the following task:\n" +
-                 dmz.object.text(voteHandle, dmz.stance.TextHandle) +
-                 "\nYour advisor's response to the task was:\n" +
-                 dmz.object.text(voteHandle, dmz.stance.CommentHandle) +
-                 "\nPlease go vote on this task as soon as possible! It expires at: " +
-                 time
-            );
-         time = dmz.util.dateToTimeStamp(time);
-         dmz.object.timeStamp(voteHandle, dmz.stance.DurationHandle, time);
-      }
+            dmz.object.flag(voteHandle, dmz.stance.ActiveHandle, false);
+            dmz.object.flag(voteHandle, dmz.stance.VoteResultHandle, false);
+            dmz.object.timeStamp(voteHandle, dmz.stance.DurationHandle, dmz.time.getFrameTime());
+         }
+         else {
 
-      VoteOpinionArea.text("");
-      VoteTextArea.text("");
-   });
+            time = dmz.util.timeStampToDate(dmz.time.getFrameTime());
+            time.add(dialog.lookup("durationSpinBox").value()).hours();
+            EmailMod.sendEmail
+               ( dmz.object.subLinks(voteHandle, dmz.stance.VoteUndecidedHandle)
+               , "STANCE: Your group must vote on a new task!"
+               , "Student, \n" + "Your advisor has approved voting on the following task:\n" +
+                    dmz.object.text(voteHandle, dmz.stance.TextHandle) +
+                    "\nYour advisor's response to the task was:\n" +
+                    dmz.object.text(voteHandle, dmz.stance.CommentHandle) +
+                    "\nPlease go vote on this task as soon as possible! It expires at: " +
+                    time
+               );
+            time = dmz.util.dateToTimeStamp(time);
+            dmz.object.timeStamp(voteHandle, dmz.stance.DurationHandle, time);
+         }
+
+         VoteOpinionArea.text("");
+         VoteTextArea.text("");
+      });
+   }
 }
 
 answerQuestion = function (questionHandle) {
 
    QuestionTextArea.text(dmz.object.text(questionHandle, dmz.stance.TextHandle));
 
-   AnswerQuestionDialog.open(self, function (result, dialog) {
+   if (LoginSkipped) { _NoContentWarning.open(self, function () {}); }
+   else {
 
-      var text;
-      text = QuestionAnswerArea.text();
-      if (!text || !text.length) { text = "I have no opinion on this matter."; }
-      dmz.object.text(questionHandle, dmz.stance.CommentHandle, text);
-      dmz.object.flag(questionHandle, dmz.stance.ActiveHandle, false);
-      dmz.object.link(dmz.stance.ViewedQuestionHandle, dmz.object.hil(), questionHandle);
-      QuestionAnswerArea.text("");
-      QuestionTextArea.text("");
-   });
+      AnswerQuestionDialog.open(self, function (result, dialog) {
+
+         var text;
+         text = QuestionAnswerArea.text();
+         if (!text || !text.length) { text = "I have no opinion on this matter."; }
+         dmz.object.text(questionHandle, dmz.stance.CommentHandle, text);
+         dmz.object.flag(questionHandle, dmz.stance.ActiveHandle, false);
+         dmz.object.link(dmz.stance.ViewedQuestionHandle, dmz.object.hil(), questionHandle);
+         QuestionAnswerArea.text("");
+         QuestionTextArea.text("");
+      });
+   }
 };
 
 updateAdvisor = function (module, idx) {
@@ -666,36 +689,40 @@ updateAdvisor = function (module, idx) {
                  , id
                  ;
 
-               if (text.length) {
+               if (!LoginSkipped) {
 
-                  question = dmz.object.create(dmz.stance.QuestionType);
-                  dmz.object.activate(question);
-                  dmz.object.flag(question, dmz.stance.ActiveHandle, true);
-                  dmz.object.link(dmz.stance.CreatedByHandle, question, hil);
-                  dmz.object.timeStamp(question, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
-                  dmz.object.text(question, dmz.stance.TextHandle, text);
+                  if (text.length) {
 
-                  list = dmz.object.subLinks(advisorHandle, dmz.stance.AdvisorActiveQuestionHandle);
-                  id = list ? list.length : 1;
-                  list = dmz.object.subLinks(advisorHandle, dmz.stance.AdvisorAnsweredQuestionHandle);
-                  id += (list ? list.length : 0);
-                  dmz.object.scalar(question, dmz.stance.ID, id);
-                  dmz.object.link(dmz.stance.AdvisorActiveQuestionHandle, advisorHandle, question);
+                     question = dmz.object.create(dmz.stance.QuestionType);
+                     dmz.object.activate(question);
+                     dmz.object.flag(question, dmz.stance.ActiveHandle, true);
+                     dmz.object.link(dmz.stance.CreatedByHandle, question, hil);
+                     dmz.object.timeStamp(question, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
+                     dmz.object.text(question, dmz.stance.TextHandle, text);
 
-                  game = dmz.object.superLinks(hilGroup, dmz.stance.GameGroupHandle);
-                  if (game && game[0]) {
+                     list = dmz.object.subLinks(advisorHandle, dmz.stance.AdvisorActiveQuestionHandle);
+                     id = list ? list.length : 1;
+                     list = dmz.object.subLinks(advisorHandle, dmz.stance.AdvisorAnsweredQuestionHandle);
+                     id += (list ? list.length : 0);
+                     dmz.object.scalar(question, dmz.stance.ID, id);
+                     dmz.object.link(dmz.stance.AdvisorActiveQuestionHandle, advisorHandle, question);
 
-                     EmailMod.sendEmail
-                        ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
-                        , "STANCE: New question!"
-                        , "Admin Notice: \n" +
-                              dmz.stance.getDisplayName(hilGroup) +
-                              " has a new question for " +
-                              dmz.stance.getDisplayName(advisorHandle)
-                        );
+                     game = dmz.object.superLinks(hilGroup, dmz.stance.GameGroupHandle);
+                     if (game && game[0]) {
+
+                        EmailMod.sendEmail
+                           ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
+                           , "STANCE: New question!"
+                           , "Admin Notice: \n" +
+                                 dmz.stance.getDisplayName(hilGroup) +
+                                 " has a new question for " +
+                                 dmz.stance.getDisplayName(advisorHandle)
+                           );
+                     }
                   }
+                  textWidget.text("");
                }
-               textWidget.text("");
+               else { _NoContentWarning.open(self, function () {}); }
             });
 
             advisorWidgets[idx].observe(self, "submitTaskButton", "clicked", function () {
@@ -710,49 +737,53 @@ updateAdvisor = function (module, idx) {
                  , game
                  ;
 
-               text = textWidget ? textWidget.text() : "";
-               if (text.length) {
+               if (!LoginSkipped) {
 
-                  vote = dmz.object.create(dmz.stance.VoteType);
-                  dmz.object.activate(vote);
-                  dmz.object.flag(vote, dmz.stance.ActiveHandle, true);
-                  dmz.object.flag(vote, dmz.stance.VoteSubmittedHandle, true);
-                  dmz.object.timeStamp(vote, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
-                  dmz.object.text(vote, dmz.stance.TextHandle, text);
-                  dmz.object.link(dmz.stance.CreatedByHandle, vote, hil);
-                  list = dmz.object.subLinks(hilGroup, dmz.stance.GroupMembersHandle);
-                  if (list && list.length) {
+                  text = textWidget ? textWidget.text() : "";
+                  if (text.length) {
 
-                     list.forEach(function (userHandle) {
+                     vote = dmz.object.create(dmz.stance.VoteType);
+                     dmz.object.activate(vote);
+                     dmz.object.flag(vote, dmz.stance.ActiveHandle, true);
+                     dmz.object.flag(vote, dmz.stance.VoteSubmittedHandle, true);
+                     dmz.object.timeStamp(vote, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
+                     dmz.object.text(vote, dmz.stance.TextHandle, text);
+                     dmz.object.link(dmz.stance.CreatedByHandle, vote, hil);
+                     list = dmz.object.subLinks(hilGroup, dmz.stance.GroupMembersHandle);
+                     if (list && list.length) {
 
-                        if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
+                        list.forEach(function (userHandle) {
 
-                           dmz.object.link(dmz.stance.VoteUndecidedHandle, vote, userHandle);
-                           count += 1;
-                        }
-                     });
-                     dmz.object.scalar(vote, dmz.stance.VoterTotalHandle, count);
+                           if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
+
+                              dmz.object.link(dmz.stance.VoteUndecidedHandle, vote, userHandle);
+                              count += 1;
+                           }
+                        });
+                        dmz.object.scalar(vote, dmz.stance.VoterTotalHandle, count);
+                     }
+                     dmz.object.link(dmz.stance.GroupActiveVoteHandle, hilGroup, vote);
+                     dmz.object.link(dmz.stance.VoteAdvisorHandle, advisorHandle, vote);
+                     groupVotes = dmz.object.subLinks(hilGroup, dmz.stance.GroupCompletedVotesHandle);
+                     groupVotes = groupVotes ? groupVotes.length : 0;
+                     dmz.object.scalar(vote, dmz.stance.ID, groupVotes + 1);
+
+                     game = dmz.object.superLinks(hilGroup, dmz.stance.GameGroupHandle);
+                     if (game && game[0]) {
+
+                        EmailMod.sendEmail
+                           ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
+                           , "STANCE: New task!"
+                           , "Admin Notice: \n" +
+                                 dmz.stance.getDisplayName(hilGroup) +
+                                 " has submitted a new task for " +
+                                 dmz.stance.getDisplayName(advisorHandle)
+                           );
+                     }
                   }
-                  dmz.object.link(dmz.stance.GroupActiveVoteHandle, hilGroup, vote);
-                  dmz.object.link(dmz.stance.VoteAdvisorHandle, advisorHandle, vote);
-                  groupVotes = dmz.object.subLinks(hilGroup, dmz.stance.GroupCompletedVotesHandle);
-                  groupVotes = groupVotes ? groupVotes.length : 0;
-                  dmz.object.scalar(vote, dmz.stance.ID, groupVotes + 1);
-
-                  game = dmz.object.superLinks(hilGroup, dmz.stance.GameGroupHandle);
-                  if (game && game[0]) {
-
-                     EmailMod.sendEmail
-                        ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
-                        , "STANCE: New task!"
-                        , "Admin Notice: \n" +
-                              dmz.stance.getDisplayName(hilGroup) +
-                              " has submitted a new task for " +
-                              dmz.stance.getDisplayName(advisorHandle)
-                        );
-                  }
+                  textWidget.text("");
                }
-               textWidget.text("");
+               else { _NoContentWarning.open(self, function () {}); }
             });
 
             btn = advisorWidgets[idx].lookup("submitTaskButton");
@@ -1683,7 +1714,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
                      VoteDialog.observe(self, "yesButton", "clicked", function () {
 
-                        if (isVoteExpired(vote)) {
+                        if (LoginSkipped) { _NoContentWarning.open(self, function () {}); }
+                        else if (isVoteExpired(vote)) {
 
                            dmz.ui.messageBox.create(
                               { type: dmz.ui.messageBox.Info
@@ -1698,7 +1730,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
                      });
                      VoteDialog.observe(self, "noButton", "clicked", function () {
 
-                        if (isVoteExpired(vote)) {
+                        if (LoginSkipped) { _NoContentWarning.open(self, function () {}); }
+                        else if (isVoteExpired(vote)) {
 
                            dmz.ui.messageBox.create(
                               { type: dmz.ui.messageBox.Info
