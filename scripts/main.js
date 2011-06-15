@@ -37,6 +37,8 @@ var dmz =
    , homeButton = main.lookup("homeButton")
 
    // Variables
+   , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
+   , LoginSkipped = false
    , ToggledGroupMessage = dmz.message.create("ToggledGroupMessage")
    , HaveToggled = false
    , GroupList = [-1]
@@ -591,6 +593,8 @@ LoginSuccessMessage.subscribe(self, function () {
 });
 
 LoginFailedMessage.subscribe(self, function () { LoggedIn = true; });
+
+LoginSkippedMessage.subscribe(self, function () { LoggedIn = true; LoginSkipped = true; });
 
 dmz.module.subscribe(self, "game-time", function (Mode, module) {
 

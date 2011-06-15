@@ -16,6 +16,7 @@ var dmz =
     // Constants
     , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
     , LogoutMessage = dmz.message.create("Logout_Message")
+    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
     , TimeStampAttr = dmz.defs.createNamedHandle("time-stamp")
     // Variables
     , _window = dmz.ui.mainWindow.window()
@@ -92,6 +93,13 @@ LoginSuccessMessage.subscribe(self, function (data) {
 
    if (_gameHandle) { _login (data); }
    else { _loginQueue = data; }
+});
+
+LoginSkippedMessage.subscribe(self, function () {
+
+   var handle = dmz.object.hil();
+   dmz.object.flag(handle, dmz.object.HILAttribute, false);
+   dmz.object.flag(handle, dmz.object.HILAttribute, true);
 });
 
 LogoutMessage.subscribe(self, function () {

@@ -17,6 +17,7 @@ var dmz =
           , label: require("dmz/ui/label")
           , loader: require('dmz/ui/uiLoader')
           , messageBox: require("dmz/ui/messageBox")
+          , mainWindow: require("dmz/ui/mainWindow")
           }
        }
 
