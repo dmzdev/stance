@@ -1505,7 +1505,7 @@ function (linkObjHandle, attrHandle, advisorHandle, questionHandle) {
          count = count ? count : 0;
          list = list ? list.length : 0;
 
-         if ((count < list) && !dmz.object.flag(hil, dmz.stance.AdminHandle)) {
+         if (isActive && (count < list) && !dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
             str = "Advisor" + index;
             MainModule.highlight(str);
