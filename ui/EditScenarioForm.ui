@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>521</width>
-    <height>252</height>
+    <height>262</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -77,17 +77,11 @@
         </layout>
        </item>
        <item>
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <layout class="QVBoxLayout" name="groupLayout">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetNoConstraint</enum>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>122</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
+        </layout>
        </item>
       </layout>
      </widget>

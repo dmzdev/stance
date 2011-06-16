@@ -21,6 +21,7 @@ var dmz =
    , time: require("dmz/runtime/time")
    , util: require("dmz/types/util")
    , resources: require("dmz/runtime/resources")
+   , message: require("dmz/runtime/messaging")
    , module: require("dmz/runtime/module")
    }
    , DateJs = require("datejs/time")
@@ -55,22 +56,22 @@ var dmz =
    , timeInfoLabel = editScenarioWidget.lookup("timeInfoLabel")
    , timeInfoText = timeInfoLabel.text()
 
-   , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui")
+   , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui", editScenarioWidget)
    , avatarList = createStudentDialog.lookup("avatarList")
    , avatarLabel = createStudentDialog.lookup("avatarLabel")
    , studentUserNameEdit = createStudentDialog.lookup("userName")
-   , studentDisplayNameEdit = createStudentDialog.lookup("displayName")
+   , studentDisplayNameEdit = createStudentDialog.lookup("displayName", editScenarioWidget)
 
-   , instructorDialog = dmz.ui.loader.load("InstructorWindowDialog")
+   , instructorDialog = dmz.ui.loader.load("InstructorWindowDialog", editScenarioWidget)
    , scenarioList = instructorDialog.lookup("scenarioList")
 
-   , editAdvisorDialog = dmz.ui.loader.load("EditAdvisorDialog.ui")
+   , editAdvisorDialog = dmz.ui.loader.load("EditAdvisorDialog.ui", editScenarioWidget)
    , advisorBio = editAdvisorDialog.lookup("advisorBio")
    , pictureLabel = editAdvisorDialog.lookup("pictureLabel")
    , advisorSpecialty = editAdvisorDialog.lookup("specialtyEdit")
    , advisorName = editAdvisorDialog.lookup("nameEdit")
 
-   , editLobbyistDialog = dmz.ui.loader.load("EditLobbyistDialog.ui")
+   , editLobbyistDialog = dmz.ui.loader.load("EditLobbyistDialog.ui", editScenarioWidget)
    , lobbyistPictureLabel = editLobbyistDialog.lookup("pictureLabel")
    , lobbyistGroupList = editLobbyistDialog.lookup("groupList")
    , lobbyistBio = editLobbyistDialog.lookup("lobbyistBio")
@@ -79,22 +80,24 @@ var dmz =
    , lobbyistTitle = editLobbyistDialog.lookup("lobbyistTitle")
    , lobbyistName = editLobbyistDialog.lookup("nameEdit")
 
-   , CreateMediaInjectDialog = dmz.ui.loader.load("MediaInjectDialog.ui")
+   , CreateMediaInjectDialog = dmz.ui.loader.load("MediaInjectDialog.ui", editScenarioWidget)
    , MediaTitleText = CreateMediaInjectDialog.lookup("titleText")
    , MediaUrlText = CreateMediaInjectDialog.lookup("urlText")
    , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupLayout")
 
-   , AddGroupDialog = dmz.ui.loader.load("AddGroupDialog.ui")
+   , AddGroupDialog = dmz.ui.loader.load("AddGroupDialog.ui", editScenarioWidget)
    , groupButtonBox = AddGroupDialog.lookup("buttonBox")
    , groupTemplatePic = AddGroupDialog.lookup("pictureLabel")
    , groupTemplateComboBox = AddGroupDialog.lookup("templateComboBox")
    , groupNameEdit = AddGroupDialog.lookup("nameEdit")
 
+   , groupLayout = editScenarioWidget.lookup("groupLayout")
+
    // Variables
+   , GroupButtonList = {}
    , EmailMod = false
    , groupList = []
    , userList = {}
-   , gameList = []
    , advisorPictureObjects = {}
    , lobbyistPictureObjects = []
    , advisorList = []
@@ -110,6 +113,7 @@ var dmz =
    , TemplateBackgroundPixmaps = []
    , AdvisorCount = 5
    , AvatarPixmapList = {}
+   , ToggledMessage = dmz.message.create("ToggledGroupMessage")
 
    // Function decls
    , toTimeStamp = dmz.util.dateToTimeStamp
@@ -250,11 +254,30 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var name = dmz.stance.getDisplayName(subHandle);
+   var name = dmz.stance.getDisplayName(subHandle)
+     , button = dmz.ui.button.createRadioButton(name)
+     ;
+
    groupList.push(subHandle);
    groupComboBox.addItem(name);
    advisorGroupComboBox.addItem(name);
    lobbyistGroupList.addItem(name);
+   GroupButtonList[subHandle] = button;
+   button.observe(self, "toggled", function (selected) {
+
+      var hil;
+      if (selected) {
+
+         hil = dmz.object.hil();
+         self.log.warn ("hil:", hil, dmz.object.flag(hil, dmz.stance.AdminHandle));
+         dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
+         ToggledMessage.send();
+         dmz.object.link(dmz.stance.GroupMembersHandle, subHandle, hil);
+         dmz.object.flag(hil, dmz.object.HILAttribute, false);
+         dmz.object.flag(hil, dmz.object.HILAttribute, true);
+      }
+   });
+   groupLayout.insertWidget(0, button);
    MediaGroupFLayout.addRow(name, dmz.ui.button.createCheckBox());
 });
 
@@ -279,7 +302,9 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
 function (linkObjHandle, attrHandle, groupHandle, studentHandle) {
 
-   var links = dmz.object.superLinks(studentHandle, dmz.stance.GameUngroupedUsersHandle);
+   var links = dmz.object.superLinks(studentHandle, dmz.stance.GameUngroupedUsersHandle)
+     , hil = dmz.object.hil
+     ;
    if (links) {
 
       dmz.object.unlinkSuperObjects(studentHandle, dmz.stance.GameUngroupedUsersHandle);
@@ -586,21 +611,6 @@ setup = function () {
 
                links.forEach(function (lobbyistHandle) {
 
-//                  var linkHandle =
-//                     dmz.object.linkHandle(
-//                        dmz.stance.ActiveLobbyistHandle,
-//                        groupList[groupIndex],
-//                        lobbyistHandle);
-
-//                  if (linkHandle) {
-
-//                     dmz.object.unlink(linkHandle);
-//                     dmz.object.link(
-//                        dmz.stance.PreviousLobbyistHandle,
-//                        groupList[groupIndex],
-//                        lobbyistHandle);
-//                  }
-
                   var linkHandle =
                      dmz.object.linkHandle(
                         dmz.stance.PreviousLobbyistHandle,
@@ -829,7 +839,7 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
 
 editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 
-   var groupListDialog = dmz.ui.loader.load("GroupListDialog.ui")
+   var groupListDialog = dmz.ui.loader.load("GroupListDialog.ui", editScenarioWidget)
      , listLayout = groupListDialog.lookup("vLayout")
      , groups
      , studentList
@@ -894,9 +904,11 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
               , media = false
               , groupMembers
               , links
-              , userList = []
+              , game
+              , userList = dmz.object.subLinks(CurrentGameHandle, dmz.stance.AdminHandle)
               ;
 
+            if (!userList) { userList = []; }
             if (value && type) {
 
                for (idx = 0; idx < count; idx += 1) {
@@ -1099,12 +1111,15 @@ serverStartDateEdit.observe(self, "dateTimeChanged", function (value) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
+   var button;
    if (value) {
 
       if (dmz.object.flag(objHandle, dmz.stance.AdminHandle)) {
 
          editScenarioWidget.lookup("tabWidget").show();
          dock.enabled(true);
+//         button = GroupButtonList[dmz.stance.getUserGroupHandle(objHandle)];
+//         if (button && !button.isChecked()) { button.click(true); }
       }
       else {
 

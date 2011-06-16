@@ -16,6 +16,7 @@ var dmz =
     // Constants
     , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
     , LogoutMessage = dmz.message.create("Logout_Message")
+    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
     , TimeStampAttr = dmz.defs.createNamedHandle("time-stamp")
     // Variables
     , _window = dmz.ui.mainWindow.window()
@@ -28,9 +29,12 @@ var dmz =
     , _admin = false
     , _loginQueue = false
     , _haveSetServerTime = false
+    , _haveToggled = false
+    , ToggledMessage = dmz.message.create("ToggledGroupMessage")
     // Functions
     , toTimeStamp = dmz.util.dateToTimeStamp
     , toDate = dmz.util.timeStampToDate
+    , _setTitle
     , _activateUser
     , _login
     ;
@@ -91,6 +95,13 @@ LoginSuccessMessage.subscribe(self, function (data) {
    else { _loginQueue = data; }
 });
 
+LoginSkippedMessage.subscribe(self, function () {
+
+   var handle = dmz.object.hil();
+   dmz.object.flag(handle, dmz.object.HILAttribute, false);
+   dmz.object.flag(handle, dmz.object.HILAttribute, true);
+});
+
 LogoutMessage.subscribe(self, function () {
 
    if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
@@ -122,12 +133,19 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
    }
 });
 
+dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
+function (linkObjHandle, attrHandle, groupHandle, userHandle) {
+
+   if (_userHandle && (userHandle === _userHandle)) { _setTitle(userHandle); }
+});
+
 dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, value) {
 
    var type = dmz.object.type(handle)
      , name
      , unverified = "*"
      , timeStamp
+     , groupName
      ;
 
    if (handle === _userHandle) {
@@ -143,32 +161,43 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
    if (value && type && type.isOfType(dmz.stance.UserType)) {
 
       _userHandle = handle;
-
-      if (!_haveSetServerTime && _timeMod) {
-
-         timeStamp = dmz.object.timeStamp(handle, dmz.stance.LastOnlineHandle);
-         if (timeStamp) {
-
-            _timeMod.serverTime(timeStamp, true);
-            self.log.warn("Last Server Time: " + toDate(timeStamp));
-            self.log.warn("  Last Game Time: " + toDate(_timeMod.gameTime(timeStamp)));
-         }
-      }
-
       name = dmz.stance.getDisplayName(_userHandle);
-      if (dmz.object.text(_userHandle, dmz.stance.NameHandle) === _userName) { unverified = ""; }
-
-      _window.title(_title + " (" + name + ")" + unverified);
-
+      _setTitle(_userHandle);
       self.log.info("User identified: " + name);
    }
 });
+
+_setTitle = function (userHandle) {
+
+   var groupName
+     , unverified = "*"
+     ;
+
+   if (userHandle) {
+
+      if (dmz.object.text(_userHandle, dmz.stance.NameHandle) === _userName) { unverified = ""; }
+      groupName = dmz.stance.getDisplayName(dmz.stance.getUserGroupHandle(_userHandle));
+      if ((dmz.object.flag(_userHandle, dmz.stance.AdminHandle) && !_haveToggled) || !groupName) {
+
+         groupName = "N/A";
+      }
+      _window.title(
+         _title + " ("
+         + dmz.stance.getDisplayName(_userHandle) + ", "
+         + groupName
+         + ")"
+         + unverified
+         );
+   }
+};
 
 dmz.module.subscribe(self, "game-time", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) { _timeMod = module; }
    else if (Mode === dmz.module.Deactivate) { _timeMod = undefined; }
 });
+
+ToggledMessage.subscribe(self, function (data) { _haveToggled = true; });
 
 (function () {
 

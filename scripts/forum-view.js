@@ -5,6 +5,7 @@ var dmz =
        , module: require("dmz/runtime/module")
        , object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
+       , message: require("dmz/runtime/messaging")
        , resources: require("dmz/runtime/resources")
        , stance: require("stanceConst")
        , time: require("dmz/runtime/time")
@@ -15,6 +16,8 @@ var dmz =
           , layout: require("dmz/ui/layout")
           , label: require("dmz/ui/label")
           , loader: require('dmz/ui/uiLoader')
+          , messageBox: require("dmz/ui/messageBox")
+          , mainWindow: require("dmz/ui/mainWindow")
           }
        }
 
@@ -24,6 +27,16 @@ var dmz =
    , _mainLayout = dmz.ui.layout.createVBoxLayout()
    , _postTextEdit = _view.lookup("postTextEdit")
    , _commentAdd = {}
+   , _NoPostWarning =
+        dmz.ui.messageBox.create(
+           { type: dmz.ui.messageBox.Warning
+            , text: "You must log in to the server to add new posts!"
+            , informativeText: "If you want to add a new post, please restart STANCE."
+            , standardButtons: [dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Ok
+            }
+            , dmz.ui.mainWindow.centralWidget()
+            )
 
    // Object Lists
    , _master = { items: [], posts: [], comments: [], forums: [] }
@@ -35,6 +48,8 @@ var dmz =
    , _forumHandle
 
    // Variables
+   , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
+   , LoginSkipped = false
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , TimeModule = { gameTime: dmz.time.getFrameTime }
@@ -59,6 +74,8 @@ var dmz =
    , _updateForumForUser
    , _setUserAvatar
    ;
+
+LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
 (function () {
 
@@ -225,86 +242,90 @@ _addCommentClicked = function (postHandle) {
      , post = _postList[postHandle]
      ;
 
-   if (!_commentAdd.form) {
+   if (!LoginSkipped) {
 
-      _commentAdd.form = dmz.ui.loader.load("CommentAdd");
-      _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
-      _commentAdd.avatar = _commentAdd.form.lookup("avatarLabel");
-//      _commentAdd.avatar.pixmap(AvatarDefault);
-      _setUserAvatar(dmz.object.hil(), _commentAdd.avatar);
+      if (!_commentAdd.form) {
 
-      dmz.stance.addUITextLimit
-         ( self
-         , MaxMessageLength
-         , _commentAdd.textEdit
-         , _commentAdd.form.lookup("submitButton")
-         , _commentAdd.form.lookup("currentCharAmt")
-         , _commentAdd.form.lookup("totalCharAmt")
-         );
+         _commentAdd.form = dmz.ui.loader.load("CommentAdd");
+         _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
+         _commentAdd.avatar = _commentAdd.form.lookup("avatarLabel");
+   //      _commentAdd.avatar.pixmap(AvatarDefault);
+         _setUserAvatar(dmz.object.hil(), _commentAdd.avatar);
 
-      _commentAdd.form.observe(self, "submitButton", "clicked", function () {
+         dmz.stance.addUITextLimit
+            ( self
+            , MaxMessageLength
+            , _commentAdd.textEdit
+            , _commentAdd.form.lookup("submitButton")
+            , _commentAdd.form.lookup("currentCharAmt")
+            , _commentAdd.form.lookup("totalCharAmt")
+            );
 
-         var textEdit = _commentAdd.textEdit
-           , form = _commentAdd.form
-           , post = _commentAdd.post
-           , message
-           ;
+         _commentAdd.form.observe(self, "submitButton", "clicked", function () {
 
-         if (post) {
+            var textEdit = _commentAdd.textEdit
+              , form = _commentAdd.form
+              , post = _commentAdd.post
+              , message
+              ;
 
-            if (textEdit) {
+            if (post) {
 
-               message = textEdit.text();
-               if (message) { _createComment (post.handle, message); }
-               textEdit.clear();
+               if (textEdit) {
+
+                  message = textEdit.text();
+                  if (message) { _createComment (post.handle, message); }
+                  textEdit.clear();
+               }
+
+               post.layout.removeWidget(form);
+               _commentAdd.post = false;
             }
 
-            post.layout.removeWidget(form);
+            form.hide();
+            _postTextEdit.setFocus();
+         });
+
+         _commentAdd.form.observe(self, "cancelButton", "clicked", function () {
+
+            if (_commentAdd.textEdit) { _commentAdd.textEdit.clear(); }
+            if (_commentAdd.post) { _commentAdd.post.layout.removeWidget(_commentAdd.form); }
             _commentAdd.post = false;
-         }
-
-         form.hide();
-         _postTextEdit.setFocus();
-      });
-
-      _commentAdd.form.observe(self, "cancelButton", "clicked", function () {
-
-         if (_commentAdd.textEdit) { _commentAdd.textEdit.clear(); }
-         if (_commentAdd.post) { _commentAdd.post.layout.removeWidget(_commentAdd.form); }
-         _commentAdd.post = false;
-         _commentAdd.form.hide();
-         _postTextEdit.setFocus();
-      });
-   }
-
-   if (_commentAdd.form.visible()) {
-
-      if (_commentAdd.post.handle !== post.handle) {
-
-         _commentAdd.form.hide();
-         _commentAdd.post.layout.removeWidget(_commentAdd.form);
-         _commentAdd.post = false;
-         show = true;
+            _commentAdd.form.hide();
+            _postTextEdit.setFocus();
+         });
       }
-      else { _commentAdd.textEdit.setFocus(); }
 
+      if (_commentAdd.form.visible()) {
+
+         if (_commentAdd.post.handle !== post.handle) {
+
+            _commentAdd.form.hide();
+            _commentAdd.post.layout.removeWidget(_commentAdd.form);
+            _commentAdd.post = false;
+            show = true;
+         }
+         else { _commentAdd.textEdit.setFocus(); }
+
+      }
+      else { show = true; }
+
+      if (show) {
+
+   //         if (!post.showComments) { post.toggleComments(); }
+
+         post.layout.addWidget(_commentAdd.form, post.layout.rowCount(), 1);
+         _commentAdd.form.show();
+         _commentAdd.post = post;
+
+         dmz.time.setTimer(self, 0.1, function () {
+
+            _scrollArea.ensureVisible(_commentAdd.form);
+            _commentAdd.textEdit.setFocus();
+         });
+      }
    }
-   else { show = true; }
-
-   if (show) {
-
-//         if (!post.showComments) { post.toggleComments(); }
-
-      post.layout.addWidget(_commentAdd.form, post.layout.rowCount(), 1);
-      _commentAdd.form.show();
-      _commentAdd.post = post;
-
-      dmz.time.setTimer(self, 0.1, function () {
-
-         _scrollArea.ensureVisible(_commentAdd.form);
-         _commentAdd.textEdit.setFocus();
-      });
-   }
+   else { _NoPostWarning.open(self, function () {}); }
 };
 
 _updatePostedBy = function (handle) {
@@ -491,8 +512,12 @@ _updateForumForUser = function (userHandle) {
 
 _view.observe(self, "postSubmitButton", "clicked", function () {
 
-   _createPost (_forumHandle, _postTextEdit.text());
-   _postTextEdit.clear();
+   if (!LoginSkipped) {
+
+      _createPost (_forumHandle, _postTextEdit.text());
+      _postTextEdit.clear();
+   }
+   else { _NoPostWarning.open(self, function () {}); }
 });
 
 dmz.object.create.observe(self, function (handle, type) {

@@ -202,7 +202,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="buttonLayout">
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -215,15 +215,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QComboBox" name="groupBox">
-       <item>
-        <property name="text">
-         <string>None</string>
-        </property>
-       </item>
-      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="homeButton">
