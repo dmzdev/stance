@@ -232,12 +232,15 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
          if (graphType === GraphType.Group) { obj.links = typeData.getGroups(objHandle); }
          else { obj.links = typeData.getUsers(objHandle); }
          obj.type = type;
-         objectDataList.push(obj);
+         if (obj.createdAt) {
+
+            objectDataList.push(obj);
+         }
       });
    });
 
 // Sort by timestamp
-   objectDataList.sort(function (a, b) { return b.createdAt.isAfter(a.createdAt); });
+   objectDataList.sort(function (a, b) { return Date.compare(a.createdAt, b.createdAt); });
    objectDataList.forEach(function (data) { self.log.warn (data.createdAt); });
 
 // Create mapping of link handle to y-index
@@ -254,13 +257,14 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       nextDate = nextInterval(currDate);
 //      objTypeCnt = {};
       item = objectDataList.pop();
-      if (item && (item.createdAt.before(nextDate))) {
+      if (item && (item.createdAt.isBefore(nextDate))) {
 
-         x = currentInterval * (StdBox.w + space);
+         x = currentInterval * (StdBox.w + StdBox.space);
          item.links.forEach(function (handle) {
 
             if (yAxisMap[handle]) {
 
+               self.log.warn ("CreateBoxObj:", handle, x, yAxisMap[handle], XAxis);
                createBoxObj(handle, x, yAxisMap[handle], XAxis);
             }
          });
@@ -268,15 +272,15 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
 
 
 
-      while (item && (item.timestamp < nextDate)) {
+//      while (item && (item.timestamp < nextDate)) {
 
-         if (item.date < nextDate) {
+//         if (item.date < nextDate) {
 
-            if (!objTypeCnt[item.type]) { objTypeCnt[item.type] = []; }
-            objTypeCnt[item.type].push(item.handle);
+//            if (!objTypeCnt[item.type]) { objTypeCnt[item.type] = []; }
+//            objTypeCnt[item.type].push(item.handle);
 
-         }
-      }
+//         }
+//      }
 
 //      Object.keys(objTypeCnt).forEach(function (type) {
 
