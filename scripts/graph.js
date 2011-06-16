@@ -222,13 +222,16 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
 
          var obj = { handle: objHandle };
          obj.createdAt = dmz.object.timeStamp(objHandle, dmz.stance.CreatedAtServerTimeHandle);
-         self.log.warn (objHandle, "created at:", obj.createdAt);
+//         self.log.warn (objHandle, "created at:", obj.createdAt);
          if (!obj.createdAt) {
 
-            self.log.error (objHandle, dmz.object.type(objHandle));
+//            self.log.error (objHandle, dmz.object.type(objHandle));
+         }
+         else {
+
+            obj.createdAt = dmz.util.timeStampToDate(obj.createdAt);
          }
 
-         obj.createdAt = dmz.util.timeStampToDate(obj.createdAt);
          if (graphType === GraphType.Group) { obj.links = typeData.getGroups(objHandle); }
          else { obj.links = typeData.getUsers(objHandle); }
          obj.type = type;
@@ -247,28 +250,35 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
    yAxisItems.forEach(function (handle, index) {
 
       yAxisMap[handle] = index * StdBox.h + 10;
-      self.log.warn ("YAxis:", handle, yAxisMap[handle]);
+//      self.log.warn ("YAxis:", handle, yAxisMap[handle]);
    });
 
 // objTypeCntr = {}; objTypeCnt[type] = 0; objTypeCnt[type] += 1
 
+   self.log.warn ("curr:", currDate, "end:", endDate, "oDL:", objectDataList.length);
    while (currDate.isBefore(endDate) && objectDataList.length) {
 
       nextDate = nextInterval(currDate);
 //      objTypeCnt = {};
-      item = objectDataList.pop();
-      if (item && (item.createdAt.isBefore(nextDate))) {
+      self.log.warn ("Next:", nextDate);
+      item = objectDataList.shift();
+      while (item && (item.createdAt.isBefore(nextDate))) {
 
+         self.log.warn ("-item:", item.handle);
          x = currentInterval * (StdBox.w + StdBox.space);
+         self.log.warn ("--links:", item.links);
          item.links.forEach(function (handle) {
 
+            self.log.warn ("---", handle, yAxisMap[handle]);
             if (yAxisMap[handle]) {
 
                self.log.warn ("CreateBoxObj:", handle, x, yAxisMap[handle], XAxis);
                createBoxObj(handle, x, yAxisMap[handle], XAxis);
             }
          });
+         item = objectDataList.shift();
       }
+
 
 
 
@@ -294,7 +304,9 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       currDate = nextDate;
       currentInterval += 1;
    }
-
+   var str = "";
+   Object.keys(yAxisMap).forEach (function (h) { str += h + ", "; });
+   self.log.warn (str);
 };
 
 updateGraph = function () {
@@ -306,7 +318,7 @@ updateGraph = function () {
      , activeTypes = []
      , activeLineHandles = []
      , dataList = false
-     , intervalfnc = function (date) { return date.add(interval).days(); }
+     , intervalfnc = function (date) { return date.clone().add(interval).days(); }
      , gameTime = dmz.object.data(masterData.game, dmz.stance.GameStartTimeHandle)
      , gameStart = dmz.util.timeStampToDate(gameTime.number("server", 0))
      , gameEnd = dmz.util.timeStampToDate(gameTime.number("server", 1))
