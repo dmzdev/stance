@@ -35,16 +35,6 @@ var dmz =
    , mainGView = main.lookup("graphicsView")
    , gscene
    , homeButton = main.lookup("homeButton")
-   , updatePreferences = dmz.ui.mainWindow.window().lookup("preferences-updates")
-   , dock = dmz.ui.mainWindow.createDock
-        ( "Update Preferences"
-        , { area: dmz.ui.consts.RightToolBarArea
-          , allowedAreas: [dmz.ui.consts.LeftToolBarArea, dmz.ui.consts.RightToolBarArea]
-          , floating: true
-          , visible: false
-          }
-        , updatePreferences
-        )
 
    // Variables
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
