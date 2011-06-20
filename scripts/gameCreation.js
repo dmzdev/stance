@@ -84,6 +84,8 @@ var dmz =
    , MediaTitleText = CreateMediaInjectDialog.lookup("titleText")
    , MediaUrlText = CreateMediaInjectDialog.lookup("urlText")
    , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupLayout")
+   , MediaOkButton = CreateMediaInjectDialog.lookup("okButton")
+   , MediaURLWarning = CreateMediaInjectDialog.lookup("urlWarning")
 
    , AddGroupDialog = dmz.ui.loader.load("AddGroupDialog.ui", editScenarioWidget)
    , groupButtonBox = AddGroupDialog.lookup("buttonBox")
@@ -104,9 +106,24 @@ var dmz =
    , advisorWidgets = {}
    , CurrentGameHandle = false
    , MediaTypes =
-        { Video: { type: dmz.stance.VideoType, attr: dmz.stance.ActiveVideoHandle, button: "addVideoInjectButton" }
-        , Memo: { type: dmz.stance.MemoType, attr: dmz.stance.ActiveMemoHandle, button: "addMemoInjectButton" }
-        , Newspaper: { type: dmz.stance.NewspaperType, attr: dmz.stance.ActiveNewspaperHandle, button: "addNewspaperInjectButton" }
+        { Video:
+           { type: dmz.stance.VideoType
+           , attr: dmz.stance.ActiveVideoHandle
+           , button: "addVideoInjectButton"
+           , urlEnd: ".mov"
+           }
+        , Memo:
+           { type: dmz.stance.MemoType
+           , attr: dmz.stance.ActiveMemoHandle
+           , button: "addMemoInjectButton"
+           , urlEnd: "?stance:view&id="
+           }
+        , Newspaper:
+           { type: dmz.stance.NewspaperType
+           , attr: dmz.stance.ActiveNewspaperHandle
+           , button: "addNewspaperInjectButton"
+           , urlEnd: "?stance:view&id="
+           }
         }
    , inUpdate = false
    , TemplateList = []
@@ -893,9 +910,22 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 // Media inject buttons
 (function () {
 
-   var generateMediaInjectFunction = function (type, attr) {
+   var generateMediaInjectFunction = function (type, attr, urlEnd) {
 
       return function () {
+
+         MediaOkButton.observe(self, "clicked", function () {
+
+            var text = MediaUrlText.text();
+            if (type) {
+
+               if (text.lastIndexOf(urlEnd) !== -1) { CreateMediaInjectDialog.accept(); }
+               else {
+
+                  MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
+               }
+            }
+         });
 
          CreateMediaInjectDialog.open(self, function (value, dialog) {
 
@@ -949,6 +979,7 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 
             MediaTitleText.text("");
             MediaUrlText.text("");
+            MediaURLWarning.text("");
             for (idx = 0; idx < count; idx += 1) {
 
                MediaGroupFLayout.at(idx, 1).setChecked(false);
@@ -963,69 +994,9 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
          self,
          MediaTypes[type].button,
          "clicked",
-         generateMediaInjectFunction(MediaTypes[type].type, MediaTypes[type].attr));
+         generateMediaInjectFunction(MediaTypes[type].type, MediaTypes[type].attr, MediaTypes[type].urlEnd));
    });
 }());
-
-//editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
-
-//   CreateMediaInjectDialog.open(self, function (value, dialog) {
-
-//      var idx
-//        , count = MediaGroupFLayout.rowCount()
-//        , media = false
-//        , type = MediaTypeList.currentText()
-//        , groupMembers
-//        , links
-//        , linkAttr = false
-//        , userList = []
-//        ;
-
-//      if (value && MediaTypes[type]) {
-
-//         for (idx = 0; idx < count; idx += 1) {
-
-//            if (MediaGroupFLayout.at(idx, 1).isChecked()) {
-
-//               groupMembers = dmz.object.subLinks(groupList[idx], dmz.stance.GroupMembersHandle);
-//               if (groupMembers) {
-
-//                  groupMembers.forEach(function (userHandle) {
-
-//                     if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
-
-//                        userList.push(userHandle);
-//                     }
-//                  });
-//               }
-//            }
-//         }
-
-//         if (userList.length) {
-
-//            media = dmz.object.create(MediaTypes[type].type);
-//            dmz.object.text(media, dmz.stance.TitleHandle, MediaTitleText.text());
-//            dmz.object.text(media, dmz.stance.TextHandle, MediaUrlText.text());
-//            links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
-//            dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
-//            dmz.object.activate(media);
-//            dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, media);
-//            linkAttr = MediaTypes[type].attr;
-//            userList.forEach(function (userHandle) {
-
-//               dmz.object.link(MediaTypes[type].attr, userHandle, media);
-//            });
-//         }
-//      }
-
-//      MediaTitleText.text("");
-//      MediaUrlText.text("");
-//      for (idx = 0; idx < count; idx += 1) {
-
-//         MediaGroupFLayout.at(idx, 1).setChecked(false);
-//      }
-//   });
-//});
 
 dmz.object.data.observe(self, dmz.stance.GameStartTimeHandle, function (handle, attr, value) {
 
