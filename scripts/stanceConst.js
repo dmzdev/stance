@@ -101,6 +101,7 @@ var dmz =
       , ForumTimeHandle: dmz.defs.createNamedHandle("forum_time")
       , LastOnlineHandle: dmz.defs.createNamedHandle("last_online")
       , ViewedLobbyistHandle: dmz.defs.createNamedHandle("viewed_lobbyist")
+      , DisabledHandle: dmz.defs.createNamedHandle("disabled")
       }
 
    , Functions =
