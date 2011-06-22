@@ -949,9 +949,8 @@ updateInjectTitle = function (handle) {
 
    if (item && item.item) {
 
-      self.log.warn ("UpdateInjectTitle:", item, item.title, item.disabled);
       str = item.title + (item.disabled ? "*" : "");
-      self.log.warn ("Text set to:", item.item.text(str));
+      item.item.text(str);
    }
 };
 

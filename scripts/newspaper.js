@@ -73,10 +73,6 @@ loadCurrent = function () {
             }
          }
       }
-      else {
-
-         self.log.error("Media error for object", SourceList[CurrentIndex].handle);
-      }
    }
 };
 
@@ -112,7 +108,7 @@ skipBackward = function () {
 nextButton.observe(self, "clicked", skipForward);
 prevButton.observe(self, "clicked", skipBackward);
 
-setUserPlayList = function (userHandle, clickWindow) {
+setUserPlayList = function (userHandle) {
 
    var list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
      , activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveNewspaperHandle)
@@ -187,7 +183,7 @@ function (objHandle, attrHandle, value) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   if (value) { setUserPlayList(objHandle, true); }
+   if (value) { setUserPlayList(objHandle); }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
