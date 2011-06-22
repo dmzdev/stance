@@ -1,16 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dmz>
-<plugin-list>
-   <plugin name="dmzQtPluginAppUpdater" scope="updater"/>
-</plugin-list>
-<updater>
-   <!-- <force-update value="true"/> -->
-   <!-- <download-to-temp value="false"/> -->
-   <release channel="devel"/>
-   <update
-      host="http://update.dmzdev.org"
-      path="/latest/{system_name}-{release_channel}/{app_name}"/>
-   <download path="/downloads/{app_name}-{major}-{minor}-{bug}-{build_number}"/>
-   <!-- <proxy host="localhost" port="8888"/> -->
-</updater>
+   <plugin-list>
+      <plugin name="dmzQtPluginPreferences" scope="preferences"/>      
+      <plugin name="dmzQtPluginPreferencesAppUpdater" unique="preferences-updates"/>   
+      <plugin name="dmzPluginSaveMessageMonostate" scope="save-preferences"/>
+      <plugin name="dmzQtPluginAppUpdater" scope="updater"/>
+   </plugin-list>
+   <updater>
+      <!-- <force-update value="true"/> -->
+      <!-- <download-to-temp value="false"/> -->
+      <!-- <release channel="stable"/> -->
+      <update
+         host="http://update.dmzdev.org"
+         path="/latest/{system_name}-{release_channel}/{app_name}"/>
+      <download path="/downloads/{app_name}-{major}-{minor}-{bug}-{build_number}"/>
+      <!-- <proxy host="localhost" port="8888"/> -->
+      <wait-message name="WaitToOpenDialogMessage"/>
+      <allow-message name="AllowOpenDialogMessage"/>
+   </updater>
+   <chds-login>
+      <wait-message name="WaitToOpenDialogMessage"/>
+      <allow-message name="AllowOpenDialogMessage"/>      
+   </chds-login>
+   <preferences>
+      <widget name="preferences-updates" title="Updates"/>
+   </preferences>
+   <preferences-updates>
+      <update value="true"/>
+      <release-channel name="stable"/>
+      <release-channel name="devel"/>
+      <release-channel name="test"/>
+   </preferences-updates>
+   <save-preferences>
+      <message name="AppUpdaterUpdateMessage"/>
+      <message name="AppUpdaterChannelMessage"/>
+   </save-preferences>   
 </dmz>

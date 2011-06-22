@@ -37,7 +37,7 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-<!--   <db app="ns4755_1001_1002"/> -->
+<!--   <db app="ns4755_1001_1002_2"/> -->
    <db app="stance_alpha"/>
 </web-services-object>
 <archive-module>

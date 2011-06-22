@@ -276,7 +276,7 @@ updateEnd = function (handle) {
    if (!item) { item = master.votes[handle]; }
    if (item && item.item) {
 
-      item.item.text(TreeItemIndex[item.type].end, item.end);
+      item.item.text(TreeItemIndex[item.type].end, item.end ? item.end : "N/A");
    }
 };
 
@@ -971,6 +971,10 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
      , yesHandleList
      , game
      , item = master.votes[voteHandle]
+     , groupHandle
+     , links
+     , admins
+     , users
      ;
 
    if (linkHandle) {
@@ -997,11 +1001,15 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
             dmz.stance.GameGroupHandle);
       if (game && game[0]) {
 
+         groupHandle = dmz.stance.getUserGroupHandle(userHandle);
+         admins = dmz.object.subLinks(game[0], dmz.stance.AdminHandle);
+         users = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
+         links = admins ? (users ? admins.concat(users) : admins) : users;
+
          EmailMod.sendEmail
-            ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
+            ( links
             , "STANCE: Task voting completed!"
-            , "Admin Notice: \n" +
-                 dmz.stance.getDisplayName(dmz.stance.getUserGroupHandle(userHandle)) +
+            , dmz.stance.getDisplayName(groupHandle) +
                  " has voted Yes on the following issue:" +
                  dmz.object.text(voteHandle, dmz.stance.TextHandle)
             );
@@ -1017,6 +1025,10 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
      , noHandleList
      , game
      , item = master.votes[voteHandle]
+     , groupHandle
+     , admins
+     , users
+     , links
      ;
 
    if (linkHandle) { dmz.object.unlink(linkHandle); }
@@ -1045,13 +1057,17 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
                dmz.stance.GameGroupHandle);
          if (game && game[0]) {
 
+            groupHandle = dmz.stance.getUserGroupHandle(userHandle);
+            admins = dmz.object.subLinks(game[0], dmz.stance.AdminHandle);
+            users = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
+            links = admins ? (users ? admins.concat(users) : admins) : users;
+
             EmailMod.sendEmail
-               ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
+               ( links
                , "STANCE: Task voting completed!"
-               , "Admin Notice: \n" +
-                     dmz.stance.getDisplayName(dmz.stance.getUserGroupHandle(userHandle)) +
-                     " has voted No on the following issue:" +
-                     dmz.object.text(voteHandle, dmz.stance.TextHandle)
+               , dmz.stance.getDisplayName(groupHandle) +
+                    " has voted No on the following issue:" +
+                    dmz.object.text(voteHandle, dmz.stance.TextHandle)
                );
          }
       }

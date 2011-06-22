@@ -8,6 +8,7 @@
 <!--   <plugin name="dmzArchivePluginUndo"/>-->
 </plugin-list>
 <archive-module>
+   <clear-archive message="dmzClearArchiveMessage"/>
    <archive version="4" clear-old="true"/>
 </archive-module>
 <archive-object>

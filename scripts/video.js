@@ -31,6 +31,7 @@ var dmz =
    , prevButton = videoForm.lookup("prevButton")
    , currLabel = videoForm.lookup("currLabel")
    , totalLabel = videoForm.lookup("totalLabel")
+   , stateLabel = videoForm.lookup("mediaStateLabel")
    , video = dmz.ui.phonon.createVideoPlayer()
    , source = dmz.ui.phonon.createMediaObject()
 
@@ -58,6 +59,22 @@ function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
 
    var linkHandle = dmz.object.linkHandle(dmz.stance.ActiveVideoHandle, userHandle, mediaHandle);
    if (linkHandle) { dmz.object.unlink(linkHandle); }
+});
+
+source.observe(self, "stateChanged", function (newstate) {
+
+   var str;
+   switch (newstate) {
+
+      case 0: str = "Loading..."; break;
+      case 1: str = "Stopped"; break;
+      case 2: str = "Playing!"; break;
+      case 3: str = "Buffering."; break;
+      case 4: str = "Paused"; break;
+      case 5: str = "Error: " + source.errorString(); break;
+      default: str = "Video State error."; break;
+   }
+   stateLabel.text(str);
 });
 
 playCurrent = function () {
@@ -92,9 +109,8 @@ playCurrent = function () {
          if (NewSource) {
 
             source.observe(self, "hasVideoChanged", onVideo);
-            self.log.warn(source.currentSource(video.source));
+            self.log.warn(dmz.object.text(video.handle, dmz.stance.TitleHandle), source.currentSource(video.source));
             NewSource = false;
-            dmz.time.setTimer(self, 1, function () { source.state(); });
          }
 
          if (source.hasVideo()) { onVideo(true, source); }
@@ -103,6 +119,7 @@ playCurrent = function () {
       }
       else {
 
+         stateLabel.text("<font=\"red\">Video error.</font>");
          self.log.error("Video error for object", SourceList[CurrentIndex].handle);
       }
    }
@@ -186,6 +203,7 @@ setUserPlayList = function (userHandle) {
      , text
      ;
 
+   stateLabel.text("");
    SourceList = []
    NewSource = true;
    totalLabel.text("0");
@@ -196,7 +214,7 @@ setUserPlayList = function (userHandle) {
       list = list.filter(function (handle, index) {
 
          var type = dmz.object.type(handle);
-         return type && type.isOfType(dmz.stance.VideoType);
+         return type && type.isOfType(dmz.stance.VideoType) && !dmz.object.flag(handle, dmz.stance.DisabledHandle);
       });
    }
    if (list && activeList) {
@@ -237,7 +255,22 @@ dmz.object.link.observe(self, dmz.stance.ActiveVideoHandle,
 function (objHandle, attrHandle, userHandle, videoHandle) {
 
    if ((userHandle === dmz.object.hil()) &&
+      !dmz.object.flag(videoHandle, dmz.stance.DisabledHandle) &&
       dmz.object.linkHandle(dmz.stance.GameMediaHandle, dmz.stance.getUserGroupHandle(userHandle), videoHandle)) {
+
+      MainModule.highlight("Video");
+   }
+});
+
+dmz.object.flag.observe(self, dmz.stance.DisabledHandle,
+function (objHandle, attrHandle, value) {
+
+   var type = dmz.object.type(objHandle)
+     , hil = dmz.object.hil()
+     ;
+
+   if (value && type && type.isOfType(dmz.stance.VideoType)
+      && dmz.object.linkHandle(dmz.stance.ActiveVideoHandle, hil, objHandle)) {
 
       MainModule.highlight("Video");
    }

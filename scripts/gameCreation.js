@@ -34,6 +34,10 @@ var dmz =
    , gameStateButton = editScenarioWidget.lookup("gameStateButton")
    , advisorGroupComboBox = editScenarioWidget.lookup("advisorGroupComboBox")
    , groupAdvisorList = editScenarioWidget.lookup("groupAdvisorList")
+   , newspaperList = editScenarioWidget.lookup("newspaperListWidget")
+   , memoList = editScenarioWidget.lookup("memoListWidget")
+   , videoList = editScenarioWidget.lookup("videoListWidget")
+   , lobbyistList = editScenarioWidget.lookup("lobbyistListWidget")
 
    , DockName = "Edit Scenario"
    , dock = dmz.ui.mainWindow.createDock
@@ -84,6 +88,8 @@ var dmz =
    , MediaTitleText = CreateMediaInjectDialog.lookup("titleText")
    , MediaUrlText = CreateMediaInjectDialog.lookup("urlText")
    , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupLayout")
+   , MediaOkButton = CreateMediaInjectDialog.lookup("okButton")
+   , MediaURLWarning = CreateMediaInjectDialog.lookup("urlWarning")
 
    , AddGroupDialog = dmz.ui.loader.load("AddGroupDialog.ui", editScenarioWidget)
    , groupButtonBox = AddGroupDialog.lookup("buttonBox")
@@ -103,11 +109,41 @@ var dmz =
    , advisorList = []
    , advisorWidgets = {}
    , CurrentGameHandle = false
-   , MediaTypes =
-        { Video: { type: dmz.stance.VideoType, attr: dmz.stance.ActiveVideoHandle, button: "addVideoInjectButton" }
-        , Memo: { type: dmz.stance.MemoType, attr: dmz.stance.ActiveMemoHandle, button: "addMemoInjectButton" }
-        , Newspaper: { type: dmz.stance.NewspaperType, attr: dmz.stance.ActiveNewspaperHandle, button: "addNewspaperInjectButton" }
+   , Lobbyist =
+        { type: dmz.stance.LobbyistType
+        , attr: dmz.stance.ActiveLobbyistHandle
+        , button: "addLobbyistButton"
+        , listItems: {}
+        , list: lobbyistList
         }
+
+   , MediaTypes =
+        { Video:
+           { type: dmz.stance.VideoType
+           , attr: dmz.stance.ActiveVideoHandle
+           , button: "addVideoInjectButton"
+           , urlEnd: ".mov"
+           , listItems: {}
+           , list: videoList
+           }
+        , Memo:
+           { type: dmz.stance.MemoType
+           , attr: dmz.stance.ActiveMemoHandle
+           , button: "addMemoInjectButton"
+           , urlEnd: "?stance:view&id="
+           , listItems: {}
+           , list: memoList
+           }
+        , Newspaper:
+           { type: dmz.stance.NewspaperType
+           , attr: dmz.stance.ActiveNewspaperHandle
+           , button: "addNewspaperInjectButton"
+           , urlEnd: "?stance:view&id="
+           , listItems: {}
+           , list: newspaperList
+           }
+        }
+   , injectItems = {}
    , inUpdate = false
    , TemplateList = []
    , TemplateBackgroundPixmaps = []
@@ -126,6 +162,8 @@ var dmz =
    , updateTimePage
    , readGroupTemplates
    , setGroupTemplate
+   , modifyInjectItem
+   , updateInjectTitle
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
@@ -241,12 +279,24 @@ setGroupTemplate = function (groupHandle, templateIndex) {
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
+   var item = { handle: objHandle, title: "N/A", disabled: false };
    if (objType) {
 
       if (objType.isOfType(dmz.stance.GameType)) {
 
          CurrentGameHandle = objHandle;
          setup();
+      }
+      else if (objType.isOfType(dmz.stance.VideoType)) { item.type = MediaTypes.Video; }
+      else if (objType.isOfType(dmz.stance.MemoType)) { item.type = MediaTypes.Memo; }
+      else if (objType.isOfType(dmz.stance.NewspaperType)) { item.type = MediaTypes.Newspaper; }
+      else if (objType.isOfType(dmz.stance.LobbyistType)) { item.type = Lobbyist; }
+
+      if (item.type) {
+
+         item.type.listItems[objHandle] = item;
+         item.item = item.type.list.addItem(item.title, item.handle);
+         injectItems[item.handle] = item;
       }
    }
 });
@@ -596,6 +646,7 @@ setup = function () {
       lobbyistMessage.text("");
       lobbyistTitle.text("");
       lobbyistName.text("");
+
       editLobbyistDialog.open(self, function (result) {
 
          var groupIndex = lobbyistGroupList.currentIndex()
@@ -890,12 +941,67 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
    });
 });
 
+updateInjectTitle = function (handle) {
+
+   var item = handle ? injectItems[handle] : false
+     , str
+     ;
+
+   if (item && item.item) {
+
+      str = item.title + (item.disabled ? "*" : "");
+      item.item.text(str);
+   }
+};
+
+dmz.object.text.observe(self, dmz.stance.TitleHandle, function (objHandle, attr, value) {
+
+   if (injectItems[objHandle]) {
+
+      injectItems[objHandle].title = value;
+      updateInjectTitle (objHandle);
+   }
+});
+
+dmz.object.flag.observe(self, dmz.stance.DisabledHandle, function (objHandle, attr, value) {
+
+   if (injectItems[objHandle]) {
+
+      injectItems[objHandle].disabled = value;
+      updateInjectTitle (objHandle);
+   }
+});
+
+modifyInjectItem = function (widgetItem) {
+
+   var handle = widgetItem ? widgetItem.data() : false
+     , item = handle ? injectItems[handle] : false
+     ;
+
+   if (item) { dmz.object.flag(handle, dmz.stance.DisabledHandle, !item.disabled); }
+};
+
+
+
 // Media inject buttons
 (function () {
 
-   var generateMediaInjectFunction = function (type, attr) {
+   var generateMediaInjectFunction = function (type, attr, urlEnd) {
 
       return function () {
+
+         MediaOkButton.observe(self, "clicked", function () {
+
+            var text = MediaUrlText.text();
+            if (type) {
+
+               if (text.lastIndexOf(urlEnd) !== -1) { CreateMediaInjectDialog.accept(); }
+               else {
+
+                  MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
+               }
+            }
+         });
 
          CreateMediaInjectDialog.open(self, function (value, dialog) {
 
@@ -949,6 +1055,7 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 
             MediaTitleText.text("");
             MediaUrlText.text("");
+            MediaURLWarning.text("");
             for (idx = 0; idx < count; idx += 1) {
 
                MediaGroupFLayout.at(idx, 1).setChecked(false);
@@ -963,69 +1070,13 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
          self,
          MediaTypes[type].button,
          "clicked",
-         generateMediaInjectFunction(MediaTypes[type].type, MediaTypes[type].attr));
+         generateMediaInjectFunction(MediaTypes[type].type, MediaTypes[type].attr, MediaTypes[type].urlEnd));
+
+      MediaTypes[type].list.observe(self, "itemActivated", modifyInjectItem);
    });
+
+   Lobbyist.list.observe(self, "itemActivated", modifyInjectItem);
 }());
-
-//editScenarioWidget.observe(self, "addInjectButton", "clicked", function () {
-
-//   CreateMediaInjectDialog.open(self, function (value, dialog) {
-
-//      var idx
-//        , count = MediaGroupFLayout.rowCount()
-//        , media = false
-//        , type = MediaTypeList.currentText()
-//        , groupMembers
-//        , links
-//        , linkAttr = false
-//        , userList = []
-//        ;
-
-//      if (value && MediaTypes[type]) {
-
-//         for (idx = 0; idx < count; idx += 1) {
-
-//            if (MediaGroupFLayout.at(idx, 1).isChecked()) {
-
-//               groupMembers = dmz.object.subLinks(groupList[idx], dmz.stance.GroupMembersHandle);
-//               if (groupMembers) {
-
-//                  groupMembers.forEach(function (userHandle) {
-
-//                     if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
-
-//                        userList.push(userHandle);
-//                     }
-//                  });
-//               }
-//            }
-//         }
-
-//         if (userList.length) {
-
-//            media = dmz.object.create(MediaTypes[type].type);
-//            dmz.object.text(media, dmz.stance.TitleHandle, MediaTitleText.text());
-//            dmz.object.text(media, dmz.stance.TextHandle, MediaUrlText.text());
-//            links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
-//            dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
-//            dmz.object.activate(media);
-//            dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, media);
-//            linkAttr = MediaTypes[type].attr;
-//            userList.forEach(function (userHandle) {
-
-//               dmz.object.link(MediaTypes[type].attr, userHandle, media);
-//            });
-//         }
-//      }
-
-//      MediaTitleText.text("");
-//      MediaUrlText.text("");
-//      for (idx = 0; idx < count; idx += 1) {
-
-//         MediaGroupFLayout.at(idx, 1).setChecked(false);
-//      }
-//   });
-//});
 
 dmz.object.data.observe(self, dmz.stance.GameStartTimeHandle, function (handle, attr, value) {
 

@@ -73,10 +73,6 @@ loadCurrent = function () {
             }
          }
       }
-      else {
-
-         self.log.error("Media error for object", SourceList[CurrentIndex].handle);
-      }
    }
 };
 
@@ -112,7 +108,7 @@ skipBackward = function () {
 nextButton.observe(self, "clicked", skipForward);
 prevButton.observe(self, "clicked", skipBackward);
 
-setUserPlayList = function (userHandle, clickWindow) {
+setUserPlayList = function (userHandle) {
 
    var list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
      , activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveNewspaperHandle)
@@ -128,7 +124,7 @@ setUserPlayList = function (userHandle, clickWindow) {
       list = list.filter(function (handle, index) {
 
          var type = dmz.object.type(handle);
-         return type && type.isOfType(dmz.stance.NewspaperType);
+         return type && type.isOfType(dmz.stance.NewspaperType) && !dmz.object.flag(handle, dmz.stance.DisabledHandle);
       });
    }
    if (list && activeList) {
@@ -163,7 +159,22 @@ dmz.object.link.observe(self, dmz.stance.ActiveNewspaperHandle,
 function (objHandle, attrHandle, userHandle, newspaperHandle) {
 
    if ((userHandle === dmz.object.hil()) &&
+      !dmz.object.flag(newspaperHandle, dmz.stance.DisabledHandle) &&
       dmz.object.linkHandle(dmz.stance.GameMediaHandle, dmz.stance.getUserGroupHandle(userHandle), newspaperHandle)) {
+
+      MainModule.highlight("Newspaper");
+   }
+});
+
+dmz.object.flag.observe(self, dmz.stance.DisabledHandle,
+function (objHandle, attrHandle, value) {
+
+   var type = dmz.object.type(objHandle)
+     , hil = dmz.object.hil()
+     ;
+
+   if (value && type && type.isOfType(dmz.stance.NewspaperType)
+      && dmz.object.linkHandle(dmz.stance.ActiveNewspaperHandle, hil, objHandle)) {
 
       MainModule.highlight("Newspaper");
    }
@@ -172,7 +183,7 @@ function (objHandle, attrHandle, userHandle, newspaperHandle) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   if (value) { setUserPlayList(objHandle, true); }
+   if (value) { setUserPlayList(objHandle); }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
