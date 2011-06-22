@@ -45,7 +45,7 @@ var dmz =
         , y: 0
         , w: 40
         , h: -40
-        , space: 20
+        , space: 5
         }
    , ObjectTypeData = {}
    , ObjectTypeList =
@@ -77,6 +77,7 @@ var dmz =
    , createAxes
    , createHLine
    , createVLine
+   , drawBoxToBoxLine
 
    , getGroupFromCreatedBy
    , getUserFromCreatedBy
@@ -161,17 +162,41 @@ createBoxObj = function (handle, x, y, count, parent) {
 createHLine = function (x, y, len) { return dmz.ui.graph.createLineItem(x, y, x + len, y); }
 createVLine = function (x, y, height) { return dmz.ui.graph.createLineItem(x, y, x, -(-y + height)); }
 
-createAxes = function (scene) {
+createAxes = function (scene, x, y, yItems) {
 
+   self.log.warn ("Create Axes:", x, y, yItems);
    if (scene) {
 
-      XAxis = createHLine(0, 0, 200);
+      XAxis = createHLine(x, y, 200);
       scene.addItem(XAxis); // X-Axis
-      YAxis = createVLine(0, 0, 50);
+      YAxis = createVLine(x, y, -((yItems + 1.5) * StdBox.h));
       scene.addItem(YAxis); // Y-Axis
    }
    return XAxis;
 };
+
+drawBoxToBoxLine = function (oldBox, newBox) {
+
+   var oldPos
+     , oldRect
+     , newPos
+     , newRect
+     , x
+     , line
+     ;
+   if (oldBox && newBox) {
+
+      oldPos = oldBox.pos();
+      newPos = newBox.pos();
+      oldRect = oldBox.boundingRect();
+      newRect = newBox.boundingRect();
+      x = oldPos[0] + oldRect.width;
+//      self.log.warn ("dB2B:", x, oldPos[1] - (oldRect.height / 2), newPos[0] - x);
+      line = createHLine(x, oldPos[1] + (oldRect.height / 2), newPos[0] - x);
+      graphWindowScene.addItem(line);
+   }
+   return line;
+}
 
 updateName = function (handle) {
 
@@ -188,7 +213,7 @@ updateName = function (handle) {
          if (data.name) {
 
             index = groupList.findText(data.name);
-            if (index !== -1) groupList.removeIndex(index);
+            if (index !== -1) { groupList.removeIndex(index); }
          }
          groupList.addItem(name, handle);
       }
@@ -213,7 +238,35 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
      , currentInterval = 0
      , x
      , item
+     , box
+     , boxCount = 0
+     , longestTitle = 0
+     , addedBox = false
+     , lastBox = false
+     , xLine
      ;
+
+   graphWindowScene.clear();
+// Create mapping of link handle to y-index
+   yAxisItems.forEach(function (handle, index) {
+
+      var text = dmz.stance.getDisplayName(handle)
+        , rect
+        ;
+      yAxisMap[handle] = { height: index * StdBox.h };
+//      self.log.warn ("YAxis:", handle, yAxisMap[handle]);
+
+      text = graphWindowScene.addText(text);
+      rect = text.boundingRect();
+      longestTitle = (rect.width > longestTitle) ? rect.width : longestTitle;
+      self.log.warn (dmz.stance.getDisplayName(handle), rect.width);
+      text.pos(0, yAxisMap[handle].height + StdBox.h);
+      yAxisMap[handle].lastBox = text;
+      yAxisMap[handle].label = text;
+   });
+
+   createAxes(graphWindowScene, (longestTitle + 10), 0, yAxisItems.length);
+
 // Iterate through all objects, save { handle, createdAt, links (users/groups) }
    activeObjectTypes.forEach(function (type) {
 
@@ -222,7 +275,6 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
 
          var obj = { handle: objHandle };
          obj.createdAt = dmz.object.timeStamp(objHandle, dmz.stance.CreatedAtServerTimeHandle);
-//         self.log.warn (objHandle, "created at:", obj.createdAt);
          if (!obj.createdAt) {
 
 //            self.log.error (objHandle, dmz.object.type(objHandle));
@@ -232,7 +284,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
             obj.createdAt = dmz.util.timeStampToDate(obj.createdAt);
          }
 
-         if (graphType === GraphType.Group) { obj.links = typeData.getGroups(objHandle); }
+         if (graphType === GraphType.Game) { obj.links = typeData.getGroups(objHandle); }
          else { obj.links = typeData.getUsers(objHandle); }
          obj.type = type;
          if (obj.createdAt) {
@@ -244,69 +296,52 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
 
 // Sort by timestamp
    objectDataList.sort(function (a, b) { return Date.compare(a.createdAt, b.createdAt); });
-   objectDataList.forEach(function (data) { self.log.warn (data.createdAt); });
-
-// Create mapping of link handle to y-index
-   yAxisItems.forEach(function (handle, index) {
-
-      yAxisMap[handle] = index * StdBox.h + 10;
-//      self.log.warn ("YAxis:", handle, yAxisMap[handle]);
-   });
-
-// objTypeCntr = {}; objTypeCnt[type] = 0; objTypeCnt[type] += 1
 
    self.log.warn ("curr:", currDate, "end:", endDate, "oDL:", objectDataList.length);
    while (currDate.isBefore(endDate) && objectDataList.length) {
 
       nextDate = nextInterval(currDate);
-//      objTypeCnt = {};
-      self.log.warn ("Next:", nextDate);
       item = objectDataList.shift();
       while (item && (item.createdAt.isBefore(nextDate))) {
 
-         self.log.warn ("-item:", item.handle);
-         x = currentInterval * (StdBox.w + StdBox.space);
-         self.log.warn ("--links:", item.links);
+         x = boxCount * (StdBox.w + StdBox.space) + longestTitle + 10;
          item.links.forEach(function (handle) {
 
-            self.log.warn ("---", handle, yAxisMap[handle]);
+            var lastX = -1
+              , lineItem
+              , line
+              ;
             if (yAxisMap[handle]) {
 
-               self.log.warn ("CreateBoxObj:", handle, x, yAxisMap[handle], XAxis);
-               createBoxObj(handle, x, yAxisMap[handle], XAxis);
+               box = createBoxObj(item.handle, x, yAxisMap[handle].height, 1, XAxis);
+               lineItem = drawBoxToBoxLine(yAxisMap[handle].lastBox, box.box);
+               if (yAxisMap[handle].lastBox === yAxisMap[handle].label) {
+
+                  line = lineItem.line();
+                  line.x1 = longestTitle + 10;
+                  lineItem.line(line);
+               }
+
+               yAxisMap[handle].lastBox = box.box;
+               addedBox = true;
             }
          });
+         if (addedBox) { boxCount += 1; }
          item = objectDataList.shift();
       }
 
+      // Create vert line to mark end of interval
 
-
-
-//      while (item && (item.timestamp < nextDate)) {
-
-//         if (item.date < nextDate) {
-
-//            if (!objTypeCnt[item.type]) { objTypeCnt[item.type] = []; }
-//            objTypeCnt[item.type].push(item.handle);
-
-//         }
-//      }
-
-//      Object.keys(objTypeCnt).forEach(function (type) {
-
-//         if (objTypeCnt[type].length > 0) {
-
-//            // Add box of correct type at next location for current interval with correct count
-//            // Add one box for each group / user line
-//            // On click, add dialog with correct info for handle
-//         }
-//      });
       currDate = nextDate;
       currentInterval += 1;
    }
+
    var str = "";
    Object.keys(yAxisMap).forEach (function (h) { str += h + ", "; });
    self.log.warn (str);
+   xLine = XAxis.line();
+   xLine.x2 = (x ? x : xLine.x2) + (StdBox.w * 2);
+   XAxis.line(xLine);
 };
 
 updateGraph = function () {
@@ -343,7 +378,7 @@ updateGraph = function () {
    self.log.warn
       ( "Update graph:\n"
       + "  Interval: " + interval + " days\n"
-      + "  GraphType: " + (graphType ? "Group" : "Game") + "\n"
+      + "  GraphType: " + (graphType ? "Group" : "Game") + "(" + graphType + ")" + "\n"
       + "  ActiveTypes: [" + activeTypes + "]\n"
       + "  activeLines: [" + activeLineHandles +"]\n"
       + "  gameStart: " + dmz.util.timeStampToDate(gameStart) + "\n"
@@ -388,7 +423,7 @@ getUserFromCreatedBy = function (handle) {
 //   graphicsView.alignment (dmz.ui.consts.AlignLeft | dmz.ui.consts.AlignBottom);
    graphWindowScene.eventFilter(self, mouseEvent);
 
-   prevObj = { box: createAxes(graphWindowScene) };
+//   createAxes(graphWindowScene);
 
    ObjectTypeData[dmz.stance.LobbyistType] =
       { name: "Lobbyists"
@@ -491,7 +526,7 @@ updateUserList = function (index) {
      , groupData
      ;
 
-   self.log.warn ("GroupList:", handle);
+//   self.log.warn ("GroupList:", handle);
    if (handle && masterData.groups[handle]) {
 
       groupData = masterData.groups[handle];
@@ -506,7 +541,7 @@ updateUserList = function (index) {
          if (isCurrent !== -1) { masterData.users[handle].label.show(); }
          else { masterData.users[handle].label.hide(); }
 
-         self.log.warn ("user:", handle, userData.label.text(), userData.group, isCurrent);
+//         self.log.warn ("user:", handle, userData.label.text(), userData.group, isCurrent);
          masterData.users[handle].label.setChecked(isCurrent !== -1);
       });
    }
@@ -546,7 +581,7 @@ function (linkObjHandle, attrHandle, groupHandle, userHandle) {
      , groupData = masterData.groups[groupHandle]
      ;
 
-   self.log.warn ("Link:", groupHandle, userHandle, userData, groupData);
+//   self.log.warn ("Link:", groupHandle, userHandle, userData, groupData);
    if (userData && groupData && !dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
 
       userData.group = groupHandle;
