@@ -62,6 +62,7 @@ var dmz =
 
    , Interval = { days: 1, weeks: 7 }
    , GraphType = { Game: 0, Group: 1 }
+   , DateFormat = "ddd MMM dd yyyy"
 
    // Variables
    , eventItems = {}
@@ -109,17 +110,24 @@ mouseEvent = function (object, event) {
             object.items(pos, dmz.ui.consts.IntersectsItemShape, dmz.ui.consts.DescendingOrder);
          items.forEach(function (item) {
 
-            var handle = item.data(HandleIndex);
-            if (handle) { self.log.warn (handle, dmz.object.type(handle)); }
+            var handles = item.data(HandleIndex);
+            if (handles) { self.log.warn (handles, dmz.object.type(handles[0])); }
          });
       }
    }
 };
 
-createBoxObj = function (handle, x, y, count, parent) {
+createBoxObj = function (handle, x, y, parent) {
 
-   var result = { box: false, label: false, count: false }
+   var result =
+          { box: false
+          , label: false
+          , countLabel: false
+          , count: 1
+          , handles: [handle]
+          }
      , label = false
+     , count = 1
      , type
      ;
 
@@ -140,7 +148,7 @@ createBoxObj = function (handle, x, y, count, parent) {
          result.box = dmz.ui.graph.createRectItem(StdBox.x, StdBox.y, StdBox.w, StdBox.h, parent);
          result.box.brush(ObjectTypeData[type].brush);
          result.box.pos(x, y);
-         result.box.data(HandleIndex, handle);
+         result.box.data(HandleIndex, result.handles);
          if (result.box) {
 
             result.label = dmz.ui.graph.createTextItem(label, result.box);
@@ -148,8 +156,8 @@ createBoxObj = function (handle, x, y, count, parent) {
 
             if (count) {
 
-               result.count = dmz.ui.graph.createTextItem(count.toString(), result.box);
-               result.count.pos(StdBox.w / 2, StdBox.h / 2);
+               result.countLabel = dmz.ui.graph.createTextItem(count.toString(), result.box);
+               result.countLabel.pos(StdBox.w / 2, StdBox.h / 2);
             }
          }
          masterData.events[handle] = result;
@@ -180,7 +188,6 @@ drawBoxToBoxLine = function (oldBox, newBox, label) {
    var oldPos
      , oldRect
      , newPos
-     , newRect
      , x
      , line
      ;
@@ -189,9 +196,7 @@ drawBoxToBoxLine = function (oldBox, newBox, label) {
       oldPos = oldBox.pos();
       newPos = newBox.pos();
       oldRect = oldBox.boundingRect();
-      newRect = newBox.boundingRect();
       x = oldPos[0] + oldRect.width;
-//      self.log.warn ("dB2B:", x, oldPos[1] - (oldRect.height / 2), newPos[0] - x);
       line = createHLine(x, oldPos[1] + (oldRect.height / 2), newPos[0] - x);
       line.acceptHoverEvents(true);
       line.toolTip(label);
@@ -262,7 +267,6 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       text = graphWindowScene.addText(text);
       rect = text.boundingRect();
       longestTitle = (rect.width > longestTitle) ? rect.width : longestTitle;
-      self.log.warn (dmz.stance.getDisplayName(handle), rect.width);
       text.pos(0, yAxisMap[handle].height + StdBox.h);
       yAxisMap[handle].lastBox = text;
       yAxisMap[handle].label = text;
@@ -272,9 +276,9 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
 //   createAxes(graphWindowScene, (longestTitle + 10), 0, yAxisItems.length);
    XAxis = createHLine(StartX, 0, 200);
    graphWindowScene.addItem(XAxis);
-   intervalLineFnc = function (x) { return createVLine(x, 0, -((yAxisItems.length + 1.5) * StdBox.h)); }
+   intervalLineFnc = function (x) { return createVLine(x, 0, -((yAxisItems.length + 1) * StdBox.h)); }
    YAxis = intervalLineFnc(StartX);
-   item = dmz.ui.graph.createTextItem(startDate.toString(), YAxis);
+   item = dmz.ui.graph.createTextItem(startDate.toString(DateFormat), YAxis);
    item.pos(StartX, 0);
 //   item.rotation(45);
 
@@ -288,21 +292,13 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       typeData.events.forEach(function (objHandle) {
 
          var obj = { handle: objHandle };
-         obj.createdAt = dmz.object.timeStamp(objHandle, dmz.stance.CreatedAtServerTimeHandle);
-         if (!obj.createdAt) {
-
-//            self.log.error (objHandle, dmz.object.type(objHandle));
-         }
-         else {
-
-            obj.createdAt = dmz.util.timeStampToDate(obj.createdAt);
-         }
-
          if (graphType === GraphType.Game) { obj.links = typeData.getGroups(objHandle); }
          else { obj.links = typeData.getUsers(objHandle); }
-         obj.type = type;
+         obj.type = typeData;
+         obj.createdAt = dmz.object.timeStamp(objHandle, dmz.stance.CreatedAtServerTimeHandle);
          if (obj.createdAt) {
 
+            obj.createdAt = dmz.util.timeStampToDate(obj.createdAt);
             objectDataList.push(obj);
          }
       });
@@ -311,6 +307,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
 // Sort by timestamp
    objectDataList.sort(function (a, b) { return Date.compare(a.createdAt, b.createdAt); });
 
+
    self.log.warn ("curr:", currDate, "end:", endDate, "oDL:", objectDataList.length);
    while (currDate.isBefore(endDate) && objectDataList.length) {
 
@@ -318,36 +315,42 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       item = objectDataList.shift();
       while (item && (item.createdAt.isBefore(nextDate))) {
 
+         addedBox = false
          x = boxCount * (StdBox.w + StdBox.space) + StartX;
          item.links.forEach(function (handle) {
 
-            var lastX = -1
-              , lineItem
+            var lineItem
               , line
+              , data = yAxisMap[handle]
+              , box
               ;
-            if (yAxisMap[handle]) {
 
-               box = createBoxObj(item.handle, x, yAxisMap[handle].height, 1, XAxis);
-               lineItem = drawBoxToBoxLine(yAxisMap[handle].lastBox, box.box, yAxisMap[handle].tooltip);
-               if (yAxisMap[handle].lastBox === yAxisMap[handle].label) {
+            if (data) {
 
-                  line = lineItem.line();
-                  line.x1 = longestTitle + 10;
-                  lineItem.line(line);
+               if (data.lastType !== item.type) {
+
+                  box = createBoxObj(item.handle, x, data.height, XAxis);
+                  addedBox = true;
+                  data.lastType = item.type;
+                  data.lastBox = box;
                }
+               else if (data.lastBox.count) {
 
-               yAxisMap[handle].lastBox = box.box;
-               addedBox = true;
+                  data.lastBox.handles.push(item.handle);
+                  data.lastBox.countLabel.plainText(data.lastBox.handles.length.toString());
+                  data.lastBox.box.data(HandleIndex, data.lastBox.handles);
+               }
             }
          });
+
          if (addedBox) { boxCount += 1; }
          item = objectDataList.shift();
       }
 
-
+      Object.keys(yAxisMap).forEach(function (key) { yAxisMap[key].lastType = false; });
       // Create vert line to mark end of interval
       intervalLine = intervalLineFnc(boxCount * (StdBox.w + StdBox.space) + StartX);
-      item = dmz.ui.graph.createTextItem(nextDate.toString(), intervalLine);
+      item = dmz.ui.graph.createTextItem(nextDate.toString(DateFormat), intervalLine);
 //      item.rotation(45);
       item.pos(boxCount * (StdBox.w + StdBox.space) + StartX, 0);
       graphWindowScene.addItem(intervalLine);
@@ -356,9 +359,20 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       currentInterval += 1;
    }
 
-   var str = "";
-   Object.keys(yAxisMap).forEach (function (h) { str += h + ", "; });
-   self.log.warn (str);
+
+   intervalLine = interval[interval.length - 1];
+   Object.keys(yAxisMap).forEach (function (h) {
+
+      var data = yAxisMap[h]
+        , line
+        ;
+
+      line = createHLine(0, data.height + (StdBox.h / 2), boxCount * (StdBox.w + StdBox.space) + StartX);
+      line.z(-1);
+      line.acceptHoverEvents(true);
+      line.toolTip(data.tooltip);
+      graphWindowScene.addItem(line);
+   });
    xLine = XAxis.line();
    xLine.x2 = (x ? x : xLine.x2) + (StdBox.w * 2);
    XAxis.line(xLine);
@@ -382,7 +396,10 @@ updateGraph = function () {
 
    Object.keys(ObjectTypeData).forEach(function (type) {
 
-      if (ObjectTypeData[type].selected) { activeTypes.push(type); }
+      if (ObjectTypeData[type].selected && (type != dmz.stance.CommentType)) {
+
+         activeTypes.push(type);
+      }
    });
 
    if (graphType === GraphType.Game) { dataList = masterData.groups; }
@@ -437,13 +454,11 @@ getUserFromCreatedBy = function (handle) {
 (function () {
 
    var data;
-//   graphWindowScene = dmz.ui.graph.createScene(-50, 50, 50, 1);
    graphWindowScene = dmz.ui.graph.createScene();
    graphicsView.scene (graphWindowScene);
-//   graphicsView.alignment (dmz.ui.consts.AlignLeft | dmz.ui.consts.AlignBottom);
+   graphicsView.alignment (dmz.ui.consts.AlignLeft | dmz.ui.consts.AlignBottom);
    graphWindowScene.eventFilter(self, mouseEvent);
 
-//   createAxes(graphWindowScene);
 
    ObjectTypeData[dmz.stance.LobbyistType] =
       { name: "Lobbyists"
@@ -453,19 +468,29 @@ getUserFromCreatedBy = function (handle) {
            var groupHandle = dmz.object.superLinks(handle, dmz.stance.ActiveLobbyistHandle);
            return (groupHandle && groupHandle[0]) ? [groupHandle] : [];
         }
+      , getUsers: false
       };
 
    ObjectTypeData[dmz.stance.MemoType] =
       { name: "Memos"
       , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.3, b: 0.3 })
       , getGroups: getMediaGroups
+      , getUsers: false
       };
 
    ObjectTypeData[dmz.stance.NewspaperType] =
       { name: "Newspapers"
       , brush: dmz.ui.graph.createBrush({ r: 0.5, g: 0.8, b: 0.3 })
       , getGroups: getMediaGroups
+      , getUsers: false
       };
+
+ObjectTypeData[dmz.stance.VideoType] =
+   { name: "Videos"
+   , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.7 })
+   , getGroups: getMediaGroups
+   , getUsers: false
+   };
 
    ObjectTypeData[dmz.stance.PinType] =
       { name: "Pins"
@@ -475,6 +500,7 @@ getUserFromCreatedBy = function (handle) {
            var groupList = dmz.object.superLinks(handle, dmz.stance.GroupPinHandle);
            return groupList ? groupList : [];
         }
+      , getUsers: false
       };
 
    ObjectTypeData[dmz.stance.QuestionType] =
@@ -482,12 +508,6 @@ getUserFromCreatedBy = function (handle) {
       , brush: dmz.ui.graph.createBrush({ r: 0.8, g: 0.8, b: 0.3 })
       , getGroups: getGroupFromCreatedBy
       , getUsers: getUserFromCreatedBy
-      };
-
-   ObjectTypeData[dmz.stance.VideoType] =
-      { name: "Videos"
-      , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.7 })
-      , getGroups: getMediaGroups
       };
 
    ObjectTypeData[dmz.stance.VoteType] =
@@ -522,10 +542,13 @@ getUserFromCreatedBy = function (handle) {
 
          data.getUsers = function (handle) {
 
-            var ret = [];
-            data.getGroups().forEach(function (handle) {
+            var ret = []
+//              , groups = data.getGroups
+              ;
+            data.getGroups(handle).forEach(function (handle) {
 
                ret = ret.concat(getAllGroupUsers(handle));
+//               self.log.warn("getUsers:", data.name, data.handle, ret);
             });
             return ret;
          };
@@ -534,8 +557,6 @@ getUserFromCreatedBy = function (handle) {
       objectTypeLayout.insertWidget(1, data.itemLabel);
       data.itemLabel.setChecked(true);
    });
-
-//   updateGraph();
 
    graphWindow.show();
 }());
@@ -546,7 +567,6 @@ updateUserList = function (index) {
      , groupData
      ;
 
-//   self.log.warn ("GroupList:", handle);
    if (handle && masterData.groups[handle]) {
 
       groupData = masterData.groups[handle];
@@ -561,7 +581,6 @@ updateUserList = function (index) {
          if (isCurrent !== -1) { masterData.users[handle].label.show(); }
          else { masterData.users[handle].label.hide(); }
 
-//         self.log.warn ("user:", handle, userData.label.text(), userData.group, isCurrent);
          masterData.users[handle].label.setChecked(isCurrent !== -1);
       });
    }
@@ -575,7 +594,6 @@ groupViewTypeList.observe(self, "currentIndexChanged", function (index) {
 });
 
 groupList.observe(self, "currentIndexChanged", updateUserList);
-
 graphWindow.observe(self, "updateGraphButton", "clicked", updateGraph);
 
 dmz.object.text.observe(self, dmz.stance.DisplayNameHandle, function (handle) {
@@ -601,7 +619,6 @@ function (linkObjHandle, attrHandle, groupHandle, userHandle) {
      , groupData = masterData.groups[groupHandle]
      ;
 
-//   self.log.warn ("Link:", groupHandle, userHandle, userData, groupData);
    if (userData && groupData && !dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
 
       userData.group = groupHandle;
@@ -666,19 +683,7 @@ dmz.object.create.observe(self, function (handle, type) {
          data.label.setChecked(true);
          updateName(handle);
       }
-      else {
-
-         if (ObjectTypeData[type]) { ObjectTypeData[type].events.push(handle); }
-         // Other types
-//         data =
-//            { handle: handle
-//            , type: type
-//            };
-
-//         masterData.events[handle] = data;
-//         nextObj = createBoxObj(handle, StdBox.w + StdBox.space, 0, 1, prevObj.box);
-//         if (nextObj.box) { prevObj = nextObj; objCount += 1; }
-      }
+      else if (ObjectTypeData[type]) { ObjectTypeData[type].events.push(handle); }
    }
 });
 
