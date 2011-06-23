@@ -175,7 +175,7 @@ createAxes = function (scene, x, y, yItems) {
    return XAxis;
 };
 
-drawBoxToBoxLine = function (oldBox, newBox) {
+drawBoxToBoxLine = function (oldBox, newBox, label) {
 
    var oldPos
      , oldRect
@@ -193,6 +193,8 @@ drawBoxToBoxLine = function (oldBox, newBox) {
       x = oldPos[0] + oldRect.width;
 //      self.log.warn ("dB2B:", x, oldPos[1] - (oldRect.height / 2), newPos[0] - x);
       line = createHLine(x, oldPos[1] + (oldRect.height / 2), newPos[0] - x);
+      line.acceptHoverEvents(true);
+      line.toolTip(label);
       graphWindowScene.addItem(line);
    }
    return line;
@@ -244,6 +246,9 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
      , addedBox = false
      , lastBox = false
      , xLine
+     , StartX
+     , intervalLineFnc
+     , intervalLine
      ;
 
    graphWindowScene.clear();
@@ -253,9 +258,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       var text = dmz.stance.getDisplayName(handle)
         , rect
         ;
-      yAxisMap[handle] = { height: index * StdBox.h };
-//      self.log.warn ("YAxis:", handle, yAxisMap[handle]);
-
+      yAxisMap[handle] = { height: index * StdBox.h, tooltip: text };
       text = graphWindowScene.addText(text);
       rect = text.boundingRect();
       longestTitle = (rect.width > longestTitle) ? rect.width : longestTitle;
@@ -265,7 +268,18 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       yAxisMap[handle].label = text;
    });
 
-   createAxes(graphWindowScene, (longestTitle + 10), 0, yAxisItems.length);
+   StartX = longestTitle + 10;
+//   createAxes(graphWindowScene, (longestTitle + 10), 0, yAxisItems.length);
+   XAxis = createHLine(StartX, 0, 200);
+   graphWindowScene.addItem(XAxis);
+   intervalLineFnc = function (x) { return createVLine(x, 0, -((yAxisItems.length + 1.5) * StdBox.h)); }
+   YAxis = intervalLineFnc(StartX);
+   item = dmz.ui.graph.createTextItem(startDate.toString(), YAxis);
+   item.pos(StartX, 0);
+//   item.rotation(45);
+
+   graphWindowScene.addItem(YAxis);
+   interval.push(YAxis);
 
 // Iterate through all objects, save { handle, createdAt, links (users/groups) }
    activeObjectTypes.forEach(function (type) {
@@ -304,7 +318,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       item = objectDataList.shift();
       while (item && (item.createdAt.isBefore(nextDate))) {
 
-         x = boxCount * (StdBox.w + StdBox.space) + longestTitle + 10;
+         x = boxCount * (StdBox.w + StdBox.space) + StartX;
          item.links.forEach(function (handle) {
 
             var lastX = -1
@@ -314,7 +328,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
             if (yAxisMap[handle]) {
 
                box = createBoxObj(item.handle, x, yAxisMap[handle].height, 1, XAxis);
-               lineItem = drawBoxToBoxLine(yAxisMap[handle].lastBox, box.box);
+               lineItem = drawBoxToBoxLine(yAxisMap[handle].lastBox, box.box, yAxisMap[handle].tooltip);
                if (yAxisMap[handle].lastBox === yAxisMap[handle].label) {
 
                   line = lineItem.line();
@@ -330,8 +344,14 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
          item = objectDataList.shift();
       }
 
-      // Create vert line to mark end of interval
 
+      // Create vert line to mark end of interval
+      intervalLine = intervalLineFnc(boxCount * (StdBox.w + StdBox.space) + StartX);
+      item = dmz.ui.graph.createTextItem(nextDate.toString(), intervalLine);
+//      item.rotation(45);
+      item.pos(boxCount * (StdBox.w + StdBox.space) + StartX, 0);
+      graphWindowScene.addItem(intervalLine);
+      interval.push(intervalLine);
       currDate = nextDate;
       currentInterval += 1;
    }
