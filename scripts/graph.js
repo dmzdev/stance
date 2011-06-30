@@ -10,6 +10,7 @@ var dmz =
       , event: require("dmz/ui/event")
       , label: require("dmz/ui/label")
       , button: require("dmz/ui/button")
+      , tabWidget: require("dmz/ui/tabWidget")
       }
    , config: require("dmz/runtime/config")
    , defs: require("dmz/runtime/definitions")
@@ -92,7 +93,161 @@ var dmz =
    , updateGraph
    , setGraph
 
+   , openEventDialog
+   , lobbyistEvent
+   , memoEvent
+   , newspaperEvent
+   , videoEvent
+   , pinEvent
+   , questionEvent
+   , voteEvent
+   , forumEvent
+
    ;
+
+openEventDialog = function (handleArray) {
+
+   var dialog = dmz.ui.loader.load("EventDialog.ui", graphWindow)
+     , tabWidget = dmz.ui.tabWidget.create()
+     , type = (handleArray && handleArray[0]) ? dmz.object.type(handleArray[0]) : false
+     , typeFunction = function () { return undefined; }
+     ;
+   if (ObjectTypeData[type]) {
+
+      typeFunction = ObjectTypeData[dmz.object.type(handleArray[0])].eventFunction;
+      if (typeFunction) {
+
+         handleArray.forEach(function (handle) {
+
+            var data = typeFunction(handle);
+            tabWidget.add(data.widget, data.label);
+         });
+         dialog.lookup("tabLayout").addWidget(tabWidget);
+         dialog.open(function (value, dialog) {});
+      }
+   }
+   else { self.log.error ("Event dialog fail:", handleArray); }
+};
+
+lobbyistEvent = function (handle) {
+
+   var data = {}
+     , layout
+     ;
+   if (handle) {
+
+      data.label = dmz.stance.getDisplayName(handle);
+      data.widget = dmz.ui.widget.create();
+      layout = dmz.ui.layout.createFormLayout();
+      data.widget.layout(layout);
+   }
+   return data;
+};
+
+memoEvent = function (handle) {
+
+   var data = {}
+     , layout
+     ;
+   if (handle) {
+
+      data.label = dmz.stance.getDisplayName(handle);
+      data.widget = dmz.ui.widget.create();
+      layout = dmz.ui.layout.createFormLayout();
+      data.widget.layout(layout);
+   }
+   return data;
+};
+
+newspaperEvent = function (handle) {
+
+   var data = {}
+     , layout
+     ;
+   if (handle) {
+
+      data.label = dmz.stance.getDisplayName(handle);
+      data.widget = dmz.ui.widget.create();
+      layout = dmz.ui.layout.createFormLayout();
+      data.widget.layout(layout);
+   }
+   return data;
+};
+
+videoEvent = function (handle) {
+
+   var data = {}
+     , layout
+     ;
+   if (handle) {
+
+      data.label = dmz.stance.getDisplayName(handle);
+      data.widget = dmz.ui.widget.create();
+      layout = dmz.ui.layout.createFormLayout();
+      data.widget.layout(layout);
+   }
+   return data;
+};
+
+pinEvent = function (handle) {
+
+   var data = {}
+     , layout
+     ;
+   if (handle) {
+
+      data.label = dmz.stance.getDisplayName(handle);
+      data.widget = dmz.ui.widget.create();
+      layout = dmz.ui.layout.createFormLayout();
+      data.widget.layout(layout);
+   }
+   return data;
+};
+
+questionEvent = function (handle) {
+
+   var data = {}
+     , layout
+     ;
+   if (handle) {
+
+      data.label = dmz.stance.getDisplayName(handle);
+      data.widget = dmz.ui.widget.create();
+      layout = dmz.ui.layout.createFormLayout();
+      data.widget.layout(layout);
+   }
+   return data;
+};
+
+voteEvent = function (handle) {
+
+   var data = {}
+     , layout
+     ;
+   if (handle) {
+
+      data.label = dmz.stance.getDisplayName(handle);
+      data.widget = dmz.ui.widget.create();
+      layout = dmz.ui.layout.createFormLayout();
+      data.widget.layout(layout);
+   }
+   return data;
+};
+
+forumEvent = function (handle) {
+
+   var data = {}
+     , layout
+     ;
+   if (handle) {
+
+      data.label = dmz.stance.getDisplayName(handle);
+      data.widget = dmz.ui.widget.create();
+      layout = dmz.ui.layout.createFormLayout();
+      data.widget.layout(layout);
+   }
+   return data;
+};
 
 mouseEvent = function (object, event) {
 
@@ -247,6 +402,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
      , item
      , box
      , boxCount = 0
+     , boxInInterval = false
      , longestTitle = 0
      , addedBox = false
      , lastBox = false
@@ -254,6 +410,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
      , StartX
      , intervalLineFnc
      , intervalLine
+     , rotationAmt = 20
      ;
 
    graphWindowScene.clear();
@@ -280,7 +437,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
    YAxis = intervalLineFnc(StartX);
    item = dmz.ui.graph.createTextItem(startDate.toString(DateFormat), YAxis);
    item.pos(StartX, 0);
-//   item.rotation(45);
+   item.rotation(rotationAmt);
 
    graphWindowScene.addItem(YAxis);
    interval.push(YAxis);
@@ -307,51 +464,59 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
 // Sort by timestamp
    objectDataList.sort(function (a, b) { return Date.compare(a.createdAt, b.createdAt); });
 
-
    self.log.warn ("curr:", currDate, "end:", endDate, "oDL:", objectDataList.length);
    while (currDate.isBefore(endDate) && objectDataList.length) {
 
       nextDate = nextInterval(currDate);
+      if (nextDate.isAfter(endDate)) { nextDate = endDate; }
+      self.log.warn(currDate.toString(DateFormat), "->", nextDate.toString(DateFormat));
       item = objectDataList.shift();
-      while (item && (item.createdAt.isBefore(nextDate))) {
+      while (item) {
 
-         addedBox = false
-         x = boxCount * (StdBox.w + StdBox.space) + StartX;
-         item.links.forEach(function (handle) {
+         if (item.createdAt.isBefore(nextDate)) {
 
-            var lineItem
-              , line
-              , data = yAxisMap[handle]
-              , box
-              ;
+            addedBox = false;
+            x = boxCount * (StdBox.w + StdBox.space) + StartX;
+            item.links.forEach(function (handle) {
 
-            if (data) {
+               var lineItem
+                 , line
+                 , data = yAxisMap[handle]
+                 , box
+                 ;
 
-               if (data.lastType !== item.type) {
+               if (data) {
 
-                  box = createBoxObj(item.handle, x, data.height, XAxis);
-                  addedBox = true;
-                  data.lastType = item.type;
-                  data.lastBox = box;
+                  if (data.lastType !== item.type) {
+
+                     box = createBoxObj(item.handle, x, data.height, XAxis);
+                     addedBox = true;
+                     boxInInterval = true;
+                     data.lastType = item.type;
+                     data.lastBox = box;
+                  }
+                  else if (data.lastBox.count) {
+
+                     data.lastBox.handles.push(item.handle);
+                     data.lastBox.countLabel.plainText(data.lastBox.handles.length.toString());
+                     data.lastBox.box.data(HandleIndex, data.lastBox.handles);
+                  }
                }
-               else if (data.lastBox.count) {
+            });
 
-                  data.lastBox.handles.push(item.handle);
-                  data.lastBox.countLabel.plainText(data.lastBox.handles.length.toString());
-                  data.lastBox.box.data(HandleIndex, data.lastBox.handles);
-               }
-            }
-         });
-
-         if (addedBox) { boxCount += 1; }
-         item = objectDataList.shift();
+            if (addedBox) { boxCount += 1; }
+            item = objectDataList.shift();
+         }
+         else { objectDataList.unshift(item); item = false; }
       }
 
       Object.keys(yAxisMap).forEach(function (key) { yAxisMap[key].lastType = false; });
       // Create vert line to mark end of interval
+      if (!boxInInterval) { boxCount += 1; }
+      boxInInterval = false;
       intervalLine = intervalLineFnc(boxCount * (StdBox.w + StdBox.space) + StartX);
       item = dmz.ui.graph.createTextItem(nextDate.toString(DateFormat), intervalLine);
-//      item.rotation(45);
+      item.rotation(rotationAmt);
       item.pos(boxCount * (StdBox.w + StdBox.space) + StartX, 0);
       graphWindowScene.addItem(intervalLine);
       interval.push(intervalLine);
@@ -389,41 +554,46 @@ updateGraph = function () {
      , dataList = false
      , intervalfnc = function (date) { return date.clone().add(interval).days(); }
      , gameTime = dmz.object.data(masterData.game, dmz.stance.GameStartTimeHandle)
-     , gameStart = dmz.util.timeStampToDate(gameTime.number("server", 0))
-     , gameEnd = dmz.util.timeStampToDate(gameTime.number("server", 1))
-
+     , gameStart
+     , gameEnd
      ;
 
-   Object.keys(ObjectTypeData).forEach(function (type) {
+   if (gameTime) {
 
-      if (ObjectTypeData[type].selected && (type != dmz.stance.CommentType)) {
+      gameStart = dmz.util.timeStampToDate(gameTime.number("server", 0))
+      gameEnd = dmz.util.timeStampToDate(gameTime.number("server", 1))
 
-         activeTypes.push(type);
-      }
-   });
+      Object.keys(ObjectTypeData).forEach(function (type) {
 
-   if (graphType === GraphType.Game) { dataList = masterData.groups; }
-   else if (graphType === GraphType.Group) { dataList = masterData.users; }
-   if (dataList) {
+         if (ObjectTypeData[type].selected && (type != dmz.stance.CommentType)) {
 
-      Object.keys(dataList).forEach(function (key) {
-
-         if (dataList[key].selected) { activeLineHandles.push(dataList[key].handle); }
+            activeTypes.push(type);
+         }
       });
+
+      if (graphType === GraphType.Game) { dataList = masterData.groups; }
+      else if (graphType === GraphType.Group) { dataList = masterData.users; }
+      if (dataList) {
+
+         Object.keys(dataList).forEach(function (key) {
+
+            if (dataList[key].selected) { activeLineHandles.push(dataList[key].handle); }
+         });
+      }
+
+      self.log.warn
+         ( "Update graph:\n"
+         + "  Interval: " + interval + " days\n"
+         + "  GraphType: " + (graphType ? "Group" : "Game") + "(" + graphType + ")" + "\n"
+         + "  ActiveTypes: [" + activeTypes + "]\n"
+         + "  activeLines: [" + activeLineHandles +"]\n"
+         + "  gameStart: " + dmz.util.timeStampToDate(gameStart) + "\n"
+         + "  gameEnd: " + dmz.util.timeStampToDate(gameEnd) + "\n"
+         );
+
+      setGraph(graphType, activeTypes, activeLineHandles, gameStart, gameEnd, intervalfnc);
    }
-
-   self.log.warn
-      ( "Update graph:\n"
-      + "  Interval: " + interval + " days\n"
-      + "  GraphType: " + (graphType ? "Group" : "Game") + "(" + graphType + ")" + "\n"
-      + "  ActiveTypes: [" + activeTypes + "]\n"
-      + "  activeLines: [" + activeLineHandles +"]\n"
-      + "  gameStart: " + dmz.util.timeStampToDate(gameStart) + "\n"
-      + "  gameEnd: " + dmz.util.timeStampToDate(gameEnd) + "\n"
-      );
-
-   setGraph(graphType, activeTypes, activeLineHandles, gameStart, gameEnd, intervalfnc);
-
+   else { self.log.error ("Game time has not been set!"); }
 };
 
 getGroupFromCreatedBy = function (handle) {
@@ -469,6 +639,7 @@ getUserFromCreatedBy = function (handle) {
            return (groupHandle && groupHandle[0]) ? [groupHandle] : [];
         }
       , getUsers: false
+      , eventFunction: lobbyistEvent
       };
 
    ObjectTypeData[dmz.stance.MemoType] =
@@ -476,6 +647,7 @@ getUserFromCreatedBy = function (handle) {
       , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.3, b: 0.3 })
       , getGroups: getMediaGroups
       , getUsers: false
+      , eventFunction: memoEvent
       };
 
    ObjectTypeData[dmz.stance.NewspaperType] =
@@ -483,14 +655,16 @@ getUserFromCreatedBy = function (handle) {
       , brush: dmz.ui.graph.createBrush({ r: 0.5, g: 0.8, b: 0.3 })
       , getGroups: getMediaGroups
       , getUsers: false
+      , eventFunction: newspaperEvent
       };
 
-ObjectTypeData[dmz.stance.VideoType] =
-   { name: "Videos"
-   , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.7 })
-   , getGroups: getMediaGroups
-   , getUsers: false
-   };
+   ObjectTypeData[dmz.stance.VideoType] =
+      { name: "Videos"
+      , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.7 })
+      , getGroups: getMediaGroups
+      , getUsers: false
+      , eventFunction: videoEvent
+      };
 
    ObjectTypeData[dmz.stance.PinType] =
       { name: "Pins"
@@ -501,6 +675,7 @@ ObjectTypeData[dmz.stance.VideoType] =
            return groupList ? groupList : [];
         }
       , getUsers: false
+      , eventFunction: pinEvent
       };
 
    ObjectTypeData[dmz.stance.QuestionType] =
@@ -508,6 +683,7 @@ ObjectTypeData[dmz.stance.VideoType] =
       , brush: dmz.ui.graph.createBrush({ r: 0.8, g: 0.8, b: 0.3 })
       , getGroups: getGroupFromCreatedBy
       , getUsers: getUserFromCreatedBy
+      , eventFunction: questionEvent
       };
 
    ObjectTypeData[dmz.stance.VoteType] =
@@ -515,6 +691,7 @@ ObjectTypeData[dmz.stance.VideoType] =
       , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
       , getGroups: getGroupFromCreatedBy
       , getUsers: getUserFromCreatedBy
+      , eventFunction: voteEvent
       };
 
    data =
@@ -522,6 +699,7 @@ ObjectTypeData[dmz.stance.VideoType] =
       , brush: dmz.ui.graph.createBrush({ r: 1, g: 0.8, b: 0.8 })
       , getGroups: getGroupFromCreatedBy
       , getUsers: getUserFromCreatedBy
+      , eventFunction: forumEvent
       };
 
    ObjectTypeData[dmz.stance.CommentType] = data;
