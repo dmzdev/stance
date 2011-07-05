@@ -100,9 +100,17 @@ var dmz =
       , PinCountHandle: dmz.defs.createNamedHandle("pin_count")
       , ForumTimeHandle: dmz.defs.createNamedHandle("forum_time")
       , LastOnlineHandle: dmz.defs.createNamedHandle("last_online")
-      , GroupPinHandle: dmz.defs.createNamedHandle("groupPinHandle")
       , ViewedLobbyistHandle: dmz.defs.createNamedHandle("viewed_lobbyist")
       , DisabledHandle: dmz.defs.createNamedHandle("disabled")
+      , GroupPinHandle: dmz.defs.createNamedHandle("groupPinHandle")
+      , PinActiveHandle: dmz.defs.createNamedHandle("Pin_Active")
+      , PinIDHandle: dmz.defs.createNamedHandle("pinID")
+      , PinPositionHandle: dmz.defs.createNamedHandle("pinPosition")
+      , PinTitleHandle: dmz.defs.createNamedHandle("pinTitle")
+      , PinDescHandle: dmz.defs.createNamedHandle("pinDescription")
+      , PinFileHandle: dmz.defs.createNamedHandle("pinFile")
+      , PinObjectHandle: dmz.defs.createNamedHandle("pinObjectHandle")
+      , PinGroupCountHandle: dmz.defs.createNamedHandle("pinGroupCountHandle")
       }
 
    , Functions =
