@@ -477,6 +477,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
 
                objectDataList.push(obj);
             }
+            else { self.log.error (obj.handle + "creation time issue"); }
 
          }
       });
