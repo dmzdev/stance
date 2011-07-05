@@ -284,6 +284,7 @@ createBoxObj = function (handle, x, y, parent) {
      , label = false
      , count = 1
      , type
+     , rect
      ;
 
 //   self.log.warn ("CreateBoxObj:", handle, x, y, count, parent);
@@ -312,7 +313,7 @@ createBoxObj = function (handle, x, y, parent) {
             if (count) {
 
                result.countLabel = dmz.ui.graph.createTextItem(count.toString(), result.box);
-               result.countLabel.pos(StdBox.w / 2, StdBox.h / 2);
+               result.countLabel.pos(0, StdBox.h / 2);
             }
          }
          masterData.events[handle] = result;

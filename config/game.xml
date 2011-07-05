@@ -271,6 +271,19 @@
          <flag value="true"/>
       </attributes>
    </object>
-   -->
+         <object type="user" uuid="188e5d78-67d3-4b4f-a61f-e5ff71f6e8a3">
+         <attributes name="name">
+            <text value="f9a60c7148ae8da5d94f6d0215b004976d9c0b50"/>
+         </attributes>
+         <attributes name="display_name">
+            <text value="Vlad"/>
+         </attributes>
+         <attributes name="picture">
+            <text value="Jake"/>
+         </attributes>
+      </object>
+      <attributes name="admin_user">
+         <flag value="true"/>
+      </attributes>
 </archive>
 </dmz>
