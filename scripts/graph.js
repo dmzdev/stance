@@ -38,6 +38,8 @@ var dmz =
    , stackedWidget = graphWindow.lookup("stackedWidget")
    , intervalAmtBox = graphWindow.lookup("intervalAmtBox")
    , intervalTypeBox = graphWindow.lookup("intervalTypeBox")
+   , startDateBox = graphWindow.lookup("startDate")
+   , endDateBox = graphWindow.lookup("endDate")
 
 
    // Consts
@@ -285,6 +287,7 @@ createBoxObj = function (handle, x, y, parent) {
      , count = 1
      , type
      , rect
+     , brush
      ;
 
 //   self.log.warn ("CreateBoxObj:", handle, x, y, count, parent);
@@ -296,13 +299,26 @@ createBoxObj = function (handle, x, y, parent) {
          label = ObjectTypeData[type].label;
          if (type.isOfType(dmz.stance.VoteType)) {
 
-            if (!dmz.object.flag(handle, dmz.stance.VoteApprovedHandle)) { label += "d"; }
-            else if (dmz.object.flag(handle, dmz.stance.VoteResultHandle)) { label += "a"; }
-            else { label += "f"; }
+            if (!dmz.object.flag(handle, dmz.stance.VoteApprovedHandle)) {
+
+               label += "d";
+               brush = ObjectTypeData[type].brush.deny;
+            }
+            else if (dmz.object.flag(handle, dmz.stance.VoteResultHandle)) {
+
+               label += "a";
+               brush = ObjectTypeData[type].brush.pass;
+            }
+            else {
+
+               label += "f";
+               brush = ObjectTypeData[type].brush.fail;
+            }
          }
+         else { brush = ObjectTypeData[type].brush; }
 
          result.box = dmz.ui.graph.createRectItem(StdBox.x, StdBox.y, StdBox.w, StdBox.h, parent);
-         result.box.brush(ObjectTypeData[type].brush);
+         result.box.brush(brush);
          result.box.pos(x, y);
          result.box.data(HandleIndex, result.handles);
          if (result.box) {
@@ -457,7 +473,11 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
          if (obj.createdAt) {
 
             obj.createdAt = dmz.util.timeStampToDate(obj.createdAt);
-            objectDataList.push(obj);
+            if (obj.createdAt.isAfter(startDate) && obj.createdAt.isBefore(endDate)) {
+
+               objectDataList.push(obj);
+            }
+
          }
       });
    });
@@ -557,6 +577,8 @@ updateGraph = function () {
      , gameTime = dmz.object.data(masterData.game, dmz.stance.GameStartTimeHandle)
      , gameStart
      , gameEnd
+     , graphStart = startDateBox.dateTime()
+     , graphEnd = endDateBox.dateTime()
      ;
 
    if (gameTime) {
@@ -564,37 +586,58 @@ updateGraph = function () {
       gameStart = dmz.util.timeStampToDate(gameTime.number("server", 0))
       gameEnd = dmz.util.timeStampToDate(gameTime.number("server", 1))
 
-      Object.keys(ObjectTypeData).forEach(function (type) {
+      if (gameStart && graphStart && graphStart.isBefore(gameStart)) {
 
-         if (ObjectTypeData[type].selected && (type != dmz.stance.CommentType)) {
-
-            activeTypes.push(type);
-         }
-      });
-
-      if (graphType === GraphType.Game) { dataList = masterData.groups; }
-      else if (graphType === GraphType.Group) { dataList = masterData.users; }
-      if (dataList) {
-
-         Object.keys(dataList).forEach(function (key) {
-
-            if (dataList[key].selected) { activeLineHandles.push(dataList[key].handle); }
-         });
+         graphStart = gameStart;
       }
-
-      self.log.warn
-         ( "Update graph:\n"
-         + "  Interval: " + interval + " days\n"
-         + "  GraphType: " + (graphType ? "Group" : "Game") + "(" + graphType + ")" + "\n"
-         + "  ActiveTypes: [" + activeTypes + "]\n"
-         + "  activeLines: [" + activeLineHandles +"]\n"
-         + "  gameStart: " + dmz.util.timeStampToDate(gameStart) + "\n"
-         + "  gameEnd: " + dmz.util.timeStampToDate(gameEnd) + "\n"
-         );
-
-      setGraph(graphType, activeTypes, activeLineHandles, gameStart, gameEnd, intervalfnc);
+      if (gameEnd && graphEnd && graphEnd.isAfter(gameEnd)) { graphEnd = gameEnd; }
    }
-   else { self.log.error ("Game time has not been set!"); }
+   if (graphStart && graphEnd) {
+
+      if (graphStart.isBefore(graphEnd)) {
+
+         Object.keys(ObjectTypeData).forEach(function (type) {
+
+            if (ObjectTypeData[type].selected && (type != dmz.stance.CommentType)) {
+
+               activeTypes.push(type);
+            }
+         });
+
+         if (graphType === GraphType.Game) { dataList = masterData.groups; }
+         else if (graphType === GraphType.Group) { dataList = masterData.users; }
+         if (dataList) {
+
+            Object.keys(dataList).forEach(function (key) {
+
+               if (dataList[key].selected) { activeLineHandles.push(dataList[key].handle); }
+            });
+         }
+
+         self.log.warn
+            ( "Update graph:\n"
+            + "  Interval: " + interval + " days\n"
+            + "  GraphType: " + (graphType ? "Group" : "Game") + "(" + graphType + ")" + "\n"
+            + "  ActiveTypes: [" + activeTypes + "]\n"
+            + "  activeLines: [" + activeLineHandles +"]\n"
+            + "  graphStart: " + graphStart + "\n"
+            + "  graphEnd: " + graphEnd + "\n"
+            );
+
+         setGraph(graphType, activeTypes, activeLineHandles, graphStart, graphEnd, intervalfnc);
+      }
+      else {
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Warning
+            , text: "Start Date must be before End Date!"
+            , standardButtons: [dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Ok
+            }
+            , graphWindow
+            ).open(self, function (value) {});
+      }
+   }
 };
 
 getGroupFromCreatedBy = function (handle) {
@@ -653,7 +696,7 @@ getUserFromCreatedBy = function (handle) {
 
    ObjectTypeData[dmz.stance.NewspaperType] =
       { name: "Newspapers"
-      , brush: dmz.ui.graph.createBrush({ r: 0.5, g: 0.8, b: 0.3 })
+      , brush: dmz.ui.graph.createBrush({ r: 0.5, g: 0.5, b: 0.3 })
       , getGroups: getMediaGroups
       , getUsers: false
       , eventFunction: newspaperEvent
@@ -689,7 +732,11 @@ getUserFromCreatedBy = function (handle) {
 
    ObjectTypeData[dmz.stance.VoteType] =
       { name: "Tasks"
-      , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
+      , brush:
+           { fail: dmz.ui.graph.createBrush({ r: 1, g: 0, b: 0 })
+           , pass: dmz.ui.graph.createBrush({ r: 0, g: 1, b: 0 })
+           , deny: dmz.ui.graph.createBrush({ r: 0, g: 0, b: 1 })
+           }
       , getGroups: getGroupFromCreatedBy
       , getUsers: getUserFromCreatedBy
       , eventFunction: voteEvent
