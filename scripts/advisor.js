@@ -710,14 +710,14 @@ updateAdvisor = function (module, idx) {
                      game = dmz.object.superLinks(hilGroup, dmz.stance.GameGroupHandle);
                      if (game && game[0]) {
 
-                        EmailMod.sendEmail
-                           ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
-                           , "STANCE: New question!"
-                           , "Admin Notice: \n" +
-                                 dmz.stance.getDisplayName(hilGroup) +
-                                 " has a new question for " +
-                                 dmz.stance.getDisplayName(advisorHandle)
-                           );
+//                        EmailMod.sendEmail
+//                           ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
+//                           , "STANCE: New question!"
+//                           , "Admin Notice: \n" +
+//                                 dmz.stance.getDisplayName(hilGroup) +
+//                                 " has a new question for " +
+//                                 dmz.stance.getDisplayName(advisorHandle)
+//                           );
                      }
                   }
                   textWidget.text("");
@@ -773,7 +773,7 @@ updateAdvisor = function (module, idx) {
 
                         EmailMod.sendEmail
                            ( dmz.object.subLinks(game[0], dmz.stance.AdminHandle)
-                           , "STANCE: New task!"
+                           , "STANCE " + dmz.stance.getDisplayName(groupHandle) + " vote approval request!"
                            , "Admin Notice: \n" +
                                  dmz.stance.getDisplayName(hilGroup) +
                                  " has submitted a new task for " +
@@ -1008,7 +1008,7 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
 
          EmailMod.sendEmail
             ( links
-            , "STANCE: Task voting completed!"
+            , "STANCE " + dmz.stance.getDisplayName(groupHandle) + " vote completed!"
             , dmz.stance.getDisplayName(groupHandle) +
                  " has voted Yes on the following issue:" +
                  dmz.object.text(voteHandle, dmz.stance.TextHandle)
@@ -1064,7 +1064,7 @@ function (linkObjHandle, attrHandle, voteHandle, userHandle) {
 
             EmailMod.sendEmail
                ( links
-               , "STANCE: Task voting completed!"
+               , "STANCE " + dmz.stance.getDisplayName(groupHandle) + " vote completed!"
                , dmz.stance.getDisplayName(groupHandle) +
                     " has voted No on the following issue:" +
                     dmz.object.text(voteHandle, dmz.stance.TextHandle)
