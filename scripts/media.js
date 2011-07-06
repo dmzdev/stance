@@ -24,10 +24,17 @@ var dmz =
 
    // UI Elements
    , webForm = dmz.ui.loader.load("PrintMediaForm.ui")
-   , nextButton = webForm.lookup("nextButton")
-   , prevButton = webForm.lookup("prevButton")
-   , currLabel = webForm.lookup("currentLabel")
-   , totalLabel = webForm.lookup("totalLabel")
+   , videoForm = dmz.ui.loader.load("VideoForm.ui")
+   , playButton = videoForm.lookup("playButton")
+   , pauseButton = videoForm.lookup("pauseButton")
+   , stopButton = videoForm.lookup("stopButton")
+   , nextButton = webForm.lookup("nextButton") //
+   , prevButton = webForm.lookup("prevButton") //
+   , currLabel = webForm.lookup("currentLabel") //
+   , totalLabel = webForm.lookup("totalLabel") //
+   , stateLabel = videoForm.lookup("mediaStateLabel")
+   , video = dmz.ui.phonon.createVideoPlayer()
+   , source = dmz.ui.phonon.createMediaObject()
    , webpage = dmz.ui.webview.create()
 
    // Variables
