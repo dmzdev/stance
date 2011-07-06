@@ -64,7 +64,7 @@ var dmz =
         , dmz.stance.PinType
         , dmz.stance.PostType
         , dmz.stance.QuestionType
-        , dmz.stance.VideoType
+//        , dmz.stance.VideoType
         ]
    , HandleIndex = 0
 
@@ -143,15 +143,17 @@ openEventDialog = function (handleArray) {
       }
 
       self.log.warn ("prev:", previousScrollWidgets);
+
       if (previousScrollWidgets) {
 
-         previousScrollWidgets(function (widget) {
+         previousScrollWidgets.forEach(function (widget) {
 
             scrollLayout.removeWidget(widget);
+            widget.hide();
          });
       }
 
-      self.log.warn (widgetList);
+      self.log.warn ("widgetList:", widgetList);
       if (widgetList) {
 
 //         graphDialog = dmz.ui.loader.load("AARDialog.ui", graphWindow)
@@ -159,7 +161,8 @@ openEventDialog = function (handleArray) {
 //         scrollLayout = dmz.ui.layout.createVBoxLayout()
 //         scrollArea.widget().layout(scrollLayout);
 //         scrollLayout.addStretch(1);
-         widgetList.forEach(function (widget) { scrollLayout.addWidget(widget); });
+         widgetList.forEach(function (widget) { scrollLayout.addWidget(widget); widget.show(); });
+         self.log.warn ("sL:", scrollLayout.count());
          graphDialog.open(self, function () {});
       }
       previousScrollWidgets = widgetList;
@@ -800,13 +803,13 @@ getUserFromCreatedBy = function (handle) {
       , eventFunction: newspaperEvent
       };
 
-   ObjectTypeData[dmz.stance.VideoType] =
-      { name: "Videos"
-      , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.7 })
-      , getGroups: getMediaGroups
-      , getUsers: false
-      , eventFunction: videoEvent
-      };
+//   ObjectTypeData[dmz.stance.VideoType] =
+//      { name: "Videos"
+//      , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.7 })
+//      , getGroups: getMediaGroups
+//      , getUsers: false
+//      , eventFunction: videoEvent
+//      };
 
    ObjectTypeData[dmz.stance.PinType] =
       { name: "Pins"
