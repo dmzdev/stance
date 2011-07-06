@@ -30,8 +30,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
       list = MainModule.list;
       MainModule = module;
-      module.addPage ("Lobbyist", lobbyistForm, function () {
+      module.addPage ("Lobbyist", lobbyistForm, function (windowName) {
 
+         self.log.warn(windowName);
          var hil = dmz.object.hil()
            , hilGroup = dmz.stance.getUserGroupHandle(hil)
            , lobHandle = dmz.object.subLinks(hilGroup, dmz.stance.ActiveLobbyistHandle)

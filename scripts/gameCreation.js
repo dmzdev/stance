@@ -319,7 +319,6 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
       if (selected) {
 
          hil = dmz.object.hil();
-         self.log.warn ("hil:", hil, dmz.object.flag(hil, dmz.stance.AdminHandle));
          dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
          ToggledMessage.send();
          dmz.object.link(dmz.stance.GroupMembersHandle, subHandle, hil);

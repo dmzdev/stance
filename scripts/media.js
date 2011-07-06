@@ -31,24 +31,66 @@ var dmz =
    , webpage = dmz.ui.webview.create()
 
    // Variables
+   , CurrentWindowName
    , CurrentIndex = 0
    , NewSource = false
    , SourceList = [] // { handle, source }
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
+   , MacVidExt = ".mov"
+   , WinVidExt = ".wmv"
+
+   // Handles
+   , CurrentViewedHandle
+   , CurrentActiveHandle
+   , CurrentType
+      // InitTypesMap is later initialized to InitTypesMap[key][HandleIndex] where
+      // data follows the types in HandleIndex
+   , InitTypesMap =
+      { "Memo":
+         [ dmz.stance.ViewedMemoHandle
+         , dmz.stance.ActiveMemoHandle
+         , dmz.stance.MemoType
+         ]
+
+      , "Newspaper":
+         [ dmz.stance.ViewedNewspaperHandle
+         , dmz.stance.ActiveNewspaperHandle
+         , dmz.stance.NewspaperType
+         ]
+      }
+
+   , HandleIndex =
+      { viewedHandle: 0
+      , activeHandle: 1
+      , type: 2
+      }
 
    // Function decls
    , loadCurrent
    , skipForward
    , skipBackward
    , setUserPlayList
+   , setActiveState
+   , setObserver
    ;
 
-dmz.object.link.observe(self, dmz.stance.ViewedMemoHandle,
-function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
+setActiveState = function (windowName) {
 
-   var linkHandle = dmz.object.linkHandle(dmz.stance.ActiveMemoHandle, userHandle, mediaHandle);
-   if (linkHandle) { dmz.object.unlink(linkHandle); }
-});
+   if (windowName == "Newspaper") {
+
+      CurrentViewedHandle = dmz.stance.ViewedNewspaperHandle;
+      CurrentActiveHandle = dmz.stance.ActiveNewspaperHandle;
+      CurrentType = dmz.stance.NewspaperType;
+      CurrentWindowName = windowName;
+   }
+   if (windowName == "Memo") {
+
+      CurrentViewedHandle = dmz.stance.ViewedMemoHandle;
+      CurrentActiveHandle = dmz.stance.ActiveMemoHandle;
+      CurrentType = dmz.stance.MemoType;
+      CurrentWindowName = windowName;
+   }
+};
 
 loadCurrent = function () {
 
@@ -66,10 +108,10 @@ loadCurrent = function () {
 
             webpage.page().mainFrame().load(item.source);
             NewSource = false;
-            linkHandle = dmz.object.linkHandle(dmz.stance.ViewedMemoHandle, hil, item.handle);
+            linkHandle = dmz.object.linkHandle(CurrentViewedHandle, hil, item.handle);
             if (!linkHandle) {
 
-               dmz.object.link(dmz.stance.ViewedMemoHandle, hil, item.handle);
+               dmz.object.link(CurrentViewedHandle, hil, item.handle);
             }
          }
       }
@@ -103,6 +145,31 @@ skipBackward = function () {
    webForm.lookup("vLayout").addWidget(webpage);
    nextButton.standardIcon(dmz.ui.button.MediaSkipForward);
    prevButton.standardIcon(dmz.ui.button.MediaSkipBackward);
+
+   Object.keys(InitTypesMap).forEach(function (key) {
+
+      dmz.object.link.observe(self, InitTypesMap[key][HandleIndex.viewedHandle],
+      function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
+
+         var linkHandle = dmz.object.linkHandle
+            ( InitTypesMap[key][HandleIndex.activeHandle]
+            , userHandle
+            , mediaHandle
+            )
+         if (linkHandle) { dmz.object.unlink(linkHandle); }
+      });
+
+      dmz.object.link.observe(self, InitTypesMap[key][HandleIndex.activeHandle],
+      function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
+
+         if ((userHandle === dmz.object.hil()) &&
+            !dmz.object.flag(mediaHandle, dmz.stance.DisableHandle) &&
+            dmz.object.linkHandle(dmz.stance.GameMediaHandle, dmz.stance.getUserGroupHandle(userHandle), mediaHandle)) {
+
+            MainModule.highlight(key)
+            }
+      });
+   });
 }());
 
 nextButton.observe(self, "clicked", skipForward);
@@ -111,7 +178,7 @@ prevButton.observe(self, "clicked", skipBackward);
 setUserPlayList = function (userHandle) {
 
    var list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
-     , activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveMemoHandle)
+     , activeList = dmz.object.subLinks(userHandle, CurrentActiveHandle)
      ;
 
    SourceList = []
@@ -124,14 +191,14 @@ setUserPlayList = function (userHandle) {
       list = list.filter(function (handle, index) {
 
          var type = dmz.object.type(handle);
-         return type && type.isOfType(dmz.stance.MemoType) && !dmz.object.flag(handle, dmz.stance.DisabledHandle);
+         return type && type.isOfType(CurrentType) && !dmz.object.flag(handle, dmz.stance.DisabledHandle);
       });
    }
    if (list && activeList) {
 
       activeList.forEach(function (activeHandle) {
 
-         if (list.indexOf(activeHandle) !== -1) { MainModule.highlight("Memo"); }
+         if (list.indexOf(activeHandle) !== -1) { MainModule.highlight(CurrentWindowName); }
       });
    }
 
@@ -156,17 +223,6 @@ setUserPlayList = function (userHandle) {
    }
 };
 
-dmz.object.link.observe(self, dmz.stance.ActiveMemoHandle,
-function (objHandle, attrHandle, userHandle, memoHandle) {
-
-   if ((userHandle === dmz.object.hil()) &&
-      !dmz.object.flag(memoHandle, dmz.stance.DisabledHandle) &&
-      dmz.object.linkHandle(dmz.stance.GameMediaHandle, dmz.stance.getUserGroupHandle(userHandle), memoHandle)) {
-
-      MainModule.highlight("Memo");
-   }
-});
-
 dmz.object.flag.observe(self, dmz.stance.DisabledHandle,
 function (objHandle, attrHandle, value) {
 
@@ -174,10 +230,10 @@ function (objHandle, attrHandle, value) {
      , hil = dmz.object.hil()
      ;
 
-   if (value && type && type.isOfType(dmz.stance.MemoType)
-      && dmz.object.linkHandle(dmz.stance.ActiveMemoHandle, hil, objHandle)) {
+   if (value && type && type.isOfType(CurrentType)
+      && dmz.object.linkHandle(CurrentActiveHandle, hil, objHandle)) {
 
-      MainModule.highlight("Memo");
+      MainModule.highlight(CurrentWindowName);
    }
 });
 
@@ -192,18 +248,43 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
    var list;
    if (Mode === dmz.module.Activate) {
 
+
       list = MainModule.list;
       MainModule = module;
-      module.addPage
-         ("Memo"
-         , webForm
-         , function (windowName) {
+      Object.keys(InitTypesMap).forEach(function (key) {
 
-              self.log.warn(windowName);
+         module.addPage
+            ( key
+            , webForm
+            , function () {
+
+                 setActiveState(key);
+                 setUserPlayList(dmz.object.hil());
+                 loadCurrent();
+              }
+            );
+      });
+      /*
+      module.addPage
+         ( "Memo"
+         , webForm
+         , function () {
+
+              setActiveState("Memo");
               setUserPlayList(dmz.object.hil());
               loadCurrent();
            }
          );
+      module.addPage
+         ( "Newspaper"
+         , webForm
+         , function () {
+
+              setActiveState("Newspaper");
+              setUserPlayList(dmz.object.hil());
+              loadCurrent();
+           }
+         );*/
 
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }

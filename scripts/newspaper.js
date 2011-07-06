@@ -196,8 +196,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       module.addPage
          ("Newspaper"
          , webForm
-         , function () {
+         , function (windowName) {
 
+              self.log.warn(windowName);
               setUserPlayList(dmz.object.hil());
               loadCurrent();
            }

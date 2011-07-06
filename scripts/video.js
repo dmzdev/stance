@@ -292,8 +292,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       module.addPage
          ("Video"
          , videoForm
-         , function () {
+         , function (windowName) {
 
+              self.log.warn(windowName);
               setUserPlayList(dmz.object.hil());
               CurrentIndex = 0;
               playCurrent();

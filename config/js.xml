@@ -18,7 +18,7 @@
    <path value="../js/scripts"/>
    <path value="./ui"/>
    <instance name="main"/>
-   <instance name="clear-archive" scope="archive-module"/>   
+   <instance name="clear-archive" scope="archive-module"/>
    <instance name="email"/>
 <!--   <instance name="devtools"/> -->
    <instance name="gameCreation"/>
@@ -29,8 +29,9 @@
    <instance name="game-time"/>
    <instance name="advisor"/>
    <instance name="video"/>
-   <instance name="newspaper"/>
-   <instance name="memo"/>
+   <instance name="media"/>
+<!--   <instance name="newspaper"/>-->
+<!--   <instance name="memo"/>-->
    <instance name="lobbyist"/>
 </javascript>
 <login>

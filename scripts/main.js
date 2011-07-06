@@ -503,6 +503,7 @@ _exports.addPage = function (name, widget, func, onHome) {
 
    if (name && stackedWidget && PageLink[name]) {
 
+      //self.log.error("Added Function " + name);
       stackedWidget.remove(PageLink[name].data(DataIndex.widget));
       stackedWidget.add(widget);
       PageLink[name].data(DataIndex.widget, widget);
