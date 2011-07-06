@@ -440,18 +440,18 @@ createBoxObj = function (handle, x, y, parent) {
 createHLine = function (x, y, len) { return dmz.ui.graph.createLineItem(x, y, x + len, y); }
 createVLine = function (x, y, height) { return dmz.ui.graph.createLineItem(x, y, x, -(-y + height)); }
 
-createAxes = function (scene, x, y, yItems) {
+//createAxes = function (scene, x, y, yItems) {
 
-   self.log.warn ("Create Axes:", x, y, yItems);
-   if (scene) {
+//   self.log.warn ("Create Axes:", x, y, yItems);
+//   if (scene) {
 
-      XAxis = createHLine(x, y, 200);
-      scene.addItem(XAxis); // X-Axis
-      YAxis = createVLine(x, y, -((yItems + 1.5) * StdBox.h));
-      scene.addItem(YAxis); // Y-Axis
-   }
-   return XAxis;
-};
+//      XAxis = createHLine(x, y, 200);
+//      scene.addItem(XAxis); // X-Axis
+//      YAxis = createVLine(x, y, -((yItems + 1.5) * StdBox.h));
+//      scene.addItem(YAxis); // Y-Axis
+//   }
+//   return XAxis;
+//};
 
 drawBoxToBoxLine = function (oldBox, newBox, label) {
 
@@ -683,11 +683,13 @@ updateGraph = function () {
       gameStart = dmz.util.timeStampToDate(gameTime.number("server", 0))
       gameEnd = dmz.util.timeStampToDate(gameTime.number("server", 1))
 
-      if (gameStart && graphStart && graphStart.isBefore(gameStart)) {
+      graphStart = gameStart;
+      graphEnd = gameEnd;
+//      if (gameStart && graphStart && graphStart.isBefore(gameStart)) {
 
-         graphStart = gameStart;
-      }
-      if (gameEnd && graphEnd && graphEnd.isAfter(gameEnd)) { graphEnd = gameEnd; }
+//         graphStart = gameStart;
+//      }
+//      if (gameEnd && graphEnd && graphEnd.isAfter(gameEnd)) { graphEnd = gameEnd; }
    }
    if (graphStart && graphEnd) {
 
