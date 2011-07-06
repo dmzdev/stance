@@ -133,11 +133,11 @@ var dmz =
 getVoteStatus = function (handle) {
 
    var status = "E: " + handle
-     , Active = dmz.object.flag(handle, dmz.stance.ActiveHandle)
-     , Submitted = dmz.object.flag(handle, dmz.stance.VoteSubmittedHandle)
-     , Approved = dmz.object.flag(handle, dmz.stance.VoteApprovedHandle)
-     , Result = dmz.object.flag(handle, dmz.stance.VoteResultHandle)
-     , noHandleList = dmz.object.subLinks(handle, dmz.stance.VoteNoHandle)
+     , Active = dmz.object.flag(handle, Handles.ActiveHandle)
+     , Submitted = dmz.object.flag(handle, Handles.VoteSubmittedHandle)
+     , Approved = dmz.object.flag(handle, Handles.VoteApprovedHandle)
+     , Result = dmz.object.flag(handle, Handles.VoteResultHandle)
+     , noHandleList = dmz.object.subLinks(handle, Handles.VoteNoHandle)
      ;
 
    if (Active) {
