@@ -236,7 +236,6 @@ setUserPlayList = function (userHandle) {
       });
       list.forEach(function (handle) {
 
-
          text = dmz.object.text(handle, dmz.stance.TextHandle);
          if (dmz.defs.OperatingSystem && (dmz.defs.OperatingSystem === dmz.defs.Win32)) {
 

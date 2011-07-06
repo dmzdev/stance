@@ -8,6 +8,7 @@ var dmz =
       , loader: require('dmz/ui/uiLoader')
       , messageBox: require("dmz/ui/messageBox")
       , mainWindow: require('dmz/ui/mainWindow')
+      , phonon: require("dmz/ui/phonon")
       , treeWidget: require("dmz/ui/treeWidget")
       , webview: require("dmz/ui/webView")
       , widget: require("dmz/ui/widget")
@@ -64,6 +65,11 @@ var dmz =
          , dmz.stance.ActiveNewspaperHandle
          , dmz.stance.NewspaperType
          ]
+      , "Video":
+         [ dmz.stance.ViewedVideoHandle
+         , dmz.stance.ActiveVideoHandle
+         , dmz.stance.VideoType
+         ]
       }
 
    , HandleIndex =
@@ -74,30 +80,55 @@ var dmz =
 
    // Function decls
    , loadCurrent
-   , skipForward
-   , skipBackward
-   , setUserPlayList
+   , playCurrent
+   , pauseCurrent
+   , stopCurrent
+   , skipForward //
+   , skipBackward //
+   , setUserPlayList //
    , setActiveState
    , setObserver
+   , setButtonBindings
    ;
 
 setActiveState = function (windowName) {
 
+   if (windowName == "Newspaper" || windowName == "Memo") {
+
+      nextButton = webForm.lookup("nextButton");
+      prevButton = webForm.lookup("prevButton");
+      currLabel = webForm.lookup("currentLabel");
+      totalLabel = webForm.lookup("totalLabel");
+      setButtonBindings();
+   }
+   if (windowName == "Video") {
+
+      CurrentViewedHandle = dmz.stance.ViewedVideoHandle;
+      CurrentActiveHandle = dmz.stance.ActiveVideoHandle;
+      CurrentType = dmz.stance.VideoType;
+      nextButton = videoForm.lookup("nextButton");
+      prevButton = videoForm.lookup("prevButton");
+      currLabel = videoForm.lookup("currLabel");
+      totalLabel = videoForm.lookup("totalLabel");
+      setButtonBindings();
+   }
    if (windowName == "Newspaper") {
 
       CurrentViewedHandle = dmz.stance.ViewedNewspaperHandle;
       CurrentActiveHandle = dmz.stance.ActiveNewspaperHandle;
       CurrentType = dmz.stance.NewspaperType;
-      CurrentWindowName = windowName;
    }
    if (windowName == "Memo") {
 
       CurrentViewedHandle = dmz.stance.ViewedMemoHandle;
       CurrentActiveHandle = dmz.stance.ActiveMemoHandle;
       CurrentType = dmz.stance.MemoType;
-      CurrentWindowName = windowName;
    }
+
+   CurrentWindowName = windowName;
 };
+
+self.shutdown = function () { dmz.ui.phonon.clearPaths(); };
 
 loadCurrent = function () {
 
@@ -125,33 +156,149 @@ loadCurrent = function () {
    }
 };
 
+playCurrent = function () {
+
+   var video
+     , onVideo
+     ;
+
+   if (CurrentIndex < SourceList.length) {
+
+      video = SourceList[CurrentIndex];
+      if (video.source) {
+
+         onVideo = function (hasVideo, source) {
+
+            var linkHandle
+              , hil = dmz.object.hil()
+              ;
+
+            if (hasVideo) {
+
+               linkHandle = dmz.object.linkHandle(CurrentViewedHandle, hil, video.handle);
+               if (!linkHandle) {
+
+                  dmz.object.link(CurrentViewedHandle, hil, video.handle);
+               }
+
+               dmz.time.setTimer(self, 1, function () { source.play(); });
+            }
+         };
+
+         if (NewSource) {
+
+            source.observe(self, "hasVideoChanged", onVideo);
+            self.log.warn(dmz.object.text(video.handle, dmz.stance.TitleHandle), source.currentSource(video.source));
+            NewSource = false;
+         }
+
+         if (source.hasVideo()) { onVideo(true, source); }
+         pauseButton.enabled(true);
+         playButton.enabled(false);
+      }
+      else {
+
+         stateLabel.text("<font=\"red\">Video error.</font>");
+         self.log.error("Video error for object", SourceList[CurrentIndex].handle);
+      }
+   }
+};
+
+pauseCurrent = function () {
+
+   if (CurrentIndex < SourceList.length) {
+
+      if (source.hasVideo()) { source.pause(); }
+      playButton.enabled(true);
+      pauseButton.enabled(false);
+   }
+};
+
+stopCurrent = function () {
+
+   if (CurrentIndex < SourceList.length) {
+
+      if (source.hasVideo()) { source.stop(); }
+      playButton.enabled(true);
+      pauseButton.enabled(false);
+   }
+};
+
+// TODO: combine these function better
 skipForward = function () {
 
-   if ((CurrentIndex + 1) < SourceList.length) {
+   if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
 
-      CurrentIndex += 1;
-      NewSource = true;
-      loadCurrent();
-      currLabel.text(CurrentIndex + 1);
+      if ((CurrentIndex + 1) < SourceList.length) {
+
+         CurrentIndex += 1;
+         NewSource = true;
+         loadCurrent();
+         currLabel.text(CurrentIndex + 1);
+      }
+   }
+   if (CurrentWindowName == "Video") {
+
+      if (CurrentIndex < SourceList.length) {
+
+         stopCurrent();
+         if ((CurrentIndex + 1) < SourceList.length) {
+
+            CurrentIndex += 1;
+            NewSource = true;
+            playCurrent();
+         }
+         else { CurrentIndex = 0; }
+         currLabel.text(CurrentIndex + 1);
+      }
    }
 };
 
 skipBackward = function () {
 
-   if (CurrentIndex > 0) {
+   if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
 
-      CurrentIndex -= 1;
-      NewSource = true;
-      loadCurrent();
-      currLabel.text(CurrentIndex + 1);
+      if (CurrentIndex > 0) {
+
+         CurrentIndex -= 1;
+         NewSource = true;
+         loadCurrent();
+         currLabel.text(CurrentIndex + 1);
+      }
    }
+   if (CurrentWindowName == "Video") {
+
+      if (CurrentIndex < SourceList.length) {
+
+         stopCurrent();
+         if (CurrentIndex > 0) {
+
+            CurrentIndex -= 1;
+            NewSource = true;
+            playCurrent();
+         }
+         else { CurrentIndex = 0; }
+         currLabel.text(CurrentIndex + 1);
+      }
+   }
+};
+
+setButtonBindings = function () {
+
+   nextButton.observe(self, "clicked", skipForward);
+   prevButton.observe(self, "clicked", skipBackward);
 };
 
 (function () {
 
    webForm.lookup("vLayout").addWidget(webpage);
+   videoForm.lookup("vLayout").addWidget(video);
+   playButton.standardIcon(dmz.ui.button.MediaPlay);
+   pauseButton.standardIcon(dmz.ui.button.MediaPause);
+   stopButton.standardIcon(dmz.ui.button.MediaStop);
    nextButton.standardIcon(dmz.ui.button.MediaSkipForward);
    prevButton.standardIcon(dmz.ui.button.MediaSkipBackward);
+   dmz.ui.phonon.createPath(source, video);
 
    Object.keys(InitTypesMap).forEach(function (key) {
 
@@ -173,19 +320,39 @@ skipBackward = function () {
             !dmz.object.flag(mediaHandle, dmz.stance.DisableHandle) &&
             dmz.object.linkHandle(dmz.stance.GameMediaHandle, dmz.stance.getUserGroupHandle(userHandle), mediaHandle)) {
 
-            MainModule.highlight(key)
-            }
+            MainModule.highlight(key);
+         }
       });
    });
 }());
 
-nextButton.observe(self, "clicked", skipForward);
-prevButton.observe(self, "clicked", skipBackward);
+playButton.observe(self, "clicked", playCurrent);
+pauseButton.observe(self, "clicked", pauseCurrent);
+stopButton.observe(self, "clicked", stopCurrent);
+source.observe(self, "finished", skipForward);
+setButtonBindings();
+
+source.observe(self, "stateChanged", function (newstate) {
+
+   var str;
+   switch (newstate) {
+
+      case 0: str = "Loading..."; break;
+      case 1: str = "Stopped"; break;
+      case 2: str = "Playing!"; break;
+      case 3: str = "Buffering."; break;
+      case 4: str = "Paused"; break;
+      case 5: str = "Error: " + source.errorString(); break;
+      default: str = "Video State error."; break;
+   }
+   stateLabel.text(str);
+});
 
 setUserPlayList = function (userHandle) {
 
    var list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
      , activeList = dmz.object.subLinks(userHandle, CurrentActiveHandle)
+     , text
      ;
 
    SourceList = []
@@ -219,9 +386,19 @@ setUserPlayList = function (userHandle) {
       });
       list.forEach(function (handle) {
 
+         text = dmz.object.text(handle, dmz.stance.TextHandle);
+         if (CurrentWindowName == "Video") {
+
+            stateLabel.text("");
+            if (dmz.defs.OperatingSystem && (dmz.defs.OperatingSystem === dmz.defs.Win32)) {
+
+               text = text.replace(MacVidExt, WinVidExt);
+            }
+         }
+
          SourceList.push (
             { handle: handle
-            , source: dmz.object.text(handle, dmz.stance.TextHandle)
+            , source: text
             });
       });
       totalLabel.text(list.length);
@@ -260,38 +437,35 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       MainModule = module;
       Object.keys(InitTypesMap).forEach(function (key) {
 
-         module.addPage
-            ( key
-            , webForm
-            , function () {
+         if (key == "Memo" || key == "Newspaper") {
 
-                 setActiveState(key);
-                 setUserPlayList(dmz.object.hil());
-                 loadCurrent();
-              }
-            );
+            module.addPage
+               ( key
+               , webForm
+               , function () {
+
+                    setActiveState(key);
+                    setUserPlayList(dmz.object.hil());
+                    loadCurrent();
+                 }
+               );
+         }
+         if (key == "Video") {
+
+            module.addPage
+               ( key
+               , videoForm
+               , function (windowName) {
+
+                    setActiveState(key);
+                    setUserPlayList(dmz.object.hil());
+                    CurrentIndex = 0;
+                    playCurrent();
+                 }
+               , stopCurrent
+               );
+         }
       });
-      /*
-      module.addPage
-         ( "Memo"
-         , webForm
-         , function () {
-
-              setActiveState("Memo");
-              setUserPlayList(dmz.object.hil());
-              loadCurrent();
-           }
-         );
-      module.addPage
-         ( "Newspaper"
-         , webForm
-         , function () {
-
-              setActiveState("Newspaper");
-              setUserPlayList(dmz.object.hil());
-              loadCurrent();
-           }
-         );*/
 
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
