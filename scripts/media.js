@@ -24,28 +24,39 @@ var dmz =
    }
 
    // UI Elements
-   //    "//" indicated a UI element shared between Video and News-Memo, the
-   //    observers are reset for these elements when one switches between Video
-   //    and News-Memo
    , webForm = dmz.ui.loader.load("PrintMediaForm.ui")
    , videoForm = dmz.ui.loader.load("VideoForm.ui")
+   , lobbyistForm = dmz.ui.loader.load("LobbyistWindow.ui")
+
+   // WebForm specific UI
+   , webpage = dmz.ui.webview.create()
+
+   // Video Specific UI
    , playButton = videoForm.lookup("playButton")
    , pauseButton = videoForm.lookup("pauseButton")
    , stopButton = videoForm.lookup("stopButton")
+   , stateLabel = videoForm.lookup("mediaStateLabel")
+   , video = dmz.ui.phonon.createVideoPlayer()
+   , source = dmz.ui.phonon.createMediaObject()
+
+   // Lobbyist Specific UI
+   , bioText = lobbyistForm.lookup("bioText")
+   , messageText = lobbyistForm.lookup("messageText")
+   , nameLabel = lobbyistForm.lookup("nameLabel")
+   , specialtyLabel = lobbyistForm.lookup("specialtyLabel")
+   , pictureLabel = lobbyistForm.lookup("pictureLabel")
+
+   // Shared UI
    , nextButton = webForm.lookup("nextButton") //
    , prevButton = webForm.lookup("prevButton") //
    , currLabel = webForm.lookup("currentLabel") //
    , totalLabel = webForm.lookup("totalLabel") //
-   , stateLabel = videoForm.lookup("mediaStateLabel")
-   , video = dmz.ui.phonon.createVideoPlayer()
-   , source = dmz.ui.phonon.createMediaObject()
-   , webpage = dmz.ui.webview.create()
 
    // Variables
    , CurrentWindowName
    , CurrentIndex = 0
    , NewSource = false
-   , SourceList = [] // { handle, source }
+   , SourceList = []
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , MacVidExt = ".mov"
    , WinVidExt = ".wmv"
@@ -86,29 +97,33 @@ var dmz =
       , type: 2
       }
 
-   // Function decls
-   , loadCurrent
-   , playCurrent
+   // Function decls, "//" indicated shared functions with flow control base on
+   // object type.
+   , loadCurrentPrint
+   , loadCurrentLobbyist
+   , playCurrentVideo
    , pauseCurrent
    , stopCurrent
    , skipForward //
    , skipBackward //
    , setUserPlayList //
-   , setActiveState
-   , setObserver
+   , setActiveState //
    , setButtonBindings
    ;
 
 setActiveState = function (windowName) {
 
-   if (windowName == "Newspaper" || windowName == "Memo" || windowName == "Lobbyist") {
+   if (windowName == "Lobbyist") {
 
-      nextButton = webForm.lookup("nextButton");
-      prevButton = webForm.lookup("prevButton");
-      currLabel = webForm.lookup("currentLabel");
-      totalLabel = webForm.lookup("totalLabel");
-      setButtonBindings();
+      CurrentViewedHandle = dmz.stance.ViewedLobbyistHandle;
+      CurrentActiveHandle = dmz.stance.ActiveLobbyistHandle;
+      CurrentType = dmz.stance.LobbyistType;
+      nextButton = lobbyistForm.lookup("nextButton");
+      prevButton = lobbyistForm.lookup("prevButton");
+      currLabel = lobbyistForm.lookup("currentLabel");
+      totalLabel = lobbyistForm.lookup("totalLabel");
    }
+
    if (windowName == "Video") {
 
       CurrentViewedHandle = dmz.stance.ViewedVideoHandle;
@@ -116,35 +131,38 @@ setActiveState = function (windowName) {
       CurrentType = dmz.stance.VideoType;
       nextButton = videoForm.lookup("nextButton");
       prevButton = videoForm.lookup("prevButton");
-      currLabel = videoForm.lookup("currLabel");
+      currLabel = videoForm.lookup("currentLabel");
       totalLabel = videoForm.lookup("totalLabel");
-      setButtonBindings();
    }
+
    if (windowName == "Newspaper") {
 
       CurrentViewedHandle = dmz.stance.ViewedNewspaperHandle;
       CurrentActiveHandle = dmz.stance.ActiveNewspaperHandle;
       CurrentType = dmz.stance.NewspaperType;
+      nextButton = webForm.lookup("nextButton");
+      prevButton = webForm.lookup("prevButton");
+      currLabel = webForm.lookup("currentLabel");
+      totalLabel = webForm.lookup("totalLabel");
    }
    if (windowName == "Memo") {
 
       CurrentViewedHandle = dmz.stance.ViewedMemoHandle;
       CurrentActiveHandle = dmz.stance.ActiveMemoHandle;
       CurrentType = dmz.stance.MemoType;
-   }
-   if (windowName == "Lobbyist") {
-
-      CurrentViewedHandle = dmz.stance.ViewedLobbyistHandle;
-      CurrentActiveHandle = dmz.stance.ActiveLobbyistHandle;
-      CurrentType = dmz.stance.LobbyistType;
+      nextButton = webForm.lookup("nextButton");
+      prevButton = webForm.lookup("prevButton");
+      currLabel = webForm.lookup("currentLabel");
+      totalLabel = webForm.lookup("totalLabel");
    }
 
+   setButtonBindings();
    CurrentWindowName = windowName;
 };
 
 self.shutdown = function () { dmz.ui.phonon.clearPaths(); };
 
-loadCurrent = function () {
+loadCurrentPrint = function () {
 
    var linkHandle
      , hil = dmz.object.hil()
@@ -170,7 +188,39 @@ loadCurrent = function () {
    }
 };
 
-playCurrent = function () {
+loadCurrentLobbyist = function () {
+   var linkHandle
+     , hil = dmz.object.hil()
+     , item
+     , pic
+     ;
+
+   if (CurrentIndex < SourceList.length) {
+
+      item = SourceList[CurrentIndex];
+      if (item.pic && item.title && item.bio && item.text && item.name && item.handle) {
+
+         if (NewSource) {
+
+            bioText.text(item.bio);
+            messageText.text(item.text);
+            nameLabel.text(item.name);
+            specialtyLabel.text(item.title);
+            pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(item.pic));
+            if (pic) { pictureLabel.pixmap(pic); }
+
+            NewSource = false;
+            linkHandle = dmz.object.linkHandle(CurrentViewedHandle, hil, item.handle);
+            if (!linkHandle) {
+
+               dmz.object.link(CurrentViewedHandle, hil, item.handle);
+            }
+         }
+      }
+   }
+};
+
+playCurrentVideo = function () {
 
    var video
      , onVideo
@@ -202,7 +252,6 @@ playCurrent = function () {
          if (NewSource) {
 
             source.observe(self, "hasVideoChanged", onVideo);
-            self.log.warn(dmz.object.text(video.handle, dmz.stance.TitleHandle), source.currentSource(video.source));
             NewSource = false;
          }
 
@@ -252,11 +301,15 @@ skipForward = function () {
          NewSource = true;
          if (CurrentWindowName == "Video") {
 
-            playCurrent();
+            playCurrentVideo();
          }
-         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper" || CurrentWindowName == "Lobbyist") {
+         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
 
-            loadCurrent();
+            loadCurrentPrint();
+         }
+         if (CurrentWindowName == "Lobbyist") {
+
+            loadCurrentLobbyist();
          }
       }
       else { CurrentIndex = 0; }
@@ -278,11 +331,15 @@ skipBackward = function () {
          NewSource = true;
          if (CurrentWindowName == "Video") {
 
-            playCurrent();
+            playCurrentVideo();
          }
-         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper" || CurrentWindowName == "Lobbyist") {
+         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
 
-            loadCurrent();
+            loadCurrentPrint();
+         }
+         if (CurrentWindowName == "Lobbyist") {
+
+            loadCurrentLobbyist();
          }
       }
       else { CurrentIndex = 0; }
@@ -338,7 +395,7 @@ setButtonBindings = function () {
    });
 }());
 
-playButton.observe(self, "clicked", playCurrent);
+playButton.observe(self, "clicked", playCurrentVideo);
 pauseButton.observe(self, "clicked", pauseCurrent);
 stopButton.observe(self, "clicked", stopCurrent);
 source.observe(self, "finished", skipForward);
@@ -365,6 +422,10 @@ setUserPlayList = function (userHandle) {
    var list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
      , activeList = dmz.object.subLinks(userHandle, CurrentActiveHandle)
      , text
+     , pic
+     , bio
+     , name
+     , title
      ;
 
    SourceList = []
@@ -398,20 +459,40 @@ setUserPlayList = function (userHandle) {
       });
       list.forEach(function (handle) {
 
-         text = dmz.object.text(handle, dmz.stance.TextHandle);
-         if (CurrentWindowName == "Video") {
+         if (CurrentWindowName == "Video" || CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
 
-            stateLabel.text("");
-            if (dmz.defs.OperatingSystem && (dmz.defs.OperatingSystem === dmz.defs.Win32)) {
+            text = dmz.object.text(handle, dmz.stance.TextHandle);
+            if (CurrentWindowName == "Video") {
 
-               text = text.replace(MacVidExt, WinVidExt);
+               stateLabel.text("");
+               if (dmz.defs.OperatingSystem && (dmz.defs.OperatingSystem === dmz.defs.Win32)) {
+
+                  text = text.replace(MacVidExt, WinVidExt);
+               }
             }
-         }
 
-         SourceList.push (
+            SourceList.push (
+               { handle: handle
+               , source: text
+               });
+         }
+         if (CurrentWindowName == "Lobbyist") {
+
+            pic = dmz.object.text(handle, dmz.stance.PictureHandle);
+            bio = dmz.object.text(handle, dmz.stance.BioHandle);
+            name = dmz.object.text(handle, dmz.stance.NameHandle);
+            title = dmz.object.text(handle, dmz.stance.TitleHandle);
+            text = dmz.object.text(handle, dmz.stance.TextHandle);
+
+            SourceList.push (
             { handle: handle
-            , source: text
+            , pic: pic
+            , bio: bio
+            , name: name
+            , title: title
+            , text: text
             });
+         }
       });
       totalLabel.text(list.length);
       CurrentIndex = 0;
@@ -449,7 +530,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       MainModule = module;
       Object.keys(InitTypesMap).forEach(function (key) {
 
-         if (key == "Memo" || key == "Newspaper" || key == "Lobbyist") {
+         if (key == "Memo" || key == "Newspaper") {
 
             module.addPage
                ( key
@@ -458,7 +539,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
                     setActiveState(key);
                     setUserPlayList(dmz.object.hil());
-                    loadCurrent();
+                    loadCurrentPrint();
                  }
                );
          }
@@ -467,14 +548,27 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             module.addPage
                ( key
                , videoForm
-               , function (windowName) {
+               , function () {
 
                     setActiveState(key);
                     setUserPlayList(dmz.object.hil());
                     CurrentIndex = 0;
-                    playCurrent();
+                    playCurrentVideo();
                  }
                , stopCurrent
+               );
+         }
+         if (key == "Lobbyist") {
+
+            module.addPage
+               ( key
+               , lobbyistForm
+               , function () {
+
+                    setActiveState(key);
+                    setUserPlayList(dmz.object.hil());
+                    loadCurrentLobbyist();
+                 }
                );
          }
       });

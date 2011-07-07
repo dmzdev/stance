@@ -656,9 +656,11 @@ setup = function () {
       editLobbyistDialog.open(self, function (result) {
 
          var groupIndex = lobbyistGroupList.currentIndex()
+           , groupMemberList
            , links
            , text
            , lobbyistHandle
+           , itor
            ;
 
          if (result) {
@@ -693,8 +695,14 @@ setup = function () {
             dmz.object.text(lobbyistHandle, dmz.stance.TitleHandle, lobbyistTitle.text());
             dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
             dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
+
             dmz.object.link(dmz.stance.GameMediaHandle, groupList[groupIndex], lobbyistHandle);
 
+            groupMemberList = dmz.object.subLinks(groupList[groupIndex], dmz.stance.GroupMembersHandle);
+            groupMemberList.forEach(function (userHandle) {
+
+               dmz.object.link(dmz.stance.ActiveLobbyistHandle, userHandle, lobbyistHandle);
+            });
          }
       });
    });
@@ -999,14 +1007,13 @@ modifyInjectItem = function (widgetItem) {
          MediaOkButton.observe(self, "clicked", function () {
 
             var text = MediaUrlText.text();
-            if (type) {
 
-               if (text.lastIndexOf(urlEnd) !== -1) { CreateMediaInjectDialog.accept(); }
-               else {
+            if (text.lastIndexOf(urlEnd) !== -1) { CreateMediaInjectDialog.accept(); }
+            else {
 
-                  MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
-               }
+               MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
             }
+
          });
 
          CreateMediaInjectDialog.open(self, function (value, dialog) {
@@ -1019,6 +1026,10 @@ modifyInjectItem = function (widgetItem) {
               , game
               , userList = dmz.object.subLinks(CurrentGameHandle, dmz.stance.AdminHandle)
               ;
+
+            // TODO: Possibly integrate the LobbyistType inject into this function, might not
+            //       be worth it though because of the radically different UIs involved.
+            if (type == dmz.stance.LobbyistType) { return; }
 
             if (!userList) { userList = []; }
             if (value && type) {

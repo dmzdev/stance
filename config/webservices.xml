@@ -38,11 +38,11 @@
       <!-- <state name="Highlight"/> -->
    </filter>
 <!-- <db app="ns4755_1001_1002_2"/> -->
-   <db app="stance_vlad"/>
+   <db app="stance_vlad2"/>
 </web-services-object>
 <archive-module>
 <!--   <db app="ns4755_1001_1002_2"/>-->
-   <db app="stance_vlad"/>
+   <db app="stance_vlad2"/>
 </archive-module>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>
