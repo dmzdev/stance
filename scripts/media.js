@@ -73,6 +73,11 @@ var dmz =
          , dmz.stance.ActiveVideoHandle
          , dmz.stance.VideoType
          ]
+      , "Lobbyist":
+         [ dmz.stance.ViewedLobbyistHandle
+         , dmz.stance.ActiveLobbyistHandle
+         , dmz.stance.LobbyistType
+         ]
       }
 
    , HandleIndex =
@@ -96,7 +101,7 @@ var dmz =
 
 setActiveState = function (windowName) {
 
-   if (windowName == "Newspaper" || windowName == "Memo") {
+   if (windowName == "Newspaper" || windowName == "Memo" || windowName == "Lobbyist") {
 
       nextButton = webForm.lookup("nextButton");
       prevButton = webForm.lookup("prevButton");
@@ -126,6 +131,12 @@ setActiveState = function (windowName) {
       CurrentViewedHandle = dmz.stance.ViewedMemoHandle;
       CurrentActiveHandle = dmz.stance.ActiveMemoHandle;
       CurrentType = dmz.stance.MemoType;
+   }
+   if (windowName == "Lobbyist") {
+
+      CurrentViewedHandle = dmz.stance.ViewedLobbyistHandle;
+      CurrentActiveHandle = dmz.stance.ActiveLobbyistHandle;
+      CurrentType = dmz.stance.LobbyistType;
    }
 
    CurrentWindowName = windowName;
@@ -243,7 +254,7 @@ skipForward = function () {
 
             playCurrent();
          }
-         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
+         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper" || CurrentWindowName == "Lobbyist") {
 
             loadCurrent();
          }
@@ -269,7 +280,7 @@ skipBackward = function () {
 
             playCurrent();
          }
-         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
+         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper" || CurrentWindowName == "Lobbyist") {
 
             loadCurrent();
          }
@@ -438,7 +449,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       MainModule = module;
       Object.keys(InitTypesMap).forEach(function (key) {
 
-         if (key == "Memo" || key == "Newspaper") {
+         if (key == "Memo" || key == "Newspaper" || key == "Lobbyist") {
 
             module.addPage
                ( key

@@ -109,14 +109,14 @@ var dmz =
    , advisorList = []
    , advisorWidgets = {}
    , CurrentGameHandle = false
-   , Lobbyist =
+   /*, Lobbyist =
         { type: dmz.stance.LobbyistType
         , attr: dmz.stance.ActiveLobbyistHandle
         , button: "addLobbyistButton"
         , listItems: {}
         , list: lobbyistList
         }
-
+   */
    , MediaTypes =
         { Video:
            { type: dmz.stance.VideoType
@@ -141,6 +141,13 @@ var dmz =
            , urlEnd: "?stance:view&id="
            , listItems: {}
            , list: newspaperList
+           }
+        , Lobbyist:
+           { type: dmz.stance.LobbyistType
+           , attr: dmz.stance.ActiveLobbyistHandle
+           , button: "addLobbyistButton"
+           , listItems: {}
+           , list: lobbyistList
            }
         }
    , injectItems = {}
@@ -290,7 +297,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
       else if (objType.isOfType(dmz.stance.VideoType)) { item.type = MediaTypes.Video; }
       else if (objType.isOfType(dmz.stance.MemoType)) { item.type = MediaTypes.Memo; }
       else if (objType.isOfType(dmz.stance.NewspaperType)) { item.type = MediaTypes.Newspaper; }
-      else if (objType.isOfType(dmz.stance.LobbyistType)) { item.type = Lobbyist; }
+      else if (objType.isOfType(dmz.stance.LobbyistType)) { item.type = MediaTypes.Lobbyist; }
 
       if (item.type) {
 
@@ -656,21 +663,21 @@ setup = function () {
 
          if (result) {
 
-            links = dmz.object.subLinks(groupList[groupIndex], dmz.stance.ActiveLobbyistHandle);
+            links = dmz.object.subLinks(groupList[groupIndex], dmz.stance.GameMediaHandle);
             if (links) {
 
                links.forEach(function (lobbyistHandle) {
 
                   var linkHandle =
                      dmz.object.linkHandle(
-                        dmz.stance.PreviousLobbyistHandle,
+                        dmz.stance.GameMediaHandle,
                         groupList[groupIndex],
                         lobbyistHandle);
 
                   if (!linkHandle) {
 
                      dmz.object.link(
-                        dmz.stance.PreviousLobbyistHandle,
+                        dmz.stance.GameMediaHandle,
                         groupList[groupIndex],
                         lobbyistHandle);
                   }
@@ -686,7 +693,7 @@ setup = function () {
             dmz.object.text(lobbyistHandle, dmz.stance.TitleHandle, lobbyistTitle.text());
             dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
             dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
-            dmz.object.link(dmz.stance.ActiveLobbyistHandle, groupList[groupIndex], lobbyistHandle);
+            dmz.object.link(dmz.stance.GameMediaHandle, groupList[groupIndex], lobbyistHandle);
 
          }
       });
@@ -695,12 +702,12 @@ setup = function () {
 //   updateTimePage ();
 };
 
-dmz.object.link.observe(self, dmz.stance.PreviousLobbyistHandle,
+/*dmz.object.link.observe(self, dmz.stance.PreviousLobbyistHandle,
 function (linkObj, attrHandle, groupHandle, lobbyistHandle) {
 
-   var linkHandle = dmz.object.linkHandle(dmz.stance.ActiveLobbyistHandle, groupHandle, lobbyistHandle);
+   var linkHandle = dmz.object.linkHandle(dmz.stance.GameMediaHandle, groupHandle, lobbyistHandle);
    if (linkHandle) { dmz.object.unlink(linkHandle); }
-});
+});*/
 
 editScenarioWidget.observe(self, "addStudentButton", "clicked", function () {
 
@@ -1073,8 +1080,6 @@ modifyInjectItem = function (widgetItem) {
 
       MediaTypes[type].list.observe(self, "itemActivated", modifyInjectItem);
    });
-
-   Lobbyist.list.observe(self, "itemActivated", modifyInjectItem);
 }());
 
 dmz.object.data.observe(self, dmz.stance.GameStartTimeHandle, function (handle, attr, value) {

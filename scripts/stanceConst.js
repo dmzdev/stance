@@ -51,7 +51,7 @@ var dmz =
       , ID: dmz.defs.createNamedHandle("id")
       , InGameStartTimeHandle: dmz.defs.createNamedHandle("in_game_start_time")
       , ActiveLobbyistHandle: dmz.defs.createNamedHandle("active_lobbyist")
-      , PreviousLobbyistHandle: dmz.defs.createNamedHandle("prev_lobbyist")
+      //, PreviousLobbyistHandle: dmz.defs.createNamedHandle("prev_lobbyist")
       , ActiveMemoHandle: dmz.defs.createNamedHandle("active_memo")
       , ViewedMemoHandle: dmz.defs.createNamedHandle("viewed_memo")
       , ActiveVideoHandle: dmz.defs.createNamedHandle("active_video")
