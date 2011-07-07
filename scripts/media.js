@@ -138,7 +138,6 @@ loadCurrent = function () {
    var linkHandle
      , hil = dmz.object.hil()
      , item
-     , onVideo
      ;
 
    if (CurrentIndex < SourceList.length) {
@@ -300,6 +299,7 @@ setButtonBindings = function () {
    nextButton.standardIcon(dmz.ui.button.MediaSkipForward);
    prevButton.standardIcon(dmz.ui.button.MediaSkipBackward);
 
+   // Once Viewed object is created, unlink the Active object
    Object.keys(InitTypesMap).forEach(function (key) {
 
       dmz.object.link.observe(self, InitTypesMap[key][HandleIndex.viewedHandle],
@@ -313,6 +313,7 @@ setButtonBindings = function () {
          if (linkHandle) { dmz.object.unlink(linkHandle); }
       });
 
+      // Once active link is created, highlight the correct area
       dmz.object.link.observe(self, InitTypesMap[key][HandleIndex.activeHandle],
       function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
 
