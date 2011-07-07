@@ -24,6 +24,9 @@ var dmz =
    }
 
    // UI Elements
+   //    "//" indicated a UI element shared between Video and News-Memo, the
+   //    observers are reset for these elements when one switches between Video
+   //    and News-Memo
    , webForm = dmz.ui.loader.load("PrintMediaForm.ui")
    , videoForm = dmz.ui.loader.load("VideoForm.ui")
    , playButton = videoForm.lookup("playButton")
@@ -135,6 +138,7 @@ loadCurrent = function () {
    var linkHandle
      , hil = dmz.object.hil()
      , item
+     , onVideo
      ;
 
    if (CurrentIndex < SourceList.length) {
@@ -224,62 +228,55 @@ stopCurrent = function () {
    }
 };
 
-// TODO: combine these function better
 skipForward = function () {
 
-   if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
+   if (CurrentIndex < SourceList.length) {
 
+      if (CurrentWindowName == "Video") {
+
+         stopCurrent();
+      }
       if ((CurrentIndex + 1) < SourceList.length) {
 
          CurrentIndex += 1;
          NewSource = true;
-         loadCurrent();
-         currLabel.text(CurrentIndex + 1);
-      }
-   }
-   if (CurrentWindowName == "Video") {
+         if (CurrentWindowName == "Video") {
 
-      if (CurrentIndex < SourceList.length) {
-
-         stopCurrent();
-         if ((CurrentIndex + 1) < SourceList.length) {
-
-            CurrentIndex += 1;
-            NewSource = true;
             playCurrent();
          }
-         else { CurrentIndex = 0; }
-         currLabel.text(CurrentIndex + 1);
+         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
+
+            loadCurrent();
+         }
       }
+      else { CurrentIndex = 0; }
+      currLabel.text(CurrentIndex + 1);
    }
 };
 
 skipBackward = function () {
 
-   if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
+   if (CurrentIndex < SourceList.length) {
 
+      if (CurrentWindowName == "Video") {
+
+         stopCurrent();
+      }
       if (CurrentIndex > 0) {
 
          CurrentIndex -= 1;
          NewSource = true;
-         loadCurrent();
-         currLabel.text(CurrentIndex + 1);
-      }
-   }
-   if (CurrentWindowName == "Video") {
+         if (CurrentWindowName == "Video") {
 
-      if (CurrentIndex < SourceList.length) {
-
-         stopCurrent();
-         if (CurrentIndex > 0) {
-
-            CurrentIndex -= 1;
-            NewSource = true;
             playCurrent();
          }
-         else { CurrentIndex = 0; }
-         currLabel.text(CurrentIndex + 1);
+         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
+
+            loadCurrent();
+         }
       }
+      else { CurrentIndex = 0; }
+      currLabel.text(CurrentIndex + 1);
    }
 };
 
@@ -291,14 +288,17 @@ setButtonBindings = function () {
 
 (function () {
 
+   // Layout Declarations
    webForm.lookup("vLayout").addWidget(webpage);
    videoForm.lookup("vLayout").addWidget(video);
+   // Video Specific UI controls
+   dmz.ui.phonon.createPath(source, video);
    playButton.standardIcon(dmz.ui.button.MediaPlay);
    pauseButton.standardIcon(dmz.ui.button.MediaPause);
    stopButton.standardIcon(dmz.ui.button.MediaStop);
+   // Shared UI Items
    nextButton.standardIcon(dmz.ui.button.MediaSkipForward);
    prevButton.standardIcon(dmz.ui.button.MediaSkipBackward);
-   dmz.ui.phonon.createPath(source, video);
 
    Object.keys(InitTypesMap).forEach(function (key) {
 
