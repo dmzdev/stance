@@ -42,8 +42,8 @@ var dmz =
    , stackedWidget = graphWindow.lookup("stackedWidget")
    , intervalAmtBox = graphWindow.lookup("intervalAmtBox")
    , intervalTypeBox = graphWindow.lookup("intervalTypeBox")
-   , startDateBox = graphWindow.lookup("startDate")
-   , endDateBox = graphWindow.lookup("endDate")
+//   , startDateBox = graphWindow.lookup("startDate")
+//   , endDateBox = graphWindow.lookup("endDate")
 
    , graphDialog = dmz.ui.loader.load("AARDialog.ui", graphWindow)
    , scrollArea = graphDialog.lookup("scrollArea")
@@ -76,6 +76,7 @@ var dmz =
 
    // Variables
    , eventItems = {}
+   , forumItems = {}
    , prevObj
    , objCount = 1
    , masterData = { game: false, groups: {}, users: {}, events: {} }
@@ -83,6 +84,7 @@ var dmz =
    , YAxis
    , previousScrollWidgets = false
    , PinMap = {}
+   , LastObjects = []
 
    // Functions
    , mouseEvent
@@ -111,7 +113,8 @@ var dmz =
    , pinEvent
    , questionEvent
    , voteEvent
-   , forumEvent
+   , postEvent
+   , commentEvent
    , getForumWidgetList = function () { return false; }
 
    , createLabel
@@ -124,52 +127,160 @@ createLabel = function (str) {
    str = str ? str : "";
    label = (str.length > 25) ? dmz.ui.textEdit.create(str) : dmz.ui.lineEdit.create(str);
    label.readOnly(true);
-//   label.sizePolicy(dmz.ui.consts.SPPreferred, dmz.ui.consts.SPMaximum);
    return label;
+};
+
+getForumWidgetList = function (handleArray) {
+
+   var postList = {}
+     , postLayouts = []
+     ;
+
+   if (handleArray) {
+
+      handleArray.forEach(function (handle) {
+
+         var type = dmz.object.type(handle)
+           , parent
+           ;
+         if (type && type.isOfType(dmz.stance.PostType)) {
+
+            if (!postList[handle]) { postList[handle] = []; }
+         }
+         else if (type && type.isOfType(dmz.stance.CommentType)) {
+
+            parent = dmz.object.subLinks(handle, dmz.stance.ParentHandle);
+            parent = parent ? parent[0] : false;
+            if (parent && !postList[parent]) { postList[parent] = []; }
+         }
+      });
+
+      Object.keys(postList).forEach(function (handleStr) {
+
+         var postHandle = parseInt(handleStr)
+           , post = {}
+           ;
+
+//         self.log.warn ("postList:", handleStr);
+         if (postHandle) {
+
+            post.handle = postHandle;
+            post.commentList = [];
+            post.layout = dmz.ui.layout.createGridLayout();
+            post.layout.property("spacing", 4);
+            post.layout.margins(4);
+            post.layout.columnMinimumWidth(0, 58);
+            post.item = postEvent(postHandle);
+
+            scrollLayout.insertLayout(0, post.layout);
+            scrollLayout.property("spacing", 4);
+            scrollLayout.margins(4);
+
+            post.layout.addWidget(post.item, 0, 0, 1, 2);
+            post.item.show();
+//            post.highlight(handleArray.indexOf(postHandle) !== -1);
+            if (handleArray.indexOf(postHandle) !== -1) {
+
+               post.item.lookup("unreadLabel").show();
+            }
+            else { post.item.lookup("unreadLabel").hide(); }
+
+            postLayouts.push(post);
+
+            postList[postHandle] = dmz.object.superLinks(postHandle, dmz.stance.ParentHandle);
+            if (postList[postHandle]) {
+
+               postList[postHandle].forEach(function (commentHandle) {
+
+                  var commentItem = commentEvent(commentHandle);
+                  if (commentItem) {
+
+                     post.layout.addWidget(commentItem, post.layout.rowCount(), 1);
+                     post.commentList.push(commentItem);
+                     commentItem.show();
+                     if (handleArray.indexOf(commentHandle) !== -1) {
+
+                        commentItem.lookup("unreadLabel").show();
+                     }
+                     else { commentItem.lookup("unreadLabel").hide(); }
+                  }
+               });
+            }
+         }
+      });
+   }
+   return postLayouts;
 };
 
 openEventDialog = function (handleArray) {
 
    var type = (handleArray && handleArray[0]) ? dmz.object.type(handleArray[0]) : false
      , typeFunction = function () { return undefined; }
-     , widgetList = []
+     , layouts
      , item
+     , addedItems = false
+     , layout
+     , layoutItem
+     , clearLayout
      ;
-
-   self.log.warn ("OTD:", type, ObjectTypeData[type]);
 
    if (ObjectTypeData[type]) {
 
+      if (LastObjects) {
+
+         LastObjects.forEach(function (item) {
+
+            if (item && item.handle) { // forum event
+
+               item.commentList.forEach(function (comment) {
+
+                  item.layout.removeWidget(comment);
+                  comment.hide();
+               });
+
+               item.layout.removeWidget(item.item);
+               item.item.hide();
+               scrollLayout.removeLayout(item.layout);
+            }
+            else { scrollLayout.removeWidget(item); item.hide(); }
+         });
+      }
+      LastObjects = [];
+
       if (ObjectTypeData[type] == ObjectTypeData[dmz.stance.PostType]) {
 
-         widgetList = getForumWidgetList(handleArray);
+         LastObjects = getForumWidgetList(handleArray);
+         if (LastObjects) {
+
+            LastObjects.forEach(function (postData) {
+
+               if (postData) {
+
+                  scrollLayout.property("spacing", 4);
+                  scrollLayout.margins(4);
+                  addedItems = true;
+               }
+            });
+         }
       }
       else {
 
          typeFunction = ObjectTypeData[type].eventFunction;
          handleArray.forEach(function (handle) {
 
-            widgetList.push(typeFunction(handle));
+            var widget = typeFunction(handle);
+            if (widget) {
+
+               scrollLayout.addWidget(widget);
+               LastObjects.push(widget);
+               widget.show();
+               addedItems = true;
+            }
          });
       }
 
-      item = scrollLayout.takeAt(0);
-      while (item) {
-
-         if (item && item.inherits("QWidget")) { item.hide(); }
-         item = scrollLayout.takeAt(0);
-      }
-
-      if (widgetList) {
-
-         widgetList.forEach(function (widget) {
-
-            scrollLayout.addWidget(widget);
-            widget.show();
-         });
-         self.log.warn ("sL:", scrollLayout.count());
-         graphDialog.open(self, function () {});
-      }
+      scrollArea.ensureVisible(0, 0);
+      if (addedItems) { graphDialog.open(self, function () {}); }
    }
    else { self.log.error ("Event dialog fail:", handleArray); }
 };
@@ -276,7 +387,6 @@ pinEvent = function (handle) {
 
          label = dmz.ui.label.create();
          text = dmz.object.text(handle, dmz.stance.PinFileHandle);
-         self.log.warn (text, PinMap[text]);
          label.pixmap(dmz.ui.graph.createPixmap(PinMap[text]));
          layout.addRow(label, createLabel(dmz.object.text(handle, dmz.stance.PinTitleHandle)));
          layout.addRow("Text:", createLabel(dmz.object.text(handle, dmz.stance.PinDescHandle)));
@@ -347,7 +457,6 @@ voteEvent = function (handle) {
                + " U: " + (undec ? undec.length : 0)
                ;
          }
-         self.log.warn ("Label:", label);
          layout.addRow("Result:", createLabel(label));
          eventItems[handle] = widget;
       }
@@ -355,19 +464,72 @@ voteEvent = function (handle) {
    return eventItems[handle];
 };
 
-forumEvent = function (handle) {
+postEvent = function (postHandle) {
 
-   var data = {}
-     , layout
+   var handle
+     , date
+     , item
+     , label
      ;
-   if (handle) {
 
-      data.label = dmz.stance.getDisplayName(handle);
-      data.widget = dmz.ui.widget.create();
-      layout = dmz.ui.layout.createFormLayout();
-      data.widget.layout(layout);
+   if (postHandle && !eventItems[postHandle]) {
+
+      item = dmz.ui.loader.load("PostItem.ui");
+      handle = dmz.object.subLinks(postHandle, dmz.stance.CreatedByHandle);
+      if (handle) {
+
+         handle = handle[0];
+         item.lookup("postedByLabel").text("<b>" + dmz.stance.getDisplayName(handle) + "</b>");
+         item.lookup("avatarLabel").pixmap(
+            dmz.ui.graph.createPixmap(
+               dmz.resources.findFile(
+                  dmz.object.text(handle, dmz.stance.PictureHandle))));
+      }
+      date = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle);
+      date = date ? dmz.util.timeStampToDate(date).toString("F") : "N/A";
+      item.lookup("postedAtLabel").text("<span style=\"color:#939393;\">- " + date + "</span>");
+      item.lookup("messageLabel").text(dmz.object.text(postHandle, dmz.stance.TextHandle));
+      item.lookup("commentAddLabel").hide();
+      label = item.lookup("unreadLabel");
+      label.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
+      label.hide();
+      eventItems[postHandle] = item;
    }
-   return data;
+   return eventItems[postHandle];
+};
+
+commentEvent = function (commentHandle) {
+
+   var handle
+     , date
+     , item
+     , label
+     ;
+
+   if (commentHandle && !eventItems[commentHandle]) {
+
+      item = dmz.ui.loader.load("CommentItem.ui");
+      handle = dmz.object.subLinks(commentHandle, dmz.stance.CreatedByHandle);
+      if (handle) {
+
+         handle = handle[0];
+         item.lookup("postedByLabel").text("<b>" + dmz.stance.getDisplayName(handle) + "</b>");
+         item.lookup("avatarLabel").pixmap(
+            dmz.ui.graph.createPixmap(
+               dmz.resources.findFile(
+                  dmz.object.text(handle, dmz.stance.PictureHandle))));
+      }
+      date = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle);
+      date = date ? dmz.util.timeStampToDate(date).toString("F") : "N/A";
+      item.lookup("postedAtLabel").text("<span style=\"color:#939393;\">- " + date + "</span>");
+      item.lookup("messageLabel").text(dmz.object.text(commentHandle, dmz.stance.TextHandle));
+      item.lookup("commentAddLabel").hide();
+      label = item.lookup("unreadLabel");
+      label.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
+      label.hide();
+      eventItems[commentHandle] = item;
+   }
+   return eventItems[commentHandle];
 };
 
 mouseEvent = function (object, event) {
@@ -414,7 +576,6 @@ createBoxObj = function (handle, x, y, parent) {
      , brush
      ;
 
-//   self.log.warn ("CreateBoxObj:", handle, x, y, count, parent);
    if (handle) {
 
       type = dmz.object.type(handle);
@@ -599,7 +760,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
 
       nextDate = nextInterval(currDate);
       if (nextDate.isAfter(endDate)) { nextDate = endDate; }
-      self.log.warn(currDate.toString(DateFormat), "->", nextDate.toString(DateFormat));
+//      self.log.warn(currDate.toString(DateFormat), "->", nextDate.toString(DateFormat));
       item = objectDataList.shift();
       while (item) {
 
@@ -686,8 +847,10 @@ updateGraph = function () {
      , gameTime = dmz.object.data(masterData.game, dmz.stance.GameStartTimeHandle)
      , gameStart
      , gameEnd
-     , graphStart = startDateBox.dateTime()
-     , graphEnd = endDateBox.dateTime()
+     , graphStart
+     , graphEnd
+//     , graphStart = startDateBox.dateTime()
+//     , graphEnd = endDateBox.dateTime()
      ;
 
    if (gameTime) {
@@ -877,7 +1040,6 @@ getUserFromCreatedBy = function (handle) {
       , brush: dmz.ui.graph.createBrush({ r: 1, g: 0.8, b: 0.8 })
       , getGroups: getGroupFromCreatedBy
       , getUsers: getUserFromCreatedBy
-      , eventFunction: forumEvent
       };
 
    ObjectTypeData[dmz.stance.CommentType] = data;
