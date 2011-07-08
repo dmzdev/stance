@@ -100,6 +100,7 @@ var dmz =
    , groupLayout = editScenarioWidget.lookup("groupLayout")
 
    // Variables
+   , aarMessage = dmz.message.create(self.config.string("aarmessage.name"))
    , GroupButtonList = {}
    , EmailMod = false
    , groupList = []
@@ -167,6 +168,12 @@ var dmz =
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
+
+editScenarioWidget.observe(self, "aarButton", "clicked", function () {
+
+   self.log.warn ("aarMessage:", aarMessage);
+   aarMessage.send();
+});
 
 createNewUser = function (userName, displayName) {
 

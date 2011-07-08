@@ -7,7 +7,7 @@
    <message name="GenerateAAR"/>
 </runtime>
 <graph>
-   <message name="GenerateAAR"/>
+   <aarmessage name="GenerateAAR"/>
    <map-pins>
       <pin name="GenericMarker.png" value="Generic"/>
       <pin name="AddSecurity.png" value="Security"/>

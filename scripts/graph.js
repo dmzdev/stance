@@ -85,6 +85,7 @@ var dmz =
    , previousScrollWidgets = false
    , PinMap = {}
    , LastObjects = []
+   , ShowWindowMessage = dmz.message.create(self.config.string("aarmessage.name"))
 
    // Functions
    , mouseEvent
@@ -120,6 +121,8 @@ var dmz =
    , createLabel
 
    ;
+
+ShowWindowMessage.subscribe(self, function () { graphWindow.show(); });
 
 createLabel = function (str) {
 
@@ -1076,7 +1079,7 @@ getUserFromCreatedBy = function (handle) {
       data.itemLabel.setChecked(true);
    });
 
-   graphWindow.show();
+//   graphWindow.show();
 }());
 
 updateUserList = function (index) {
