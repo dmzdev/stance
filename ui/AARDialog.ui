@@ -6,9 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>751</width>
+    <width>1012</width>
     <height>303</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>20</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -27,7 +32,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>737</width>
+        <width>998</width>
         <height>253</height>
        </rect>
       </property>

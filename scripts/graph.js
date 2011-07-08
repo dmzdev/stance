@@ -53,11 +53,11 @@ var dmz =
    , StdBox =
         { x: 0
         , y: 0
-        , w: 40
-        , h: -40
+        , w: 80
+        , h: -80
         , space: 5
         }
-   , ObjectTypeData = {}
+   , Font = { font: "Times", size: 30, weight: 75 }
    , ObjectTypeList =
         [ dmz.stance.CommentType
         , dmz.stance.LobbyistType
@@ -75,6 +75,7 @@ var dmz =
    , DateFormat = "ddd MMM dd yyyy"
 
    // Variables
+   , ObjectTypeData = {}
    , eventItems = {}
    , forumItems = {}
    , prevObj
@@ -477,7 +478,7 @@ postEvent = function (postHandle) {
 
    if (postHandle && !eventItems[postHandle]) {
 
-      item = dmz.ui.loader.load("PostItem.ui");
+      item = dmz.ui.loader.load("AARPostItem.ui");
       handle = dmz.object.subLinks(postHandle, dmz.stance.CreatedByHandle);
       if (handle) {
 
@@ -511,7 +512,7 @@ commentEvent = function (commentHandle) {
 
    if (commentHandle && !eventItems[commentHandle]) {
 
-      item = dmz.ui.loader.load("CommentItem.ui");
+      item = dmz.ui.loader.load("AARCommentItem.ui");
       handle = dmz.object.subLinks(commentHandle, dmz.stance.CreatedByHandle);
       if (handle) {
 
@@ -613,10 +614,12 @@ createBoxObj = function (handle, x, y, parent) {
 
             result.label = dmz.ui.graph.createTextItem(label, result.box);
             result.label.pos(0, StdBox.h);
+            result.label.font(Font)
 
             if (count) {
 
                result.countLabel = dmz.ui.graph.createTextItem(count.toString(), result.box);
+               result.countLabel.font(Font);
                result.countLabel.pos(0, StdBox.h / 2);
             }
          }
@@ -714,6 +717,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
         ;
       yAxisMap[handle] = { height: index * StdBox.h, tooltip: text };
       text = graphWindowScene.addText(text);
+      text.font(Font);
       rect = text.boundingRect();
       longestTitle = (rect.width > longestTitle) ? rect.width : longestTitle;
       text.pos(0, yAxisMap[handle].height + StdBox.h);
@@ -727,6 +731,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
    intervalLineFnc = function (x) { return createVLine(x, 0, -((yAxisItems.length + 1) * StdBox.h)); }
    YAxis = intervalLineFnc(StartX);
    item = dmz.ui.graph.createTextItem(startDate.toString(DateFormat), YAxis);
+   item.font(Font);
    item.pos(StartX, 0);
    item.rotation(rotationAmt);
 
@@ -810,6 +815,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       boxInInterval = false;
       intervalLine = intervalLineFnc(boxCount * (StdBox.w + StdBox.space) + StartX);
       item = dmz.ui.graph.createTextItem(nextDate.toString(DateFormat), intervalLine);
+      item.font(Font);
       item.rotation(rotationAmt);
       item.pos(boxCount * (StdBox.w + StdBox.space) + StartX, 0);
       graphWindowScene.addItem(intervalLine);
