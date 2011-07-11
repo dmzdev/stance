@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<plugin-list>
+   <plugin name="dmzWebServicesModuleQt" scope="web-services"/>
+   <plugin name="dmzWebServicesPluginObject" scope="web-services-object"/>
+<!--   <plugin name="dmzQtPluginLoginDialog" scope="login-dialog"/>-->
+   <plugin name="dmzQtPluginLoginChds" scope="chds-login"/>
+</plugin-list>
+<main>
+   <login value="1"/>
+</main>
+<web-services>
+<!--   <server host="localhost" port="5984">-->
+<!--   <server host="http://172.20.89.96:5984/" port="5984"/> -->
+<!--   <server host="dmz.couchone.com" port="80">-->
+   <server host="games.chds.us" port="443" path="/db/" login="stance_default_user" password="GLOck26">
+<!--   <server host="205.155.65.16" port="443" path="/db/" login="stance_default_user" password="GLOck26">-->
+<!--      <proxy host="localhost" port="8888"/>-->
+   </server>
+<!--   <login-target name="dmzQtPluginLoginDialog"/>-->
+   <login-target name="dmzQtPluginLoginChds"/>
+</web-services>
+<web-services-object>
+   <filter>
+      <object-type-set>
+         <!-- <object-type name="intel"/> -->
+      </object-type-set>
+      <attribute name="Object_Human_In_The_Loop">
+         <mask name="flag"/>
+      </attribute>
+      <attribute name="last_online">
+         <mask name="timeStamp"/>
+      </attribute>
+      <attribute name="visible">
+         <mask name="flag"/>
+      </attribute>
+      <!-- <state name="Selected"/> -->
+      <!-- <state name="Highlight"/> -->
+   </filter>
+<<<<<<< HEAD
+<!-- <db app="ns4755_1001_1002_2"/> -->
+   <db app="stance_vlad7"/>
+=======
+   <db app="ns4755_1001_1002_2"/>
+<!--   <db app="stance_alpha"/> -->
+<!--   <db app="stance_beta"/> -->
+>>>>>>> 73dc307ac344171357f2743a67f9535b72430140
+</web-services-object>
+<archive-module>
+<!--   <db app="ns4755_1001_1002_2"/>-->
+   <db app="stance_vlad7"/>
+</archive-module>
+<login-dialog>
+   <login-target name="dmzWebServicesModuleQt"/>
+<!--   <auto-login value="true"/>-->
+</login-dialog>
+<chds-login>
+   <login-target name="dmzWebServicesModuleQt"/>
+   <picture-grid>
+      <row>
+         <col value="Bell"/>
+         <col value="House"/>
+         <col value="Microphone"/>
+         <col value="ShoppingBag"/>
+      </row>
+      <row>
+         <col value="Yield"/>
+         <col value="Film"/>
+         <col value="Wallet"/>
+         <col value="Trees"/>
+      </row>
+      <row>
+         <col value="Camera"/>
+         <col value="Box"/>
+         <col value="Stoplight"/>
+         <col value="Phone"/>
+         </row>
+      <row>
+         <col value="Chip"/>
+         <col value="WallClock"/>
+         <col value="Burn"/>
+         <col value="Smile"/>
+      </row>
+      <row>
+         <col value="Suit"/>
+         <col value="MusicalNote"/>
+         <col value="Water"/>
+         <col value="Coffee"/>
+      </row>
+   </picture-grid>
+   <color-grid>
+      <row>
+         <col value="Red"/>
+         <col value="Green"/>
+         <col value="Blue"/>
+         <col value="Yellow"/>
+      </row>
+      <row>
+         <col value="Pink"/>
+         <col value="Black"/>
+         <col value="Purple"/>
+         <col value="Orange"/>
+      </row>
+   </color-grid>
+</chds-login>
+</dmz>
