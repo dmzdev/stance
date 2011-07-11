@@ -28,11 +28,7 @@
    <instance name="login"/>
    <instance name="game-time"/>
    <instance name="advisor"/>
-<!--   <instance name="video"/>-->
    <instance name="media"/>
-<!--   <instance name="newspaper"/>-->
-<!--   <instance name="memo"/>-->
-<!--   <instance name="lobbyist"/>-->
 </javascript>
 <login>
 <!--   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>-->
