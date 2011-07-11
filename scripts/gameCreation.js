@@ -78,7 +78,6 @@ var dmz =
    , editLobbyistDialog = dmz.ui.loader.load("EditLobbyistDialog.ui", editScenarioWidget)
    , lobbyistPictureLabel = editLobbyistDialog.lookup("pictureLabel")
    , lobbyistGroupList = editLobbyistDialog.lookup("groupList")
-   , lobbyistBio = editLobbyistDialog.lookup("lobbyistBio")
    , lobbyistMessage = editLobbyistDialog.lookup("lobbyistMessage")
    , lobbyistPictureList = editLobbyistDialog.lookup("pictureList")
    , lobbyistTitle = editLobbyistDialog.lookup("lobbyistTitle")
@@ -648,7 +647,6 @@ setup = function () {
 
       lobbyistPictureList.currentIndex(0);
       lobbyistGroupList.currentIndex(0);
-      lobbyistBio.text("");
       lobbyistMessage.text("");
       lobbyistTitle.text("");
       lobbyistName.text("");
@@ -690,15 +688,22 @@ setup = function () {
             dmz.object.activate(lobbyistHandle);
             text = lobbyistPictureList.currentText();
             dmz.object.text(lobbyistHandle, dmz.stance.PictureHandle, text);
-            dmz.object.text(lobbyistHandle, dmz.stance.BioHandle, lobbyistBio.text());
             dmz.object.text(lobbyistHandle, dmz.stance.NameHandle, lobbyistName.text());
             dmz.object.text(lobbyistHandle, dmz.stance.TitleHandle, lobbyistTitle.text());
             dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
             dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
 
+            //self.log.error(CurrentGameHandle);
+            //self.log.error(dmz.stance.GameMediaHandle);
+            links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
+            //self.log.error(links.length);
+            dmz.object.scalar(lobbyistHandle, dmz.stance.ID, links ? links.length : 0);
+
             dmz.object.link(dmz.stance.GameMediaHandle, groupList[groupIndex], lobbyistHandle);
+            dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, lobbyistHandle);
 
             groupMemberList = dmz.object.subLinks(groupList[groupIndex], dmz.stance.GroupMembersHandle);
+            self.log.error(groupMemberList);
             groupMemberList.forEach(function (userHandle) {
 
                dmz.object.link(dmz.stance.ActiveLobbyistHandle, userHandle, lobbyistHandle);

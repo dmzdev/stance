@@ -40,7 +40,6 @@ var dmz =
    , source = dmz.ui.phonon.createMediaObject()
 
    // Lobbyist Specific UI
-   , bioText = lobbyistForm.lookup("bioText")
    , messageText = lobbyistForm.lookup("messageText")
    , nameLabel = lobbyistForm.lookup("nameLabel")
    , specialtyLabel = lobbyistForm.lookup("specialtyLabel")
@@ -168,6 +167,10 @@ loadCurrentPrint = function () {
      , hil = dmz.object.hil()
      , item
      ;
+   if (!SourceList.length) {
+
+      webpage.setHtml("<center><b>No Current Items</b></center>");
+   }
 
    if (CurrentIndex < SourceList.length) {
 
@@ -194,15 +197,21 @@ loadCurrentLobbyist = function () {
      , item
      , pic
      ;
+   if (!SourceList.length) {
+
+      messageText.text("");
+      nameLabel.text("");
+      specialtyLabel.text("");
+      pictureLabel.clear();
+   }
 
    if (CurrentIndex < SourceList.length) {
 
       item = SourceList[CurrentIndex];
-      if (item.pic && item.title && item.bio && item.text && item.name && item.handle) {
+      if (item.pic && item.title && item.text && item.name && item.handle) {
 
          if (NewSource) {
 
-            bioText.text(item.bio);
             messageText.text(item.text);
             nameLabel.text(item.name);
             specialtyLabel.text(item.title);
@@ -251,11 +260,14 @@ playCurrentVideo = function () {
 
          if (NewSource) {
 
-            source.observe(self, "hasVideoChanged", onVideo);
+            self.log.warn(dmz.object.text(video.handle, dmz.stance.TitleHandle), source.currentSource(video.source));
             NewSource = false;
          }
 
-         if (source.hasVideo()) { onVideo(true, source); }
+         if (source.hasVideo()) {
+
+            onVideo(true, source);
+         }
          pauseButton.enabled(true);
          playButton.enabled(false);
       }
@@ -423,12 +435,11 @@ setUserPlayList = function (userHandle) {
      , activeList = dmz.object.subLinks(userHandle, CurrentActiveHandle)
      , text
      , pic
-     , bio
      , name
      , title
      ;
 
-   SourceList = []
+   SourceList = [];
    NewSource = true;
    totalLabel.text("0");
    currLabel.text("0");
@@ -479,7 +490,6 @@ setUserPlayList = function (userHandle) {
          if (CurrentWindowName == "Lobbyist") {
 
             pic = dmz.object.text(handle, dmz.stance.PictureHandle);
-            bio = dmz.object.text(handle, dmz.stance.BioHandle);
             name = dmz.object.text(handle, dmz.stance.NameHandle);
             title = dmz.object.text(handle, dmz.stance.TitleHandle);
             text = dmz.object.text(handle, dmz.stance.TextHandle);
@@ -487,7 +497,6 @@ setUserPlayList = function (userHandle) {
             SourceList.push (
             { handle: handle
             , pic: pic
-            , bio: bio
             , name: name
             , title: title
             , text: text
