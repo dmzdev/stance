@@ -452,6 +452,7 @@ setUserPlayList = function (userHandle) {
          return type && type.isOfType(CurrentType) && !dmz.object.flag(handle, dmz.stance.DisabledHandle);
       });
    }
+
    if (list && activeList) {
 
       activeList.forEach(function (activeHandle) {
@@ -526,14 +527,20 @@ function (objHandle, attrHandle, value) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   if (value) { setUserPlayList(objHandle); }
+   if (value) {
+
+      Object.keys(InitTypesMap).forEach (function (initType) {
+
+         setActiveState(initType);
+         setUserPlayList(objHandle);
+      });
+   }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
    var list;
    if (Mode === dmz.module.Activate) {
-
 
       list = MainModule.list;
       MainModule = module;
