@@ -11,6 +11,10 @@ var dmz =
       , label: require("dmz/ui/label")
       , button: require("dmz/ui/button")
       , tabWidget: require("dmz/ui/tabWidget")
+      , webview: require("dmz/ui/webView")
+      , widget: require("dmz/ui/widget")
+      , textEdit: require("dmz/ui/textEdit")
+      , lineEdit: require("dmz/ui/lineEdit")
       }
    , config: require("dmz/runtime/config")
    , defs: require("dmz/runtime/definitions")
@@ -38,17 +42,22 @@ var dmz =
    , stackedWidget = graphWindow.lookup("stackedWidget")
    , intervalAmtBox = graphWindow.lookup("intervalAmtBox")
    , intervalTypeBox = graphWindow.lookup("intervalTypeBox")
+//   , startDateBox = graphWindow.lookup("startDate")
+//   , endDateBox = graphWindow.lookup("endDate")
 
+   , graphDialog = dmz.ui.loader.load("AARDialog.ui", graphWindow)
+   , scrollArea = graphDialog.lookup("scrollArea")
+   , scrollLayout = dmz.ui.layout.createVBoxLayout()
 
    // Consts
    , StdBox =
         { x: 0
         , y: 0
-        , w: 40
-        , h: -40
+        , w: 80
+        , h: -80
         , space: 5
         }
-   , ObjectTypeData = {}
+   , Font = { font: "Times", size: 30, weight: 75 }
    , ObjectTypeList =
         [ dmz.stance.CommentType
         , dmz.stance.LobbyistType
@@ -57,7 +66,7 @@ var dmz =
         , dmz.stance.PinType
         , dmz.stance.PostType
         , dmz.stance.QuestionType
-        , dmz.stance.VideoType
+//        , dmz.stance.VideoType
         ]
    , HandleIndex = 0
 
@@ -66,17 +75,22 @@ var dmz =
    , DateFormat = "ddd MMM dd yyyy"
 
    // Variables
+   , ObjectTypeData = {}
    , eventItems = {}
+   , forumItems = {}
    , prevObj
    , objCount = 1
    , masterData = { game: false, groups: {}, users: {}, events: {} }
    , XAxis
    , YAxis
+   , previousScrollWidgets = false
+   , PinMap = {}
+   , LastObjects = []
+   , ShowWindowMessage = dmz.message.create(self.config.string("aarmessage.name"))
 
    // Functions
    , mouseEvent
 
-   , createAxes
    , createHLine
    , createVLine
    , drawBoxToBoxLine
@@ -101,152 +115,425 @@ var dmz =
    , pinEvent
    , questionEvent
    , voteEvent
-   , forumEvent
+   , postEvent
+   , commentEvent
+   , getForumWidgetList = function () { return false; }
+
+   , createLabel
 
    ;
 
+ShowWindowMessage.subscribe(self, function () { graphWindow.show(); });
+
+createLabel = function (str) {
+
+   var label;
+   str = str ? str : "";
+   label = (str.length > 25) ? dmz.ui.textEdit.create(str) : dmz.ui.lineEdit.create(str);
+   label.readOnly(true);
+   return label;
+};
+
+getForumWidgetList = function (handleArray) {
+
+   var postList = {}
+     , postLayouts = []
+     ;
+
+   if (handleArray) {
+
+      handleArray.forEach(function (handle) {
+
+         var type = dmz.object.type(handle)
+           , parent
+           ;
+         if (type && type.isOfType(dmz.stance.PostType)) {
+
+            if (!postList[handle]) { postList[handle] = []; }
+         }
+         else if (type && type.isOfType(dmz.stance.CommentType)) {
+
+            parent = dmz.object.subLinks(handle, dmz.stance.ParentHandle);
+            parent = parent ? parent[0] : false;
+            if (parent && !postList[parent]) { postList[parent] = []; }
+         }
+      });
+
+      Object.keys(postList).forEach(function (handleStr) {
+
+         var postHandle = parseInt(handleStr)
+           , post = {}
+           ;
+
+//         self.log.warn ("postList:", handleStr);
+         if (postHandle) {
+
+            post.handle = postHandle;
+            post.commentList = [];
+            post.layout = dmz.ui.layout.createGridLayout();
+            post.layout.property("spacing", 4);
+            post.layout.margins(4);
+            post.layout.columnMinimumWidth(0, 58);
+            post.item = postEvent(postHandle);
+
+            scrollLayout.insertLayout(0, post.layout);
+            scrollLayout.property("spacing", 4);
+            scrollLayout.margins(4);
+
+            post.layout.addWidget(post.item, 0, 0, 1, 2);
+            post.item.show();
+//            post.highlight(handleArray.indexOf(postHandle) !== -1);
+            if (handleArray.indexOf(postHandle) !== -1) {
+
+               post.item.lookup("unreadLabel").show();
+            }
+            else { post.item.lookup("unreadLabel").hide(); }
+
+            postLayouts.push(post);
+
+            postList[postHandle] = dmz.object.superLinks(postHandle, dmz.stance.ParentHandle);
+            if (postList[postHandle]) {
+
+               postList[postHandle].forEach(function (commentHandle) {
+
+                  var commentItem = commentEvent(commentHandle);
+                  if (commentItem) {
+
+                     post.layout.addWidget(commentItem, post.layout.rowCount(), 1);
+                     post.commentList.push(commentItem);
+                     commentItem.show();
+                     if (handleArray.indexOf(commentHandle) !== -1) {
+
+                        commentItem.lookup("unreadLabel").show();
+                     }
+                     else { commentItem.lookup("unreadLabel").hide(); }
+                  }
+               });
+            }
+         }
+      });
+   }
+   return postLayouts;
+};
+
 openEventDialog = function (handleArray) {
 
-   var dialog = dmz.ui.loader.load("EventDialog.ui", graphWindow)
-     , tabWidget = dmz.ui.tabWidget.create()
-     , type = (handleArray && handleArray[0]) ? dmz.object.type(handleArray[0]) : false
+   var type = (handleArray && handleArray[0]) ? dmz.object.type(handleArray[0]) : false
      , typeFunction = function () { return undefined; }
+     , layouts
+     , item
+     , addedItems = false
+     , layout
+     , layoutItem
+     , clearLayout
      ;
+
    if (ObjectTypeData[type]) {
 
-      typeFunction = ObjectTypeData[dmz.object.type(handleArray[0])].eventFunction;
-      if (typeFunction) {
+      if (LastObjects) {
 
+         LastObjects.forEach(function (item) {
+
+            if (item && item.handle) { // forum event
+
+               item.commentList.forEach(function (comment) {
+
+                  item.layout.removeWidget(comment);
+                  comment.hide();
+               });
+
+               item.layout.removeWidget(item.item);
+               item.item.hide();
+               scrollLayout.removeLayout(item.layout);
+            }
+            else { scrollLayout.removeWidget(item); item.hide(); }
+         });
+      }
+      LastObjects = [];
+
+      if (ObjectTypeData[type] == ObjectTypeData[dmz.stance.PostType]) {
+
+         LastObjects = getForumWidgetList(handleArray);
+         if (LastObjects) {
+
+            LastObjects.forEach(function (postData) {
+
+               if (postData) {
+
+                  scrollLayout.property("spacing", 4);
+                  scrollLayout.margins(4);
+                  addedItems = true;
+               }
+            });
+         }
+      }
+      else {
+
+         typeFunction = ObjectTypeData[type].eventFunction;
          handleArray.forEach(function (handle) {
 
-            var data = typeFunction(handle);
-            tabWidget.add(data.widget, data.label);
+            var widget = typeFunction(handle);
+            if (widget) {
+
+               scrollLayout.addWidget(widget);
+               LastObjects.push(widget);
+               widget.show();
+               addedItems = true;
+            }
          });
-         dialog.lookup("tabLayout").addWidget(tabWidget);
-         dialog.open(function (value, dialog) {});
       }
+
+      scrollArea.ensureVisible(0, 0);
+      if (addedItems) { graphDialog.open(self, function () {}); }
    }
    else { self.log.error ("Event dialog fail:", handleArray); }
 };
 
 lobbyistEvent = function (handle) {
 
-   var data = {}
+   var widget
      , layout
      ;
-   if (handle) {
 
-      data.label = dmz.stance.getDisplayName(handle);
-      data.widget = dmz.ui.widget.create();
-      layout = dmz.ui.layout.createFormLayout();
-      data.widget.layout(layout);
+   if (handle && !eventItems[handle]) {
+
+      widget = dmz.ui.loader.load("AARItem.ui");
+      layout = widget.lookup("formLayout");
+      if (widget && layout) {
+
+         layout.addRow("Title:", createLabel(dmz.object.text(handle, dmz.stance.TitleHandle)));
+         layout.addRow("Message:", createLabel(dmz.object.text(handle, dmz.stance.TextHandle)));
+         eventItems[handle] = widget;
+      }
    }
-   return data;
+   return eventItems[handle];
 };
 
 memoEvent = function (handle) {
 
-   var data = {}
+   var widget
      , layout
+     , webview
      ;
-   if (handle) {
 
-      data.label = dmz.stance.getDisplayName(handle);
-      data.widget = dmz.ui.widget.create();
-      layout = dmz.ui.layout.createFormLayout();
-      data.widget.layout(layout);
+   if (handle && !eventItems[handle]) {
+
+      widget = dmz.ui.loader.load("AARItem.ui");
+      layout = widget.lookup("formLayout");
+      if (widget && layout) {
+
+         layout.addRow("Title:", createLabel(dmz.object.text(handle, dmz.stance.TitleHandle)));
+         webview = dmz.ui.webview.create();
+         webview.page().mainFrame().load(dmz.object.text(handle, dmz.stance.TextHandle));
+         webview.sizePolicy(dmz.ui.consts.SPPreferred, dmz.ui.consts.SPMinimumExpanding);
+         layout.addRow(webview);
+         eventItems[handle] = widget;
+      }
    }
-   return data;
+   return eventItems[handle];
 };
 
 newspaperEvent = function (handle) {
 
-   var data = {}
+   var widget
      , layout
+     , webview
      ;
-   if (handle) {
 
-      data.label = dmz.stance.getDisplayName(handle);
-      data.widget = dmz.ui.widget.create();
-      layout = dmz.ui.layout.createFormLayout();
-      data.widget.layout(layout);
+   if (handle && !eventItems[handle]) {
+
+      widget = dmz.ui.loader.load("AARItem.ui");
+      layout = widget.lookup("formLayout");
+      if (widget && layout) {
+
+         layout.addRow("Title:", createLabel(dmz.object.text(handle, dmz.stance.TitleHandle)));
+         webview = dmz.ui.webview.create();
+         webview.page().mainFrame().load(dmz.object.text(handle, dmz.stance.TextHandle));
+         webview.sizePolicy(dmz.ui.consts.SPPreferred, dmz.ui.consts.SPMinimumExpanding);
+         layout.addRow(webview);
+         eventItems[handle] = widget;
+      }
    }
-   return data;
+   return eventItems[handle];
 };
 
 videoEvent = function (handle) {
 
-   var data = {}
-     , layout
-     ;
-   if (handle) {
+//   var data = {}
+//     , layout
+//     ;
+//   if (handle) {
 
-      data.label = dmz.stance.getDisplayName(handle);
-      data.widget = dmz.ui.widget.create();
-      layout = dmz.ui.layout.createFormLayout();
-      data.widget.layout(layout);
-   }
-   return data;
+//      data.label = dmz.stance.getDisplayName(handle);
+//      data.widget = dmz.ui.widget.create();
+//      layout = dmz.ui.layout.createFormLayout();
+//      data.widget.layout(layout);
+//   }
+//   return data;
+
+   return false;
 };
 
 pinEvent = function (handle) {
 
-   var data = {}
+   var widget
      , layout
+     , label
+     , text
+     , index
      ;
-   if (handle) {
 
-      data.label = dmz.stance.getDisplayName(handle);
-      data.widget = dmz.ui.widget.create();
-      layout = dmz.ui.layout.createFormLayout();
-      data.widget.layout(layout);
+   if (handle && !eventItems[handle]) {
+
+      widget = dmz.ui.loader.load("AARItem.ui");
+      layout = widget.lookup("formLayout");
+      if (widget && layout) {
+
+         label = dmz.ui.label.create();
+         text = dmz.object.text(handle, dmz.stance.PinFileHandle);
+         label.pixmap(dmz.ui.graph.createPixmap(PinMap[text]));
+         layout.addRow(label, createLabel(dmz.object.text(handle, dmz.stance.PinTitleHandle)));
+         layout.addRow("Text:", createLabel(dmz.object.text(handle, dmz.stance.PinDescHandle)));
+         eventItems[handle] = widget;
+      }
    }
-   return data;
+   return eventItems[handle];
 };
 
 questionEvent = function (handle) {
 
-   var data = {}
+   var widget
      , layout
+     , advisorHandle
      ;
-   if (handle) {
 
-      data.label = dmz.stance.getDisplayName(handle);
-      data.widget = dmz.ui.widget.create();
-      layout = dmz.ui.layout.createFormLayout();
-      data.widget.layout(layout);
+   if (handle && !eventItems[handle]) {
+
+      advisorHandle = dmz.object.superLinks(handle, dmz.stance.AdvisorAnsweredQuestionHandle);
+      if (!advisorHandle) { advisorHandle = dmz.object.superLinks(handle, dmz.stance.AdvisorActiveQuestionHandle); }
+      advisorHandle = advisorHandle ? advisorHandle[0] : false;
+
+      widget = dmz.ui.loader.load("AARItem.ui");
+      layout = widget.lookup("formLayout");
+      if (widget && layout) {
+
+         layout.addRow("Advisor Title:", createLabel(dmz.object.text(advisorHandle, dmz.stance.TitleHandle)));
+         layout.addRow("Question:", createLabel(dmz.object.text(handle, dmz.stance.TextHandle)));
+         layout.addRow("Answer:", createLabel(dmz.object.text(handle, dmz.stance.CommentHandle)));
+         eventItems[handle] = widget;
+      }
    }
-   return data;
+   return eventItems[handle];
 };
 
 voteEvent = function (handle) {
 
-   var data = {}
+   var widget
      , layout
+     , advisorHandle
+     , undec
+     , yes
+     , no
+     , label
      ;
-   if (handle) {
 
-      data.label = dmz.stance.getDisplayName(handle);
-      data.widget = dmz.ui.widget.create();
-      layout = dmz.ui.layout.createFormLayout();
-      data.widget.layout(layout);
+   if (handle && !eventItems[handle]) {
+
+      advisorHandle = dmz.object.superLinks(handle, dmz.stance.VoteAdvisorHandle);
+      advisorHandle = advisorHandle ? advisorHandle[0] : false;
+
+      widget = dmz.ui.loader.load("AARItem.ui");
+      layout = widget.lookup("formLayout");
+      if (widget && layout) {
+
+         layout.addRow("Advisor Title:", createLabel(dmz.object.text(advisorHandle, dmz.stance.TitleHandle)));
+         layout.addRow("Task:", createLabel(dmz.object.text(handle, dmz.stance.TextHandle)));
+         layout.addRow("Advisor Response:", createLabel(dmz.object.text(handle, dmz.stance.CommentHandle)));
+         yes = dmz.object.subLinks(handle, dmz.stance.VoteYesHandle);
+         no = dmz.object.subLinks(handle, dmz.stance.VoteNoHandle);
+         undec = dmz.object.subLinks(handle, dmz.stance.VoteUndecidedHandle);
+         label = dmz.stance.getVoteStatus(handle);
+         if (label !== "DENIED") {
+
+            label = label
+               + " - Y: " + (yes ? yes.length : 0)
+               + " N: " + (no ? no.length : 0)
+               + " U: " + (undec ? undec.length : 0)
+               ;
+         }
+         layout.addRow("Result:", createLabel(label));
+         eventItems[handle] = widget;
+      }
    }
-   return data;
+   return eventItems[handle];
 };
 
-forumEvent = function (handle) {
+postEvent = function (postHandle) {
 
-   var data = {}
-     , layout
+   var handle
+     , date
+     , item
+     , label
      ;
-   if (handle) {
 
-      data.label = dmz.stance.getDisplayName(handle);
-      data.widget = dmz.ui.widget.create();
-      layout = dmz.ui.layout.createFormLayout();
-      data.widget.layout(layout);
+   if (postHandle && !eventItems[postHandle]) {
+
+      item = dmz.ui.loader.load("AARPostItem.ui");
+      handle = dmz.object.subLinks(postHandle, dmz.stance.CreatedByHandle);
+      if (handle) {
+
+         handle = handle[0];
+         item.lookup("postedByLabel").text("<b>" + dmz.stance.getDisplayName(handle) + "</b>");
+         item.lookup("avatarLabel").pixmap(
+            dmz.ui.graph.createPixmap(
+               dmz.resources.findFile(
+                  dmz.object.text(handle, dmz.stance.PictureHandle))));
+      }
+      date = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle);
+      date = date ? dmz.util.timeStampToDate(date).toString("F") : "N/A";
+      item.lookup("postedAtLabel").text("<span style=\"color:#939393;\">- " + date + "</span>");
+      item.lookup("messageLabel").text(dmz.object.text(postHandle, dmz.stance.TextHandle));
+      item.lookup("commentAddLabel").hide();
+      label = item.lookup("unreadLabel");
+      label.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
+      label.hide();
+      eventItems[postHandle] = item;
    }
-   return data;
+   return eventItems[postHandle];
+};
+
+commentEvent = function (commentHandle) {
+
+   var handle
+     , date
+     , item
+     , label
+     ;
+
+   if (commentHandle && !eventItems[commentHandle]) {
+
+      item = dmz.ui.loader.load("AARCommentItem.ui");
+      handle = dmz.object.subLinks(commentHandle, dmz.stance.CreatedByHandle);
+      if (handle) {
+
+         handle = handle[0];
+         item.lookup("postedByLabel").text("<b>" + dmz.stance.getDisplayName(handle) + "</b>");
+         item.lookup("avatarLabel").pixmap(
+            dmz.ui.graph.createPixmap(
+               dmz.resources.findFile(
+                  dmz.object.text(handle, dmz.stance.PictureHandle))));
+      }
+      date = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle);
+      date = date ? dmz.util.timeStampToDate(date).toString("F") : "N/A";
+      item.lookup("postedAtLabel").text("<span style=\"color:#939393;\">- " + date + "</span>");
+      item.lookup("messageLabel").text(dmz.object.text(commentHandle, dmz.stance.TextHandle));
+      item.lookup("commentAddLabel").hide();
+      label = item.lookup("unreadLabel");
+      label.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
+      label.hide();
+      eventItems[commentHandle] = item;
+   }
+   return eventItems[commentHandle];
 };
 
 mouseEvent = function (object, event) {
@@ -266,7 +553,12 @@ mouseEvent = function (object, event) {
          items.forEach(function (item) {
 
             var handles = item.data(HandleIndex);
-            if (handles) { self.log.warn (handles, dmz.object.type(handles[0])); }
+//            openEventDialog(item.data(HandleIndex));
+            if (handles) {
+
+               self.log.warn (handles, dmz.object.type(handles[0]));
+               dmz.time.setTimer(self, function () { openEventDialog(handles); });
+            }
          });
       }
    }
@@ -284,9 +576,10 @@ createBoxObj = function (handle, x, y, parent) {
      , label = false
      , count = 1
      , type
+     , rect
+     , brush
      ;
 
-//   self.log.warn ("CreateBoxObj:", handle, x, y, count, parent);
    if (handle) {
 
       type = dmz.object.type(handle);
@@ -295,24 +588,39 @@ createBoxObj = function (handle, x, y, parent) {
          label = ObjectTypeData[type].label;
          if (type.isOfType(dmz.stance.VoteType)) {
 
-            if (!dmz.object.flag(handle, dmz.stance.VoteApprovedHandle)) { label += "d"; }
-            else if (dmz.object.flag(handle, dmz.stance.VoteResultHandle)) { label += "a"; }
-            else { label += "f"; }
+            if (!dmz.object.flag(handle, dmz.stance.VoteApprovedHandle)) {
+
+               label += "d";
+               brush = ObjectTypeData[type].brush.deny;
+            }
+            else if (dmz.object.flag(handle, dmz.stance.VoteResultHandle)) {
+
+               label += "a";
+               brush = ObjectTypeData[type].brush.pass;
+            }
+            else {
+
+               label += "f";
+               brush = ObjectTypeData[type].brush.fail;
+            }
          }
+         else { brush = ObjectTypeData[type].brush; }
 
          result.box = dmz.ui.graph.createRectItem(StdBox.x, StdBox.y, StdBox.w, StdBox.h, parent);
-         result.box.brush(ObjectTypeData[type].brush);
+         result.box.brush(brush);
          result.box.pos(x, y);
          result.box.data(HandleIndex, result.handles);
          if (result.box) {
 
             result.label = dmz.ui.graph.createTextItem(label, result.box);
             result.label.pos(0, StdBox.h);
+            result.label.font(Font)
 
             if (count) {
 
                result.countLabel = dmz.ui.graph.createTextItem(count.toString(), result.box);
-               result.countLabel.pos(StdBox.w / 2, StdBox.h / 2);
+               result.countLabel.font(Font);
+               result.countLabel.pos(0, StdBox.h / 2);
             }
          }
          masterData.events[handle] = result;
@@ -324,19 +632,6 @@ createBoxObj = function (handle, x, y, parent) {
 
 createHLine = function (x, y, len) { return dmz.ui.graph.createLineItem(x, y, x + len, y); }
 createVLine = function (x, y, height) { return dmz.ui.graph.createLineItem(x, y, x, -(-y + height)); }
-
-createAxes = function (scene, x, y, yItems) {
-
-   self.log.warn ("Create Axes:", x, y, yItems);
-   if (scene) {
-
-      XAxis = createHLine(x, y, 200);
-      scene.addItem(XAxis); // X-Axis
-      YAxis = createVLine(x, y, -((yItems + 1.5) * StdBox.h));
-      scene.addItem(YAxis); // Y-Axis
-   }
-   return XAxis;
-};
 
 drawBoxToBoxLine = function (oldBox, newBox, label) {
 
@@ -422,6 +717,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
         ;
       yAxisMap[handle] = { height: index * StdBox.h, tooltip: text };
       text = graphWindowScene.addText(text);
+      text.font(Font);
       rect = text.boundingRect();
       longestTitle = (rect.width > longestTitle) ? rect.width : longestTitle;
       text.pos(0, yAxisMap[handle].height + StdBox.h);
@@ -430,12 +726,12 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
    });
 
    StartX = longestTitle + 10;
-//   createAxes(graphWindowScene, (longestTitle + 10), 0, yAxisItems.length);
    XAxis = createHLine(StartX, 0, 200);
    graphWindowScene.addItem(XAxis);
    intervalLineFnc = function (x) { return createVLine(x, 0, -((yAxisItems.length + 1) * StdBox.h)); }
    YAxis = intervalLineFnc(StartX);
    item = dmz.ui.graph.createTextItem(startDate.toString(DateFormat), YAxis);
+   item.font(Font);
    item.pos(StartX, 0);
    item.rotation(rotationAmt);
 
@@ -456,7 +752,10 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
          if (obj.createdAt) {
 
             obj.createdAt = dmz.util.timeStampToDate(obj.createdAt);
-            objectDataList.push(obj);
+            if (obj.createdAt.isAfter(startDate) && obj.createdAt.isBefore(endDate)) {
+
+               objectDataList.push(obj);
+            }
          }
       });
    });
@@ -469,7 +768,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
 
       nextDate = nextInterval(currDate);
       if (nextDate.isAfter(endDate)) { nextDate = endDate; }
-      self.log.warn(currDate.toString(DateFormat), "->", nextDate.toString(DateFormat));
+//      self.log.warn(currDate.toString(DateFormat), "->", nextDate.toString(DateFormat));
       item = objectDataList.shift();
       while (item) {
 
@@ -516,6 +815,7 @@ setGraph = function (graphType, activeObjectTypes, yAxisItems, startDate, endDat
       boxInInterval = false;
       intervalLine = intervalLineFnc(boxCount * (StdBox.w + StdBox.space) + StartX);
       item = dmz.ui.graph.createTextItem(nextDate.toString(DateFormat), intervalLine);
+      item.font(Font);
       item.rotation(rotationAmt);
       item.pos(boxCount * (StdBox.w + StdBox.space) + StartX, 0);
       graphWindowScene.addItem(intervalLine);
@@ -556,6 +856,10 @@ updateGraph = function () {
      , gameTime = dmz.object.data(masterData.game, dmz.stance.GameStartTimeHandle)
      , gameStart
      , gameEnd
+     , graphStart
+     , graphEnd
+//     , graphStart = startDateBox.dateTime()
+//     , graphEnd = endDateBox.dateTime()
      ;
 
    if (gameTime) {
@@ -563,37 +867,60 @@ updateGraph = function () {
       gameStart = dmz.util.timeStampToDate(gameTime.number("server", 0))
       gameEnd = dmz.util.timeStampToDate(gameTime.number("server", 1))
 
-      Object.keys(ObjectTypeData).forEach(function (type) {
+      graphStart = gameStart;
+      graphEnd = gameEnd;
+//      if (gameStart && graphStart && graphStart.isBefore(gameStart)) {
 
-         if (ObjectTypeData[type].selected && (type != dmz.stance.CommentType)) {
-
-            activeTypes.push(type);
-         }
-      });
-
-      if (graphType === GraphType.Game) { dataList = masterData.groups; }
-      else if (graphType === GraphType.Group) { dataList = masterData.users; }
-      if (dataList) {
-
-         Object.keys(dataList).forEach(function (key) {
-
-            if (dataList[key].selected) { activeLineHandles.push(dataList[key].handle); }
-         });
-      }
-
-      self.log.warn
-         ( "Update graph:\n"
-         + "  Interval: " + interval + " days\n"
-         + "  GraphType: " + (graphType ? "Group" : "Game") + "(" + graphType + ")" + "\n"
-         + "  ActiveTypes: [" + activeTypes + "]\n"
-         + "  activeLines: [" + activeLineHandles +"]\n"
-         + "  gameStart: " + dmz.util.timeStampToDate(gameStart) + "\n"
-         + "  gameEnd: " + dmz.util.timeStampToDate(gameEnd) + "\n"
-         );
-
-      setGraph(graphType, activeTypes, activeLineHandles, gameStart, gameEnd, intervalfnc);
+//         graphStart = gameStart;
+//      }
+//      if (gameEnd && graphEnd && graphEnd.isAfter(gameEnd)) { graphEnd = gameEnd; }
    }
-   else { self.log.error ("Game time has not been set!"); }
+   if (graphStart && graphEnd) {
+
+      if (graphStart.isBefore(graphEnd)) {
+
+         Object.keys(ObjectTypeData).forEach(function (type) {
+
+            if (ObjectTypeData[type].selected && (type != dmz.stance.CommentType)) {
+
+               activeTypes.push(type);
+            }
+         });
+
+         if (graphType === GraphType.Game) { dataList = masterData.groups; }
+         else if (graphType === GraphType.Group) { dataList = masterData.users; }
+         if (dataList) {
+
+            Object.keys(dataList).forEach(function (key) {
+
+               if (dataList[key].selected) { activeLineHandles.push(dataList[key].handle); }
+            });
+         }
+
+         self.log.warn
+            ( "Update graph:\n"
+            + "  Interval: " + interval + " days\n"
+            + "  GraphType: " + (graphType ? "Group" : "Game") + "(" + graphType + ")" + "\n"
+            + "  ActiveTypes: [" + activeTypes + "]\n"
+            + "  activeLines: [" + activeLineHandles +"]\n"
+            + "  graphStart: " + graphStart + "\n"
+            + "  graphEnd: " + graphEnd + "\n"
+            );
+
+         setGraph(graphType, activeTypes, activeLineHandles, graphStart, graphEnd, intervalfnc);
+      }
+      else {
+
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Warning
+            , text: "Start Date must be before End Date!"
+            , standardButtons: [dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Ok
+            }
+            , graphWindow
+            ).open(self, function (value) {});
+      }
+   }
 };
 
 getGroupFromCreatedBy = function (handle) {
@@ -623,10 +950,29 @@ getUserFromCreatedBy = function (handle) {
 
 (function () {
 
+   var iconList = self.config.get("map-pins.pin")
+     ;
+
+   if (iconList) {
+
+      iconList.forEach(function (icon) {
+
+         PinMap[icon.string("name")] = dmz.resources.findFile(icon.string("value"));
+      });
+   }
+}());
+
+(function () {
+
    var data;
    graphWindowScene = dmz.ui.graph.createScene();
    graphicsView.scene (graphWindowScene);
    graphicsView.alignment (dmz.ui.consts.AlignLeft | dmz.ui.consts.AlignBottom);
+
+   scrollArea.widget().layout(scrollLayout);
+   scrollLayout.margins(4);
+//   scrollLayout.addStretch(1);
+
    graphWindowScene.eventFilter(self, mouseEvent);
 
 
@@ -652,19 +998,19 @@ getUserFromCreatedBy = function (handle) {
 
    ObjectTypeData[dmz.stance.NewspaperType] =
       { name: "Newspapers"
-      , brush: dmz.ui.graph.createBrush({ r: 0.5, g: 0.8, b: 0.3 })
+      , brush: dmz.ui.graph.createBrush({ r: 0.5, g: 0.5, b: 0.3 })
       , getGroups: getMediaGroups
       , getUsers: false
       , eventFunction: newspaperEvent
       };
 
-   ObjectTypeData[dmz.stance.VideoType] =
-      { name: "Videos"
-      , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.7 })
-      , getGroups: getMediaGroups
-      , getUsers: false
-      , eventFunction: videoEvent
-      };
+//   ObjectTypeData[dmz.stance.VideoType] =
+//      { name: "Videos"
+//      , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.7 })
+//      , getGroups: getMediaGroups
+//      , getUsers: false
+//      , eventFunction: videoEvent
+//      };
 
    ObjectTypeData[dmz.stance.PinType] =
       { name: "Pins"
@@ -688,7 +1034,11 @@ getUserFromCreatedBy = function (handle) {
 
    ObjectTypeData[dmz.stance.VoteType] =
       { name: "Tasks"
-      , brush: dmz.ui.graph.createBrush({ r: 0.3, g: 0.8, b: 0.3 })
+      , brush:
+           { fail: dmz.ui.graph.createBrush({ r: 1, g: 0, b: 0 })
+           , pass: dmz.ui.graph.createBrush({ r: 0, g: 1, b: 0 })
+           , deny: dmz.ui.graph.createBrush({ r: 0, g: 0, b: 1 })
+           }
       , getGroups: getGroupFromCreatedBy
       , getUsers: getUserFromCreatedBy
       , eventFunction: voteEvent
@@ -699,7 +1049,6 @@ getUserFromCreatedBy = function (handle) {
       , brush: dmz.ui.graph.createBrush({ r: 1, g: 0.8, b: 0.8 })
       , getGroups: getGroupFromCreatedBy
       , getUsers: getUserFromCreatedBy
-      , eventFunction: forumEvent
       };
 
    ObjectTypeData[dmz.stance.CommentType] = data;
@@ -736,7 +1085,7 @@ getUserFromCreatedBy = function (handle) {
       data.itemLabel.setChecked(true);
    });
 
-   graphWindow.show();
+//   graphWindow.show();
 }());
 
 updateUserList = function (index) {
@@ -861,7 +1210,11 @@ dmz.object.create.observe(self, function (handle, type) {
          data.label.setChecked(true);
          updateName(handle);
       }
-      else if (ObjectTypeData[type]) { ObjectTypeData[type].events.push(handle); }
+      else if (ObjectTypeData[type]) {
+
+         ObjectTypeData[type].events.push(handle);
+//         eventItems[handle] = ObjectTypeData[type].generateWidget(handle);
+      }
    }
 });
 

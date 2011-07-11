@@ -5,7 +5,7 @@
    <plugin name="dmzQtPluginVersion"/>
    <plugin name="dmzObjectModuleBasic"/>
 <!--   <plugin name="dmzObjectPluginCleanup" scope="cleanup"/>-->
-   <plugin name="dmzQtPluginObjectInspector"/>
+<!--   <plugin name="dmzQtPluginObjectInspector"/> -->
 <!--   <plugin name="dmzQtPluginMessageInspector"/> -->
    <plugin name="dmzBorderWebInterface" scope="webMap"/>
 </plugin-list>

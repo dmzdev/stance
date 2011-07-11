@@ -6,15 +6,24 @@
 <runtime>
    <message name="GenerateAAR"/>
 </runtime>
-<aargraph>
-   <message name="GenerateAAR"/>
-   <graph name="" type="time">
-      <interval name="days"/>
-      <object-type name="">
-         <handle value=""/>
-      </object-type>
-   </graph>
-</aargraph>
+<graph>
+   <aarmessage name="GenerateAAR"/>
+   <map-pins>
+      <pin name="GenericMarker.png" value="Generic"/>
+      <pin name="AddSecurity.png" value="Security"/>
+      <pin name="Bomb.png" value="Bomb"/>
+      <pin name="Disasters.png" value="Disaster"/>
+      <pin name="Event.png" value="Event"/>
+      <pin name="Information.png" value="Info"/>
+      <pin name="MeetingPlace.png" value="Meeting"/>
+      <pin name="Note.png" value="Note"/>
+      <pin name="Placeholder.png" value="Question"/>
+      <pin name="Target.png" value="Target"/>
+      <pin name="Biohazard.png" value="Biohazard"/>
+      <pin name="Quarantine.png" value="Quarantine"/>
+      <pin name="Riot.png" value="Riot"/>
+   </map-pins>
+</graph>
 <gameCreation>
    <aarmessage name="GenerateAAR"/>
 </gameCreation>
