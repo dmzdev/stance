@@ -700,10 +700,7 @@ setup = function () {
             dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
             dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
 
-            //self.log.error(CurrentGameHandle);
-            //self.log.error(dmz.stance.GameMediaHandle);
             links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
-            //self.log.error(links.length);
             dmz.object.scalar(lobbyistHandle, dmz.stance.ID, links ? links.length : 0);
 
             dmz.object.link(dmz.stance.GameMediaHandle, groupList[groupIndex], lobbyistHandle);
