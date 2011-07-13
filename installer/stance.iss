@@ -5,7 +5,7 @@
 #define AppURL "http://dmzdev.org"
 #define AppExeName "stance.exe"
 #define DependDir "..\..\..\depend"
-#define VsDir "c:\Program Files\Microsoft Visual Studio 8"
+#define VsDir "c:\Program Files\Microsoft Visual Studio 9.0"
 
 [Setup]
 AppId={{1A497040-702B-11E0-A1F0-0800200C9A66}
@@ -67,4 +67,4 @@ Source: {#DependDir}\bin\qjpeg4.dll; DestDir: {app}\bin\plugins\imageformats
 Source: {#DependDir}\bin\qgif4.dll; DestDir: {app}\bin\plugins\imageformats
 Source: {#DependDir}\bin\qtiff4.dll; DestDir: {app}\bin\plugins\imageformats
 Source: {#DependDir}\bin\v8.dll; DestDir: {app}\bin
-Source: {#VsDir}\VC\redist\x86\Microsoft.VC80.CRT\*; DestDir: {app}\bin\Microsoft.VC80.CRT
+Source: {#VsDir}\VC\redist\x86\Microsoft.VC90.CRT\*; DestDir: {app}\bin\Microsoft.VC90.CRT
