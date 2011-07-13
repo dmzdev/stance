@@ -69,19 +69,14 @@ var dmz =
    , commentList = {}
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
-   , advisorAttr =
-        [ dmz.stance.Advisor0Handle
-        , dmz.stance.Advisor1Handle
-        , dmz.stance.Advisor2Handle
-        , dmz.stance.Advisor3Handle
-        , dmz.stance.Advisor4Handle
-        ]
+   , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
 
    // Functions
    , createAdvisorWindow
    , getVoteDecision
    , getQuestionAnswer
    , getCreatedBy
+   , getAvatarPixmap
 
    , getHILAdvisor
 
@@ -112,7 +107,12 @@ createAdvisorWindow = function (windowStr) {
    data.window = dmz.ui.widget.create();
    data.layout = dmz.ui.layout.createGridLayout();
    data.window.layout(data.layout);
-   data.infoWidget = dmz.ui.loader.load("AdvisorWindow.ui");
+   data.infoWindow = { widget: dmz.ui.loader.load("AdvisorWindow.ui") }
+   data.infoWindow.name = data.infoWindow.widget.lookup("nameLabel");
+   data.infoWindow.bio = data.infoWindow.widget.lookup("bioText");
+   data.infoWindow.title = data.infoWindow.widget.lookup("specialtyLabel");
+   data.infoWindow.picture = data.infoWindow.widget.lookup("pictureLabel");
+   data.infoWindow.picture.pixmap(AvatarDefault);
 
    canReplyFnc = function (replyToHandle) {
 
@@ -207,11 +207,17 @@ createAdvisorWindow = function (windowStr) {
 
    data.update = function (advisorHandle) {
 
+      self.log.warn ("Update:", dmz.stance.getDisplayName(advisorHandle));
+      data.infoWindow.name.text(dmz.object.text(advisorHandle, dmz.stance.NameHandle));
+      data.infoWindow.bio.text(dmz.object.text(advisorHandle, dmz.stance.BioHandle));
+      data.infoWindow.title.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
+      data.infoWindow.picture.pixmap(getAvatarPixmap(advisorHandle));
+
       if (data.question && data.question.update) { data.question.update(advisorHandle); }
       if (data.task && data.task.update) { data.task.update(advisorHandle); }
    };
 
-   data.layout.addWidget(data.infoWidget, 0, 0, 1, 2);
+   data.layout.addWidget(data.infoWindow.widget, 0, 0, 1, 2);
    if (data.task && data.task.widget) { data.layout.addWidget(data.task.widget, 1, 0); }
    if (data.question && data.question.widget) {
 
@@ -239,11 +245,19 @@ getCreatedBy = function (handle) {
    return (author && author.length) ? author[0] : false;
 };
 
+getAvatarPixmap = function (handle) {
+
+   var resource = dmz.resources.findFile(dmz.object.text(handle, dmz.stance.PictureHandle))
+     , pixmap = dmz.ui.graph.createPixmap(resource)
+     ;
+
+   return pixmap ? pixmap : AvatarDefault;
+};
+
 getHILAdvisor = function (index) {
 
    var groupHandle = dmz.stance.getUserGroupHandle(dmz.object.hil())
      , advisors = dmz.object.subLinks(groupHandle, dmz.stance.AdvisorGroupHandle)
-     , advisorHandle = false
      ;
 
    if (advisors) {
@@ -254,6 +268,7 @@ getHILAdvisor = function (index) {
       });
    }
 
+   self.log.warn("Get HIL Advisor:", index, groupHandle, advisors);
    return (advisors && advisors.length) ? advisors[0] : false;
 };
 
@@ -278,22 +293,25 @@ dmz.object.scalar.observe(self, dmz.stance.ID, function (handle, attr, value) {
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
-   var idx
-     , data
-     , str
-     ;
+   var idx;
    if (Mode === dmz.module.Activate) {
 
       for (idx = 0; idx < ADVISOR_COUNT; idx += 1) {
 
-         str = "Advisor" + idx;
-         data = createAdvisorWindow(str);
-         module.addPage
-            ( str
-            , data.window
-            , function () { data.update(getHILAdvisor(index)); }
-            , function () { data.onHome(); }
-            );
+         (function (index) {
+
+            var data
+              , str
+              ;
+            str = "Advisor" + idx;
+            data = createAdvisorWindow(str);
+            module.addPage
+               ( str
+               , data.window
+               , function () { self.log.warn("Update", index); data.update(getHILAdvisor(index)); }
+               , function () { data.onHome(); }
+               );
+         }(idx));
       };
    }
 });

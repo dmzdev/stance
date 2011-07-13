@@ -282,6 +282,7 @@ setGroupTemplate = function (groupHandle, templateIndex) {
          }
       }
    }
+   return advisorImages;
 }
 
 dmz.object.create.observe(self, function (objHandle, objType) {
@@ -777,6 +778,8 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
         , handle
         , name
         , str
+        , advisorImages
+        , file
         ;
 
       if (value) {
@@ -784,27 +787,30 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
          group = dmz.object.create(dmz.stance.GroupType);
          name = groupNameEdit.text();
          dmz.object.text(group, dmz.stance.NameHandle, name);
-         setGroupTemplate(group, groupTemplateComboBox.currentIndex());
+         advisorImages = setGroupTemplate(group, groupTemplateComboBox.currentIndex());
+         advisorImages = advisorImages ? advisorImages : [];
          dmz.object.activate(group);
          dmz.object.link(dmz.stance.GameGroupHandle, CurrentGameHandle, group);
 
          for (idx = 0; idx < AdvisorCount; idx += 1) {
 
-            str = name + ": Advisor" + idx;
+            str = name + ": No Name - Adv" + idx;
             handle = dmz.object.create(dmz.stance.AdvisorType);
             dmz.object.text(handle, dmz.stance.NameHandle, str);
-            dmz.object.scalar(handle, dmz.stance.AdvisorImageHandle, idx);
+            if (idx < advisorImages.length) {
+
+               file = dmz.resources.lookupConfig(advisorImages[idx]);
+               if (file) { file = dmz.resources.findFile(file.string("alt.name")); }
+               if (!file) { file = dmz.resources.findFile(resource); }
+               if (file) { dmz.object.text(handle, dmz.stance.PictureHandle, advisorImages[idx]); }
+            }
             dmz.object.scalar(handle, dmz.stance.ID, idx);
             dmz.object.activate(handle);
             dmz.object.link(dmz.stance.AdvisorGroupHandle, group, handle);
          }
-
-         handle = dmz.object.create(dmz.stance.ForumType);
-         dmz.object.text(handle, dmz.stance.NameHandle, name);
-         dmz.object.activate(handle);
-         dmz.object.link(dmz.stance.ForumLink, group, handle);
       }
    });
+
 });
 
 advisorGroupComboBox.observe(self, "currentIndexChanged", function (index) {
