@@ -20,9 +20,11 @@ var dmz =
       , PostType: dmz.objectType.lookup("post")
       , CommentType: dmz.objectType.lookup("comment")
       , QuestionType: dmz.objectType.lookup("question")
+      , AnswerType: dmz.objectType.lookup("answer")
       , UserType: dmz.objectType.lookup("user")
       , VideoType: dmz.objectType.lookup("media-video")
       , VoteType: dmz.objectType.lookup("vote")
+      , DecisionType: dmz.objectType.lookup("decision")
       }
 
    , Handles =
@@ -111,6 +113,10 @@ var dmz =
       , PinFileHandle: dmz.defs.createNamedHandle("pinFile")
       , PinObjectHandle: dmz.defs.createNamedHandle("pinObjectHandle")
       , PinGroupCountHandle: dmz.defs.createNamedHandle("pinGroupCountHandle")
+
+      , VoteLinkHandle: dmz.defs.createNamedHandle("vote_link")
+      , QuestionLinkHandle: dmz.defs.createNamedHandle("question_link")
+      , VoteState: dmz.defs.createNamedHandle("vote_state")
       }
 
    , Functions =

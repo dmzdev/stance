@@ -222,13 +222,11 @@
    </user-filter>
 </email>
 <archive>
-<!--
    <object type="game" uuid="73482562-b36f-45f1-9e1c-87a02269622a">
       <attributes name="name">
          <text value="Game"/>
       </attributes>
    </object>
--->
    <object type="user" uuid="12832b4e-5094-4636-b458-6cad452fccd1">
       <attributes name="name">
          <text value="b99dd12817cdd21400a9fb489376eb2ba76858ab"/>

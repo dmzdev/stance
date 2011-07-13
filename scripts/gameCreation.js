@@ -794,6 +794,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
             handle = dmz.object.create(dmz.stance.AdvisorType);
             dmz.object.text(handle, dmz.stance.NameHandle, str);
             dmz.object.scalar(handle, dmz.stance.AdvisorImageHandle, idx);
+            dmz.object.scalar(handle, dmz.stance.ID, idx);
             dmz.object.activate(handle);
             dmz.object.link(dmz.stance.AdvisorGroupHandle, group, handle);
          }
@@ -873,6 +874,7 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
 
       var user
         , name
+        , isAdmin
         ;
       if (value) {
 
@@ -883,8 +885,11 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
             dmz.ui.crypto.hash(studentUserNameEdit.text(), dmz.ui.crypto.Sha1));
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
+         isAdmin = dialog.lookup("adminCheckBox").isChecked();
+         if (isAdmin) { dmz.object.flag(user, dmz.stance.AdminHandle, true); }
+
          dmz.object.activate(user);
-         if (user) {
+         if (user && !isAdmin) {
 
             dmz.object.link(dmz.stance.GameUngroupedUsersHandle, CurrentGameHandle, user);
          }

@@ -20,10 +20,8 @@
    <instance name="main"/>
    <instance name="clear-archive" scope="archive-module"/>   
    <instance name="email"/>
-<!--   <instance name="devtools"/> -->
    <instance name="gameCreation"/>
    <instance name="webMap"/>
-<!--   <instance name="forum"/> -->
    <instance name="forum-view"/>
    <instance name="login"/>
    <instance name="game-time"/>
