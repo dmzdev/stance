@@ -101,6 +101,16 @@ var dmz =
       , ForumTimeHandle: dmz.defs.createNamedHandle("forum_time")
       , LastOnlineHandle: dmz.defs.createNamedHandle("last_online")
       , ViewedLobbyistHandle: dmz.defs.createNamedHandle("viewed_lobbyist")
+      , DisabledHandle: dmz.defs.createNamedHandle("disabled")
+      , GroupPinHandle: dmz.defs.createNamedHandle("groupPinHandle")
+      , PinActiveHandle: dmz.defs.createNamedHandle("Pin_Active")
+      , PinIDHandle: dmz.defs.createNamedHandle("pinID")
+      , PinPositionHandle: dmz.defs.createNamedHandle("pinPosition")
+      , PinTitleHandle: dmz.defs.createNamedHandle("pinTitle")
+      , PinDescHandle: dmz.defs.createNamedHandle("pinDescription")
+      , PinFileHandle: dmz.defs.createNamedHandle("pinFile")
+      , PinObjectHandle: dmz.defs.createNamedHandle("pinObjectHandle")
+      , PinGroupCountHandle: dmz.defs.createNamedHandle("pinGroupCountHandle")
       }
 
    , Functions =
@@ -109,22 +119,51 @@ var dmz =
       , getAuthorHandle: false
       , getUserGroupHandle: false
       , addUITextLimit: false
+      , getVoteStatus: false
       }
 
    , getDisplayName
    , getAuthorHandle
    , getAuthorName
    , getUserGroupHandle
+   , getVoteStatus
    , addUITextLimit
    ;
 
+getVoteStatus = function (handle) {
+
+   var status = "E: " + handle
+     , Active = dmz.object.flag(handle, Handles.ActiveHandle)
+     , Submitted = dmz.object.flag(handle, Handles.VoteSubmittedHandle)
+     , Approved = dmz.object.flag(handle, Handles.VoteApprovedHandle)
+     , Result = dmz.object.flag(handle, Handles.VoteResultHandle)
+     , noHandleList = dmz.object.subLinks(handle, Handles.VoteNoHandle)
+     ;
+
+   if (Active) {
+
+      if (Submitted) { status = "SBMITD"; }
+      else {
+
+         if (Approved) { status = "ACTIVE"; }
+         else { status = "DENIED"; }
+      }
+   }
+   else {
+
+      if (Result) { status = "PASSED"; }
+      else if (!noHandleList) { status = "DENIED"; }
+      else { status = "FAILED"; }
+   }
+   return status;
+};
 
 getDisplayName = function (handle) {
 
    var name = dmz.object.text (handle, Handles.DisplayNameHandle);
    if (!name || (name === undefined)) { name = dmz.object.text (handle, Handles.NameHandle); }
    return name;
-}
+};
 
 getAuthorHandle = function (handle) {
 
@@ -136,7 +175,7 @@ getAuthorHandle = function (handle) {
    if (parentLinks) { parent = parentLinks[0]; }
 
    return parent;
-}
+};
 
 getAuthorName = function (handle) { return getDisplayName(getAuthorHandle(handle)); }
 
@@ -179,6 +218,7 @@ Functions.getAuthorHandle = getAuthorHandle;
 Functions.getAuthorName = getAuthorName;
 Functions.getUserGroupHandle = getUserGroupHandle;
 Functions.addUITextLimit = addUITextLimit;
+Functions.getVoteStatus = getVoteStatus;
 
 (function () {
 

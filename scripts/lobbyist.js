@@ -38,7 +38,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            , pic = false
            ;
 
-         if (lobHandle) {
+         if (lobHandle && !dmz.object.flag(lobHandle[0], dmz.stance.DisabledHandle)) {
 
             lobHandle = lobHandle[0];
             bioText.text(dmz.object.text(lobHandle, dmz.stance.BioHandle));
@@ -70,7 +70,29 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 dmz.object.link.observe(self, dmz.stance.ActiveLobbyistHandle,
 function (objHandle, attrHandle, groupHandle, lobbyistHandle) {
 
-   if (dmz.stance.getUserGroupHandle(dmz.object.hil()) === groupHandle) {
+   if ((dmz.stance.getUserGroupHandle(dmz.object.hil()) === groupHandle) &&
+      !dmz.object.flag(lobbyistHandle, dmz.stance.DisabledHandle)) {
+
+      MainModule.highlight("Lobbyist");
+   }
+});
+
+dmz.object.flag.observe(self, dmz.stance.DisabledHandle,
+function (objHandle, attrHandle, value) {
+
+   var type = dmz.object.type(objHandle)
+     , hil = dmz.object.hil()
+     ;
+
+   if (value && type && type.isOfType(dmz.stance.LobbyistType)
+      && dmz.object.linkHandle(
+            dmz.stance.ActiveLobbyistHandle,
+            dmz.stance.getUserGroupHandle(hil),
+            objHandle)
+      && !dmz.object.linkHandle(
+            dmz.stance.ViewedLobbyistHandle,
+            objHandle,
+            dmz.object.hil())) {
 
       MainModule.highlight("Lobbyist");
    }
@@ -86,6 +108,7 @@ function (objHandle, attrHandle, value) {
          dmz.object.subLinks(
             dmz.stance.getUserGroupHandle(objHandle), dmz.stance.ActiveLobbyistHandle);
       if (lobbyist && lobbyist[0] &&
+         !dmz.object.flag(lobbyist[0], dmz.stance.DisabledHandle) &&
          !dmz.object.linkHandle(dmz.stance.ViewedLobbyistHandle, lobbyist[0], objHandle)) {
 
          MainModule.highlight("Lobbyist");

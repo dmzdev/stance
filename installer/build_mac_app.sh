@@ -24,10 +24,13 @@ if [ -d $DEPTH/depend/QtGui.framework/Versions/4/Resources/qt_menu.nib ] ; then
 cp -R $DEPTH/depend/QtGui.framework/Versions/4/Resources/qt_menu.nib $DEPTH/STANCE.app/Contents/Resources
 fi
 cp $DEPTH/depend/v8/lib/libv8.dylib $DEPTH/STANCE.app/Contents/Frameworks/v8/
+mkdir $DEPTH/STANCE
+mv $DEPTH/STANCE.app $DEPTH/STANCE/
+ln -s /Applications $DEPTH/STANCE/
 TARGET=$DEPTH/STANCE-`cat $DEPTH/tmp/macos-opt/stanceapp/versionnumber.txt`-`cat $DEPTH/tmp/macos-opt/stanceapp/buildnumber.txt`.dmg
-hdiutil create -srcfolder $DEPTH/STANCE.app $TARGET
+hdiutil create -srcfolder $DEPTH/STANCE/ $TARGET
 hdiutil internet-enable -yes -verbose $TARGET
-rm -rf $DEPTH/STANCE.app/
+rm -rf $DEPTH/STANCE/
 INSTALLER_PATH=$DEPTH/installers
 if [ ! -d $INSTALLER_PATH ] ; then
    mkdir $INSTALLER_PATH

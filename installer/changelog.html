@@ -40,21 +40,34 @@
 <hr noshade size='1'>
 -->
 
-<h2>Version 1.0.3 (2011-06-20)</h2>
+<h2>Version 1.0.3 (2011-07-07)</h2>
 
 <h3>New Features</h3>
 <ul>
+   <li>After Action Report Utility added to allow admins an easy method of reviewing simulation statistics and timelines.</li>
+   <li>OS X install process has gotten an update to increase ease of use. Installation can now be accomplished simply by dragging the STANCE icon over to the Applications directory shortcut that pops up next to it.</li>
    <li>Added "Preferences" to app to allow for multiple update channels. Students are recommended to stay with the (default) "stable" updates, but the curious can try the "devel" updates, which can have faster fixes for previous bugs, but may contain additional new bugs. Please do not use the "test" option unless specifically instructed to do so.</li>
+   <li>Added link checker to admin window to ensure that inject links are associated with the proper type of inject.</li>
+   <li>Added "Media state" label to video window to give students more information about video loading.</li>
+   <li>Added ability for admin to enable / disable Lobbyist, Video, Memo, and Newspaper injects that are not functioning correctly.</li>
+   <li>Added an option to the "File" menu which will let students clear their local STANCE data cache. This *only* clears game data, and does *not* require any sort of reinstall. All data will be redownloaded the next time that the user logs in to the game. This can fix some bugs with not being able to post, or seeing advisors locked when they should not be.</li>
+   <li>Users will now receive an email when their group completes a vote.</li>
 </ul>
 
 <h3>Changes</h3>
 <ul>
-   <li></li>
+   <li>Removed the gray border around the game window.</li>
+   <li>Users will now be prompted to update before being prompted to log in.</li>
+   <li>Moved admin inject buttons and lists to own tab in Edit Scenario window in order to better allocate space.</li>
+   <li>The default vote duration has been increased to 24 hours from 12 hours.</li>
+   <li>Removed admin notification emails for questions.</li>
+   <li>Modified subject line of admin vote emails to allow for inbox filtering.</li>
 </ul>
 
 <h3>Bugs fixed</h3>
 <ul>
-   <li></li>
+   <li>Lobbyist notifications should now work as intended.</li>
+   <li>Fixed a bug where vote real end dates would show up as "undefined" until reviewed by advisor. This should now read "N/A".</li>
 </ul>
 
 <hr noshade size='1'>

@@ -43,7 +43,6 @@ var dmz =
    , setUserPlayList
    ;
 
-
 dmz.object.link.observe(self, dmz.stance.ViewedMemoHandle,
 function (linkObjHandle, attrHandle, userHandle, mediaHandle) {
 
@@ -109,7 +108,7 @@ skipBackward = function () {
 nextButton.observe(self, "clicked", skipForward);
 prevButton.observe(self, "clicked", skipBackward);
 
-setUserPlayList = function (userHandle, clickWindow) {
+setUserPlayList = function (userHandle) {
 
    var list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
      , activeList = dmz.object.subLinks(userHandle, dmz.stance.ActiveMemoHandle)
@@ -125,7 +124,7 @@ setUserPlayList = function (userHandle, clickWindow) {
       list = list.filter(function (handle, index) {
 
          var type = dmz.object.type(handle);
-         return type && type.isOfType(dmz.stance.MemoType);
+         return type && type.isOfType(dmz.stance.MemoType) && !dmz.object.flag(handle, dmz.stance.DisabledHandle);
       });
    }
    if (list && activeList) {
@@ -161,7 +160,22 @@ dmz.object.link.observe(self, dmz.stance.ActiveMemoHandle,
 function (objHandle, attrHandle, userHandle, memoHandle) {
 
    if ((userHandle === dmz.object.hil()) &&
+      !dmz.object.flag(memoHandle, dmz.stance.DisabledHandle) &&
       dmz.object.linkHandle(dmz.stance.GameMediaHandle, dmz.stance.getUserGroupHandle(userHandle), memoHandle)) {
+
+      MainModule.highlight("Memo");
+   }
+});
+
+dmz.object.flag.observe(self, dmz.stance.DisabledHandle,
+function (objHandle, attrHandle, value) {
+
+   var type = dmz.object.type(objHandle)
+     , hil = dmz.object.hil()
+     ;
+
+   if (value && type && type.isOfType(dmz.stance.MemoType)
+      && dmz.object.linkHandle(dmz.stance.ActiveMemoHandle, hil, objHandle)) {
 
       MainModule.highlight("Memo");
    }
@@ -170,7 +184,7 @@ function (objHandle, attrHandle, userHandle, memoHandle) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   if (value) { setUserPlayList(objHandle, true); }
+   if (value) { setUserPlayList(objHandle); }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {

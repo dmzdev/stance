@@ -37,12 +37,13 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-<!--   <db app="ns4755_1001_1002_2"/> -->
-   <db app="stance_alpha"/>
+   <db app="ns4755_1001_1002_2"/>
+<!--   <db app="stance_alpha"/> -->
+<!--   <db app="stance_beta"/> -->
 </web-services-object>
 <archive-module>
-<!--   <db app="ns4755_1001_1002_2"/> -->
-   <db app="stance_alpha"/>
+   <db app="ns4755_1001_1002_2"/>
+<!--   <db app="stance_alpha"/> -->
 </archive-module>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>

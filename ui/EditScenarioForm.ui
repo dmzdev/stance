@@ -27,37 +27,16 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QPushButton" name="addLobbyistButton">
-           <property name="text">
-            <string>Add Lobbyist Inject</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="addVideoInjectButton">
-           <property name="text">
-            <string>Add Video Inject</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="addNewspaperInjectButton">
-           <property name="text">
-            <string>Add Newspaper Inject</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="addMemoInjectButton">
-           <property name="text">
-            <string>Add Memo Inject</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="gameStateButton">
            <property name="text">
             <string>Start Game</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="aarButton">
+           <property name="text">
+            <string>Show AAR</string>
            </property>
           </widget>
          </item>
@@ -82,6 +61,85 @@
           <enum>QLayout::SetNoConstraint</enum>
          </property>
         </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Media Injects</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QPushButton" name="addLobbyistButton">
+             <property name="text">
+              <string>Lobbyist</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListWidget" name="lobbyistListWidget"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QPushButton" name="addVideoInjectButton">
+             <property name="text">
+              <string>Video</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListWidget" name="videoListWidget"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QPushButton" name="addNewspaperInjectButton">
+             <property name="text">
+              <string>Newspaper</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListWidget" name="newspaperListWidget"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <widget class="QPushButton" name="addMemoInjectButton">
+             <property name="text">
+              <string>Memo</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListWidget" name="memoListWidget"/>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Note: Items marked with '*' are currently disabled.</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
