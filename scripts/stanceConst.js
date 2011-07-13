@@ -31,6 +31,7 @@ var dmz =
       , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
       , AdvisorActiveQuestionHandle: dmz.defs.createNamedHandle("advisor_active_question")
       , AdvisorAnsweredQuestionHandle: dmz.defs.createNamedHandle("advisor_answered_question")
+      , BioHandle: dmz.defs.createNamedHandle("bio")
       , CommentHandle: dmz.defs.createNamedHandle("comment")
       , CreatedByHandle: dmz.defs.createNamedHandle("created_by")
       , CreatedAtServerTimeHandle: dmz.defs.createNamedHandle("created_at_server_time")

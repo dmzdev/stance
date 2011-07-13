@@ -707,7 +707,6 @@ setup = function () {
             dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, lobbyistHandle);
 
             groupMemberList = dmz.object.subLinks(groupList[groupIndex], dmz.stance.GroupMembersHandle);
-            self.log.error(groupMemberList);
             groupMemberList.forEach(function (userHandle) {
 
                dmz.object.link(dmz.stance.ActiveLobbyistHandle, userHandle, lobbyistHandle);
