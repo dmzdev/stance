@@ -46,7 +46,7 @@ LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
 (function () {
 
-   RetData = dmz.forumView.setupForumView(
+   var forumData =
       { self: self
       , postType: dmz.stance.PostType
       , commentType: dmz.stance.CommentType
@@ -57,7 +57,15 @@ LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
       , canReplyTo: function () { return true; }
       , canPost: function () { return true; }
       , messageLength: MaxMessageLength
-      });
+      };
+   RetData = dmz.forumView.setupForumView(forumData);
+
+   dmz.object.create.observe(self, RetData.observers.create);
+   dmz.object.text.observe(self, dmz.stance.TextHandle, RetData.observers.text);
+   dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, RetData.observers.createdAt);
+   dmz.object.link.observe(self, dmz.stance.CreatedByHandle, RetData.observers.createdBy);
+   dmz.object.link.observe(self, dmz.stance.ForumLink, RetData.observers.forumLink);
+   dmz.object.link.observe(self, dmz.stance.ParentHandle, RetData.observers.parentLink);
 }());
 
 dmz.module.subscribe(self, "main", function (Mode, module) {

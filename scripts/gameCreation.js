@@ -797,6 +797,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
             str = name + ": No Name - Adv" + idx;
             handle = dmz.object.create(dmz.stance.AdvisorType);
             dmz.object.text(handle, dmz.stance.NameHandle, str);
+            dmz.object.scalar(handle, dmz.stance.ID, idx);
             if (idx < advisorImages.length) {
 
                file = dmz.resources.lookupConfig(advisorImages[idx]);
@@ -804,10 +805,13 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
                if (!file) { file = dmz.resources.findFile(resource); }
                if (file) { dmz.object.text(handle, dmz.stance.PictureHandle, advisorImages[idx]); }
             }
-            dmz.object.scalar(handle, dmz.stance.ID, idx);
             dmz.object.activate(handle);
             dmz.object.link(dmz.stance.AdvisorGroupHandle, group, handle);
          }
+         handle = dmz.object.create(dmz.stance.ForumType);
+         dmz.object.text(handle, dmz.stance.NameHandle, name);
+         dmz.object.activate(handle);
+         dmz.object.link(dmz.stance.ForumLink, group, handle);
       }
    });
 

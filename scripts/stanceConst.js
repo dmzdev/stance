@@ -117,6 +117,8 @@ var dmz =
       , VoteLinkHandle: dmz.defs.createNamedHandle("vote_link")
       , QuestionLinkHandle: dmz.defs.createNamedHandle("question_link")
       , VoteState: dmz.defs.createNamedHandle("vote_state")
+      , TotalHandle: dmz.defs.createNamedHandle("total")
+      , ExpireHandle: dmz.defs.createNamedHandle("expire")
       }
 
    , Functions =

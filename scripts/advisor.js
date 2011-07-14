@@ -50,7 +50,7 @@ var dmz =
         [ "Submitted"
         , "Denied"
         , "Active"
-        , "Approved"
+        , "Passed"
         , "Failed"
         ]
 
@@ -70,6 +70,15 @@ var dmz =
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
+   , extraInfoList = []
+   , observerLists =
+        { create: []
+        , text: []
+        , createdBy: []
+        , createdAt: []
+        , forumLink: []
+        , parentLink: []
+        }
 
    // Functions
    , createAdvisorWindow
@@ -97,10 +106,7 @@ LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
 createAdvisorWindow = function (windowStr) {
 
-   var data = {}
-     , canReplyFnc
-     , canPostFnc
-     ;
+   var data = {};
 
    data.update = function () { self.log.error ("Could not update", windowStr); }
    data.onHome = function () { self.log.error ("Could not do onHome for", windowStr); }
@@ -114,40 +120,6 @@ createAdvisorWindow = function (windowStr) {
    data.infoWindow.picture = data.infoWindow.widget.lookup("pictureLabel");
    data.infoWindow.picture.pixmap(AvatarDefault);
 
-   canReplyFnc = function (replyToHandle) {
-
-      return dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) &&
-         dmz.object.type(replyToHandle).isTypeOf(dmz.stance.VoteType) &&
-         !getVoteDecision(replyToHandle) && !LoginSkipped;
-   };
-
-   canPostFnc = function (advisorHandle) {
-
-      var votes = dmz.object.superLinks(advisorHandle, dmz.stance.VoteHandle)
-        , result = dmz.object.hil() ? true : false;
-        ;
-
-      if (votes) {
-
-         votes.forEach(function (voteHandle) {
-
-            var decision = getVoteDecision(voteHandle)
-              , voteState = dmz.object.counter(decision, dmz.stance.VoteState)
-              , result = dmz.object.hil()
-              ;
-
-            if (!decision ||
-               ((voteState !== VOTE_YES) &&
-                  (voteState !== VOTE_NO) &&
-                  (voteState !== VOTE_DENIED))) {
-
-               result = false;
-            }
-         });
-      }
-      return result && !LoginSkipped;
-   };
-
    data.task = dmz.forumView.setupForumView(
       { self: self
       , postType: dmz.stance.VoteType
@@ -155,36 +127,85 @@ createAdvisorWindow = function (windowStr) {
       , forumType: dmz.stance.AdvisorType
       , parentHandle: dmz.stance.VoteLinkHandle
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
-      , highlight: function () { MainModule.highlight(windowStr); }
-      , canReplyTo: canReplyFnc
-      , canPost: canPostFnc
+      , useForumData: true
       , messageLength: MAX_TASK_STR_LEN
+      , highlight: function () { MainModule.highlight(windowStr); }
+      , onNewPost: function (handle) { dmz.object.scalar(handle, dmz.stance.VoteState, VOTE_APPROVAL_PENDING); }
+      , canReplyTo: function (replyToHandle) {
+
+           return dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) &&
+              dmz.object.type(replyToHandle).isOfType(dmz.stance.VoteType) &&
+              !getVoteDecision(replyToHandle)/* && !LoginSkipped*/;
+        }
+      , canPost: function (advisorHandle) {
+
+           var votes = dmz.object.superLinks(advisorHandle, dmz.stance.VoteHandle)
+             , result = dmz.object.hil() ? true : false;
+             ;
+
+           if (votes) {
+
+              votes.forEach(function (voteHandle) {
+
+                 var decision = getVoteDecision(voteHandle)
+                   , voteState = dmz.object.scalar(decision, dmz.stance.VoteState)
+                   , result = dmz.object.hil()
+                   ;
+
+                 if (!decision ||
+                    ((voteState !== VOTE_YES) &&
+                       (voteState !== VOTE_NO) &&
+                       (voteState !== VOTE_DENIED))) {
+
+                    result = false;
+                 }
+              });
+           }
+           return result && !LoginSkipped;
+        }
+      , extraInfo: function (handle) {
+
+           var type = dmz.object.type(handle)
+             , state = -1
+             , result = ""
+             , links
+             , total = 0
+             , expire
+             ;
+
+           if (type && type.isOfType(dmz.stance.DecisionType)) {
+
+              state = dmz.object.scalar(handle, dmz.stance.VoteState);
+              if ((state === VOTE_APPROVAL_PENDING) || (state === VOTE_DENIED)) {
+
+                 result = STATE_STR[state];
+              }
+              else if ((state === VOTE_ACTIVE) || (state === VOTE_YES) || (STATE === VOTE_NO)) {
+
+                 result = STATE_STR[state];
+                 links = dmz.object.subLinks(handle, dmz.stance.YesHandle);
+                 total += links ? links.length : 0;
+                 result += " - Y: " + (links ? links.length : 0);
+
+                 links = dmz.object.subLinks(handle, dmz.stance.NoHandle);
+                 total += links ? links.length : 0;
+                 result += " N: " + (links ? links.length : 0);
+
+                 links = dmz.object.scalar(handle, dmz.stance.TotalHandle);
+                 result += " U: " + (links ? (links - total) : "?");
+
+                 expire = dmz.object.timeStamp(handle, dmz.stance.ExpireHandle);
+                 if (expire) {
+
+                    result += " - Ends: " +
+                       dmz.util.timeStampToDate(expire).toString("MMM-dd-yyyy hh:mm:ss tt");
+                 }
+              }
+           }
+           return result;
+        }
       });
-
-   canReplyFnc = function (replyToHandle) {
-
-      return dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) && !getQuestionAnswer(replyToHandle);
-   };
-
-   canPostFnc = function (advisorHandle) {
-
-      var questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionHandle)
-        , result = dmz.object.hil()
-        ;
-
-      if (questions) {
-
-         questions.forEach(function (questionHandle) {
-
-            if (!getQuestionAnswer(questionHandle) &&
-               !dmz.object.flag(getCreatedBy(questionHandle), dmz.stance.AdminHandle)) {
-
-               result = false;
-            }
-         });
-      }
-      return result;
-   };
+   if (data.task.updateExtraInfo) { extraInfoList.push(data.task.updateExtraInfo); }
 
    data.question = dmz.forumView.setupForumView(
       { self: self
@@ -193,11 +214,44 @@ createAdvisorWindow = function (windowStr) {
       , forumType: dmz.stance.AdvisorType
       , parentHandle: dmz.stance.QuestionLinkHandle
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
-      , highlight: function () { MainModule.highlight(windowStr); }
-      , canReplyTo: canReplyFnc
-      , canPost: canPostFnc
+      , useForumData: true
       , messageLength: MAX_QUESTION_STR_LEN
+      , highlight: function () { MainModule.highlight(windowStr); }
+      , canReplyTo: function (replyToHandle) {
+
+           return dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) &&
+              !getQuestionAnswer(replyToHandle);
+        }
+      , canPost: function (advisorHandle) {
+
+           var questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionHandle)
+             , result = dmz.object.hil()
+             ;
+
+           if (questions) {
+
+              questions.forEach(function (questionHandle) {
+
+                 if (!getQuestionAnswer(questionHandle) &&
+                    !dmz.object.flag(getCreatedBy(questionHandle), dmz.stance.AdminHandle)) {
+
+                    result = false;
+                 }
+              });
+           }
+           return result/* && !LoginSkipped*/;
+        }
       });
+
+   Object.keys(data.task.observers).forEach(function (key) {
+
+      observerLists[key].push({ data: data.task, callback: data.task.observers[key] });
+   });
+
+   Object.keys(data.question.observers).forEach(function (key) {
+
+      observerLists[key].push({ data: data.task, callback: data.question.observers[key] });
+   });
 
    data.onHome = function () {
 
@@ -267,15 +321,16 @@ getHILAdvisor = function (index) {
          return master.advisors[element].ID === index;
       });
    }
-
-   self.log.warn("Get HIL Advisor:", index, groupHandle, advisors);
    return (advisors && advisors.length) ? advisors[0] : false;
 };
 
 dmz.object.create.observe(self, function (handle, type) {
 
-   var obj = { handle: handle };
+   var obj = { handle: handle }
+     , args = arguments
+     ;
 
+   observerLists.create.forEach(function (obj) { obj.callback.apply(obj.data, args); });
    if (type) {
 
       if (type.isOfType(dmz.stance.VoteType)) { master.votes[handle] = obj; }
@@ -286,9 +341,74 @@ dmz.object.create.observe(self, function (handle, type) {
    }
 });
 
+dmz.object.text.observe(self, dmz.stance.TextHandle, function () {
+
+   var args = arguments;
+   observerLists.text.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+});
+
+dmz.object.link.observe(self, dmz.stance.CreatedByHandle, function () {
+
+   var args = arguments;
+   observerLists.createdBy.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+});
+
+dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, function () {
+
+   var args = arguments;
+   observerLists.createdAt.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+});
+
+dmz.object.link.observe(self, dmz.stance.ForumLink, function () {
+
+   var args = arguments;
+   observerLists.forumLink.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+});
+
+dmz.object.link.observe(self, dmz.stance.ParentHandle, function () {
+
+   var args = arguments;
+   observerLists.parentLink.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+});
+
+
 dmz.object.scalar.observe(self, dmz.stance.ID, function (handle, attr, value) {
 
    if (master.advisors[handle]) { master.advisors[handle].ID = value; }
+});
+
+dmz.object.scalar.observe(self, dmz.stance.VoteState, function (handle, attr, value) {
+
+   if (master.decisions[handle]) {
+
+      extraInfoList.forEach(function (fnc) { fnc(handle); });
+   }
+});
+
+dmz.object.timeStamp.observe(self, dmz.stance.ExpireHandle, function (handle, attr, value) {
+
+   if (master.decisions[handle]) {
+
+      extraInfoList.forEach(function (fnc) { fnc(handle); });
+   }
+});
+
+dmz.object.link.observe(self, dmz.stance.YesHandle,
+function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
+
+   if (master.decisions[decisionHandle]) {
+
+      extraInfoList.forEach(function (fnc) { fnc(decisionHandle); });
+   }
+});
+
+dmz.object.link.observe(self, dmz.stance.NoHandle,
+function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
+
+   if (master.decisions[decisionHandle]) {
+
+      extraInfoList.forEach(function (fnc) { fnc(decisionHandle); });
+   }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
@@ -308,7 +428,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             module.addPage
                ( str
                , data.window
-               , function () { self.log.warn("Update", index); data.update(getHILAdvisor(index)); }
+               , function () { data.update(getHILAdvisor(index)); }
                , function () { data.onHome(); }
                );
          }(idx));
