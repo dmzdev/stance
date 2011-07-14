@@ -39,6 +39,7 @@ var dmz =
       , DisplayNameHandle: dmz.defs.createNamedHandle("display_name")
       , DurationHandle: dmz.defs.createNamedHandle("duration")
       , ForumLink: dmz.defs.createNamedHandle("group_forum_link")
+      , ViewedMediaHandle: dmz.defs.createNamedHandle("viewed_media_handle")
       , GameGroupHandle: dmz.defs.createNamedHandle("game_group")
       , GameForumsHandle: dmz.defs.createNamedHandle("game_forums")
       , GameMediaHandle: dmz.defs.createNamedHandle("game_media")

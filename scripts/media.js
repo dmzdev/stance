@@ -108,6 +108,7 @@ var dmz =
    , setUserPlayList //
    , setActiveState //
    , setButtonBindings
+   , init
    ;
 
 setActiveState = function (windowName) {
@@ -365,7 +366,7 @@ setButtonBindings = function () {
    prevButton.observe(self, "clicked", skipBackward);
 };
 
-(function () {
+init = function () {
 
    // Layout Declarations
    webForm.lookup("vLayout").addWidget(webpage);
@@ -405,7 +406,9 @@ setButtonBindings = function () {
          }
       });
    });
-}());
+};
+
+init();
 
 playButton.observe(self, "clicked", playCurrentVideo);
 pauseButton.observe(self, "clicked", pauseCurrent);
