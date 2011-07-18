@@ -383,9 +383,11 @@
    </resource>
    <resource name="WHC_memos" file="WHC_memos.png">
       <loc x="1010" y="495"/>
+      <offset x="0" y="30"/>
    </resource>
    <resource name="WHC_newspaper" file="WHC_newspaper.png">
       <loc x="81" y="507"/>
+      <offset x="0" y="30"/>
    </resource>
 <!--
    <resource name="WHC_resources" file="WHC_resources.png">
@@ -646,7 +648,7 @@
    </resource>
    <resource name="CBP_newspaper" file="CBP_newspaper.png">
       <loc x="286" y="487"/>
-      <offset x="0" y="40"/>      
+      <offset x="0" y="40"/>
    </resource>
 <!--
    <resource name="CBP_resources" file="CBP_resources.png">
