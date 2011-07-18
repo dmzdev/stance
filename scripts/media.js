@@ -47,10 +47,10 @@ var dmz =
    , pictureLabel = lobbyistForm.lookup("pictureLabel")
 
    // Shared UI
-   , nextButton = webForm.lookup("nextButton") //
-   , prevButton = webForm.lookup("prevButton") //
-   , currLabel = webForm.lookup("currentLabel") //
-   , totalLabel = webForm.lookup("totalLabel") //
+   , nextButton = webForm.lookup("nextButton")
+   , prevButton = webForm.lookup("prevButton")
+   , currLabel = webForm.lookup("currentLabel")
+   , totalLabel = webForm.lookup("totalLabel")
 
    // Variables
    , CurrentWindowName
@@ -62,11 +62,11 @@ var dmz =
    , WinVidExt = ".wmv"
    , CurrentType
    , TypesMap =
-      { "Memo": dmz.stance.MemoType
-      , "Newspaper": dmz.stance.NewspaperType
-      , "Video": dmz.stance.VideoType
-      , "Lobbyist": dmz.stance.LobbyistType
-      }
+        { "Memo": dmz.stance.MemoType
+        , "Newspaper": dmz.stance.NewspaperType
+        , "Video": dmz.stance.VideoType
+        , "Lobbyist": dmz.stance.LobbyistType
+        }
    // Function decls, "//" indicated shared functions with flow control base on
    // object type.
    , loadCurrentPrint
@@ -84,7 +84,7 @@ var dmz =
    , init
    ;
 
-self.shtdown = function () { dmz.ui.phonon.clearPaths(); };
+self.shutdown = function () { dmz.ui.phonon.clearPaths(); };
 
 setActiveState = function (state) {
 
@@ -162,7 +162,7 @@ setUserPlayList = function (userHandle) {
       userMediaList.forEach(function (userMediaHandle) {
 
          var idx = groupMediaList.indexOf(userMediaHandle)
-         if (idx != -1) {
+         if (idx !== -1) {
 
             groupMediaList.splice(idx, 1);
          }
@@ -172,6 +172,7 @@ setUserPlayList = function (userHandle) {
    // At this point, userMediaList containts previously viewed items, while groupMediaList
    // contains items not yet seen by the user.
    if (groupMediaList) {
+
       if (groupMediaList.length) {
 
          MainModule.highlight(CurrentWindowName);
@@ -180,14 +181,14 @@ setUserPlayList = function (userHandle) {
 
    if (groupMediaList) {
 
-      for (itor = 0; itor < groupMediaList.length; itor++) {
+      for (itor = 0; itor < groupMediaList.length; itor+=1) {
 
          combinedMediaList.push(groupMediaList[itor]);
       }
    }
    if (userMediaList) {
 
-      for (itor = 0; itor < userMediaList.length; itor++) {
+      for (itor = 0; itor < userMediaList.length; itor+=1) {
 
          combinedMediaList.push(userMediaList[itor]);
       }
@@ -195,9 +196,9 @@ setUserPlayList = function (userHandle) {
 
    if (combinedMediaList && combinedMediaList.length) {
 
-      /* Go through the combined media list and remove and objects that don't also
-         belong to the user's current group (only a problem for admin users)
-      */
+      // Go through the combined media list and remove and objects that don't also
+      // belong to the user's current group (only a problem for admin users)
+
       groupMediaList = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle);
       userMediaList = combinedMediaList;
       combinedMediaList = [];
@@ -205,7 +206,7 @@ setUserPlayList = function (userHandle) {
 
          groupMediaList.forEach(function (handle) {
 
-            if (userMediaList.indexOf(handle) != -1) {
+            if (userMediaList.indexOf(handle) !== -1) {
 
                combinedMediaList.push(handle);
             }
@@ -257,9 +258,7 @@ setUserPlayList = function (userHandle) {
       });
       totalLabel.text(combinedMediaList.length);
       CurrentIndex = 0;
-      if (SourceList.length != 0) {
-         currLabel.text(CurrentIndex + 1);
-      }
+      if (SourceList.length !== 0) { currLabel.text(CurrentIndex + 1); }
    }
 };
 
@@ -269,10 +268,7 @@ loadCurrentPrint = function () {
      , hil = dmz.object.hil()
      , item
      ;
-   if (!SourceList.length) {
-
-      webpage.setHtml("<center><b>No Current Items</b></center>");
-   }
+   if (!SourceList.length) { webpage.setHtml("<center><b>No Current Items</b></center>"); }
 
    if (CurrentIndex < SourceList.length) {
 
@@ -357,18 +353,15 @@ playCurrentVideo = function () {
                   dmz.object.link(dmz.stance.GameMediaHandle, hil, video.handle);
                }
 
-               dmz.time.setTimer(self, 1, function () {source.play(); });
+               dmz.time.setTimer(self, 1, function () { source.play(); });
             }
          };
          if (NewSource) {
 
-            self.log.warn(dmz.object.text(video.handle, dmz.stance.TitleHandle), source.currentSource(video.source));
+            dmz.object.text(video.handle, dmz.stance.TitleHandle), source.currentSource(video.source);
             NewSource = false;
          }
-         if (source.hasVideo()) {
-
-            onVideo(true, source);
-         }
+         if (source.hasVideo()) { onVideo(true, source); }
          pauseButton.enabled(true);
          playButton.enabled(false);
       }
@@ -548,9 +541,7 @@ function (objHandle, attrHandle, value) {
 
       Object.keys(TypesMap).forEach(function (key) {
 
-         if (TypesMap[key] == type) {
-            MainModule.highlight(key);
-         }
+         if (TypesMap[key] == type) { MainModule.highlight(key); }
       });
    }
 });
