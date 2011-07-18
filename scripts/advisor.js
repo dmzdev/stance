@@ -40,7 +40,9 @@ var dmz =
    // Consts
    , ADVISOR_COUNT = 5
    , MAX_QUESTION_STR_LEN = 144
+   , MAX_QUESTION_REPLY_LEN = 500
    , MAX_TASK_STR_LEN = 144
+   , MAX_TASK_REPLY_LEN = 500
    , VOTE_APPROVAL_PENDING = 0
    , VOTE_DENIED = 1
    , VOTE_ACTIVE = 2
@@ -129,21 +131,26 @@ createAdvisorWindow = function (windowStr) {
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
       , useForumData: true
       , messageLength: MAX_TASK_STR_LEN
+      , replyLength: MAX_TASK_REPLY_LEN
       , highlight: function () { MainModule.highlight(windowStr); }
       , onNewPost: function (handle) { dmz.object.scalar(handle, dmz.stance.VoteState, VOTE_APPROVAL_PENDING); }
-      , canReplyTo: function (replyToHandle) {
+      , canReplyTo: function (replyToHandle) { return false; }
+      , canPost: function () {
 
-           return dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) &&
-              dmz.object.type(replyToHandle).isOfType(dmz.stance.VoteType) &&
-              !getVoteDecision(replyToHandle)/* && !LoginSkipped*/;
-        }
-      , canPost: function (advisorHandle) {
-
-           var votes = dmz.object.superLinks(advisorHandle, dmz.stance.VoteHandle)
-             , result = dmz.object.hil() ? true : false;
+           var hil = dmz.object.hil()
+             , advisors = dmz.object.subLinks(dmz.stance.getUserGroupHandle(hil), dmz.stance.AdvisorGroupHandle)
+             , result
+             , votes = []
              ;
 
-           if (votes) {
+           result = hil && !dmz.object.flag(hil, dmz.stance.AdminHandle);
+
+           advisors.forEach(function (advisorHandle) {
+
+              var links = dmz.object.superLinks(advisorHandle, dmz.stance.VoteLinkHandle) || [];
+              votes = votes.concat(links);
+           });
+           if (votes && votes.length) {
 
               votes.forEach(function (voteHandle) {
 
@@ -180,7 +187,7 @@ createAdvisorWindow = function (windowStr) {
 
                  result = STATE_STR[state];
               }
-              else if ((state === VOTE_ACTIVE) || (state === VOTE_YES) || (STATE === VOTE_NO)) {
+              else if ((state === VOTE_ACTIVE) || (state === VOTE_YES) || (state === VOTE_NO)) {
 
                  result = STATE_STR[state];
                  links = dmz.object.subLinks(handle, dmz.stance.YesHandle);
@@ -216,11 +223,13 @@ createAdvisorWindow = function (windowStr) {
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
       , useForumData: true
       , messageLength: MAX_QUESTION_STR_LEN
+      , replyLength: MAX_QUESTION_REPLY_LEN
       , highlight: function () { MainModule.highlight(windowStr); }
       , canReplyTo: function (replyToHandle) {
 
-           return dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) &&
-              !getQuestionAnswer(replyToHandle);
+           var type = dmz.object.type(replyToHandle);
+           return dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) && type &&
+              type.isOfType(dmz.stance.QuestionType) && !getQuestionAnswer(replyToHandle);
         }
       , canPost: function (advisorHandle) {
 
@@ -245,12 +254,12 @@ createAdvisorWindow = function (windowStr) {
 
    Object.keys(data.task.observers).forEach(function (key) {
 
-      observerLists[key].push({ data: data.task, callback: data.task.observers[key] });
+      observerLists[key].push(data.task.observers[key]);
    });
 
    Object.keys(data.question.observers).forEach(function (key) {
 
-      observerLists[key].push({ data: data.task, callback: data.question.observers[key] });
+      observerLists[key].push(data.question.observers[key]);
    });
 
    data.onHome = function () {
@@ -326,11 +335,8 @@ getHILAdvisor = function (index) {
 
 dmz.object.create.observe(self, function (handle, type) {
 
-   var obj = { handle: handle }
-     , args = arguments
-     ;
-
-   observerLists.create.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+   var obj = { handle: handle };
+   observerLists.create.forEach(function (fnc) { fnc(handle, type); });
    if (type) {
 
       if (type.isOfType(dmz.stance.VoteType)) { master.votes[handle] = obj; }
@@ -341,36 +347,39 @@ dmz.object.create.observe(self, function (handle, type) {
    }
 });
 
-dmz.object.text.observe(self, dmz.stance.TextHandle, function () {
+dmz.object.text.observe(self, dmz.stance.TextHandle, function (handle, attr, value) {
 
-   var args = arguments;
-   observerLists.text.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+   observerLists.text.forEach(function (fnc) { fnc(handle, attr, value); });
 });
 
-dmz.object.link.observe(self, dmz.stance.CreatedByHandle, function () {
+dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var args = arguments;
-   observerLists.createdBy.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+   observerLists.createdBy.forEach(function (fnc) { fnc(linkObjHandle, attrHandle, superHandle, subHandle); });
 });
 
-dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, function () {
+dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, function (handle, attr, value) {
 
-   var args = arguments;
-   observerLists.createdAt.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+   observerLists.createdAt.forEach(function (fnc) { fnc(handle, attr, value); });
 });
 
-dmz.object.link.observe(self, dmz.stance.ForumLink, function () {
+dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var args = arguments;
-   observerLists.forumLink.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+   observerLists.forumLink.forEach(function (fnc) { fnc(linkObjHandle, attrHandle, superHandle, subHandle); });
 });
 
-dmz.object.link.observe(self, dmz.stance.ParentHandle, function () {
+dmz.object.link.observe(self, dmz.stance.VoteLinkHandle,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var args = arguments;
-   observerLists.parentLink.forEach(function (obj) { obj.callback.apply(obj.data, args); });
+   observerLists.parentLink.forEach(function (fnc) { fnc(linkObjHandle, attrHandle, superHandle, subHandle); });
 });
 
+dmz.object.link.observe(self, dmz.stance.QuestionLinkHandle,
+function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   observerLists.parentLink.forEach(function (fnc) { fnc(linkObjHandle, attrHandle, superHandle, subHandle); });
+});
 
 dmz.object.scalar.observe(self, dmz.stance.ID, function (handle, attr, value) {
 
@@ -425,6 +434,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               ;
             str = "Advisor" + idx;
             data = createAdvisorWindow(str);
+            AdvisorWindows.push(data);
             module.addPage
                ( str
                , data.window

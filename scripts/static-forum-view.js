@@ -62,6 +62,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
      , IsCurrentWindow = false
      , MaxMessageLength = 0
+     , MaxReplyLength = 0
 
      , _Self
      , _PostType
@@ -112,6 +113,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    _OnNewPost = forumData.onNewPost ? forumData.onNewPost : function () {};
 
    MaxMessageLength = forumData.messageLength;
+   MaxReplyLength = forumData.replyLength || MaxMessageLength;
 
    if (_Self && _PostType && _CommentType && _ForumType && _ParentLinkHandle &&
       _CanReplyTo && _CanPost && _Highlight) {
@@ -173,7 +175,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          if (item) {
 
             info = _ExtraInfo(handle);
-            _Self.log.warn ("uEI:", handle, info);
+//            _Self.log.warn ("uEI:", handle, info);
             if (info && info.length && item.extra) {
 
                item.extra.text (info);
@@ -238,9 +240,9 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          _updatePostedBy(postHandle);
          _updatePostedAt(postHandle);
          _updateMessage(postHandle);
-         _Self.log.warn ("call UEI", postHandle);
+//         _Self.log.warn ("call UEI", postHandle);
          _updateExtraInfo(postHandle);
-         _Self.log.warn ("leaving UEI", postHandle);
+//         _Self.log.warn ("leaving UEI", postHandle);
       };
 
       _addComment = function (postHandle, commentHandle) {
@@ -290,7 +292,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             _updatePostedBy(commentHandle);
             _updatePostedAt(commentHandle);
             _updateMessage(commentHandle);
-            _Self.log.warn ("call comment UEI", commentHandle, dmz.object.type(commentHandle));
+//            _Self.log.warn ("call comment UEI", commentHandle, dmz.object.type(commentHandle));
             _updateExtraInfo(commentHandle);
          }
       };
@@ -310,7 +312,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
             dmz.stance.addUITextLimit
                ( _Self
-               , MaxMessageLength
+               , MaxReplyLength
                , _commentAdd.textEdit
                , _commentAdd.form.lookup("submitButton")
                , _commentAdd.form.lookup("currentCharAmt")
@@ -551,8 +553,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
       _updateForumForUser = function (userHandle, forumHandle) {
 
-         var forumHandle
-           , forumList
+         var forumList
            , forum
            , group
            , avatar = _view.lookup("avatarLabel")
@@ -580,6 +581,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          }
       };
 
+      retData.updateForUser = _updateForumForUser;
+
       dmz.time.setRepeatingTimer(_Self, 1, function () {
 
          var msg =
@@ -587,7 +590,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             " is active.</font>";
          if (_CanPost(_forumHandle)) {
 
-            if (_postTextEdit.text() === msg) { _postTextEdit.clear(); }
+            if (_postTextEdit.text() == msg) { _postTextEdit.clear(); }
             _postTextEdit.enabled(true);
             _submitButton.enabled(true);
          }
@@ -618,19 +621,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          }
       };
 
-//      dmz.object.create.observe(_Self, function (handle, type) {
-
-//         var obj = { handle: handle }
-//           ;
-
-//         if (type) {
-
-//            if (type.isOfType(_PostType)) { _master.posts[handle] = obj; }
-//            else if (type.isOfType(_CommentType)) { _master.comments[handle] = obj; }
-//            else if (type.isOfType(_ForumType)) { _master.forums[handle] = obj; }
-//         }
-//      });
-
       retData.observers.text = function (handle, attr, value) {
 
          var item = _master.posts[handle];
@@ -640,16 +630,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
          _updateMessage(handle);
       };
-
-//      dmz.object.text.observe(_Self, dmz.stance.TextHandle, function (handle, attr, value) {
-
-//         var item = _master.posts[handle];
-
-//         if (!item) { item = _master.comments[handle]; }
-//         if (item) { item.message = value; }
-
-//         _updateMessage(handle);
-//      });
 
       retData.observers.createdBy = function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
@@ -663,21 +643,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          }
 
          _updatePostedBy(superHandle);
-      }
-//      dmz.object.link.observe(_Self, dmz.stance.CreatedByHandle,
-//      function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-//         var item = _master.posts[superHandle];
-
-//         if (!item) { item = _master.comments[superHandle]; }
-//         if (item) {
-
-//            item.postedBy = dmz.stance.getDisplayName(subHandle);
-//            item.authorHandle = subHandle;
-//         }
-
-//         _updatePostedBy(superHandle);
-//      });
+      };
 
       retData.observers.createdAt = function (handle, attr, value) {
 
@@ -687,29 +653,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          _updatePostedAt(handle);
       };
 
-//      dmz.object.timeStamp.observe(_Self, dmz.stance.CreatedAtServerTimeHandle,
-//      function (handle, attr, value) {
-
-//         var item = _master.posts[handle];
-//         if (!item) { item = _master.comments[handle]; }
-//         if (item) { item.postedAt = value; }
-//         _updatePostedAt(handle);
-//      });
-
       retData.observers.forumLink = function (linkObjHandle, attrHandle, groupHandle, forumHandle) {
 
          var forum = _master.forums[forumHandle];
-//         _Self.log.warn (_ForumLinkHandle, groupHandle, forumHandle, forum);
          if (forum) { forum.group = groupHandle; }
       };
-
-//      dmz.object.link.observe(_Self, _ForumLinkHandle,
-//      function (linkObjHandle, attrHandle, groupHandle, forumHandle) {
-
-//         var forum = _master.forums[forumHandle];
-//         _Self.log.warn (_ForumLinkHandle, groupHandle, forumHandle, forum);
-//         if (forum) { forum.group = groupHandle; }
-//      });
 
       retData.observers.parentLink = function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
@@ -740,41 +688,14 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             }
          }
       };
-//      dmz.object.link.observe(_Self, _ParentLinkHandle,
-//      function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-//         var type = dmz.object.type(superHandle)
-//           , item
-//           , parent
-//           ;
-
-//         if (type) {
-
-//            if (type.isOfType(_PostType)) {
-
-//               item = _master.posts[superHandle];
-//               parent = _master.forums[subHandle];
-
-//               if (item && parent) { item.forum = subHandle; }
-
-//               if (subHandle === _forumHandle) { _addPost(superHandle); }
-//            }
-//            else if (type.isOfType(_CommentType)) {
-
-//               item = _master.comments[superHandle];
-//               parent = _master.posts[subHandle];
-
-//               if (item && parent) { item.post = subHandle; }
-
-//               if (parent && (parent.forum === _forumHandle)) { _addComment(subHandle, superHandle); }
-//            }
-//         }
-//      });
 
       retData.update = function (forumHandle) {
 
          IsCurrentWindow = true;
-         if (!_forumHandle) { _updateForumForUser(dmz.object.hil(), forumHandle); }
+         if (!_forumHandle || forumHandle) {
+
+            _updateForumForUser(dmz.object.hil(), forumHandle);
+         }
       };
 
       retData.onHome = function () {
@@ -786,6 +707,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             dmz.object.timeStamp(dmz.object.hil(), dmz.stance.ForumTimeHandle, _LatestTimeStamp);
             posts.forEach(function (postHandle) {
 
+               _Self.log.warn ("postHandle:", postHandle, dmz.object.type(postHandle), _postList[postHandle]);
                _postList[postHandle].unread.hide();
                var comments = dmz.object.superLinks(postHandle, _ParentLinkHandle);
                if (comments) {

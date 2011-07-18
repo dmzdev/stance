@@ -22,56 +22,59 @@ var dmz =
        , forumView: require("static-forum-view")
        }
 
-   // Object Lists
-   , _master = { items: [], posts: [], comments: [], forums: [] }
-   , _exports = {}
-   , _commentCache = []
-   , _postCache = []
-   , _postList = []
-   , _commentList = []
-   , _forumHandle
-
    // Variables
    , RetData = false
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
-   , IsCurrentWindow = false
    , MaxMessageLength = 500
 
    // Functions
-   , toDate = dmz.util.timeStampToDate
+
    ;
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
-(function () {
-
-   var forumData =
-      { self: self
-      , postType: dmz.stance.PostType
-      , commentType: dmz.stance.CommentType
-      , forumType: dmz.stance.ForumType
-      , parentHandle: dmz.stance.ParentHandle
-      , groupLinkHandle: dmz.stance.ForumLink
-      , highlight: function () { MainModule.highlight("Forum"); }
-      , canReplyTo: function () { return true; }
-      , canPost: function () { return true; }
-      , messageLength: MaxMessageLength
-      };
-   RetData = dmz.forumView.setupForumView(forumData);
-
-   dmz.object.create.observe(self, RetData.observers.create);
-   dmz.object.text.observe(self, dmz.stance.TextHandle, RetData.observers.text);
-   dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, RetData.observers.createdAt);
-   dmz.object.link.observe(self, dmz.stance.CreatedByHandle, RetData.observers.createdBy);
-   dmz.object.link.observe(self, dmz.stance.ForumLink, RetData.observers.forumLink);
-   dmz.object.link.observe(self, dmz.stance.ParentHandle, RetData.observers.parentLink);
-}());
-
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
-   var list;
+   var forumData;
    if (Mode === dmz.module.Activate) {
+
+      forumData =
+         { self: self
+         , postType: dmz.stance.PostType
+         , commentType: dmz.stance.CommentType
+         , forumType: dmz.stance.ForumType
+         , parentHandle: dmz.stance.ParentHandle
+         , groupLinkHandle: dmz.stance.ForumLink
+         , highlight: function () { module.highlight("Forum"); }
+         , canReplyTo: function () { return true; }
+         , canPost: function () { return true; }
+         , messageLength: MaxMessageLength
+         };
+      RetData = dmz.forumView.setupForumView(forumData);
+
+      dmz.object.create.observe(self, RetData.observers.create);
+      dmz.object.text.observe(self, dmz.stance.TextHandle, RetData.observers.text);
+      dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, RetData.observers.createdAt);
+      dmz.object.link.observe(self, dmz.stance.CreatedByHandle, RetData.observers.createdBy);
+      dmz.object.link.observe(self, dmz.stance.ForumLink, RetData.observers.forumLink);
+      dmz.object.link.observe(self, dmz.stance.ParentHandle, RetData.observers.parentLink);
+
+      dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
+      function (linkObjHandle, attrHandle, groupHandle, userHandle) {
+
+         if (dmz.object.hil() === userHandle) { RetData.updateForUser(userHandle); }
+      });
+
+      dmz.object.flag.observe(self, dmz.object.HILAttribute,
+      function (objHandle, attrHandle, value) {
+
+         var type = dmz.object.type(objHandle);
+         if (type && type.isOfType(dmz.stance.UserType)) {
+
+            RetData.updateForUser(value ? objHandle : undefined);
+         }
+      });
 
       if (RetData && RetData.update && RetData.onHome && RetData.widget) {
 
@@ -79,5 +82,4 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       }
    }
 });
-
 
