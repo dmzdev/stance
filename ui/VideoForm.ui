@@ -103,7 +103,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="currLabel">
+        <widget class="QLabel" name="currentLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
            <horstretch>0</horstretch>
@@ -190,7 +190,7 @@
        <item>
         <spacer name="horizontalSpacer_3">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+          <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
