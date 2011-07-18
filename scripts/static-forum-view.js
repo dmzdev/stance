@@ -294,6 +294,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             _updateMessage(commentHandle);
 //            _Self.log.warn ("call comment UEI", commentHandle, dmz.object.type(commentHandle));
             _updateExtraInfo(commentHandle);
+            if (!_CanReplyTo(postHandle)) { post.commentAddLabel.hide(); }
          }
       };
 

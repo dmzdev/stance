@@ -248,7 +248,7 @@ createAdvisorWindow = function (windowStr) {
                  }
               });
            }
-           return result/* && !LoginSkipped*/;
+           return result && !LoginSkipped;
         }
       });
 
@@ -298,8 +298,11 @@ getVoteDecision = function (voteHandle) {
 
 getQuestionAnswer = function (questionHandle) {
 
-   var result = dmz.object.superLinks(questionHandle, dmz.stance.QuestionLinkHandle);
-   return (result && result.length) ? result[0] : false;
+   var type = dmz.object.type(questionHandle)
+     , result = dmz.object.superLinks(questionHandle, dmz.stance.QuestionLinkHandle)
+     ;
+   return (type && type.isOfType(dmz.stance.QuestionType) && result && result.length) ?
+      result[0] : false;
 };
 
 getCreatedBy = function (handle) {
