@@ -22,7 +22,7 @@
    <instance name="email"/>
 <!--   <instance name="devtools"/> -->
    <instance name="gameCreation"/>
-   <instance name="media"/>
+   <instance name="media2"/>
    <instance name="webMap"/>
 <!--   <instance name="forum"/> -->
    <instance name="forum-view"/>

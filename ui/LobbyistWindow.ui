@@ -74,7 +74,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="specialtyLabel">
+    <widget class="QLabel" name="specialityLabel">
      <property name="text">
       <string>TextLabel</string>
      </property>
