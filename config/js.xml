@@ -25,7 +25,6 @@
    <instance name="webMap"/>
    <instance name="forum-view"/>
    <instance name="login"/>
-<!--   <instance name="game-time"/>-->
    <instance name="advisor"/>
 </javascript>
 <login>

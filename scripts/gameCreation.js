@@ -1089,93 +1089,6 @@ mediaInjectButtons = function () {
    });
 };
 
-mediaInjectButtons();
-
-/*dmz.object.data.observe(self, dmz.stance.GameStartTimeHandle, function (handle, attr, value) {
-
-   var server = {}
-     , game = {}
-     ;
-
-   if (handle === CurrentGameHandle && !inUpdate) {
-
-      inUpdate = true;
-      server.start = toDate(value.number("server", 0));
-      server.end = toDate(value.number("server", 1));
-      serverStartDateEdit.dateTime(server.start);
-      serverEndDateEdit.dateTime(server.end);
-
-      game.start = toDate(value.number("game", 0));
-      gameStartDateEdit.dateTime(game.start);
-
-      inUpdate = false;
-
-      timeFactorSpinBox.value(value.number("factor", 0));
-   }
-});
-*/
-
-/*updateTimePage = function () {
-
-   var server = {}
-     , game = {}
-     , data
-     , info = timeInfoText
-     , GameStartTime = dmz.stance.GameStartTimeHandle
-     ;
-
-   if (!inUpdate) {
-
-      server.start = serverStartDateEdit.dateTime();
-      server.end = serverEndDateEdit.dateTime();
-      server.delta = toTimeStamp(server.end) - toTimeStamp(server.start);
-      server.span = new DateJs.TimeSpan(server.end - server.start);
-      server.period = new DateJs.TimePeriod(server.start, server.end);
-      serverDeltaLabel.text(server.span.getDays());
-
-      game.start = gameStartDateEdit.dateTime();
-      game.end = game.start.clone();
-      game.end.addMilliseconds(server.span.getTotalMilliseconds() * timeFactorSpinBox.value());
-      game.span = new DateJs.TimeSpan(game.end - game.start);
-      game.period = new DateJs.TimePeriod(game.start, game.end);
-      gameDeltaLabel.text(game.span.getDays());
-      gameEndDateEdit.dateTime(game.end);
-
-      info = info.replace("{{serverDelta}}", server.span.getDays());
-      info = info.replace("{{gameDelta}}", game.span.getDays());
-
-      timeInfoLabel.text(info);
-
-      if (CurrentGameHandle) {
-
-         data = dmz.data.create();
-         data.number("server", 0, toTimeStamp(server.start));
-         data.number("server", 1, toTimeStamp(server.end));
-         data.number("game", 0, toTimeStamp(game.start));
-         data.number("game", 1, toTimeStamp(game.end));
-         data.number("factor", 0, timeFactorSpinBox.value());
-
-         inUpdate = true;
-         dmz.object.data(CurrentGameHandle, GameStartTime, data);
-         inUpdate = false;
-      }
-   }
-};
-*/
-
-/*
-editScenarioWidget.observe(self, "setTimeButton", "clicked", updateTimePage);
-
-serverStartDateEdit.observe(self, "dateTimeChanged", function (value) {
-
-   serverEndDateEdit.minimum(value);
-});
-*/
-
-//serverEndDateEdit.observe(self, "dateTimeChanged", updateTimePage);
-//gameStartDateEdit.observe(self, "dateTimeChanged", updateTimePage);
-//timeFactorSpinBox.observe(self, "valueChanged", updateTimePage);
-
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
@@ -1186,8 +1099,6 @@ function (objHandle, attrHandle, value) {
 
          editScenarioWidget.lookup("tabWidget").show();
          dock.enabled(true);
-//         button = GroupButtonList[dmz.stance.getUserGroupHandle(objHandle)];
-//         if (button && !button.isChecked()) { button.click(true); }
       }
       else {
 
@@ -1208,6 +1119,7 @@ groupTemplateComboBox.observe(self, "currentIndexChanged", function (index) {
 
 (function () {
 
+   mediaInjectButtons();
    readGroupTemplates();
    editScenarioWidget.lookup("tabWidget").hide();
    dock.hide();

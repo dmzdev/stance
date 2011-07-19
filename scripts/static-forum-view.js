@@ -152,6 +152,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , resource
            ;
 
+         _Self.log.error(userHandle, labelWidget);
          if (labelWidget) {
 
             if (userHandle) {
