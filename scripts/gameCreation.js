@@ -619,16 +619,16 @@ setup = function () {
                if (!active) {
 
                   body += "is now over! \nThank you for participating!";
-                  dmz.object.timeStamp(CurrentGameHandle, dmz.stance.UpdateEndTimeHandle, 0);
-                  dmz.object.flag(CurrentGameHandle, dmz.stance.GameEndTimeHandle, true);
+                  dmz.object.timeStamp(CurrentGameHandle, dmz.stance.GameEndTimeHandle, 0);
+                  dmz.object.flag(CurrentGameHandle, dmz.stance.UpdateEndTimeHandle, true);
                }
                else {
 
                   body +=
                      "has just begun! Please log on at your earliest convenience and " +
                      "examine the initial scenario description."
-                  dmz.object.timeStamp(CurrentGameHandle, dmz.stance.UpdateStartTimeHandle, 0);
-                  dmz.object.flag(CurrentGameHandle, dmz.stance.GameStartTimeHandle, true);
+                  dmz.object.timeStamp(CurrentGameHandle, dmz.stance.GameStartTimeHandle, 0);
+                  dmz.object.flag(CurrentGameHandle, dmz.stance.UpdateStartTimeHandle, true);
                }
                EmailMod.sendEmail(userList, subject, body);
             }

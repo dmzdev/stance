@@ -68,6 +68,9 @@ var dmz =
         , UpdateStartTimeHandle: dmz.defs.createNamedHandle("update_start_time_handle")
         , UpdateEndTimeHandle: dmz.defs.createNamedHandle("update_end_time_handle")
         , CreatedAtServerTimeHandle: dmz.defs.createNamedHandle("created_at_server_time")
+        , EndedAtServerTimeHandle: dmz.defs.createNamedHandle("ended_at_server_time")
+
+
         , CreatedAtGameTimeHandle: dmz.defs.createNamedHandle("created_at_game_time")
         , GameStartTimeHandle: dmz.defs.createNamedHandle("game_start_time")
         , GameEndTimeHandle: dmz.defs.createNamedHandle("game_end_time")
