@@ -50,7 +50,7 @@ var dmz =
         , editScenarioWidget
         )
 
-   , serverStartDateEdit = editScenarioWidget.lookup("serverStartDateEdit")
+   /*, serverStartDateEdit = editScenarioWidget.lookup("serverStartDateEdit")
    , serverEndDateEdit = editScenarioWidget.lookup("serverEndDateEdit")
    , serverDeltaLabel = editScenarioWidget.lookup("serverDeltaLabel")
    , gameStartDateEdit = editScenarioWidget.lookup("gameStartDateEdit")
@@ -59,6 +59,7 @@ var dmz =
    , timeFactorSpinBox = editScenarioWidget.lookup("timeFactorSpinBox")
    , timeInfoLabel = editScenarioWidget.lookup("timeInfoLabel")
    , timeInfoText = timeInfoLabel.text()
+   */
 
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui", editScenarioWidget)
    , avatarList = createStudentDialog.lookup("avatarList")
@@ -523,11 +524,12 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
 
       gameStateButton.text(value ? "End Game" : "Start Game");
 
-      serverStartDateEdit.enabled (!value);
+      /*serverStartDateEdit.enabled (!value);
       serverEndDateEdit.enabled(!value);
       gameStartDateEdit.enabled(!value);
       timeFactorSpinBox.enabled(!value);
       editScenarioWidget.lookup("setTimeButton").enabled(!value);
+      */
    }
 });
 
@@ -613,12 +615,19 @@ setup = function () {
 
                subject = "STANCE Game " + (!active ? "Completed!" : "Initiated!")
                body = "Students, \n Your STANCE game ";
-               if (!active) { body += "is now over! \nThank you for participating!"; }
+               if (!active) {
+
+                  body += "is now over! \nThank you for participating!";
+                  dmz.object.timeStamp(CurrentGameHandle, dmz.stance.UpdateEndTimeHandle, 0);
+                  dmz.object.flag(CurrentGameHandle, dmz.stance.GameEndTimeHandle, true);
+               }
                else {
 
                   body +=
                      "has just begun! Please log on at your earliest convenience and " +
                      "examine the initial scenario description."
+                  dmz.object.timeStamp(CurrentGameHandle, dmz.stance.UpdateStartTimeHandle, 0);
+                  dmz.object.flag(CurrentGameHandle, dmz.stance.GameStartTimeHandle, true);
                }
                EmailMod.sendEmail(userList, subject, body);
             }
@@ -1067,7 +1076,7 @@ mediaInjectButtons = function () {
 
 mediaInjectButtons();
 
-dmz.object.data.observe(self, dmz.stance.GameStartTimeHandle, function (handle, attr, value) {
+/*dmz.object.data.observe(self, dmz.stance.GameStartTimeHandle, function (handle, attr, value) {
 
    var server = {}
      , game = {}
@@ -1089,8 +1098,9 @@ dmz.object.data.observe(self, dmz.stance.GameStartTimeHandle, function (handle, 
       timeFactorSpinBox.value(value.number("factor", 0));
    }
 });
+*/
 
-updateTimePage = function () {
+/*updateTimePage = function () {
 
    var server = {}
      , game = {}
@@ -1136,13 +1146,16 @@ updateTimePage = function () {
       }
    }
 };
+*/
 
+/*
 editScenarioWidget.observe(self, "setTimeButton", "clicked", updateTimePage);
 
 serverStartDateEdit.observe(self, "dateTimeChanged", function (value) {
 
    serverEndDateEdit.minimum(value);
 });
+*/
 
 //serverEndDateEdit.observe(self, "dateTimeChanged", updateTimePage);
 //gameStartDateEdit.observe(self, "dateTimeChanged", updateTimePage);
