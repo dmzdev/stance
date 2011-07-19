@@ -70,7 +70,6 @@ var dmz =
         , CreatedAtServerTimeHandle: dmz.defs.createNamedHandle("created_at_server_time")
         , EndedAtServerTimeHandle: dmz.defs.createNamedHandle("ended_at_server_time")
 
-
         , CreatedAtGameTimeHandle: dmz.defs.createNamedHandle("created_at_game_time")
         , GameStartTimeHandle: dmz.defs.createNamedHandle("game_start_time")
         , GameEndTimeHandle: dmz.defs.createNamedHandle("game_end_time")
