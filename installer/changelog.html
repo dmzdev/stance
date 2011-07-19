@@ -54,6 +54,9 @@
    <li>Lobbyist history is now saved, users can view previous messages from lobbyists just like with memos, newspapers and videos.</li>
    <li>Lobbyist bio was removed.</li>
    <li>Major data structure rewrite in order to reduce the number of database writes necessary for new actions.</li>
+   <li>Game time removed.</li>
+   <li>All objects which require a timestamp now receive their timestamp from the server in order to provide proper synchronization. Any of these objects created while not logged in will not receive a timestamp until reaching the server for the first time.<li>
+   <li>Removed the "Time" tab from the admin Edit Scenario window. The Start/End game button now sends out emails to students and sets flags for the server to set an appropriate start or end time for AAR graphs.</li>
 </ul>
 
 <h3>Bugs fixed</h3>
