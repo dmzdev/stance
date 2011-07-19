@@ -161,11 +161,8 @@ setUserPlayList = function (userHandle) {
       });
       userMediaList.forEach(function (userMediaHandle) {
 
-         var idx = groupMediaList.indexOf(userMediaHandle)
-         if (idx !== -1) {
-
-            groupMediaList.splice(idx, 1);
-         }
+         var idx = groupMediaList.indexOf(userMediaHandle);
+         if (idx !== -1) { groupMediaList.splice(idx, 1); }
       });
    }
 
@@ -546,10 +543,7 @@ function (objHandle, attrHandle, value) {
 
       Object.keys(TypesMap).forEach(function (key) {
 
-         if (TypesMap[key].isOfType(type)) {
-
-            MainModule.highlight(key);
-         }
+         if (TypesMap[key].isOfType(type)) { MainModule.highlight(key); }
       });
    }
 });
@@ -579,7 +573,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , webForm
          , function () {
 
-              setActiveState(key);
+              setActiveState("Memo");
               setUserPlayList(dmz.object.hil());
               loadCurrentPrint();
            }
@@ -589,28 +583,28 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , webForm
          , function () {
 
-              setActiveState(key);
+              setActiveState("Newspaper");
               setUserPlayList(dmz.object.hil());
               loadCurrentPrint();
            }
          );
       module.addPage
-         ( key
+         ( "Video"
          , videoForm
          , function () {
 
-              setActiveState(key);
+              setActiveState("Video");
               setUserPlayList(dmz.object.hil());
               playCurrentVideo();
            }
          , stopCurrentOnHome
          );
       module.addPage
-         ( key
+         ( "Lobbyist"
          , lobbyistForm
          , function () {
 
-              setActiveState(key);
+              setActiveState("Lobbyist");
               setUserPlayList(dmz.object.hil());
               loadCurrentLobbyist();
            }

@@ -317,15 +317,15 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
 function (linkObjHandle, attrHandle, groupHandle, gameHandle) {
 
-   var name = dmz.stance.getDisplayName(subHandle)
+   var name = dmz.stance.getDisplayName(groupHandle)
      , button = dmz.ui.button.createRadioButton(name)
      ;
 
-   groupList.push(subHandle);
+   groupList.push(groupHandle);
    groupComboBox.addItem(name);
    advisorGroupComboBox.addItem(name);
    lobbyistGroupList.addItem(name);
-   GroupButtonList[subHandle] = button;
+   GroupButtonList[groupHandle] = button;
    button.observe(self, "toggled", function (selected) {
 
       var hil;
