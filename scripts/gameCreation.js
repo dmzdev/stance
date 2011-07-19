@@ -986,7 +986,7 @@ mediaInjectButtons = function () {
                   dmz.object.text(media, dmz.stance.TitleHandle, MediaTitleText.text());
                   dmz.object.text(media, dmz.stance.TextHandle, MediaUrlText.text());
                   dmz.object.timeStamp(media, dmz.stance.CreatedAtServerTimeHandle, 0);
-                  dmz.object.flag(media, dmz.stance.UpdateTimeHandle, 0);
+                  dmz.object.flag(media, dmz.stance.UpdateStartTimeHandle, true);
                   links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.MediaHandle);
                   dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
                   dmz.object.flag(media, dmz.stance.ActiveHandle, true);
@@ -1038,7 +1038,7 @@ mediaInjectButtons = function () {
                      dmz.object.text(lobbyistHandle, dmz.stance.TitleHandle, lobbyistTitle.text());
                      dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
                      dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
-                     dmz.object.flag(lobbyistHandle, dmz.stance.UpdateTimeHandle, true);
+                     dmz.object.flag(lobbyistHandle, dmz.stance.UpdateStartTimeHandle, true);
                      links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.MediaHandle);
                      dmz.object.scalar(lobbyistHandle, dmz.stance.ID, links ? links.length : 0);
                      dmz.object.flag(lobbyistHandle, dmz.stance.ActiveHandle, true);
