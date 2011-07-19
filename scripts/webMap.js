@@ -351,20 +351,11 @@ onPinRemoved = function (data) {
    });
    pinSelectedMessage.subscribe(self, function (data) {
 
-      var id
-        , x
-        , y
-        ;
-
+      var id;
       if (dmz.data.isTypeOf(data)) {
 
         id = data.number(dmz.stance.ID, 0);
-
-        if (PinIDList[id]) {
-
-           CurrentPinID = id;
-//           self.log.warn ("Selected:", id, PinIDList[id].handle);
-        }
+        if (PinIDList[id]) { CurrentPinID = id; }
       }
    });
 }());
