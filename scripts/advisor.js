@@ -86,7 +86,6 @@ var dmz =
    , createAdvisorWindow
    , getVoteDecision
    , getQuestionAnswer
-   , getCreatedBy
    , getAvatarPixmap
 
    , getHILAdvisor
@@ -100,7 +99,6 @@ var dmz =
    , updateAvatar
 
    , setupForumView
-
 
    ;
 
@@ -145,7 +143,6 @@ createAdvisorWindow = function (windowStr) {
 
            result = hil && !dmz.object.flag(hil, dmz.stance.AdminHandle);
            advisors = dmz.object.superLinks(dmz.stance.getUserGroupHandle(hil), dmz.stance.AdvisorGroupHandle) || [];
-
            advisors.forEach(function (advisorHandle) {
 
               var links = dmz.object.superLinks(advisorHandle, dmz.stance.VoteLinkHandle) || [];
@@ -243,7 +240,7 @@ createAdvisorWindow = function (windowStr) {
               questions.forEach(function (questionHandle) {
 
                  if (!getQuestionAnswer(questionHandle) &&
-                    !dmz.object.flag(getCreatedBy(questionHandle), dmz.stance.AdminHandle)) {
+                    !dmz.object.flag(dmz.stance.getAuthorHandle(questionHandle), dmz.stance.AdminHandle)) {
 
                     result = false;
                  }
@@ -304,12 +301,6 @@ getQuestionAnswer = function (questionHandle) {
      ;
    return (type && type.isOfType(dmz.stance.QuestionType) && result && result.length) ?
       result[0] : false;
-};
-
-getCreatedBy = function (handle) {
-
-   var author = dmz.object.subLinks(handle, dmz.stance.CreatedByHandle);
-   return (author && author.length) ? author[0] : false;
 };
 
 getAvatarPixmap = function (handle) {
