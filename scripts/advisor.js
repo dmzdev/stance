@@ -138,12 +138,13 @@ createAdvisorWindow = function (windowStr) {
       , canPost: function () {
 
            var hil = dmz.object.hil()
-             , advisors = dmz.object.subLinks(dmz.stance.getUserGroupHandle(hil), dmz.stance.AdvisorGroupHandle)
+             , advisors
              , result
              , votes = []
              ;
 
            result = hil && !dmz.object.flag(hil, dmz.stance.AdminHandle);
+           advisors = dmz.object.subLinks(dmz.stance.getUserGroupHandle(hil), dmz.stance.AdvisorGroupHandle) || [];
 
            advisors.forEach(function (advisorHandle) {
 
