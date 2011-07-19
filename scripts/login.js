@@ -21,7 +21,6 @@ var dmz =
     // Variables
     , _window = dmz.ui.mainWindow.window()
     , _title = _window.title()
-    , _timeMod
     , _gameHandle
     , _userList = []
     , _userName
@@ -70,20 +69,6 @@ _login = function (data) {
       _window.title(_title);
       _admin = data.boolean("admin");
       _userName = data.string(dmz.stance.NameHandle);
-
-      if (_timeMod) {
-
-         timeStamp = data.number(TimeStampAttr);
-         date = toDate(timeStamp);
-         date.add(-date.getTimezoneOffset("PST", date.isDaylightSavingTime())).minutes();
-         timeStamp = toTimeStamp(date);
-         _timeMod.serverTime(timeStamp);
-
-         self.log.warn("Server Time: " + toDate(timeStamp));
-         self.log.warn("  Game Time: " + toDate(_timeMod.gameTime(timeStamp)));
-         _haveSetServerTime = true;
-      }
-      else { self.log.error("Failed to to set server time"); }
 
       _activateUser(_userName);
    }
@@ -190,12 +175,6 @@ _setTitle = function (userHandle) {
          );
    }
 };
-
-dmz.module.subscribe(self, "game-time", function (Mode, module) {
-
-   if (Mode === dmz.module.Activate) { _timeMod = module; }
-   else if (Mode === dmz.module.Deactivate) { _timeMod = undefined; }
-});
 
 ToggledMessage.subscribe(self, function (data) { _haveToggled = true; });
 

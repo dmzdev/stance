@@ -473,7 +473,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             post = dmz.object.create(_PostType);
             _OnNewPost(post);
             dmz.object.text(post, dmz.stance.TextHandle, message);
-            dmz.object.timeStamp(post, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
+            dmz.object.timeStamp(post, dmz.stance.CreatedAtServerTimeHandle, 0);
+            dmz.object.flag(post, dmz.stance.UpdateStartTimeHandle, true);
             dmz.object.link(_ParentLinkHandle, post, parent);
             dmz.object.link(dmz.stance.CreatedByHandle, post, hil);
             dmz.object.activate(post);
@@ -494,7 +495,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
             comment = dmz.object.create(_CommentType);
             dmz.object.text(comment, dmz.stance.TextHandle, message);
-            dmz.object.timeStamp(comment, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
+            dmz.object.timeStamp(comment, dmz.stance.CreatedAtServerTimeHandle, 0);
+            dmz.object.flag(comment, dmz.stance.UpdateStartTimeHandle, true);
             dmz.object.link(_ParentLinkHandle, comment, parent);
             dmz.object.link(dmz.stance.CreatedByHandle, comment, hil);
             dmz.object.activate(comment);
