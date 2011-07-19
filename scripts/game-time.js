@@ -22,13 +22,14 @@ var dmz =
     ;
 
 
-dmz.time.setRepeatingTimer(self, 60, function () {
+/*dmz.time.setRepeatingTimer(self, 60, function () {
 
    if (_haveSetServerTime) {
 
       dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastOnlineHandle, dmz.time.getFrameTime());
    }
 });
+*/
 
 dmz.object.create.observe(self, function (handle, type) {
 
@@ -43,7 +44,8 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
    if (handle === _game.handle) { _game.active = value; }
 });
 
-dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, function (handle, attr, value) {
+
+/*dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, function (handle, attr, value) {
 
    if (!dmz.object.timeStamp(handle, dmz.stance.CreatedAtGameTimeHandle)) {
 
@@ -52,6 +54,8 @@ dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, functio
       dmz.object.timeStamp(handle, dmz.stance.CreatedAtGameTimeHandle, _exports.gameTime(value));
    }
 });
+*/
+
 
 dmz.object.data.observe(self, GameStartTime, function (handle, attr, value) {
 

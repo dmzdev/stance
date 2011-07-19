@@ -290,7 +290,7 @@ setGroupTemplate = function (groupHandle, templateIndex) {
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
-   var item = { handle: objHandle, title: "N/A", disabled: false };
+   var item = { handle: objHandle, title: "N/A", active: true };
    if (objType) {
 
       if (objType.isOfType(dmz.stance.GameType)) {
@@ -895,9 +895,9 @@ updateInjectTitle = function (handle) {
      , str
      ;
 
-   if (item && item.item) {
+   if (item) {
 
-      str = item.title + (item.disabled ? "*" : "");
+      str = item.title + (item.active ? "" : "*");
       item.item.text(str);
    }
 };
@@ -911,24 +911,19 @@ dmz.object.text.observe(self, dmz.stance.TitleHandle, function (objHandle, attr,
    }
 });
 
-dmz.object.flag.observe(self, dmz.stance.DisabledHandle, function (objHandle, attr, value) {
-
-   if (injectItems[objHandle]) {
-
-      injectItems[objHandle].disabled = value;
-      updateInjectTitle (objHandle);
-   }
-});
-
 modifyInjectItem = function (widgetItem) {
 
    var handle = widgetItem ? widgetItem.data() : false
      , item = handle ? injectItems[handle] : false
      ;
 
-   if (item) { dmz.object.flag(handle, dmz.stance.DisabledHandle, !item.disabled); }
-};
+   if (item) {
 
+      dmz.object.flag(handle, dmz.stance.ActiveHandle, !item.active);
+      item.active = !item.active;
+      updateInjectTitle (handle);
+   }
+};
 
 
 // Media inject buttons
@@ -990,16 +985,18 @@ mediaInjectButtons = function () {
                   media = dmz.object.create(type);
                   dmz.object.text(media, dmz.stance.TitleHandle, MediaTitleText.text());
                   dmz.object.text(media, dmz.stance.TextHandle, MediaUrlText.text());
-                  dmz.object.timeStamp(media, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
-                  links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
+                  dmz.object.timeStamp(media, dmz.stance.CreatedAtServerTimeHandle, 0);
+                  dmz.object.flag(media, dmz.stance.UpdateTimeHandle, 0);
+                  links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.MediaHandle);
                   dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
+                  dmz.object.flag(media, dmz.stance.ActiveHandle, true);
                   dmz.object.activate(media);
-                  dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, media);
+                  dmz.object.link(dmz.stance.MediaHandle, CurrentGameHandle, media);
                   for (itor = 0; itor < count; itor += 1) {
 
                      if (MediaGroupFLayout.at(itor, 1).isChecked()) {
 
-                        dmz.object.link(dmz.stance.GameMediaHandle, groupList[itor], media);
+                        dmz.object.link(dmz.stance.MediaHandle, groupList[itor], media);
                      }
                   }
 
@@ -1040,13 +1037,15 @@ mediaInjectButtons = function () {
                      dmz.object.text(lobbyistHandle, dmz.stance.NameHandle, lobbyistName.text());
                      dmz.object.text(lobbyistHandle, dmz.stance.TitleHandle, lobbyistTitle.text());
                      dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
-                     dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
-                     links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameMediaHandle);
+                     dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
+                     dmz.object.flag(lobbyistHandle, dmz.stance.UpdateTimeHandle, true);
+                     links = dmz.object.subLinks(CurrentGameHandle, dmz.stance.MediaHandle);
                      dmz.object.scalar(lobbyistHandle, dmz.stance.ID, links ? links.length : 0);
+                     dmz.object.flag(lobbyistHandle, dmz.stance.ActiveHandle, true);
                      dmz.object.activate(lobbyistHandle);
 
-                     dmz.object.link(dmz.stance.GameMediaHandle, groupList[groupIndex], lobbyistHandle);
-                     dmz.object.link(dmz.stance.GameMediaHandle, CurrentGameHandle, lobbyistHandle);
+                     dmz.object.link(dmz.stance.MediaHandle, groupList[groupIndex], lobbyistHandle);
+                     dmz.object.link(dmz.stance.MediaHandle, CurrentGameHandle, lobbyistHandle);
                   }
                });
             });

@@ -127,8 +127,8 @@ setActiveState = function (state) {
 
 setUserPlayList = function (userHandle) {
 
-   var groupMediaList = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle)
-     , userMediaList = dmz.object.subLinks(userHandle, dmz.stance.GameMediaHandle)
+   var groupMediaList = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.MediaHandle)
+     , userMediaList = dmz.object.subLinks(userHandle, dmz.stance.MediaHandle)
      , combinedMediaList = []
      , text
      , pic
@@ -148,7 +148,7 @@ setUserPlayList = function (userHandle) {
       groupMediaList = groupMediaList.filter(function (handle, index) {
 
          var type = dmz.object.type(handle);
-         return type && type.isOfType(CurrentType) && !dmz.object.flag(handle, dmz.stance.DisabledHandle);
+         return type && type.isOfType(CurrentType) && dmz.object.flag(handle, dmz.stance.ActiveHandle);
       });
    }
 
@@ -157,7 +157,7 @@ setUserPlayList = function (userHandle) {
       userMediaList = userMediaList.filter(function (handle, index) {
 
          var type = dmz.object.type(handle);
-         return type && type.isOfType(CurrentType) && !dmz.object.flag(handle, dmz.stance.DisableHandle);
+         return type && type.isOfType(CurrentType) && dmz.object.flag(handle, dmz.stance.ActiveHandle);
       });
       userMediaList.forEach(function (userMediaHandle) {
 
@@ -198,7 +198,7 @@ setUserPlayList = function (userHandle) {
       /* Go through the combined media list and remove and objects that don't also
          belong to the user's current group (only a problem for admin users)
       */
-      groupMediaList = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.GameMediaHandle);
+      groupMediaList = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.MediaHandle);
       userMediaList = combinedMediaList;
       combinedMediaList = [];
       if (groupMediaList) {
@@ -283,10 +283,10 @@ loadCurrentPrint = function () {
 
             webpage.page().mainFrame().load(item.source);
             NewSource = false;
-            linkHandle = dmz.object.linkHandle(dmz.stance.GameMediaHandle, hil, item.handle);
+            linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, hil, item.handle);
             if (!linkHandle) {
 
-               dmz.object.link(dmz.stance.GameMediaHandle, hil, item.handle);
+               dmz.object.link(dmz.stance.MediaHandle, hil, item.handle);
             }
          }
       }
@@ -323,10 +323,10 @@ loadCurrentLobbyist = function () {
             if (pic) { pictureLabel.pixmap(pic); }
 
             NewSource = false;
-            linkHandle = dmz.object.linkHandle(dmz.stance.GameMediaHandle, hil, item.handle);
+            linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, hil, item.handle);
             if (!linkHandle) {
 
-               dmz.object.link(dmz.stance.GameMediaHandle, hil, item.handle);
+               dmz.object.link(dmz.stance.MediaHandle, hil, item.handle);
             }
          }
       }
@@ -351,10 +351,10 @@ playCurrentVideo = function () {
               ;
 
             if (hasVideo) {
-               linkHandle = dmz.object.linkHandle(dmz.stance.GameMediaHandle, hil, video.handle);
+               linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, hil, video.handle);
                if (!linkHandle) {
 
-                  dmz.object.link(dmz.stance.GameMediaHandle, hil, video.handle);
+                  dmz.object.link(dmz.stance.MediaHandle, hil, video.handle);
                }
 
                dmz.time.setTimer(self, 1, function () {source.play(); });
@@ -491,18 +491,21 @@ init = function () {
    prevButton.standardIcon(dmz.ui.button.MediaSkipBackward);
 
    // When object is created for a group, check its type and highlight if needed
-   dmz.object.link.observe(self, dmz.stance.GameMediaHandle, function (linkHandle, attrHandle, groupHandle, mediaHandle) {
+   dmz.object.link.observe(self, dmz.stance.MediaHandle, function (linkHandle, attrHandle, groupHandle, mediaHandle) {
 
       var hil = dmz.object.hil()
         ;
       // check that media is not disabled, not in user's list, and is in user's group list, and user is in the group
-      if (!dmz.object.flag(mediaHandle, dmz.stance.DisableHandle) &&
-         !dmz.object.linkHandle(dmz.stance.GameMediaHandle, hil, mediaHandle) &&
-         dmz.object.linkHandle(dmz.stance.GameMediaHandle, groupHandle, mediaHandle) &&
+      if (dmz.object.flag(mediaHandle, dmz.stance.ActiveHandle) &&
+         !dmz.object.linkHandle(dmz.stance.MediaHandle, hil, mediaHandle) &&
+         dmz.object.linkHandle(dmz.stance.MediaHandle, groupHandle, mediaHandle) &&
          dmz.stance.getUserGroupHandle(hil) == groupHandle) {
 
          Object.keys(TypesMap).forEach(function (key) {
 
+            /* type checks for the correct area to highlight, and secures this
+               against any future uses of a more generic MediaHandle
+            */
             if (TypesMap[key].isOfType(dmz.object.type(mediaHandle))) {
 
                MainModule.highlight(key);
@@ -536,19 +539,20 @@ source.observe(self, "stateChanged", function (newState) {
    stateLabel.text(str);
 });
 
-dmz.object.flag.observe(self, dmz.stance.DisableHandle,
+dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
 function (objHandle, attrHandle, value) {
 
-   var type = dmz.object.type(objhandle)
+   var type = dmz.object.type(objHandle)
      , hil = dmz.object.hil()
      ;
 
-   if (value && type && !dmz.object.linkHandle(dmz.stance.GameMediaType, hil, objHandle) &&
-      dmz.object.linkHandle(dmz.stance.GameMediaType, dmz.stance.getUserGroup(hil), objHandle)) {
+   if (value && type && !dmz.object.linkHandle(dmz.stance.MediaHandle, hil, objHandle) &&
+      dmz.object.linkHandle(dmz.stance.MediaHandle, dmz.stance.getUserGroupHandle(hil), objHandle)) {
 
       Object.keys(TypesMap).forEach(function (key) {
 
-         if (TypesMap[key] == type) {
+         if (TypesMap[key].isOfType(type)) {
+
             MainModule.highlight(key);
          }
       });

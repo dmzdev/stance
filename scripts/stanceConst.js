@@ -39,7 +39,7 @@ var dmz =
       , ForumLink: dmz.defs.createNamedHandle("group_forum_link")
       , GameGroupHandle: dmz.defs.createNamedHandle("game_group")
       , GameForumsHandle: dmz.defs.createNamedHandle("game_forums")
-      , GameMediaHandle: dmz.defs.createNamedHandle("game_media")
+      , MediaHandle: dmz.defs.createNamedHandle("game_media")
       , GameUngroupedUsersHandle: dmz.defs.createNamedHandle("game_ungrouped_users")
       , GroupMembersHandle: dmz.defs.createNamedHandle("group_members")
       , GroupPermissionsHandle: dmz.defs.createNamedHandle("group_permissions")
@@ -86,7 +86,7 @@ var dmz =
       , Advisor4Handle: dmz.defs.createNamedHandle("advisor_4_data")
       , PinCountHandle: dmz.defs.createNamedHandle("pin_count")
       , ForumTimeHandle: dmz.defs.createNamedHandle("forum_time")
-      , LastOnlineHandle: dmz.defs.createNamedHandle("last_online")
+//      , LastOnlineHand: dmz.defs.createNamedHandle("last_online")
       , ViewedLobbyistHandle: dmz.defs.createNamedHandle("viewed_lobbyist")
       , DisabledHandle: dmz.defs.createNamedHandle("disabled")
       , GroupPinHandle: dmz.defs.createNamedHandle("groupPinHandle")
@@ -100,7 +100,8 @@ var dmz =
       , PinGroupCountHandle: dmz.defs.createNamedHandle("pinGroupCountHandle")
 
       /* Time handles, and handles to be removed later */
-      , UpdateTimeHandle: dmz.defs.createNamedHandle("update_time_handle")
+      , UpdateStartTimeHandle: dmz.defs.createNamedHandle("update_start_time_handle")
+      , UpdateEndTimeHandle: dmz.defs.createNamedHandle("update_end_time_handle")
       , CreatedAtServerTimeHandle: dmz.defs.createNamedHandle("created_at_server_time")
       , CreatedAtGameTimeHandle: dmz.defs.createNamedHandle("created_at_game_time")
       , GameStartTimeHandle: dmz.defs.createNamedHandle("game_start_time")

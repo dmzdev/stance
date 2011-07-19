@@ -183,7 +183,8 @@ onPinAdded = function (data) {
          dmz.object.text(pinHandle, dmz.stance.PinDescHandle, description);
          dmz.object.text(pinHandle, dmz.stance.PinFileHandle, file);
          dmz.object.flag(pinHandle, dmz.stance.PinActiveHandle, true);
-         dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle, dmz.time.getFrameTime());
+         dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
+         dmz.object.flag(pinHandle, dmz.stance.UpdateTimeHandle, true);
          PinData[pinHandle] = data;
          list.forEach(function (handle) {
 
