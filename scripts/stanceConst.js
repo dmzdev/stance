@@ -64,11 +64,13 @@ var dmz =
         , QuestionLinkHandle: dmz.defs.createNamedHandle("question_link")
         , MediaHandle: dmz.defs.createNamedHandle("game_media")
 
-        // Time handles, and handles to be removed later
-        , UpdateTimeHandle: dmz.defs.createNamedHandle("update_time_handle")
+        /* Time handles, and handles to be removed later */
+        , UpdateStartTimeHandle: dmz.defs.createNamedHandle("update_start_time_handle")
+        , UpdateEndTimeHandle: dmz.defs.createNamedHandle("update_end_time_handle")
         , CreatedAtServerTimeHandle: dmz.defs.createNamedHandle("created_at_server_time")
         , CreatedAtGameTimeHandle: dmz.defs.createNamedHandle("created_at_game_time")
         , GameStartTimeHandle: dmz.defs.createNamedHandle("game_start_time")
+        , GameEndTimeHandle: dmz.defs.createNamedHandle("game_end_time")
         , InGameStartTimeHandle: dmz.defs.createNamedHandle("in_game_start_time")
         , ServerTimeHandle: dmz.defs.createNamedHandle("server_time")
 
