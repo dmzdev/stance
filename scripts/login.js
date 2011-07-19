@@ -134,7 +134,7 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
-function (linkObjHandle, attrHandle, groupHandle, userHandle) {
+function (linkObjHandle, attrHandle, userHandle, groupHandle) {
 
    if (_userHandle && (userHandle === _userHandle)) { _setTitle(userHandle); }
 });

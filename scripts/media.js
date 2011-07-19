@@ -127,8 +127,8 @@ setActiveState = function (state) {
 
 setUserPlayList = function (userHandle) {
 
-   var groupMediaList = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.MediaHandle)
-     , userMediaList = dmz.object.subLinks(userHandle, dmz.stance.MediaHandle)
+   var groupMediaList = dmz.object.superLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.MediaHandle)
+     , userMediaList = dmz.object.superLinks(userHandle, dmz.stance.MediaHandle)
      , combinedMediaList = []
      , text
      , pic
@@ -199,7 +199,7 @@ setUserPlayList = function (userHandle) {
       /* Go through the combined media list and remove and objects that don't also
          belong to the user's current group (only a problem for admin users)
       */
-      groupMediaList = dmz.object.subLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.MediaHandle);
+      groupMediaList = dmz.object.superLinks(dmz.stance.getUserGroupHandle(userHandle), dmz.stance.MediaHandle);
       userMediaList = combinedMediaList;
       combinedMediaList = [];
       if (groupMediaList) {
@@ -279,10 +279,10 @@ loadCurrentPrint = function () {
 
             webpage.page().mainFrame().load(item.source);
             NewSource = false;
-            linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, hil, item.handle);
+            linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, item.handle, hil);
             if (!linkHandle) {
 
-               dmz.object.link(dmz.stance.MediaHandle, hil, item.handle);
+               dmz.object.link(dmz.stance.MediaHandle, item.handle, hil);
             }
          }
       }
@@ -319,10 +319,10 @@ loadCurrentLobbyist = function () {
             if (pic) { pictureLabel.pixmap(pic); }
 
             NewSource = false;
-            linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, hil, item.handle);
+            linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, item.handle, hil);
             if (!linkHandle) {
 
-               dmz.object.link(dmz.stance.MediaHandle, hil, item.handle);
+               dmz.object.link(dmz.stance.MediaHandle, item.handle, hil);
             }
          }
       }
@@ -347,10 +347,10 @@ playCurrentVideo = function () {
               ;
 
             if (hasVideo) {
-               linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, hil, video.handle);
+               linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, video.handle, hil);
                if (!linkHandle) {
 
-                  dmz.object.link(dmz.stance.MediaHandle, hil, video.handle);
+                  dmz.object.link(dmz.stance.MediaHandle, video.handle, hil);
                }
 
                dmz.time.setTimer(self, 1, function () { source.play(); });
@@ -358,7 +358,7 @@ playCurrentVideo = function () {
          };
          if (NewSource) {
 
-            dmz.object.text(video.handle, dmz.stance.TitleHandle), source.currentSource(video.source);
+            source.currentSource(video.source);
             NewSource = false;
          }
          if (source.hasVideo()) { onVideo(true, source); }
@@ -484,15 +484,17 @@ init = function () {
    prevButton.standardIcon(dmz.ui.button.MediaSkipBackward);
 
    // When object is created for a group, check its type and highlight if needed
-   dmz.object.link.observe(self, dmz.stance.MediaHandle, function (linkHandle, attrHandle, groupHandle, mediaHandle) {
+   dmz.object.link.observe(self, dmz.stance.MediaHandle,
+   function (linkHandle, attrHandle, mediaHandle, groupHandle) {
 
       var hil = dmz.object.hil()
+        , type = dmz.object.type(groupHandle)
         ;
       // check that media is not disabled, not in user's list, and is in user's group list, and user is in the group
       if (dmz.object.flag(mediaHandle, dmz.stance.ActiveHandle) &&
-         !dmz.object.linkHandle(dmz.stance.MediaHandle, hil, mediaHandle) &&
-         dmz.object.linkHandle(dmz.stance.MediaHandle, groupHandle, mediaHandle) &&
-         dmz.stance.getUserGroupHandle(hil) == groupHandle) {
+         type && type.isOfType(dmz.stance.GroupType) &&
+         !dmz.object.linkHandle(dmz.stance.MediaHandle, mediaHandle, hil) &&
+         (dmz.stance.getUserGroupHandle(hil) === groupHandle)) {
 
          Object.keys(TypesMap).forEach(function (key) {
 
@@ -539,8 +541,8 @@ function (objHandle, attrHandle, value) {
      , hil = dmz.object.hil()
      ;
 
-   if (value && type && !dmz.object.linkHandle(dmz.stance.MediaHandle, hil, objHandle) &&
-      dmz.object.linkHandle(dmz.stance.MediaHandle, dmz.stance.getUserGroupHandle(hil), objHandle)) {
+   if (value && type && !dmz.object.linkHandle(dmz.stance.MediaHandle, objHandle, hil) &&
+      dmz.object.linkHandle(dmz.stance.MediaHandle, objHandle, dmz.stance.getUserGroupHandle(hil))) {
 
       Object.keys(TypesMap).forEach(function (key) {
 
@@ -572,50 +574,47 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
       list = MainModule.list;
       MainModule = module;
-      Object.keys(TypesMap).forEach(function (key) {
+      module.addPage
+         ( "Memo"
+         , webForm
+         , function () {
 
-         if (key == "Memo" || key == "Newspaper") {
+              setActiveState(key);
+              setUserPlayList(dmz.object.hil());
+              loadCurrentPrint();
+           }
+         );
+      module.addPage
+         ( "Newspaper"
+         , webForm
+         , function () {
 
-            module.addPage
-               ( key
-               , webForm
-               , function () {
+              setActiveState(key);
+              setUserPlayList(dmz.object.hil());
+              loadCurrentPrint();
+           }
+         );
+      module.addPage
+         ( key
+         , videoForm
+         , function () {
 
-                    setActiveState(key);
-                    setUserPlayList(dmz.object.hil());
-                    loadCurrentPrint();
-                 }
-               );
-         }
-         if (key == "Video") {
+              setActiveState(key);
+              setUserPlayList(dmz.object.hil());
+              playCurrentVideo();
+           }
+         , stopCurrentOnHome
+         );
+      module.addPage
+         ( key
+         , lobbyistForm
+         , function () {
 
-            module.addPage
-               ( key
-               , videoForm
-               , function () {
-
-                    setActiveState(key);
-                    setUserPlayList(dmz.object.hil());
-                    playCurrentVideo();
-                 }
-               , stopCurrentOnHome
-               );
-         }
-         if (key == "Lobbyist") {
-
-            module.addPage
-               ( key
-               , lobbyistForm
-               , function () {
-
-                    setActiveState(key);
-                    setUserPlayList(dmz.object.hil());
-                    loadCurrentLobbyist();
-                 }
-               );
-         }
-      });
-
+              setActiveState(key);
+              setUserPlayList(dmz.object.hil());
+              loadCurrentLobbyist();
+           }
+         );
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });

@@ -115,7 +115,7 @@ self.shutdown = function () {
    var hil = dmz.object.hil();
    if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
-      dmz.object.unlinkSuperObjects(hil, dmz.stance.GroupMembersHandle);
+      dmz.object.unlinkSubObjects(hil, dmz.stance.GroupMembersHandle);
    }
 
    if (mainGView) { mainGView.removeEventFilter(); }
@@ -298,7 +298,7 @@ mouseEvent = function (object, event) {
 };
 
 dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
-function (objHandle, attrHandle, gameHandle, groupHandle) {
+function (objHandle, attrHandle, groupHandle, gameHandle) {
 
    GroupList.push(groupHandle);
 });
@@ -327,7 +327,7 @@ function (objHandle, attrHandle, value) {
 });
 
 dmz.object.unlink.observe(self, dmz.stance.GroupMembersHandle,
-function (linkObjHandle, attrHandle, groupHandle, userHandle) {
+function (linkObjHandle, attrHandle, userHandle, groupHandle) {
 
    if (userHandle === dmz.object.hil()) {
 
@@ -524,7 +524,7 @@ _exports.highlight = function (name) {
 };
 
 dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
-function (linkObjHandle, attrHandle, groupHandle, advisorHandle) {
+function (linkObjHandle, attrHandle, advisorHandle, groupHandle) {
 
    if (!groupAdvisors[groupHandle]) { groupAdvisors[groupHandle] = []; }
    if (groupAdvisors[groupHandle].length <= AdvisorCount) {
@@ -552,7 +552,7 @@ function (objHandle, attrHandle, value) {
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
-function (objHandle, attrHandle, groupHandle, userHandle) {
+function (objHandle, attrHandle, userHandle, groupHandle) {
 
    if ((userHandle === dmz.object.hil()) &&
       (!dmz.object.flag(userHandle, dmz.stance.AdminHandle) || HaveToggled)) {

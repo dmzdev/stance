@@ -109,30 +109,30 @@ var dmz =
 
 getVoteStatus = function (handle) {
 
-   var status = "E: " + handle
-     , Active = dmz.object.flag(handle, Handles.ActiveHandle)
-     , Submitted = dmz.object.flag(handle, Handles.VoteSubmittedHandle)
-     , Approved = dmz.object.flag(handle, Handles.VoteApprovedHandle)
-     , Result = dmz.object.flag(handle, Handles.VoteResultHandle)
-     , noHandleList = dmz.object.subLinks(handle, Handles.VoteNoHandle)
-     ;
+//   var status = "E: " + handle
+//     , Active = dmz.object.flag(handle, Handles.ActiveHandle)
+//     , Submitted = dmz.object.flag(handle, Handles.VoteSubmittedHandle)
+//     , Approved = dmz.object.flag(handle, Handles.VoteApprovedHandle)
+//     , Result = dmz.object.flag(handle, Handles.VoteResultHandle)
+//     , noHandleList = dmz.object.subLinks(handle, Handles.VoteNoHandle)
+//     ;
 
-   if (Active) {
+//   if (Active) {
 
-      if (Submitted) { status = "SBMITD"; }
-      else {
+//      if (Submitted) { status = "SBMITD"; }
+//      else {
 
-         if (Approved) { status = "ACTIVE"; }
-         else { status = "DENIED"; }
-      }
-   }
-   else {
+//         if (Approved) { status = "ACTIVE"; }
+//         else { status = "DENIED"; }
+//      }
+//   }
+//   else {
 
-      if (Result) { status = "PASSED"; }
-      else if (!noHandleList) { status = "DENIED"; }
-      else { status = "FAILED"; }
-   }
-   return status;
+//      if (Result) { status = "PASSED"; }
+//      else if (!noHandleList) { status = "DENIED"; }
+//      else { status = "FAILED"; }
+//   }
+   return "ERROR";
 };
 
 getDisplayName = function (handle) {
@@ -144,12 +144,9 @@ getDisplayName = function (handle) {
 
 getAuthorHandle = function (handle) {
 
-   var parentLinks = dmz.object.subLinks (handle, Handles.CreatedByHandle)
-     , parent
+   var parentLinks = dmz.object.superLinks (handle, Handles.CreatedByHandle)
+     , parent = (parentLinks && parentLinks.length) ? parentLinks[0] : undefined
      ;
-
-   parentLinks = dmz.object.subLinks (handle, Handles.CreatedByHandle);
-   if (parentLinks) { parent = parentLinks[0]; }
 
    return parent;
 };
@@ -160,10 +157,11 @@ getUserGroupHandle = function (userHandle) {
 
    var userGroupHandle = 0
      , retval = 0
+     , type = dmz.object.type(userHandle)
      ;
-   if (userHandle) {
+   if (type && type.isOfType(ObjectTypes.UserType)) {
 
-      userGroupHandle = dmz.object.superLinks(userHandle, Handles.GroupMembersHandle);
+      userGroupHandle = dmz.object.subLinks(userHandle, Handles.GroupMembersHandle);
       if (userGroupHandle && userGroupHandle[0]) { retval = userGroupHandle[0]; }
    }
    return retval;

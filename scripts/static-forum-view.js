@@ -654,7 +654,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          _updatePostedAt(handle);
       };
 
-      retData.observers.forumLink = function (linkObjHandle, attrHandle, groupHandle, forumHandle) {
+      retData.observers.forumLink = function (linkObjHandle, attrHandle, forumHandle, groupHandle) {
 
          var forum = _master.forums[forumHandle];
          if (forum) { forum.group = groupHandle; }

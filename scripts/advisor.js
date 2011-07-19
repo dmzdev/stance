@@ -144,7 +144,7 @@ createAdvisorWindow = function (windowStr) {
              ;
 
            result = hil && !dmz.object.flag(hil, dmz.stance.AdminHandle);
-           advisors = dmz.object.subLinks(dmz.stance.getUserGroupHandle(hil), dmz.stance.AdvisorGroupHandle) || [];
+           advisors = dmz.object.superLinks(dmz.stance.getUserGroupHandle(hil), dmz.stance.AdvisorGroupHandle) || [];
 
            advisors.forEach(function (advisorHandle) {
 
@@ -324,7 +324,7 @@ getAvatarPixmap = function (handle) {
 getHILAdvisor = function (index) {
 
    var groupHandle = dmz.stance.getUserGroupHandle(dmz.object.hil())
-     , advisors = dmz.object.subLinks(groupHandle, dmz.stance.AdvisorGroupHandle)
+     , advisors = dmz.object.superLinks(groupHandle, dmz.stance.AdvisorGroupHandle)
      ;
 
    if (advisors) {

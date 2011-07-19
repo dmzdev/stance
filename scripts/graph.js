@@ -932,13 +932,13 @@ getGroupFromCreatedBy = function (handle) {
 
 getMediaGroups = function (handle) {
 
-   var groupList = dmz.object.superLinks(handle, dmz.stance.GameMediaHandle);
+   var groupList = dmz.object.subLinks(handle, dmz.stance.MediaHandle);
    return groupList ? groupList : [];
 }
 
 getAllGroupUsers = function (groupHandle) {
 
-   var users = dmz.object.subLinks(groupHandle, dmz.stance.GroupMembersHandle);
+   var users = dmz.object.superLinks(groupHandle, dmz.stance.GroupMembersHandle);
    return users ? users : [];
 };
 
@@ -1017,7 +1017,7 @@ getUserFromCreatedBy = function (handle) {
       , brush: dmz.ui.graph.createBrush({ r: 1, g: 0.2, b: 0.3 })
       , getGroups: function (handle) {
 
-           var groupList = dmz.object.superLinks(handle, dmz.stance.GroupPinHandle);
+           var groupList = dmz.object.subLinks(handle, dmz.stance.GroupPinHandle);
            return groupList ? groupList : [];
         }
       , getUsers: false
@@ -1140,7 +1140,7 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle) {
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
-function (linkObjHandle, attrHandle, groupHandle, userHandle) {
+function (linkObjHandle, attrHandle, userHandle, groupHandle) {
 
    var userData = masterData.users[userHandle]
      , groupData = masterData.groups[groupHandle]
@@ -1154,7 +1154,7 @@ function (linkObjHandle, attrHandle, groupHandle, userHandle) {
 
 });
 
-dmz.object.link.observe(self, dmz.stance.AdminHandle, function (handle, attr, value) {
+dmz.object.flag.observe(self, dmz.stance.AdminHandle, function (handle, attr, value) {
 
    var userData = masterData.users[handle]
      , groupData
@@ -1179,10 +1179,7 @@ dmz.object.create.observe(self, function (handle, type) {
      ;
    if (type) {
 
-      if (type.isOfType(dmz.stance.GameType)) {
-
-         masterData.game = handle;
-      }
+      if (type.isOfType(dmz.stance.GameType)) { masterData.game = handle; }
       else if (type.isOfType(dmz.stance.GroupType)) {
 
          data =
@@ -1210,11 +1207,7 @@ dmz.object.create.observe(self, function (handle, type) {
          data.label.setChecked(true);
          updateName(handle);
       }
-      else if (ObjectTypeData[type]) {
-
-         ObjectTypeData[type].events.push(handle);
-//         eventItems[handle] = ObjectTypeData[type].generateWidget(handle);
-      }
+      else if (ObjectTypeData[type]) { ObjectTypeData[type].events.push(handle); }
    }
 });
 

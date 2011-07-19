@@ -61,7 +61,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       dmz.object.link.observe(self, dmz.stance.ParentHandle, RetData.observers.parentLink);
 
       dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
-      function (linkObjHandle, attrHandle, groupHandle, userHandle) {
+      function (linkObjHandle, attrHandle, userHandle, groupHandle) {
 
          if (dmz.object.hil() === userHandle) { RetData.updateForUser(userHandle); }
       });

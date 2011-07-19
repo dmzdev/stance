@@ -191,9 +191,9 @@ onPinAdded = function (data) {
             var type = dmz.object.type(handle);
 
             if (type && type.isOfType(dmz.stance.GroupType) &&
-               !dmz.object.linkHandle(dmz.stance.GroupPinHandle, handle, pinHandle)) {
+               !dmz.object.linkHandle(dmz.stance.GroupPinHandle, pinHandle, handle)) {
 
-               dmz.object.link(dmz.stance.GroupPinHandle, handle, pinHandle);
+               dmz.object.link(dmz.stance.GroupPinHandle, pinHandle, handle);
             }
          });
          dmz.object.activate(pinHandle);
@@ -362,10 +362,10 @@ onPinRemoved = function (data) {
 }());
 
 dmz.object.link.observe(self, dmz.stance.GroupPinHandle,
-function (linkObjHandle, attrHandle, groupHandle, pinHandle) {
+function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
 
    var hil = dmz.object.hil()
-     , list = dmz.object.subLinks(groupHandle, dmz.stance.GroupPinHandle)
+     , list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle)
      , count
      , data = PinData[pinHandle]
      ;
@@ -397,7 +397,7 @@ dmz.object.flag.observe(self, dmz.stance.VisibleHandle, function (handle, attr, 
       if (value) {
 
          hilGroup = dmz.stance.getUserGroupHandle(dmz.object.hil());
-         if (dmz.object.linkHandle(dmz.stance.GroupPinHandle, hilGroup, handle)) {
+         if (dmz.object.linkHandle(dmz.stance.GroupPinHandle, handle, hilGroup)) {
 
             if (HaveActivatedMap) { addPinMessage.send(data); }
             else { MessageQueue.push({ msg: addPinMessage, data: data }); }
@@ -413,7 +413,7 @@ dmz.object.flag.observe(self, dmz.stance.VisibleHandle, function (handle, attr, 
 
 populateMapFromGroup = function (groupHandle) {
 
-   var list = dmz.object.subLinks(groupHandle, dmz.stance.GroupPinHandle)
+   var list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle)
      ;
 
    if (groupHandle) {
@@ -442,7 +442,7 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
-      list = dmz.object.subLinks(dmz.stance.getUserGroupHandle(objHandle), dmz.stance.GroupPinHandle);
+      list = dmz.object.superLinks(dmz.stance.getUserGroupHandle(objHandle), dmz.stance.GroupPinHandle);
       list = list ? list.length : 0;
       count = dmz.object.scalar(objHandle, dmz.stance.TotalHandle);
       count = count ? count : 0;
@@ -456,7 +456,7 @@ function (objHandle, attrHandle, value) {
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
-function (linkObjHandle, attrHandle, groupHandle, userHandle) {
+function (linkObjHandle, attrHandle, userHandle, groupHandle) {
 
    var count
      , list
@@ -464,7 +464,7 @@ function (linkObjHandle, attrHandle, groupHandle, userHandle) {
 
    if (userHandle === dmz.object.hil()) {
 
-      list = dmz.object.subLinks(groupHandle, dmz.stance.GroupPinHandle);
+      list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle);
       list = list ? list.length : 0;
       count = dmz.object.scalar(userHandle, dmz.stance.TotalHandle);
       count = count ? count : 0;
@@ -520,7 +520,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
          if (hilGroup) {
 
-            list = dmz.object.subLinks(hilGroup, dmz.stance.GroupPinHandle);
+            list = dmz.object.superLinks(hilGroup, dmz.stance.GroupPinHandle);
             list = list ? list.length : 0;
             dmz.object.scalar(hil, dmz.stance.TotalHandle, list);
          }
@@ -530,9 +530,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       MainModule = module;
       module.addPage("Map", map, mapClickFn, mapHomeFn);
       setWebViewMessage.send();
-//      page = map.page();
-//      page.mainFrame().load(self.config.string("url.name"));
-//      page.linkDelegation(dmz.ui.webview.DelegateAllLinks);
 
       browser = dmz.ui.webview.create();
       browserDialog.lookup("verticalLayout").addWidget(browser);
