@@ -34,9 +34,16 @@ var dmz =
    , stackedWidget = main.lookup("stackedWidget")
    , mainGView = main.lookup("graphicsView")
    , gscene
-   , homeButton = main.lookup("homeButton")
+   , WindowDialog
+   , dialogLayout
+   , lastDialogWidget
+
+   // Consts
+   , NAME_INDEX = 0
 
    // Variables
+   , lastItem
+
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , ToggledGroupMessage = dmz.message.create("ToggledGroupMessage")
@@ -54,6 +61,7 @@ var dmz =
    , computer
    , LastWindow = false
    , Background
+   , ItemPage = {}
    , PageLink =
         { Map: false
         , Forum: false
@@ -69,14 +77,13 @@ var dmz =
         , Vote: false
         , Exit: false
         }
-   , DataIndex =
-        { widget: 0
-        , func: 1
-        , onHome: 2
-        , highlight: 3
-        }
-
-   , Calendar = false
+//   , DataIndex =
+//        { widget: 0
+//        , func: 1
+//        , onHome: 2
+//        , highlight: 3
+//        , dialog: 4
+//        }
    , LoggedIn = false
    , groupAdvisors = {}
    , advisorPicture = {}
@@ -89,7 +96,6 @@ var dmz =
         , techList: []
         , sendTechEmail: function (a, b) { this.techList.push([a,b]); }
         }
-   , TimeModule = { gameTime: dmz.time.getFrameTime }
 
 
    // Messages
@@ -152,6 +158,7 @@ setPixmapFromResource = function (graphicsItem, resourceName) {
 
    var file = dmz.resources.findFile(resourceName)
      , config = dmz.resources.lookupConfig(resourceName)
+     , name
      , loc
      , pixmap
      , font
@@ -167,8 +174,8 @@ setPixmapFromResource = function (graphicsItem, resourceName) {
       loc = config.vector("offset");
       if (dmz.vector.isTypeOf(loc)) {
 
-         highlight = graphicsItem.data(DataIndex.highlight);
-         if (highlight) { highlight.pos(loc.x, loc.y); }
+         name = graphicsItem.data(NAME_INDEX);
+         if (PageLink[name] && PageLink[name].highlight) { PageLink[name].highlight.pos(loc.x, loc.y); }
       }
    }
 };
@@ -185,8 +192,6 @@ updateGraphicsForGroup = function (groupHandle) {
 
       setPixmapFromResource(
          Background, dmz.object.text(groupHandle, dmz.stance.BackgroundImageHandle));
-      setPixmapFromResource(
-         Calendar, dmz.object.text(groupHandle, dmz.stance.CalendarImageHandle));
 
       data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
       count = dmz.object.scalar(groupHandle, dmz.stance.AdvisorImageCountHandle);
@@ -195,7 +200,7 @@ updateGraphicsForGroup = function (groupHandle) {
          for (index = 0; index < count; index += 1) {
 
             setPixmapFromResource(
-               PageLink[advisorKey[index]],
+               PageLink[advisorKey[index]].pixmap,
                data.string(dmz.stance.AdvisorImageHandle, index)
                );
          }
@@ -227,7 +232,7 @@ updateGraphicsForGroup = function (groupHandle) {
 
          if (attr) {
 
-            setPixmapFromResource(PageLink[key], dmz.object.text(groupHandle, attr));
+            setPixmapFromResource(PageLink[key].pixmap, dmz.object.text(groupHandle, attr));
          }
       });
 
@@ -256,19 +261,60 @@ mouseEvent = function (object, event) {
             object.items(pos, dmz.ui.consts.IntersectsItemShape, dmz.ui.consts.DescendingOrder);
          items.forEach(function (item) {
 
-            var widget = item.data(DataIndex.widget)
-              , onChangeFunction = item.data(DataIndex.func)
-              , highlight = item.data(DataIndex.highlight)
-              ;
+//            var dialog = item.data(DataIndex.dialog)
+//              , onLoad = item.data(DataIndex.func)
+//              , onHome = item.data(DataIndex.onHome)
+//              , highlight = item.data(DataIndex.highlight)
+//              ;
 
-            if (stackedWidget && widget) {
+//              if (dialog) {
 
-               stackedWidget.currentWidget(widget);
-               LastWindow = item;
-            }
+//                 dmz.time.setTimer(self, function () {
 
-            if (onChangeFunction) { onChangeFunction(); }
-            if (highlight) { highlight.hide(); }
+//                    if (onLoad) { onLoad(); }
+//                    dialog.open(self, function () {
+
+//                       if (highlight) { highlight.hide(); }
+//                       if (onHome) { onHome(); }
+//                    });
+//                 });
+//              }
+            var name = item.data(NAME_INDEX);
+            if (name) { lastItem = name; }
+//            var widget = item.data(DataIndex.widget)
+//              , onChangeFunction = item.data(DataIndex.func)
+//              , onHome = item.data(DataIndex.onHome)
+//              , highlight = item.data(DataIndex.highlight)
+//              , oldWidget
+//              ;
+
+//            if (widget) {
+
+////               oldWidget = dialogLayout.takeAt(0);
+//////               if (oldWidget) { oldWidget.hide(); }
+//               dialogLayout.addWidget(widget);
+//               dmz.time.setTimer(self, 1, function () {
+
+//                  if (onChangeFunction) { onChangeFunction(); }
+//                  WindowDialog.open(self, function () {
+
+//                     if (highlight) { highlight.hide(); }
+//                     if (onHome) { onHome(); }
+////                     dmz.time.setTimer(self, 0.1, function () { dialogLayout.takeAt(0); });
+//                     dialogLayout.takeAt(0);
+//                  });
+//               });
+//            }
+
+
+//            if (stackedWidget && widget) {
+
+//               stackedWidget.currentWidget(widget);
+//               LastWindow = item;
+//            }
+
+//            if (onChangeFunction) { onChangeFunction(); }
+//            if (highlight) { highlight.hide(); }
          });
 
       }
@@ -276,8 +322,41 @@ mouseEvent = function (object, event) {
       else if (type == dmz.ui.event.GraphicsSceneMouseMove) {}
    }
    return false;
-
 };
+
+dmz.time.setRepeatingTimer(self, 0.5, function () {
+
+   var widget
+     , onClicked
+     , onHome
+     , highlight
+     , data = lastItem ? PageLink[lastItem] : false;
+     ;
+
+   self.log.warn ("LastItem:", lastItem);
+   if (data) {
+
+//      widget = data.widget;
+//      onClicked = data.onClicked;
+//      onHome = data.onHome;
+//      highlight
+//      onClicked = lastItem.data(DataIndex.func);
+//      onHome = lastItem.data(DataIndex.onHome);
+//      highlight = lastItem.data(DataIndex.highlight);
+      if (data.widget) {
+
+         dialogLayout.addWidget(data.widget);
+         if (data.onClicked) { data.onClicked(); }
+         WindowDialog.open(self, function () {
+
+            if (data.highlight) { data.highlight.hide(); }
+            if (data.onHome) { data.onHome(); }
+            dialogLayout.takeAt(0);
+         });
+      }
+      lastItem = false;
+   }
+});
 
 dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
 function (objHandle, attrHandle, groupHandle, gameHandle) {
@@ -298,12 +377,7 @@ function (objHandle, attrHandle, value) {
 
       Object.keys(PageLink).forEach(function (item) {
 
-         var highlight;
-         if (PageLink[item]) {
-
-            highlight = PageLink[item].data(DataIndex.highlight);
-            if (highlight) { highlight.hide(); }
-         }
+         if (PageLink[item].highlight) { PageLink[item].highlight.hide(); }
       });
    }
 });
@@ -315,12 +389,7 @@ function (linkObjHandle, attrHandle, userHandle, groupHandle) {
 
       Object.keys(PageLink).forEach(function (item) {
 
-         var highlight;
-         if (PageLink[item]) {
-
-            highlight = PageLink[item].data(DataIndex.highlight);
-            if (highlight) { highlight.hide(); }
-         }
+         if (PageLink[item].highlight) { PageLink[item].highlight.hide(); }
       });
    }
 });
@@ -390,26 +459,16 @@ setupMainWindow = function () {
 
                      pixmap = gscene.addPixmap(pixmap);
                      pixmap.pos(loc.x, loc.y);
-                     if (name === "Calendar") {
+                     PageLink[name] = { pixmap: pixmap };
+                     pixmap.data(NAME_INDEX, name);
+                     if (highlight) {
 
-                        Calendar = pixmap;
-                        prev = Calendar;
-                     }
-                     else {
-
-                        widget = dmz.ui.label.create(name);
-                        pixmap.data(DataIndex.widget, widget);
-                        stackedWidget.add(widget);
-                        PageLink[name] = pixmap;
-                        if (highlight) {
-
-                           pixmap = dmz.ui.graph.createPixmap(highlight);
-                           pixmap = dmz.ui.graph.createPixmapItem(pixmap, PageLink[name]);
-                           PageLink[name].data(DataIndex.highlight, pixmap);
-                           offset = config.vector("offset");
-                           if (dmz.vector.isTypeOf(offset)) { pixmap.pos(offset.x, offset.y); }
-                           pixmap.hide();
-                        }
+                        pixmap = dmz.ui.graph.createPixmap(highlight);
+                        pixmap = dmz.ui.graph.createPixmapItem(pixmap, PageLink[name].pixmap);
+                        PageLink[name].highlight = pixmap;
+                        offset = config.vector("offset");
+                        if (dmz.vector.isTypeOf(offset)) { pixmap.pos(offset.x, offset.y); }
+                        pixmap.hide();
                      }
                   }
                }
@@ -419,35 +478,24 @@ setupMainWindow = function () {
 
       _exports.addPage("Exit", false, function () {
 
-         dmz.ui.messageBox.create(
-            { type: dmz.ui.messageBox.Warning
-            , text: "Are you sure you wish to exit?"
-            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-            , defaultButton: dmz.ui.messageBox.Cancel
-            }
-            , main
-         ).open(self, function (value) {
+         self.log.error ("Exit functionality must be reimplemented.");
+//         dmz.ui.messageBox.create(
+//            { type: dmz.ui.messageBox.Warning
+//            , text: "Are you sure you wish to exit?"
+//            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+//            , defaultButton: dmz.ui.messageBox.Cancel
+//            }
+//            , main
+//         ).open(self, function (value) {
 
-            if (value === dmz.ui.messageBox.Ok) { dmz.sys.requestExit(); }
-         });
-      });
-
-      homeButton.observe(self, "clicked", function () {
-
-         var item = LastWindow
-           , func
-           ;
-
-         stackedWidget.currentIndex(HomeIndex);
-         if (item) {
-
-           func = item.data(DataIndex.onHome);
-           if (func) { func(); }
-         }
+//            if (value === dmz.ui.messageBox.Ok) { dmz.sys.requestExit(); }
+//         });
       });
 
       gscene.eventFilter(self, mouseEvent);
       dmz.ui.mainWindow.centralWidget(main);
+      WindowDialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget());
+      dialogLayout = WindowDialog.lookup("verticalLayout");
       mainGView.eventFilter(self, function (object, event) {
 
          var type = event.type()
@@ -469,16 +517,17 @@ setupMainWindow = function () {
 
 _exports.addPage = function (name, widget, func, onHome) {
 
-   if (name && stackedWidget && PageLink[name]) {
+   var dialog
+     , highlight
+     ;
+   if (name && PageLink[name] && widget) {
 
-      stackedWidget.remove(PageLink[name].data(DataIndex.widget));
-      stackedWidget.add(widget);
-      PageLink[name].data(DataIndex.widget, widget);
-      PageLink[name].data(DataIndex.func, func);
-      PageLink[name].data(DataIndex.onHome, onHome);
-      PageLink[name].cursor(dmz.ui.consts.PointingHandCursor);
+         PageLink[name].widget = widget;
+         PageLink[name].onClicked = func;
+         PageLink[name].onHome = onHome;
+         PageLink[name].pixmap.cursor(dmz.ui.consts.PointingHandCursor);
    }
-   else { self.log.error(name, widget, stackedWidget, PageLink[name]); }
+   else { self.log.error(name, widget, PageLink[name]); }
 };
 
 _exports.highlight = function (name) {
@@ -486,7 +535,7 @@ _exports.highlight = function (name) {
    var highlight;
    if (name && PageLink[name]) {
 
-      highlight = PageLink[name].data(DataIndex.highlight);
+      highlight = PageLink[name].highlight();
       if (highlight) { highlight.show(); }
    }
 };
@@ -563,24 +612,6 @@ LoginSuccessMessage.subscribe(self, function () {
 LoginFailedMessage.subscribe(self, function () { LoggedIn = true; });
 
 LoginSkippedMessage.subscribe(self, function () { LoggedIn = true; LoginSkipped = true; });
-
-dmz.module.subscribe(self, "game-time", function (Mode, module) {
-
-   var timeStamp;
-   if (Mode === dmz.module.Activate) {
-
-      TimeModule = module;
-      timeStamp = dmz.util.timeStampToDate(module.gameTime());
-      dmz.time.setRepeatingTimer(self, 5, function () {
-
-         var date;
-         if (dmz.object.hil()) {
-
-            date = dmz.util.timeStampToDate(module.gameTime());
-         }
-      });
-   }
-});
 
 dmz.module.subscribe(self, "email", function (Mode, module) {
 

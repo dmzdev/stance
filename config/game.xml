@@ -18,7 +18,6 @@
       <image name="Advisor2" resource="default_adv2"/>
       <image name="Advisor3" resource="default_adv3"/>
       <image name="Advisor4" resource="default_adv4"/>
-      <image name="Calendar" resource="default_calendar"/>
       <image name="Vote" resource="default_vote"/>
    </set>
 </main>
@@ -37,7 +36,6 @@
          <image name="Advisor" resource="default_adv2"/>
          <image name="Advisor" resource="default_adv3"/>
          <image name="Advisor" resource="default_adv4"/>
-         <image name="Calendar" resource="default_calendar"/>
          <image name="Vote" resource="default_vote"/>
       </set>
       <set name="bw" background="bw_background" highlight="PushNotify">
@@ -53,7 +51,6 @@
          <image name="Advisor" resource="bw_adv2"/>
          <image name="Advisor" resource="bw_adv3"/>
          <image name="Advisor" resource="bw_adv4"/>
-         <image name="Calendar" resource="bw_calendar"/>
          <image name="Vote" resource="bw_vote"/>
       </set>
       <set name="Business" background="Business_background" highlight="PushNotify">
@@ -62,7 +59,6 @@
          <image name="Advisor" resource="Business_adv2"/>
          <image name="Advisor" resource="Business_adv3"/>
          <image name="Advisor" resource="Business_adv4"/>
-         <image name="Calendar" resource="Business_calendar"/>
          <image name="Exit" resource="Business_exit"/>
          <image name="Forum" resource="Business_computer"/>
          <image name="Lobbyist" resource="Business_videophone"/>
@@ -78,7 +74,6 @@
          <image name="Advisor" resource="Cartel1_adv2"/>
          <image name="Advisor" resource="Cartel1_adv3"/>
          <image name="Advisor" resource="Cartel1_adv4"/>
-         <image name="Calendar" resource="Cartel1_calendar"/>
          <image name="Exit" resource="Cartel1_exit"/>
          <image name="Forum" resource="Cartel1_computer"/>
          <image name="Lobbyist" resource="Cartel1_videophone"/>
@@ -101,7 +96,6 @@
          <image name="Advisor" resource="WHC_adv2"/>
          <image name="Advisor" resource="WHC_adv3"/>
          <image name="Advisor" resource="WHC_adv4"/>
-         <image name="Calendar" resource="WHC_calendar"/>
          <image name="Vote" resource="WHC_vote"/>
       </set>
       <set name="MexicanGov" background="MexicanGov_background" highlight="PushNotify">
@@ -117,7 +111,6 @@
          <image name="Advisor" resource="MexicanGov_adv2"/>
          <image name="Advisor" resource="MexicanGov_adv3"/>
          <image name="Advisor" resource="MexicanGov_adv4"/>
-         <image name="Calendar" resource="MexicanGov_calendar"/>
          <image name="Vote" resource="MexicanGov_vote"/>
       </set>
       <set name="Cartel2" background="Cartel2_background" highlight="PushNotify">
@@ -133,7 +126,6 @@
          <image name="Advisor" resource="Cartel2_adv2"/>
          <image name="Advisor" resource="Cartel2_adv3"/>
          <image name="Advisor" resource="Cartel2_adv4"/>
-         <image name="Calendar" resource="Cartel2_calendar"/>
          <image name="Vote" resource="Cartel2_vote"/>
       </set>
       <set name="ACLU" background="ACLU_background" highlight="PushNotify">
@@ -149,7 +141,6 @@
          <image name="Advisor" resource="ACLU_adv2"/>
          <image name="Advisor" resource="ACLU_adv3"/>
          <image name="Advisor" resource="ACLU_adv4"/>
-         <image name="Calendar" resource="ACLU_calendar"/>
          <image name="Vote" resource="ACLU_vote"/>
       </set>
       <set name="CBP" background="CBP_background" highlight="PushNotify">
@@ -165,7 +156,6 @@
          <image name="Advisor" resource="CBP_adv2"/>
          <image name="Advisor" resource="CBP_adv3"/>
          <image name="Advisor" resource="CBP_adv4"/>
-         <image name="Calendar" resource="CBP_calendar"/>
          <image name="Vote" resource="CBP_vote"/>
       </set>
    </group-picture-set>
