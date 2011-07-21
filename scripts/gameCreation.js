@@ -346,7 +346,7 @@ function (linkObjHandle, attrHandle, groupHandle, gameHandle) {
 dmz.object.unlink.observe(self, dmz.stance.GameGroupHandle,
 function (linkObjHandle, attrHandle, groupHandle, gameHandle) {
 
-   var name = dmz.stance.getDisplayName(subHandle)
+   var name = dmz.stance.getDisplayName(groupHandle)
      , index
      ;
 
