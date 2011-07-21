@@ -85,15 +85,17 @@ dmz::BorderWebInterface::receive_message (
    else if (Type == _removePinMessage) {
 
       int id = -1;
-      if (InData->lookup_int32 (_pinIDHandle, 0, id)) {
+      int handle = -1;
 
+      if (InData->lookup_int32 (_pinObjectHandle, 0, handle)) {
+
+         id = _idHandleMap[handle];
          if (!_removePinList.contains (id)) {
 
             _removePinList.append (id);
-            if (_addPinMap.contains (id)) {
+            if (_idHandleMap.key (id)) {
 
-               int handle = _addPinMap[id];
-               _addPinMap.remove (id);
+               _idHandleMap.remove (handle);
                int index = _addPinList.indexOf (handle);
                if (index != -1) { _addPinList.removeAt (index); }
             }
@@ -103,13 +105,14 @@ dmz::BorderWebInterface::receive_message (
    }
    else if (Type == _movePinMessage) {
 
-      int id;
+      int id, handle;
       Float64 x = -1, y = -1;
 
-      if (InData->lookup_int32 (_pinIDHandle, 0, id) &&
+      if (InData->lookup_int32 (_pinObjectHandle, 0, handle) &&
          InData->lookup_float64 (_pinPositionHandle, 0, x) &&
          InData->lookup_float64 (_pinPositionHandle, 1, y)) {
 
+         id = _idHandleMap[handle];
          if (!_movePinList.contains (id)) {
 
             _movePinList.append (id);
@@ -144,41 +147,19 @@ dmz::BorderWebInterface::receive_message (
 // BorderWebInterface Interface
 void
 dmz::BorderWebInterface::pinWasAdded (
-      const int id,
-      const float x,
-      const float y,
-      const QString title,
-      const QString description,
-      const QString filename,
-      const int objectHandle,
-      const QVariantList list) {
+   const int id,
+   const float worldX,
+   const float worldY,
+   const QString title,
+   const QString description,
+   const QString filename,
+   int objectHandle,
+   QVariantList groupHandles) {
 
    Data data;
    data.store_int32 (_pinIDHandle, 0, id);
-   data.store_float64 (_pinPositionHandle, 0, x);
-   data.store_float64 (_pinPositionHandle, 1, y);
-   data.store_string (_pinTitleHandle, 0, qPrintable (title));
-   data.store_string (_pinDescHandle, 0, qPrintable (description));
-   data.store_string (_pinFileHandle, 0, qPrintable (filename));
    data.store_int32 (_pinObjectHandle, 0, objectHandle);
-
-   int idx = 0;
-   int count = list.count ();
-   bool cont = true;
-   while ((idx < count) && cont) {
-
-      QVariant var = list.at (idx);
-      if (var.canConvert (QVariant::Int)) {
-
-         data.store_int32 (_groupPinHandle, idx, var.toInt ());
-      }
-      else { cont = false; }
-      ++idx;
-   }
-
-   data.store_int32 (_pinGroupCountHandle, 0, idx);
-
-   _addPinMap[id] = objectHandle;
+   _idHandleMap[objectHandle] = id;
    _pinAddedMessage.send (&data);
 }
 
@@ -187,7 +168,7 @@ void
 dmz::BorderWebInterface::pinWasMoved (const int id, const float x, const float y) {
 
    Data data;
-   data.store_int32 (_pinIDHandle, 0, id);
+   data.store_int32 (_pinObjectHandle, 0, _idHandleMap.key (id));
    data.store_float64 (_pinPositionHandle, 0, x);
    data.store_float64 (_pinPositionHandle, 1, y);
    int index = _movePinList.indexOf (id);
@@ -200,7 +181,7 @@ void
 dmz::BorderWebInterface::pinWasRemoved (const int id) {
 
    Data data;
-   data.store_int32 (_pinIDHandle, 0, id);
+   data.store_int32 (_pinObjectHandle, 0, _idHandleMap.key (id));
    int index = _removePinList.indexOf (id);
    if (index != -1) { _removePinList.removeAt (index); }
    _pinRemovedMessage.send (&data);
@@ -211,7 +192,7 @@ void
 dmz::BorderWebInterface::pinSelected (const int id) {
 
    Data data;
-   data.store_int32 (_pinIDHandle, 0, id);
+   data.store_int32 (_pinObjectHandle, 0, _idHandleMap.key (id));
    _pinSelectedMessage.send (&data);
 }
 
@@ -232,7 +213,6 @@ dmz::BorderWebInterface::_addPin (const Data *InData) {
       InData->lookup_int32 (_pinObjectHandle, 0, handle)) {
 
       int value, idx = 0;
-      while (InData->lookup_int32 (_groupPinHandle, idx++, value)) { list.append (value); }
 
       if (!handle || !_addPinList.contains (handle)) {
 

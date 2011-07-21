@@ -88,7 +88,7 @@ namespace dmz {
          Boolean _haveSetJSObject;
          QList<const Data *> _pinDataQueue;
 
-         QMap<int, int> _addPinMap;
+         QMap<int, int> _idHandleMap;
          QList<int> _addPinList;
          QList<int> _removePinList;
          QList<int> _movePinList;

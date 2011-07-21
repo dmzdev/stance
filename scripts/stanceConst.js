@@ -52,6 +52,7 @@ var dmz =
         , ForumTimeHandle: dmz.defs.createNamedHandle("forum_time")
         , VoteState: dmz.defs.createNamedHandle("vote_state")
         , EmailRecipientHandle: dmz.defs.createNamedHandle("email_recipient")
+        , PinTotalHandle: dmz.defs.createNamedHandle("pin_total")
 
         // Link Attr Handles
         , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")

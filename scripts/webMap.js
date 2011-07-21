@@ -25,7 +25,7 @@ var dmz =
 
    // UI elements
    , map = dmz.ui.webview.create()
-   , newPinDialog = dmz.ui.loader.load("MapAddPinDialog.ui")
+   , newPinDialog = dmz.ui.loader.load("MapAddPinDialog.ui", dmz.ui.mainWindow.centralWidget())
    , typeList = newPinDialog.lookup("typeList")
    , descEdit = newPinDialog.lookup("descEdit")
    , titleEdit = newPinDialog.lookup("titleEdit")
@@ -56,6 +56,10 @@ var dmz =
    , PinGroupList = {}
    , GroupQueue = {}
    , PinData = {}
+
+
+   , master = { pins: {} }
+   , VisiblePins = []
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , MessageQueue = []
 
@@ -63,10 +67,38 @@ var dmz =
    , onPinAdded
    , onPinRemoved
    , populateMapFromGroup
+
+   , updatePosition
+   , updateTitle
+   , updateText
+   , updateFile
+   , updateActive
+
+   , sendMessage
    ;
 
 
 self.shutdown = function () { if (map) { map.removeEventFilter(); } }
+
+sendMessage = function (message, handle) {
+
+   var data = master.pins[handle]
+     , msgData
+     ;
+   if (message && data && data.pos && data.title && data.text && data.picture) {
+
+      msgData = dmz.data.create();
+      msgData.number(dmz.stance.ObjectHandle, 0, handle);
+      msgData.number(dmz.stance.PositionHandle, 0, data.pos[0]);
+      msgData.number(dmz.stance.PositionHandle, 1, data.pos[1]);
+      msgData.string(dmz.stance.TitleHandle, 0, data.title);
+      msgData.string(dmz.stance.TextHandle, 0, data.text);
+      msgData.string(dmz.stance.PictureHandle, 0, data.picture);
+
+      message.send(msgData);
+   };
+
+}
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
@@ -86,44 +118,21 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
       if (objType.isOfType(dmz.stance.PinType)) {
 
-         if (!PinData[objHandle] && dmz.object.flag(objHandle, dmz.stance.ActiveHandle)) {
-
-            pos = dmz.object.position(objHandle, dmz.stance.PositionHandle);
-            title = dmz.object.text(objHandle, dmz.stance.TitleHandle);
-            description = dmz.object.text(objHandle, dmz.stance.TextHandle);
-            file = dmz.object.text(objHandle, dmz.stance.PictureHandle);
-
-            data = dmz.data.create();
-            data.number(dmz.stance.PositionHandle, 0, pos.x);
-            data.number(dmz.stance.PositionHandle, 1, pos.y);
-            data.string(dmz.stance.TitleHandle, 0, title);
-            data.string(dmz.stance.TextHandle, 0, description);
-            data.string(dmz.stance.PictureHandle, 0, file);
-            data.number(dmz.stance.ObjectHandle, 0, objHandle);
-            PinData[objHandle] = data;
-         }
+         master.pins[objHandle] = { handle: objHandle, active: false };
       }
-      else if (objType.isOfType(dmz.stance.GroupType)) { GroupQueue[objHandle] = true; }
+      else if (objType.isOfType(dmz.stance.GroupType)) {
+
+         GroupQueue[objHandle] = true;
+      }
    }
 });
 
 dmz.object.position.observe(self, dmz.stance.PositionHandle, function (handle, attr, value, prev) {
 
-   var data;
-   if (!prev || ((value.x !== prev.x) && (value.y !== prev.y))) {
+   var data = master.pins[handle];
+   if (data && (!prev || ((value.x !== prev.x) && (value.y !== prev.y)))) {
 
-      if (PinHandleList[handle]) {
-
-         data = PinData[handle];
-         if (data) {
-
-            data.number(dmz.stance.ID, 0, PinHandleList[handle].id);
-            data.number(dmz.stance.PositionHandle, 0, value.x);
-            data.number(dmz.stance.PositionHandle, 1, value.y);
-            if (HaveActivatedMap) { movePinMessage.send(data); }
-            else { MessageQueue.push({ msg: movePinMessage, data: data }); }
-         }
-      }
+      data.position = value;
    }
 });
 
@@ -142,88 +151,6 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
       if (index !== -1) { groupFLayout.at(index, 0).text(value); }
    }
 });
-
-onPinAdded = function (data) {
-
-   var id
-     , x
-     , y
-     , title
-     , description
-     , file
-     , pinHandle
-     , idx
-     , count
-     , list
-     ;
-
-   if (dmz.data.isTypeOf(data)) {
-
-      id = data.number(dmz.stance.ID, 0);
-      x = data.number(dmz.stance.PositionHandle, 0);
-      y = data.number(dmz.stance.PositionHandle, 1);
-      title = data.string(dmz.stance.TitleHandle, 0);
-      description = data.string(dmz.stance.TextHandle, 0);
-      file = data.string(dmz.stance.PictureHandle, 0);
-      pinHandle = data.number(dmz.stance.ObjectHandle, 0);
-      count = data.number(dmz.stance.TotalHandle, 0);
-      list = [];
-      for (idx = 0; idx < count; idx += 1) {
-
-         list.push(data.number(dmz.stance.GroupPinHandle, idx));
-      }
-
-      if (!pinHandle) {
-
-         pinHandle = dmz.object.create(dmz.stance.PinType);
-         PinIDList[id] = { id: id, handle: pinHandle };
-         PinHandleList[pinHandle] = PinIDList[id];
-         dmz.object.position(pinHandle, dmz.stance.PositionHandle, [x, y, 0]);
-         dmz.object.text(pinHandle, dmz.stance.TitleHandle, title);
-         dmz.object.text(pinHandle, dmz.stance.TextHandle, description);
-         dmz.object.text(pinHandle, dmz.stance.PictureHandle, file);
-         dmz.object.flag(pinHandle, dmz.stance.ActiveHandle, true);
-         dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
-         dmz.object.flag(pinHandle, dmz.stance.UpdateStartTimeHandle, true);
-         PinData[pinHandle] = data;
-         list.forEach(function (handle) {
-
-            var type = dmz.object.type(handle);
-
-            if (type && type.isOfType(dmz.stance.GroupType) &&
-               !dmz.object.linkHandle(dmz.stance.GroupPinHandle, pinHandle, handle)) {
-
-               dmz.object.link(dmz.stance.GroupPinHandle, pinHandle, handle);
-            }
-         });
-         dmz.object.activate(pinHandle);
-      }
-      else {
-
-         PinIDList[id] = { id: id, handle: pinHandle };
-         PinHandleList[pinHandle] = PinIDList[id];
-         PinData[pinHandle].number(dmz.stance.ID, 0, id);
-      }
-   }
-}
-
-onPinRemoved = function (data) {
-
-   var id
-     , handle
-     ;
-   if (dmz.data.isTypeOf(data)) {
-
-      id = data.number(dmz.stance.ID, 0);
-      if (PinIDList[id]) {
-
-         handle = PinIDList[id].handle;
-         dmz.object.flag(handle, dmz.stance.ActiveHandle, false);
-         delete PinHandleList[handle];
-         delete PinIDList[id];
-      }
-   }
-}
 
 // Dialog setup
 (function () {
@@ -286,6 +213,7 @@ onPinRemoved = function (data) {
                        , widget
                        , idx
                        , indexCounter
+                       , handle
                        ;
 
                      if (value) {
@@ -293,24 +221,25 @@ onPinRemoved = function (data) {
                         title = titleEdit.text();
                         desc = descEdit.text();
 
-                        data = dmz.data.create();
-                        data.number(dmz.stance.PositionHandle, 0, x);
-                        data.number(dmz.stance.PositionHandle, 1, y);
-                        data.string(dmz.stance.TitleHandle, 0, title ? title : " ");
-                        data.string(dmz.stance.TextHandle, 0, desc ? desc : " ");
-                        data.string(dmz.stance.PictureHandle, 0, PinIconList[typeList.currentIndex()].webfile);
-                        data.number(dmz.stance.ObjectHandle, 0, 0);
+                        handle = dmz.object.create(dmz.stance.PinType);
+                        PinHandleList[handle] = { handle: handle };
+                        dmz.object.position(handle, dmz.stance.PositionHandle, [x, y, 0]);
+                        dmz.object.text(handle, dmz.stance.TitleHandle, title);
+                        dmz.object.text(handle, dmz.stance.TextHandle, desc);
+                        dmz.object.text(handle, dmz.stance.PictureHandle, PinIconList[typeList.currentIndex()].webfile);
+                        dmz.object.timeStamp(handle, dmz.stance.CreatedAtServerTimeHandle, 0);
+                        dmz.object.flag(handle, dmz.stance.UpdateStartTimeHandle, true);
+                        dmz.object.activate(handle);
 
                         for (idx = 0, indexCounter = 0; idx < count; idx += 1) {
 
                            if (groupFLayout.at(idx, 1).isChecked()) {
 
-                              data.number(dmz.stance.GroupPinHandle, indexCounter++, GroupHandleList[idx]);
+                              dmz.object.link(dmz.stance.GroupPinHandle, handle, GroupHandleList[idx]);
                            }
                         }
 
-                        if (HaveActivatedMap) { addPinMessage.send(data); }
-                        else { MessageQueue.push({ msg: addPinMessage, data: data }); }
+                        sendMessage(addPinMessage, handle);
                      }
 
                      titleEdit.clear();
@@ -325,11 +254,11 @@ onPinRemoved = function (data) {
          }
       }
    });
-   pinAddedMessage.subscribe(self, onPinAdded);
-   pinRemovedMessage.subscribe(self, onPinRemoved);
+//   pinAddedMessage.subscribe(self, onPinAdded);
+//   pinRemovedMessage.subscribe(self, onPinRemoved);
    pinMovedMessage.subscribe(self, function (data) {
 
-      var id
+      var handle
         , x
         , y
         , data
@@ -337,100 +266,91 @@ onPinRemoved = function (data) {
 
       if (dmz.data.isTypeOf(data)) {
 
-        id = data.number(dmz.stance.ID, 0);
+        handle = data.number(dmz.stance.ObjectHandle, 0);
         x = data.number(dmz.stance.PositionHandle, 0);
         y = data.number(dmz.stance.PositionHandle, 1);
 
-        if (PinIDList[id]) {
+         if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
 
-           if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
-
-              dmz.object.position(PinIDList[id].handle, dmz.stance.PositionHandle, [x, y, 0]);
-           }
-        }
+            dmz.object.position(handle, dmz.stance.PositionHandle, [x, y, 0]);
+         }
       }
    });
-   pinSelectedMessage.subscribe(self, function (data) {
+//   pinSelectedMessage.subscribe(self, function (data) {
 
-      var id;
-      if (dmz.data.isTypeOf(data)) {
+//      var id;
+//      if (dmz.data.isTypeOf(data)) {
 
-        id = data.number(dmz.stance.ID, 0);
-        if (PinIDList[id]) { CurrentPinID = id; }
-      }
-   });
+//        id = data.number(dmz.stance.ID, 0);
+//        if (PinIDList[id]) { CurrentPinID = id; }
+//      }
+//   });
 }());
+
+//dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value, prev) {
+
+//   var data = master.pins[handle];
+//   if (data) {
+
+//      data.active = value;
+//      updateActive(handle);
+//   }
+//});
 
 dmz.object.link.observe(self, dmz.stance.GroupPinHandle,
 function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
 
    var hil = dmz.object.hil()
-     , list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle)
+     , list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle) || []
      , count
-     , data = PinData[pinHandle]
      ;
 
-   if (data && (dmz.stance.getUserGroupHandle(hil) === groupHandle)) {
+   if (dmz.stance.getUserGroupHandle(hil) === groupHandle) {
 
-      count = dmz.object.scalar(hil, dmz.stance.TotalHandle);
-      count = count ? count : 0;
-      list = list ? list.length : 0;
-      if (!dmz.object.flag(hil, dmz.stance.AdminHandle) && (count < list)) {
+      count = dmz.object.scalar(hil, dmz.stance.PinTotalHandle) || 0;
+      if (!dmz.object.flag(hil, dmz.stance.AdminHandle) && (count < list.length)) {
 
          MainModule.highlight("Map");
       }
-      if (HaveActivatedMap) { addPinMessage.send(data); }
-      else { MessageQueue.push({ msg: addPinMessage, data: data }); }
    }
 });
 
-dmz.object.flag.observe(self, dmz.stance.VisibleHandle, function (handle, attr, value) {
+//dmz.object.flag.observe(self, dmz.stance.VisibleHandle, function (handle, attr, value) {
 
-   var type = dmz.object.type(handle)
-     , data = PinData[handle]
-     , hilGroup
-     , id
-     ;
+//   var type = dmz.object.type(handle)
+//     , data = PinData[handle]
+//     , hilGroup
+//     , id
+//     ;
 
-   if (data) {
+//   if (data) {
 
-      if (value) {
+//      if (value) {
 
-         hilGroup = dmz.stance.getUserGroupHandle(dmz.object.hil());
-         if (dmz.object.linkHandle(dmz.stance.GroupPinHandle, handle, hilGroup)) {
+//         hilGroup = dmz.stance.getUserGroupHandle(dmz.object.hil());
+//         if (dmz.object.linkHandle(dmz.stance.GroupPinHandle, handle, hilGroup)) {
 
-            if (HaveActivatedMap) { addPinMessage.send(data); }
-            else { MessageQueue.push({ msg: addPinMessage, data: data }); }
-         }
-      }
-      else {
+//            if (HaveActivatedMap) { addPinMessage.send(data); }
+//            else { MessageQueue.push({ msg: addPinMessage, data: data }); }
+//         }
+//      }
+//      else {
 
-         if (HaveActivatedMap) { removePinMessage.send(data); }
-         else { MessageQueue.push({ msg: removePinMessage, data: data }); }
-      }
-   }
-});
+//         if (HaveActivatedMap) { removePinMessage.send(data); }
+//         else { MessageQueue.push({ msg: removePinMessage, data: data }); }
+//      }
+//   }
+//});
 
 populateMapFromGroup = function (groupHandle) {
 
-   var list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle)
-     ;
+   var list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle) || [];
+   while (VisiblePins.length) { sendMessage(removePinMessage, VisiblePins.pop()); }
+   list.forEach(function (handle) {
 
-   if (groupHandle) {
-
-      list = list ? list : [];
-      Object.keys(PinData).forEach(function (pinHandle) {
-
-         pinHandle = parseInt(pinHandle);
-         if (pinHandle) {
-
-            dmz.object.flag(
-               pinHandle,
-               dmz.stance.VisibleHandle,
-               (list.indexOf(pinHandle) !== -1));
-         }
-      });
-   }
+      VisiblePins.push(handle);
+      sendMessage(addPinMessage, handle);
+   });
 };
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
@@ -442,38 +362,12 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
-      list = dmz.object.superLinks(dmz.stance.getUserGroupHandle(objHandle), dmz.stance.GroupPinHandle);
-      list = list ? list.length : 0;
-      count = dmz.object.scalar(objHandle, dmz.stance.TotalHandle);
-      count = count ? count : 0;
-      if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) && (count < list)) {
+      list = dmz.object.superLinks(dmz.stance.getUserGroupHandle(objHandle), dmz.stance.GroupPinHandle) || [];
+      count = dmz.object.scalar(objHandle, dmz.stance.PinTotalHandle) || 0;
+      if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) && (count < list.length)) {
 
          MainModule.highlight("Map");
       }
-
-      populateMapFromGroup(dmz.stance.getUserGroupHandle(objHandle));
-   }
-});
-
-dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
-function (linkObjHandle, attrHandle, userHandle, groupHandle) {
-
-   var count
-     , list
-     ;
-
-   if (userHandle === dmz.object.hil()) {
-
-      list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle);
-      list = list ? list.length : 0;
-      count = dmz.object.scalar(userHandle, dmz.stance.TotalHandle);
-      count = count ? count : 0;
-      if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle) && (count < list)) {
-
-         MainModule.highlight("Map");
-      }
-
-      populateMapFromGroup(groupHandle);
    }
 });
 
@@ -520,9 +414,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
          if (hilGroup) {
 
-            list = dmz.object.superLinks(hilGroup, dmz.stance.GroupPinHandle);
-            list = list ? list.length : 0;
-            dmz.object.scalar(hil, dmz.stance.TotalHandle, list);
+            list = dmz.object.superLinks(hilGroup, dmz.stance.GroupPinHandle) || [];
+            dmz.object.scalar(hil, dmz.stance.PinTotalHandle, list.length);
          }
       };
 
