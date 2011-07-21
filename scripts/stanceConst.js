@@ -61,6 +61,8 @@ var dmz =
         , GroupMembersHandle: dmz.defs.createNamedHandle("group_members")
         , GroupPinHandle: dmz.defs.createNamedHandle("group_pin")
         , VoteLinkHandle: dmz.defs.createNamedHandle("vote_link")
+        , YesHandle: dmz.defs.createNamedHandle("yes_link")
+        , NoHandle: dmz.defs.createNamedHandle("no_link")
         , QuestionLinkHandle: dmz.defs.createNamedHandle("question_link")
         , MediaHandle: dmz.defs.createNamedHandle("game_media")
 
@@ -101,6 +103,20 @@ var dmz =
         , getVoteStatus: false
         }
 
+   , Constants =
+        { VOTE_APPROVAL_PENDING: 0
+        , VOTE_DENIED: 1
+        , VOTE_ACTIVE: 2
+        , VOTE_YES: 3
+        , VOTE_NO: 4
+        , STATE_STR:
+             [ "Submitted"
+             , "Denied"
+             , "Active"
+             , "Passed"
+             , "Failed"
+             ]
+         }
    , getDisplayName
    , getAuthorHandle
    , getAuthorName
@@ -212,6 +228,11 @@ Functions.getVoteStatus = getVoteStatus;
    Object.keys(Functions).forEach(function (fncName) {
 
       dmz.util.defineConst(exports, fncName, Functions[fncName]);
+   });
+
+   Object.keys(Constants).forEach(function (fncName) {
+
+      dmz.util.defineConst(exports, fncName, Constants[fncName]);
    });
 
 }());

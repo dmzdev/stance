@@ -26,6 +26,7 @@
    <instance name="forum-view"/>
    <instance name="login"/>
    <instance name="advisor"/>
+   <instance name="vote"/>
 <!--   <instance name="graph"/> -->
 </javascript>
 <login>
