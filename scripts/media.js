@@ -18,6 +18,7 @@ var dmz =
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
    , module: require("dmz/runtime/module")
+   , message: require("dmz/runtime/messaging")
    , resources: require("dmz/runtime/resources")
    , time: require("dmz/runtime/time")
    , util: require("dmz/types/util")
@@ -53,6 +54,7 @@ var dmz =
    , totalLabel = webForm.lookup("totalLabel") //
 
    // Variables
+   , VideoHomeMessage = dmz.message.create("VideoHome")
    , CurrentWindowName
    , CurrentIndex = 0
    , NewSource = false
@@ -85,6 +87,12 @@ var dmz =
    ;
 
 self.shutdown = function () { dmz.ui.phonon.clearPaths(); };
+
+videoForm.observe(self, "homeButton", "clicked", function () {
+
+   stopCurrentOnHome();
+   VideoHomeMessage.send();
+});
 
 setActiveState = function (state) {
 
@@ -470,6 +478,7 @@ init = function () {
 
    // Layout Declarations
    webForm.lookup("vLayout").addWidget(webpage);
+   webpage.setHtml("<center><b>Loading...</b></center>");
    videoForm.lookup("vLayout").addWidget(video);
    // Video Specific UI controls
    dmz.ui.phonon.createPath(source, video);
@@ -577,18 +586,20 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               setUserPlayList(dmz.object.hil());
               loadCurrentPrint();
            }
+         , function () { webpage.setHtml("<center><b>Loading...</b></center>"); }
          );
       module.addPage
          ( "Newspaper"
-         , webForm
+         , "Memo" // Use the "Memo" dialog with the newspaper functions
          , function () {
 
               setActiveState("Newspaper");
               setUserPlayList(dmz.object.hil());
               loadCurrentPrint();
            }
+         , function () { webpage.setHtml("<center><b>Loading...</b></center>"); }
          );
-      module.addPage
+      module.addWidget
          ( "Video"
          , videoForm
          , function () {

@@ -40,10 +40,13 @@ var dmz =
 
    // Consts
    , NAME_INDEX = 0
+   , HOME_INDEX = 0
+   , SPLASH_INDEX = 1
 
    // Variables
    , lastItem
 
+   , VideoHomeMessage = dmz.message.create("VideoHome")
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , ToggledGroupMessage = dmz.message.create("ToggledGroupMessage")
@@ -77,18 +80,9 @@ var dmz =
         , Vote: false
         , Exit: false
         }
-//   , DataIndex =
-//        { widget: 0
-//        , func: 1
-//        , onHome: 2
-//        , highlight: 3
-//        , dialog: 4
-//        }
    , LoggedIn = false
    , groupAdvisors = {}
    , advisorPicture = {}
-   , HomeIndex = 0
-   , SplashIndex = 1
    , LastGViewSize = false
    , EmailMod =
         { list: []
@@ -125,6 +119,11 @@ self.shutdown = function () {
    if (mainGView) { mainGView.removeEventFilter(); }
    if (gscene) { gscene.removeEventFilter(); }
 };
+
+VideoHomeMessage.subscribe(self, function () {
+
+   if (stackedWidget) { stackedWidget.currentIndex(HOME_INDEX); }
+});
 
 setGItemPos = function (item, vector) {
 
@@ -236,7 +235,7 @@ updateGraphicsForGroup = function (groupHandle) {
          }
       });
 
-      if (LoggedIn) { stackedWidget.currentIndex(HomeIndex); }
+      if (LoggedIn) { stackedWidget.currentIndex(HOME_INDEX); }
    }
 };
 
@@ -261,60 +260,30 @@ mouseEvent = function (object, event) {
             object.items(pos, dmz.ui.consts.IntersectsItemShape, dmz.ui.consts.DescendingOrder);
          items.forEach(function (item) {
 
-//            var dialog = item.data(DataIndex.dialog)
-//              , onLoad = item.data(DataIndex.func)
-//              , onHome = item.data(DataIndex.onHome)
-//              , highlight = item.data(DataIndex.highlight)
-//              ;
+            var name = item.data(NAME_INDEX)
+              , data = PageLink[name]
+              ;
+            if (data) {
 
-//              if (dialog) {
+               if (data.dialog) {
 
-//                 dmz.time.setTimer(self, function () {
+                  dmz.time.setTimer(self, function () {
 
-//                    if (onLoad) { onLoad(); }
-//                    dialog.open(self, function () {
+                     if (data.onClicked) { data.onClicked(); }
+                     data.dialog.open(self, function (value) {
 
-//                       if (highlight) { highlight.hide(); }
-//                       if (onHome) { onHome(); }
-//                    });
-//                 });
-//              }
-            var name = item.data(NAME_INDEX);
-            if (name) { lastItem = name; }
-//            var widget = item.data(DataIndex.widget)
-//              , onChangeFunction = item.data(DataIndex.func)
-//              , onHome = item.data(DataIndex.onHome)
-//              , highlight = item.data(DataIndex.highlight)
-//              , oldWidget
-//              ;
+                        if (data.highlight) { data.highlight.hide(); }
+                        if (data.onHome) { data.onHome(value); }
+                     });
+                  });
+               }
+               else if (data.widget && stackedWidget) {
 
-//            if (widget) {
-
-////               oldWidget = dialogLayout.takeAt(0);
-//////               if (oldWidget) { oldWidget.hide(); }
-//               dialogLayout.addWidget(widget);
-//               dmz.time.setTimer(self, 1, function () {
-
-//                  if (onChangeFunction) { onChangeFunction(); }
-//                  WindowDialog.open(self, function () {
-
-//                     if (highlight) { highlight.hide(); }
-//                     if (onHome) { onHome(); }
-////                     dmz.time.setTimer(self, 0.1, function () { dialogLayout.takeAt(0); });
-//                     dialogLayout.takeAt(0);
-//                  });
-//               });
-//            }
-
-
-//            if (stackedWidget && widget) {
-
-//               stackedWidget.currentWidget(widget);
-//               LastWindow = item;
-//            }
-
-//            if (onChangeFunction) { onChangeFunction(); }
-//            if (highlight) { highlight.hide(); }
+                  stackedWidget.currentWidget(data.widget);
+                  if (data.onClicked) { data.onClicked(); }
+                  if (data.highlight) { data.highlight.hide(); }
+               }
+            }
          });
 
       }
@@ -323,40 +292,6 @@ mouseEvent = function (object, event) {
    }
    return false;
 };
-
-dmz.time.setRepeatingTimer(self, 0.5, function () {
-
-   var widget
-     , onClicked
-     , onHome
-     , highlight
-     , data = lastItem ? PageLink[lastItem] : false;
-     ;
-
-   self.log.warn ("LastItem:", lastItem);
-   if (data) {
-
-//      widget = data.widget;
-//      onClicked = data.onClicked;
-//      onHome = data.onHome;
-//      highlight
-//      onClicked = lastItem.data(DataIndex.func);
-//      onHome = lastItem.data(DataIndex.onHome);
-//      highlight = lastItem.data(DataIndex.highlight);
-      if (data.widget) {
-
-         dialogLayout.addWidget(data.widget);
-         if (data.onClicked) { data.onClicked(); }
-         WindowDialog.open(self, function () {
-
-            if (data.highlight) { data.highlight.hide(); }
-            if (data.onHome) { data.onHome(); }
-            dialogLayout.takeAt(0);
-         });
-      }
-      lastItem = false;
-   }
-});
 
 dmz.object.link.observe(self, dmz.stance.GameGroupHandle,
 function (objHandle, attrHandle, groupHandle, gameHandle) {
@@ -415,9 +350,12 @@ setupMainWindow = function () {
       gscene = dmz.ui.graph.createScene();
       mainGView.scene(gscene);
 
+      widget = dmz.ui.mainWindow.statusBar();
+      if (widget) { widget.hide(); }
+
       file = dmz.resources.findFile(self.config.string("splash.name"));
       if (file) { main.lookup("splashLabel").pixmap(dmz.ui.graph.createPixmap(file)); }
-      stackedWidget.currentIndex(SplashIndex);
+      stackedWidget.currentIndex(SPLASH_INDEX);
 
       file = dmz.resources.findFile(self.config.string("set.background"));
       highlight = dmz.resources.findFile(self.config.string("set.highlight"));
@@ -476,21 +414,19 @@ setupMainWindow = function () {
          }
       });
 
-      _exports.addPage("Exit", false, function () {
-
-         self.log.error ("Exit functionality must be reimplemented.");
-//         dmz.ui.messageBox.create(
-//            { type: dmz.ui.messageBox.Warning
-//            , text: "Are you sure you wish to exit?"
-//            , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-//            , defaultButton: dmz.ui.messageBox.Cancel
-//            }
-//            , main
-//         ).open(self, function (value) {
-
-//            if (value === dmz.ui.messageBox.Ok) { dmz.sys.requestExit(); }
-//         });
-      });
+      _exports.addPage
+         ( "Exit"
+         , dmz.ui.messageBox.create(
+              { type: dmz.ui.messageBox.Warning
+              , text: "Are you sure you wish to exit?"
+              , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
+              , defaultButton: dmz.ui.messageBox.Cancel
+              }
+              , main
+              )
+         , undefined
+         , function (value) { if (value === dmz.ui.messageBox.Ok) { dmz.sys.requestExit(); } }
+         );
 
       gscene.eventFilter(self, mouseEvent);
       dmz.ui.mainWindow.centralWidget(main);
@@ -517,15 +453,32 @@ setupMainWindow = function () {
 
 _exports.addPage = function (name, widget, func, onHome) {
 
-   var dialog
-     , highlight
-     ;
+   var dialog;
    if (name && PageLink[name] && widget) {
 
-         PageLink[name].widget = widget;
-         PageLink[name].onClicked = func;
-         PageLink[name].onHome = onHome;
-         PageLink[name].pixmap.cursor(dmz.ui.consts.PointingHandCursor);
+      if (PageLink[widget] && PageLink[widget].dialog) { PageLink[name].dialog = PageLink[widget].dialog; }
+      else if (widget.inherits("QDialog")) { PageLink[name].dialog = widget; }
+      else {
+
+         dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget());
+         dialog.lookup("verticalLayout").addWidget(widget);
+         PageLink[name].dialog = dialog;
+      }
+      PageLink[name].onClicked = func;
+      PageLink[name].onHome = onHome;
+      PageLink[name].pixmap.cursor(dmz.ui.consts.PointingHandCursor);
+   }
+   else { self.log.error(name, widget, PageLink[name]); }
+};
+
+_exports.addWidget = function (name, widget, func) {
+
+   if (name && PageLink[name] && widget) {
+
+      stackedWidget.add(widget);
+      PageLink[name].widget = widget;
+      PageLink[name].onClicked = func;
+      PageLink[name].pixmap.cursor(dmz.ui.consts.PointingHandCursor);
    }
    else { self.log.error(name, widget, PageLink[name]); }
 };
@@ -564,7 +517,7 @@ function (objHandle, attrHandle, value) {
 
    if ((objHandle === dmz.object.hil()) && stackedWidget) {
 
-      stackedWidget.currentIndex(SplashIndex);
+      stackedWidget.currentIndex(SPLASH_INDEX);
    }
 });
 
@@ -598,7 +551,7 @@ function (objHandle, attrHandle, userHandle, groupHandle) {
 
       dmz.time.setTimer(self, 3, function () {
 
-         if (!LoggedIn && stackedWidget) { stackedWidget.currentIndex(HomeIndex); LoggedIn = true; }
+         if (!LoggedIn && stackedWidget) { stackedWidget.currentIndex(HOME_INDEX); LoggedIn = true; }
       });
    }
 }());

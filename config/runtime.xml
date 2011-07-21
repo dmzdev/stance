@@ -30,5 +30,6 @@
    <message name="AppUpdaterUpdateMessage"/>
    <message name="AppUpdaterChannelMessage"/>
    <message name="ToggledGroupMessage"/>
+   <message name="VideoHome"/>
 </runtime>
 </dmz>
