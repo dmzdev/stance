@@ -269,6 +269,11 @@ mouseEvent = function (object, event) {
 
                   dmz.time.setTimer(self, function () {
 
+                     var rect = main.rect();
+                     if (rect.width && rect.height) {
+
+                        data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.9);
+                     }
                      if (data.onClicked) { data.onClicked(); }
                      data.dialog.open(self, function (value) {
 

@@ -24,7 +24,7 @@
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
-       <color alpha="191">
+       <color alpha="255">
         <red>232</red>
         <green>232</green>
         <blue>232</blue>
@@ -44,7 +44,7 @@
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
-       <color alpha="191">
+       <color alpha="255">
         <red>232</red>
         <green>232</green>
         <blue>232</blue>
@@ -55,7 +55,7 @@
     <disabled>
      <colorrole role="Base">
       <brush brushstyle="SolidPattern">
-       <color alpha="191">
+       <color alpha="255">
         <red>232</red>
         <green>232</green>
         <blue>232</blue>
@@ -64,7 +64,7 @@
      </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
-       <color alpha="191">
+       <color alpha="255">
         <red>232</red>
         <green>232</green>
         <blue>232</blue>
@@ -251,5 +251,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>closeWindow</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>25</x>
+     <y>135</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>358</x>
+     <y>272</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
