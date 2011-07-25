@@ -51,14 +51,12 @@
       <selected name="PinSelectedMessage"/>
    </message-names>
    <pin-handles>
-      <id name="id"/>
+      <screen-coord name="is_screen_coord"/>
       <position name="position"/>
       <title name="title"/>
       <description name="text"/>
       <file name="picture"/>
       <object-handle name="objectHandle"/>
-      <group-handle name="group_pin"/>
-      <pin-group-count name="total"/>
    </pin-handles>
    <icon-type>
       <icon name="Generic"/>

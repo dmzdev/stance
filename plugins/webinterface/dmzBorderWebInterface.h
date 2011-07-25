@@ -42,15 +42,15 @@ namespace dmz {
             Data *outData);
 
       signals:
-         void addPin (const float x, const float y, const QString title, const QString description, const QString filename, int objectHandle, QVariantList groupHandles);
-         void removePin (const int id);
-         void movePin (const int id, const float x, const float y);
+         void addPin (const int handle, const float x, const float y, const bool isScreenLoc, const QString title, const QString description, const QString filename);
+         void removePin (const int handle);
+         void movePin (const int handle, const int x, const int y);
 
       public slots:
-         void pinWasMoved (const int id, const float worldX, const float worldY);
-         void pinWasAdded (const int id, const float worldX, const float worldY, const QString title, const QString description, const QString filename, int objectHandle, QVariantList groupHandles);
-         void pinWasRemoved (const int id);
-         void pinSelected (const int id);
+         void pinWasMoved (const int handle, const float worldX, const float worldY);
+         void pinWasAdded (const int handle, const float worldX, const float worldY);
+         void pinWasRemoved (const int handle);
+         void pinSelected (const int handle);
 
       protected:
          // BorderWebInterface Interface
@@ -67,16 +67,13 @@ namespace dmz {
          Message _pinSelectedMessage;
          Message _removePinMessage;
          Message _setWebViewMessage;
-         Message _clearPinsMessage;
 
-         Handle _pinIDHandle;
          Handle _pinPositionHandle;
          Handle _pinTitleHandle;
          Handle _pinDescHandle;
          Handle _pinFileHandle;
          Handle _pinObjectHandle;
-         Handle _groupPinHandle;
-         Handle _pinGroupCountHandle;
+         Handle _screenCoordHandle;
 
          String _uiV8Name;
          String _jsWindowObjectName;
@@ -88,7 +85,6 @@ namespace dmz {
          Boolean _haveSetJSObject;
          QList<const Data *> _pinDataQueue;
 
-         QMap<int, int> _idHandleMap;
          QList<int> _addPinList;
          QList<int> _removePinList;
          QList<int> _movePinList;

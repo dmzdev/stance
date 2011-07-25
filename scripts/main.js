@@ -493,7 +493,7 @@ _exports.highlight = function (name) {
    var highlight;
    if (name && PageLink[name]) {
 
-      highlight = PageLink[name].highlight();
+      highlight = PageLink[name].highlight;
       if (highlight) { highlight.show(); }
    }
 };

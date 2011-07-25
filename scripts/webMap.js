@@ -8,6 +8,7 @@ var dmz =
        , message: require("dmz/runtime/messaging")
        , resources: require("dmz/runtime/resources")
        , time: require("dmz/runtime/time")
+       , vector: require("dmz/types/vector")
        , ui:
           { consts: require('dmz/ui/consts')
           , event: require("dmz/ui/event")
@@ -25,7 +26,7 @@ var dmz =
 
    // UI elements
    , map = dmz.ui.webview.create()
-   , newPinDialog = dmz.ui.loader.load("MapAddPinDialog.ui", dmz.ui.mainWindow.centralWidget())
+   , newPinDialog = dmz.ui.loader.load("MapAddPinDialog.ui")
    , typeList = newPinDialog.lookup("typeList")
    , descEdit = newPinDialog.lookup("descEdit")
    , titleEdit = newPinDialog.lookup("titleEdit")
@@ -44,19 +45,15 @@ var dmz =
    , setWebViewMessage = dmz.message.create(self.config.string("message-names.set-interface.name"))
    , pinSelectedMessage = dmz.message.create(self.config.string("message-names.selected.name"))
 
+   // Handles
+   , ScreenCoordHandle = dmz.defs.createNamedHandle("is_screen_coord")
+
    // Variables
-   , CurrentUser = false
-   , PinIDList = {}
-   , PinHandleList = {}
-   , CurrentPinID = -1
    , PinIconList = []
    , PinQueue = []
    , HaveActivatedMap = false
    , GroupHandleList = []
-   , PinGroupList = {}
    , GroupQueue = {}
-   , PinData = {}
-
 
    , master = { pins: {} }
    , VisiblePins = []
@@ -68,12 +65,11 @@ var dmz =
    , onPinRemoved
    , populateMapFromGroup
 
+   , receivePositionUpdate
    , updatePosition
    , updateTitle
    , updateText
-   , updateFile
-   , updateActive
-
+   , updatePicture
    , sendMessage
    ;
 
@@ -85,25 +81,32 @@ sendMessage = function (message, handle) {
    var data = master.pins[handle]
      , msgData
      ;
-   if (message && data && data.pos && data.title && data.text && data.picture) {
+
+   if (message && data && data.title && data.text && data.picture) {
 
       msgData = dmz.data.create();
       msgData.number(dmz.stance.ObjectHandle, 0, handle);
-      msgData.number(dmz.stance.PositionHandle, 0, data.pos[0]);
-      msgData.number(dmz.stance.PositionHandle, 1, data.pos[1]);
       msgData.string(dmz.stance.TitleHandle, 0, data.title);
       msgData.string(dmz.stance.TextHandle, 0, data.text);
       msgData.string(dmz.stance.PictureHandle, 0, data.picture);
+      if (data.screenPos) {
 
-      message.send(msgData);
-   };
+         msgData.boolean(ScreenCoordHandle, 0, false);
+         msgData.vector(dmz.stance.PositionHandle, 0, data.screenPos);
+         message.send(msgData);
+      }
+      else if (data.pos) {
 
-}
+         msgData.boolean(ScreenCoordHandle, 0, true);
+         msgData.vector(dmz.stance.PositionHandle, 0, data.pos);
+         message.send(msgData);
+      }
+   }
+};
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
-   var id
-     , pos
+   var pos
      , title
      , description
      , file
@@ -127,13 +130,33 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    }
 });
 
+updatePosition = function (handle) {
+
+   if (master.pins[handle]) { master.pins[handle].pos = dmz.object.position(handle, dmz.stance.PositionHandle); }
+};
+
+updateText = function (handle) {
+
+   if (master.pins[handle]) { master.pins[handle].text = dmz.object.text(handle, dmz.stance.TextHandle); }
+};
+
+updateTitle = function (handle) {
+
+   if (master.pins[handle]) { master.pins[handle].title = dmz.object.text(handle, dmz.stance.TitleHandle); }
+};
+
+updatePicture = function (handle) {
+
+   if (master.pins[handle]) { master.pins[handle].picture = dmz.object.text(handle, dmz.stance.PictureHandle); }
+};
+
+dmz.object.text.observe(self, dmz.stance.TextHandle, updateText);
+dmz.object.text.observe(self, dmz.stance.TitleHandle, updateTitle);
+dmz.object.text.observe(self, dmz.stance.PictureHandle, updatePicture);
+
 dmz.object.position.observe(self, dmz.stance.PositionHandle, function (handle, attr, value, prev) {
 
-   var data = master.pins[handle];
-   if (data && (!prev || ((value.x !== prev.x) && (value.y !== prev.y)))) {
-
-      data.position = value;
-   }
+   if (!prev || ((value.x !== prev.x) && (value.y !== prev.y))) { updatePosition(handle); }
 });
 
 dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, value) {
@@ -222,8 +245,7 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
                         desc = descEdit.text();
 
                         handle = dmz.object.create(dmz.stance.PinType);
-                        PinHandleList[handle] = { handle: handle };
-                        dmz.object.position(handle, dmz.stance.PositionHandle, [x, y, 0]);
+//                        dmz.object.position(handle, dmz.stance.PositionHandle, [x, y, 0]);
                         dmz.object.text(handle, dmz.stance.TitleHandle, title);
                         dmz.object.text(handle, dmz.stance.TextHandle, desc);
                         dmz.object.text(handle, dmz.stance.PictureHandle, PinIconList[typeList.currentIndex()].webfile);
@@ -239,6 +261,14 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
                            }
                         }
 
+                        if (master.pins[handle]) {
+
+                           master.pins[handle].screenPos = dmz.vector.create([x, y, 0]);
+                        }
+                        updatePicture(handle);
+                        updateTitle(handle);
+                        updateText(handle);
+                        updateTitle(handle);
                         sendMessage(addPinMessage, handle);
                      }
 
@@ -254,48 +284,31 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
          }
       }
    });
-//   pinAddedMessage.subscribe(self, onPinAdded);
-//   pinRemovedMessage.subscribe(self, onPinRemoved);
-   pinMovedMessage.subscribe(self, function (data) {
-
-      var handle
-        , x
-        , y
-        , data
-        ;
-
-      if (dmz.data.isTypeOf(data)) {
-
-        handle = data.number(dmz.stance.ObjectHandle, 0);
-        x = data.number(dmz.stance.PositionHandle, 0);
-        y = data.number(dmz.stance.PositionHandle, 1);
-
-         if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
-
-            dmz.object.position(handle, dmz.stance.PositionHandle, [x, y, 0]);
-         }
-      }
-   });
-//   pinSelectedMessage.subscribe(self, function (data) {
-
-//      var id;
-//      if (dmz.data.isTypeOf(data)) {
-
-//        id = data.number(dmz.stance.ID, 0);
-//        if (PinIDList[id]) { CurrentPinID = id; }
-//      }
-//   });
 }());
 
-//dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value, prev) {
 
-//   var data = master.pins[handle];
-//   if (data) {
+receivePositionUpdate = function (data) {
 
-//      data.active = value;
-//      updateActive(handle);
-//   }
-//});
+   var handle
+     , vec
+     , pos
+     ;
+
+   if (dmz.data.isTypeOf(data)) {
+
+      handle = data.number(dmz.stance.ObjectHandle, 0);
+      pos = dmz.object.position(handle, dmz.stance.PositionHandle);
+      vec = data.vector(dmz.stance.PositionHandle, 0);
+      if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) &&
+         (!pos || !((vec.x == pos.x) && (vec.y == pos.y)))) {
+
+         dmz.object.position(handle, dmz.stance.PositionHandle, vec);
+      }
+   }
+};
+
+pinAddedMessage.subscribe(self, receivePositionUpdate);
+pinMovedMessage.subscribe(self, receivePositionUpdate);
 
 dmz.object.link.observe(self, dmz.stance.GroupPinHandle,
 function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
@@ -314,33 +327,6 @@ function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
       }
    }
 });
-
-//dmz.object.flag.observe(self, dmz.stance.VisibleHandle, function (handle, attr, value) {
-
-//   var type = dmz.object.type(handle)
-//     , data = PinData[handle]
-//     , hilGroup
-//     , id
-//     ;
-
-//   if (data) {
-
-//      if (value) {
-
-//         hilGroup = dmz.stance.getUserGroupHandle(dmz.object.hil());
-//         if (dmz.object.linkHandle(dmz.stance.GroupPinHandle, handle, hilGroup)) {
-
-//            if (HaveActivatedMap) { addPinMessage.send(data); }
-//            else { MessageQueue.push({ msg: addPinMessage, data: data }); }
-//         }
-//      }
-//      else {
-
-//         if (HaveActivatedMap) { removePinMessage.send(data); }
-//         else { MessageQueue.push({ msg: removePinMessage, data: data }); }
-//      }
-//   }
-//});
 
 populateMapFromGroup = function (groupHandle) {
 

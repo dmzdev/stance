@@ -6,6 +6,7 @@
 #include <dmzRuntimeDefinitions.h>
 #include <dmzRuntimePluginFactoryLinkSymbol.h>
 #include <dmzRuntimePluginInfo.h>
+#include <dmzTypesVector.h>
 #include <QtGui/QMainWindow>
 #include <QtWebKit/QWebView>
 #include <QtWebKit/QWebFrame>
@@ -15,10 +16,11 @@ dmz::BorderWebInterface::BorderWebInterface (const PluginInfo &Info, Config &loc
       Plugin (Info),
       MessageObserver (Info),
       _log (Info),
-      _pinIDHandle (0),
       _pinPositionHandle (0),
       _pinTitleHandle (0),
       _pinDescHandle (0),
+      _pinObjectHandle (0),
+      _screenCoordHandle (0),
       _mainWindow (0),
       _haveSetJSObject (false) {
 
@@ -84,39 +86,29 @@ dmz::BorderWebInterface::receive_message (
    }
    else if (Type == _removePinMessage) {
 
-      int id = -1;
       int handle = -1;
-
       if (InData->lookup_int32 (_pinObjectHandle, 0, handle)) {
 
-         id = _idHandleMap[handle];
-         if (!_removePinList.contains (id)) {
+         if (!_removePinList.contains (handle)) {
 
-            _removePinList.append (id);
-            if (_idHandleMap.key (id)) {
-
-               _idHandleMap.remove (handle);
-               int index = _addPinList.indexOf (handle);
-               if (index != -1) { _addPinList.removeAt (index); }
-            }
-            emit (removePin (id));
+            _addPinList.removeAll (handle);
+            emit (removePin (handle));
          }
       }
    }
    else if (Type == _movePinMessage) {
 
-      int id, handle;
+      int handle;
       Float64 x = -1, y = -1;
 
       if (InData->lookup_int32 (_pinObjectHandle, 0, handle) &&
          InData->lookup_float64 (_pinPositionHandle, 0, x) &&
          InData->lookup_float64 (_pinPositionHandle, 1, y)) {
 
-         id = _idHandleMap[handle];
-         if (!_movePinList.contains (id)) {
+         if (!_movePinList.contains (handle)) {
 
-            _movePinList.append (id);
-            emit (movePin (id, x, y));
+            _movePinList.append (handle);
+            emit (movePin (handle, x, y));
          }
       }
    }
@@ -146,53 +138,43 @@ dmz::BorderWebInterface::receive_message (
 
 // BorderWebInterface Interface
 void
-dmz::BorderWebInterface::pinWasAdded (
-   const int id,
-   const float worldX,
-   const float worldY,
-   const QString title,
-   const QString description,
-   const QString filename,
-   int objectHandle,
-   QVariantList groupHandles) {
+dmz::BorderWebInterface::pinWasAdded (const int handle, const float worldX, const float worldY) {
 
    Data data;
-   data.store_int32 (_pinIDHandle, 0, id);
-   data.store_int32 (_pinObjectHandle, 0, objectHandle);
-   _idHandleMap[objectHandle] = id;
+   data.store_int32 (_pinObjectHandle, 0, handle);
+   Vector vec (worldX, worldY, 0);
+   data.store_vector (_pinPositionHandle, 0, vec);
    _pinAddedMessage.send (&data);
 }
 
 
 void
-dmz::BorderWebInterface::pinWasMoved (const int id, const float x, const float y) {
+dmz::BorderWebInterface::pinWasMoved (const int handle, const float worldX, const float worldY) {
 
    Data data;
-   data.store_int32 (_pinObjectHandle, 0, _idHandleMap.key (id));
-   data.store_float64 (_pinPositionHandle, 0, x);
-   data.store_float64 (_pinPositionHandle, 1, y);
-   int index = _movePinList.indexOf (id);
-   if (index != -1) { _movePinList.removeAt (index); }
+   Vector vec (worldX, worldY, 0);
+   data.store_vector (_pinPositionHandle, 0, vec);
+   data.store_int32 (_pinObjectHandle, 0, handle);
+   _movePinList.removeAll (handle);
    _pinMovedMessage.send (&data);
 }
 
 
 void
-dmz::BorderWebInterface::pinWasRemoved (const int id) {
+dmz::BorderWebInterface::pinWasRemoved (const int handle) {
 
    Data data;
-   data.store_int32 (_pinObjectHandle, 0, _idHandleMap.key (id));
-   int index = _removePinList.indexOf (id);
-   if (index != -1) { _removePinList.removeAt (index); }
+   data.store_int32 (_pinObjectHandle, 0, handle);
+   _removePinList.removeAll (handle);
    _pinRemovedMessage.send (&data);
 }
 
 
 void
-dmz::BorderWebInterface::pinSelected (const int id) {
+dmz::BorderWebInterface::pinSelected (const int handle) {
 
    Data data;
-   data.store_int32 (_pinObjectHandle, 0, _idHandleMap.key (id));
+   data.store_int32 (_pinObjectHandle, 0, handle);
    _pinSelectedMessage.send (&data);
 }
 
@@ -200,33 +182,27 @@ dmz::BorderWebInterface::pinSelected (const int id) {
 void
 dmz::BorderWebInterface::_addPin (const Data *InData) {
 
-   Float64 x = -1, y = -1;
-   int handle = -1;
+   Vector vec;
+   int handle;
    String title, description, filename;
-   QVariantList list;
+   Boolean isScreen;
 
    if (InData->lookup_string (_pinTitleHandle, 0, title) &&
       InData->lookup_string (_pinDescHandle, 0, description) &&
       InData->lookup_string (_pinFileHandle, 0, filename) &&
-      InData->lookup_float64 (_pinPositionHandle, 0, x) &&
-      InData->lookup_float64 (_pinPositionHandle, 1, y) &&
-      InData->lookup_int32 (_pinObjectHandle, 0, handle)) {
+      InData->lookup_vector (_pinPositionHandle, 0, vec) &&
+      InData->lookup_int32 (_pinObjectHandle, 0, handle) &&
+      InData->lookup_boolean (_screenCoordHandle, 0, isScreen)) {
 
-      int value, idx = 0;
-
-      if (!handle || !_addPinList.contains (handle)) {
-
-         _addPinList.append (handle);
-         emit (
-            addPin (
-               x,
-               y,
-               title.get_buffer (),
-               description.get_buffer (),
-               filename.get_buffer (),
-               handle,
-               list));
-      }
+      emit (
+         addPin (
+            handle,
+            vec.get_x (),
+            vec.get_y (),
+            isScreen,
+            title.get_buffer (),
+            description.get_buffer (),
+            filename.get_buffer ()));
    }
 }
 
@@ -240,12 +216,6 @@ dmz::BorderWebInterface::_init (Config &local) {
    _jsWindowObjectName = config_to_string ("module.js.windowObject.name", local, "dmz");
    _mainWindowName = config_to_string ("module.main-window.name", local, "dmzQtModuleMainWindowBasic");
    _webviewName = config_to_string ("webview.name", local, "WebView");
-
-   _pinIDHandle = config_to_named_handle (
-      "pin-handles.id.name",
-      local,
-      "pinID",
-      context);
 
    _pinPositionHandle = config_to_named_handle (
       "pin-handles.position.name",
@@ -277,16 +247,10 @@ dmz::BorderWebInterface::_init (Config &local) {
       "pinObjectHandle",
       context);
 
-   _groupPinHandle = config_to_named_handle (
-      "pin-handles.group-handle.name",
+   _screenCoordHandle = config_to_named_handle (
+      "pin-handles.screen-coord.name",
       local,
-      "groupPinHandle",
-      context);
-
-   _pinGroupCountHandle = config_to_named_handle (
-      "pin-handles.pin-group-count.name",
-      local,
-      "pinGroupCountHandle",
+      "is_screen_coord",
       context);
 
    _addPinMessage = config_create_message (

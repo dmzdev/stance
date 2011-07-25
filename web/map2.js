@@ -232,8 +232,7 @@
 
    // DMZ Application =================================================================================
 
-   var pointID
-     , pointList
+   var pointList
      , currentPopUp = false
 
    // Function Decls
@@ -253,7 +252,6 @@
 
       if (window.dmz) {
 
-         pointID = 0;
          pointList = {};
          window.dmz.addPin.connect (appAddPoint);
          window.dmz.removePin.connect (appRemovePoint);
@@ -298,7 +296,7 @@
 
                      if (feature.attributes) {
 
-                        window.dmz.pinSelected (feature.attributes.id);
+                        window.dmz.pinSelected (feature.attributes.handle);
                      }
 
                      currentPopUp = feature.popup;
@@ -319,22 +317,22 @@
       if (!evt.feature && window.dmz) { // Drag event
 
          lonlat = MapDystopia.getLonLatFromViewPortPx(pixel);
-         window.dmz.pinWasMoved (evt.attributes.id, lonlat.lon, lonlat.lat);
+         window.dmz.pinWasMoved (evt.attributes.handle, lonlat.lon, lonlat.lat);
       }
    }
 
-   appMovePin = function (id, lon, lat) {
+   appMovePin = function (handle, x, y) {
 
       var feature;
       if (window.dmz) {
 
-         feature = pointList[id];
-         if (feature) { feature.move (new OpenLayers.LonLat(lon, lat)); }
+         feature = pointList[handle];
+         if (feature) { feature.move (MapDystopia.getLonLatFromViewPortPx(new OpenLayers.Pixel(x, y))); }
       }
    }
 
    // App layer add marker
-   appAddPoint = function (x, y, title, content, file, objectHandle, groupHandles) {
+   appAddPoint = function (handle, x, y, isScreenLoc, title, content, file) {
 
       var lonlat
         , feature
@@ -342,56 +340,42 @@
         , layer
         ;
 
-      if (window.dmz) {
+      if (window.dmz && !pointList[handle]) {
 
          layer = MapDystopia.getLayersByName('AppLayer')[0];
          style = layer.style;
          style.externalGraphic = "dystopia/pages/MapIcons/" + file;
-         if (objectHandle) { lonlat = new OpenLayers.LonLat(x, y); }
-         else {
-
-            lonlat = MapDystopia.getLonLatFromViewPortPx(new OpenLayers.Pixel(x, y));
-         }
+         lonlat = new OpenLayers.LonLat(x, y);
+         if (isScreenLoc) { lonlat = new OpenLayers.LonLat(x, y); }
+         else { lonlat = MapDystopia.getLonLatFromViewPortPx(new OpenLayers.Pixel(x, y)); }
          feature = new OpenLayers.Feature.Vector
             ( new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat) // Should this be lon/lat?
-            ,
-               { name: title
-               , description: content
-               , id: pointID
-               , file: file
-               , style: style
-               }
+            , { name: title
+              , description: content
+              , handle: handle
+              , id: handle
+              , file: file
+              , style: style
+              }
             );
          layer.addFeatures(feature);
-
-         window.dmz.pinWasAdded
-            ( feature.attributes.id
-            , lonlat.lon
-            , lonlat.lat
-            , title
-            , content
-            , file
-            , objectHandle
-            , groupHandles
-            );
-
-         pointList[pointID] = feature;
-         pointID += 1;
+         window.dmz.pinWasAdded(feature.attributes.handle, lonlat.lon, lonlat.lat);
+         pointList[handle] = feature;
       }
    }
 
-   appRemovePoint = function (id) {
+   appRemovePoint = function (handle) {
 
       var feature;
 
       if (window.dmz) {
 
-         feature = pointList[id];
+         feature = pointList[handle];
          if (feature) {
 
             MapDystopia.getLayersByName("AppLayer")[0].removeFeatures(feature);
-            delete pointList[id];
-            window.dmz.pinWasRemoved (id);
+            delete pointList[handle];
+            window.dmz.pinWasRemoved (handle);
          }
       }
    }
