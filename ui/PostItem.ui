@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>256</width>
-    <height>120</height>
+    <height>134</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -102,7 +102,7 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0" rowspan="4">
+      <item row="1" column="0" rowspan="4">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QLabel" name="avatarLabel">
@@ -150,7 +150,7 @@
         </item>
        </layout>
       </item>
-      <item row="0" column="1">
+      <item row="1" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLabel" name="unreadLabel">
@@ -184,7 +184,7 @@
         </item>
        </layout>
       </item>
-      <item row="3" column="1">
+      <item row="4" column="1">
        <widget class="QLabel" name="commentAddLabel">
         <property name="text">
          <string>&lt;a href=&quot;javascript://&quot;&gt;Comment&lt;/a&gt;</string>
@@ -197,7 +197,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1">
        <widget class="QLabel" name="messageLabel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
@@ -219,7 +219,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="2" column="1">
        <widget class="QLabel" name="extraInfoLabel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
@@ -240,6 +240,9 @@
          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
         </property>
        </widget>
+      </item>
+      <item row="5" column="1">
+       <layout class="QHBoxLayout" name="buttonLayout"/>
       </item>
      </layout>
     </widget>

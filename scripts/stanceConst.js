@@ -109,6 +109,7 @@ var dmz =
         , VOTE_ACTIVE: 2
         , VOTE_YES: 3
         , VOTE_NO: 4
+        , VOTE_EXPIRED: 5
         , STATE_STR:
              [ "Submitted"
              , "Denied"
