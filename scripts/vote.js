@@ -79,15 +79,16 @@ voteExpired = function (voteHandle) {
 
    if (noVotes.length >= yesVotes.length) {
 
-      dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
-   }
-   else{
-
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
+   }
+   else {
+
+      dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
    }
 };
 
-voteObserveFunction = function(linkHandle, attrHandle, superHandle, subHandle) {
+// Super = usertype, sub = decisiontype
+voteObserveFunction = function (linkHandle, attrHandle, superHandle, subHandle) {
 
    var userGroupHandle = dmz.stance.getUserGroupHandle(superHandle)
      , numberInGroup = dmz.object.superLinks(userGroupHandle, dmz.stance.GroupMembersHandle) || []
@@ -102,11 +103,7 @@ voteObserveFunction = function(linkHandle, attrHandle, superHandle, subHandle) {
    /* Subtract the admins from the total number of users (admins can't vote) */
    numberInGroup.forEach(function (userHandle) {
 
-      adminFlag = dmz.object.flag(userHandle, dmz.stance.AdminHandle);
-      if (adminFlag) {
-
-         itor += 1;
-      }
+      if (dmz.object.flag(userHandle, dmz.stance.AdminHandle)) { itor += 1; }
    });
    numberInGroup = numberInGroup.length - itor;
 
@@ -130,10 +127,9 @@ voteObserveFunction = function(linkHandle, attrHandle, superHandle, subHandle) {
       });
       dmz.object.flag(subHandle, dmz.stance.UpdateEndTimeHandle, true);
    }
-}
+};
 
 dmz.object.link.observe(self, dmz.stance.YesHandle, voteObserveFunction);
-
 dmz.object.link.observe(self, dmz.stance.NoHandle, voteObserveFunction);
 
 userVoted = function (userHandle, decisionHandle, vote) {
@@ -167,6 +163,7 @@ createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
 };
 
 resetLayout = function () {
+
    var widget;
    if (content) {
 
@@ -228,6 +225,7 @@ getTopVote = function (hil) {
 
          tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle) || [];
          tempHandles.forEach(function (handle) {
+
             postedByLabel.text("Posted By: " + dmz.object.text(handle, dmz.stance.DisplayNameHandle));
             userPicture = dmz.object.text(handle, dmz.stance.PictureHandle);
             avatarLabel.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile(userPicture)));
@@ -263,7 +261,7 @@ getTopVote = function (hil) {
                createDecisionObject(false, voteHandle, 0, reason);
                initVoteForm();
             });
-            ApprovalVotes.push( { postItem: postItem });
+            ApprovalVotes.push({ postItem: postItem });
          }
          else if (voteState === dmz.stance.VOTE_ACTIVE) {
 
@@ -273,17 +271,11 @@ getTopVote = function (hil) {
                /* see if user has voted befre or is a admin */
                userHandles = dmz.object.superLinks(handle, dmz.stance.NoHandle) || [];
                noVotesLabel.text("No Votes: " + userHandles.length);
-               userHandles.forEach(function (userHandle) {
-
-                  if (userHandle === hil) { previouslyVoted = true; }
-               });
+               if (userHandles.indexOf(hil) !== -1) { previouslyVoted = true; }
 
                userHandles = dmz.object.superLinks(handle, dmz.stance.YesHandle) || [];
                yesVotesLabel.text("Yes Votes: " + userHandles.length);
-               userHandles.forEach(function (userHandle) {
-
-                  if (userHandle === hil) { previouslyVoted = true; }
-               });
+               if (userHandles.indexOf(hil) !== -1) { previouslyVoted = true; }
 
                if (previouslyVoted || dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
@@ -308,7 +300,7 @@ getTopVote = function (hil) {
                userVoted(hil, decisionHandle, false);
                initVoteForm();
             });
-            ActiveVotes.push( {postItem: postItem } );
+            ActiveVotes.push({ postItem: postItem });
          }
       });
    });
@@ -439,21 +431,13 @@ initVoteForm = function () {
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
-   var list
-     ;
-
+   var list;
    if (Mode === dmz.module.Activate) {
 
       list = MainModule.list;
       MainModule = module;
-      module.addPage
-         ( "Vote"
-         , voteForm
-         , function () {
-
-              initVoteForm();
-           }
-         );
+      module.addPage("Vote", voteForm, initVoteForm);
+      if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
 
