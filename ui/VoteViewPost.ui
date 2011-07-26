@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>256</width>
-    <height>134</height>
+    <width>283</width>
+    <height>149</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -102,7 +102,7 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0" rowspan="5">
+      <item row="1" column="0" rowspan="6">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QLabel" name="avatarLabel">
@@ -169,7 +169,7 @@
         <item>
          <widget class="QLabel" name="endTime">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -206,20 +206,6 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QLabel" name="reason">
-        <property name="text">
-         <string>reasonLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <layout class="QVBoxLayout" name="textLayout">
-        <item>
-         <layout class="QHBoxLayout" name="buttonLayout"/>
-        </item>
-       </layout>
-      </item>
       <item row="3" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -242,6 +228,49 @@
            <string>noVotes</string>
           </property>
          </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="4" column="1" rowspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="advisorAvatarLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>25</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>25</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="reason">
+          <property name="text">
+           <string>reasonLabel</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="6" column="1">
+       <layout class="QVBoxLayout" name="textLayout">
+        <item>
+         <layout class="QHBoxLayout" name="buttonLayout"/>
         </item>
        </layout>
       </item>
