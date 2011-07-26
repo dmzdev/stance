@@ -395,13 +395,19 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
          var hil = dmz.object.hil()
            , hilGroup = dmz.stance.getUserGroupHandle(hil)
+           , latest = 0
            , list
            ;
 
          if (hilGroup) {
 
             list = dmz.object.superLinks(hilGroup, dmz.stance.GroupPinHandle) || [];
-            dmz.object.scalar(hil, dmz.stance.PinTotalHandle, list.length);
+            list.forEach(function (pinHandle) {
+
+               var time = dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle);
+               if (time && (time > latest)) { latest = time; }
+            });
+            dmz.stance.userAttribute(hil, dmz.stance.PinTimeHandle, latest);
          }
       };
 

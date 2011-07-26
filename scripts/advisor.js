@@ -43,11 +43,7 @@ var dmz =
    , MAX_QUESTION_REPLY_LEN = 500
    , MAX_TASK_STR_LEN = 144
    , MAX_TASK_REPLY_LEN = 500
-   , VOTE_APPROVAL_PENDING = 0
-   , VOTE_DENIED = 1
-   , VOTE_ACTIVE = 2
-   , VOTE_YES = 3
-   , VOTE_NO = 4
+
    , STATE_STR =
         [ "Submitted"
         , "Denied"
@@ -128,10 +124,11 @@ createAdvisorWindow = function (windowStr) {
       , parentHandle: dmz.stance.VoteLinkHandle
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
       , useForumData: true
+      , timeHandle: dmz.stance.VoteTimeHandle
       , messageLength: MAX_TASK_STR_LEN
       , replyLength: MAX_TASK_REPLY_LEN
       , highlight: function () { MainModule.highlight(windowStr); }
-      , onNewPost: function (handle) { dmz.object.scalar(handle, dmz.stance.VoteState, VOTE_APPROVAL_PENDING); }
+      , onNewPost: function (handle) { dmz.object.scalar(handle, dmz.stance.VoteState, dmz.stance.VOTE_APPROVAL_PENDING); }
       , canReplyTo: function (replyToHandle) { return false; }
       , canPost: function () {
 
@@ -158,9 +155,9 @@ createAdvisorWindow = function (windowStr) {
                    ;
 
                  if (!decision ||
-                    ((voteState !== VOTE_YES) &&
-                       (voteState !== VOTE_NO) &&
-                       (voteState !== VOTE_DENIED))) {
+                    ((voteState !== dmz.stance.VOTE_YES) &&
+                       (voteState !== dmz.stance.VOTE_NO) &&
+                       (voteState !== dmz.stance.VOTE_DENIED))) {
 
                     result = false;
                  }
@@ -176,28 +173,33 @@ createAdvisorWindow = function (windowStr) {
              , links
              , total = 0
              , expire
+             , vote
              ;
 
            if (type && type.isOfType(dmz.stance.DecisionType)) {
 
-              state = dmz.object.scalar(handle, dmz.stance.VoteState);
-              if ((state === VOTE_APPROVAL_PENDING) || (state === VOTE_DENIED)) {
+              vote = dmz.object.subLinks(handle, dmz.stance.VoteLinkHandle) || [undefined];
+              vote = vote[0];
+              state = dmz.object.scalar(vote, dmz.stance.VoteState);
+              if ((state === dmz.stance.VOTE_APPROVAL_PENDING) || (state === dmz.stance.VOTE_DENIED)) {
 
-                 result = STATE_STR[state];
+                 result = dmz.stance.STATE_STR[vote];
               }
-              else if ((state === VOTE_ACTIVE) || (state === VOTE_YES) || (state === VOTE_NO)) {
+              else if ((state === dmz.stance.VOTE_ACTIVE) ||
+                      (state === dmz.stance.VOTE_YES) ||
+                      (state === dmz.stance.VOTE_NO)) {
 
-                 result = STATE_STR[state];
-                 links = dmz.object.subLinks(handle, dmz.stance.YesHandle);
-                 total += links ? links.length : 0;
-                 result += " - Y: " + (links ? links.length : 0);
+                 result = dmz.stance.STATE_STR[vote];
+                 links = dmz.object.subLinks(handle, dmz.stance.YesHandle) || [];
+                 total += links.length;
+                 result += " - Y: " + links.length;
 
-                 links = dmz.object.subLinks(handle, dmz.stance.NoHandle);
-                 total += links ? links.length : 0;
-                 result += " N: " + (links ? links.length : 0);
+                 links = dmz.object.subLinks(handle, dmz.stance.NoHandle) || [];
+                 total += links.length;
+                 result += " - N: " + links.length;
 
-                 links = dmz.object.scalar(handle, dmz.stance.TotalHandle);
-                 result += " U: " + (links ? (links - total) : "?");
+                 links = dmz.object.scalar(handle, dmz.stance.TotalHandle) || total;
+                 result += " U: " + (links - total);
 
                  expire = dmz.object.timeStamp(handle, dmz.stance.ExpireHandle);
                  if (expire) {
@@ -220,6 +222,7 @@ createAdvisorWindow = function (windowStr) {
       , parentHandle: dmz.stance.QuestionLinkHandle
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
       , useForumData: true
+      , timeHandle: dmz.stance.VoteTimeHandle
       , messageLength: MAX_QUESTION_STR_LEN
       , replyLength: MAX_QUESTION_REPLY_LEN
       , highlight: function () { MainModule.highlight(windowStr); }
@@ -235,12 +238,10 @@ createAdvisorWindow = function (windowStr) {
              , result = dmz.object.hil()
              ;
 
-//           self.log.warn (result, "["+questions+"]");
            if (questions) {
 
               questions.forEach(function (questionHandle) {
 
-//                 self.log.warn ("--", getQuestionAnswer(questionHandle), dmz.stance.getAuthorHandle(questionHandle));
                  if (!getQuestionAnswer(questionHandle) &&
                     !dmz.object.flag(dmz.stance.getAuthorHandle(questionHandle), dmz.stance.AdminHandle)) {
 
@@ -270,7 +271,6 @@ createAdvisorWindow = function (windowStr) {
 
    data.update = function (advisorHandle) {
 
-      self.log.warn ("Update:", dmz.stance.getDisplayName(advisorHandle));
       data.infoWindow.name.text(dmz.object.text(advisorHandle, dmz.stance.NameHandle));
       data.infoWindow.bio.text(dmz.object.text(advisorHandle, dmz.stance.BioHandle));
       data.infoWindow.title.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));

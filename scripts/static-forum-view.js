@@ -71,6 +71,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _ParentLinkHandle
      , _ForumLinkHandle
      , _UseForumDataForAdmin
+     , _TimeHandle
 
      , _LatestTimeStamp = 0
 
@@ -108,6 +109,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    _CanReplyTo = forumData.canReplyTo;
    _CanPost = forumData.canPost;
    _UseForumDataForAdmin = forumData.useForumData;
+   _TimeHandle = forumData.timeHandle;
    _Highlight = forumData.highlight;
    _ExtraInfo = forumData.extraInfo ? forumData.extraInfo : function () { return ""; };
    _OnNewPost = forumData.onNewPost ? forumData.onNewPost : function () {};
@@ -116,7 +118,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    MaxReplyLength = forumData.replyLength || MaxMessageLength;
 
    if (_Self && _PostType && _CommentType && _ForumType && _ParentLinkHandle &&
-      _CanReplyTo && _CanPost && _Highlight) {
+      _CanReplyTo && _CanPost && _Highlight && _TimeHandle) {
 
       _view = dmz.ui.loader.load("ForumView.ui");
       retData.widget = _view;
@@ -562,6 +564,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , avatar = _view.lookup("avatarLabel")
            ;
 
+         _LatestTimeStamp = dmz.stance.userAttribute(userHandle, _TimeHandle) || 0;
+
          _Self.log.warn ("Update forum for user:", dmz.stance.getDisplayName(userHandle));
          group = dmz.stance.getUserGroupHandle(userHandle);
 
@@ -703,27 +707,30 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
       retData.onHome = function () {
 
-         var posts = dmz.object.superLinks(_forumHandle, _ParentLinkHandle);
+         var posts = dmz.object.superLinks(_forumHandle, _ParentLinkHandle)
+           , latest = _LatestTimeStamp
+           ;
          IsCurrentWindow = false;
          if (posts) {
 
-            dmz.object.timeStamp(dmz.object.hil(), dmz.stance.ForumTimeHandle, _LatestTimeStamp);
             posts.forEach(function (postHandle) {
 
-               _Self.log.warn ("postHandle:", postHandle, dmz.object.type(postHandle), _postList[postHandle]);
+               var comments = dmz.object.superLinks(postHandle, _ParentLinkHandle) || []
+                 , timestamp = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle)
+                 ;
+               if (timestamp && (timestamp > latest)) { latest = timestamp; }
                _postList[postHandle].unread.hide();
-               var comments = dmz.object.superLinks(postHandle, _ParentLinkHandle);
-               if (comments) {
+               comments.forEach(function (commentHandle) {
 
-                  comments.forEach(function (commentHandle) {
+                  var timestamp = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle);
+                  if (timestamp && (timestamp > latest)) { latest = timestamp; }
+                  if (_commentList[commentHandle]) {
 
-                     if (_commentList[commentHandle]) {
-
-                        _commentList[commentHandle].unread.hide();
-                     }
-                  });
-               }
+                     _commentList[commentHandle].unread.hide();
+                  }
+               });
             });
+            dmz.stance.userAttribute(dmz.object.hil(), _TimeHandle, latest);
          }
       };
    }

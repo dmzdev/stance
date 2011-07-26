@@ -25,6 +25,7 @@ var dmz =
         , UserType: dmz.objectType.lookup("user")
         , VideoType: dmz.objectType.lookup("media-video")
         , VoteType: dmz.objectType.lookup("vote")
+        , DataType: dmz.objectType.lookup("data")
         }
 
    , Handles =
@@ -49,7 +50,6 @@ var dmz =
         , ObjectHandle: dmz.defs.createNamedHandle("objectHandle")
 
         // Object-specific handles
-        , ForumTimeHandle: dmz.defs.createNamedHandle("forum_time")
         , VoteState: dmz.defs.createNamedHandle("vote_state")
         , EmailRecipientHandle: dmz.defs.createNamedHandle("email_recipient")
         , PinTotalHandle: dmz.defs.createNamedHandle("pin_total")
@@ -66,18 +66,25 @@ var dmz =
         , NoHandle: dmz.defs.createNamedHandle("no_link")
         , QuestionLinkHandle: dmz.defs.createNamedHandle("question_link")
         , MediaHandle: dmz.defs.createNamedHandle("game_media")
+        , DataLinkHandle: dmz.defs.createNamedHandle("data_link")
 
         /* Time handles, and handles to be removed later */
         , UpdateStartTimeHandle: dmz.defs.createNamedHandle("update_start_time_handle")
         , UpdateEndTimeHandle: dmz.defs.createNamedHandle("update_end_time_handle")
         , CreatedAtServerTimeHandle: dmz.defs.createNamedHandle("created_at_server_time")
         , EndedAtServerTimeHandle: dmz.defs.createNamedHandle("ended_at_server_time")
-
         , GameStartTimeHandle: dmz.defs.createNamedHandle("game_start_time")
         , GameEndTimeHandle: dmz.defs.createNamedHandle("game_end_time")
-        , InGameStartTimeHandle: dmz.defs.createNamedHandle("in_game_start_time")
-        , ServerTimeHandle: dmz.defs.createNamedHandle("server_time")
-        , CreatedAtGameTimeHandle: dmz.defs.createNamedHandle("created_at_game_time")
+
+        // Notification Time Handles
+        , PinTimeHandle: dmz.defs.createNamedHandle("pin_time")
+        , ForumTimeHandle: dmz.defs.createNamedHandle("forum_time")
+        , QuestionTimeHandle: dmz.defs.createNamedHandle("question_time")
+        , VoteTimeHandle: dmz.defs.createNamedHandle("vote_time")
+        , NewspaperTimeHandle: dmz.defs.createNamedHandle("newspaper_time")
+        , MemoTimeHandle: dmz.defs.createNamedHandle("memo_time")
+        , VideoTimeHandle: dmz.defs.createNamedHandle("video_time")
+        , LobbyistTimeHandle: dmz.defs.createNamedHandle("lobbyist_time")
 
         // Group Office Image handles
         , BackgroundImageHandle: dmz.defs.createNamedHandle("background_image")
@@ -102,6 +109,7 @@ var dmz =
         , getUserGroupHandle: false
         , addUITextLimit: false
         , getVoteStatus: false
+        , userAttribute: false
         }
 
    , Constants =
@@ -111,6 +119,7 @@ var dmz =
         , VOTE_YES: 3
         , VOTE_NO: 4
         , VOTE_EXPIRED: 5
+        , VOTE_ERROR: 6
         , STATE_STR:
              [ "Submitted"
              , "Denied"
@@ -118,6 +127,7 @@ var dmz =
              , "Passed"
              , "Failed"
              , "Expired"
+             , "ERROR"
              ]
          }
    , getDisplayName
@@ -126,34 +136,18 @@ var dmz =
    , getUserGroupHandle
    , getVoteStatus
    , addUITextLimit
+   , userAttribute
    ;
 
 getVoteStatus = function (handle) {
 
-//   var status = "E: " + handle
-//     , Active = dmz.object.flag(handle, Handles.ActiveHandle)
-//     , Submitted = dmz.object.flag(handle, Handles.VoteSubmittedHandle)
-//     , Approved = dmz.object.flag(handle, Handles.VoteApprovedHandle)
-//     , Result = dmz.object.flag(handle, Handles.VoteResultHandle)
-//     , noHandleList = dmz.object.subLinks(handle, Handles.VoteNoHandle)
-//     ;
+   var type = dmz.object.type(handle)
+     , state
+     ;
 
-//   if (Active) {
-
-//      if (Submitted) { status = "SBMITD"; }
-//      else {
-
-//         if (Approved) { status = "ACTIVE"; }
-//         else { status = "DENIED"; }
-//      }
-//   }
-//   else {
-
-//      if (Result) { status = "PASSED"; }
-//      else if (!noHandleList) { status = "DENIED"; }
-//      else { status = "FAILED"; }
-//   }
-   return "ERROR";
+   if (type.isOfType(ObjectTypes.VoteType)) { state = dmz.object.scalar(handle, Handles.VoteState); }
+   else { state = Constants.VOTE_ERROR; }
+   return Constants.STATE_STR[state];
 };
 
 getDisplayName = function (handle) {
@@ -209,12 +203,39 @@ addUITextLimit = function (script, maxLength, target, submitButton, current, tot
    }
 };
 
+userAttribute = function (handle, attribute, value) {
+
+   var type = dmz.object.type(handle)
+     , isAdmin = dmz.object.flag(handle, Handles.AdminHandle)
+     , dataHandle
+     , retval
+     ;
+   if (type && type.isOfType(ObjectTypes.UserType)) {
+
+      if (isAdmin) {
+
+         dataHandle =
+            dmz.object.linkAttributeObject(
+               dmz.object.linkHandle(
+                  Handles.DataLinkHandle,
+                  adminHandle,
+                  getUserGroupHandle(handle)));
+      }
+      else { dataHandle = handle; }
+
+      if (arguments.length === 3) { dmz.object.timeStamp(dataHandle, attribute, value); }
+      retval = dmz.object.timeStamp(dataHandle, attribute);
+   }
+   return retval || 0;
+};
+
 Functions.getDisplayName = getDisplayName;
 Functions.getAuthorHandle = getAuthorHandle;
 Functions.getAuthorName = getAuthorName;
 Functions.getUserGroupHandle = getUserGroupHandle;
 Functions.addUITextLimit = addUITextLimit;
 Functions.getVoteStatus = getVoteStatus;
+Functions.userAttribute = userAttribute;
 
 (function () {
 

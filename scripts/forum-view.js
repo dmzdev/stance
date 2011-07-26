@@ -27,9 +27,6 @@ var dmz =
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , MaxMessageLength = 500
-
-   // Functions
-
    ;
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
@@ -43,6 +40,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          { self: self
          , postType: dmz.stance.PostType
          , commentType: dmz.stance.CommentType
+         , timeHandle: dmz.stance.ForumTimeHandle
          , forumType: dmz.stance.ForumType
          , parentHandle: dmz.stance.ParentHandle
          , groupLinkHandle: dmz.stance.ForumLink
