@@ -399,6 +399,7 @@ getPreviousVotes = function (hil) {
          }
          else if (voteState === dmz.stance.VOTE_DENIED) {
 
+            endTimeLabel.text("");
             postItem.setStyleSheet("* { background-color: rgb(180, 40, 40); border-width: 5px; }");
          }
 
