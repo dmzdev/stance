@@ -69,11 +69,8 @@ var dmz =
    , userVoted
    , voteExpired
    , voteObserveFunction
+   , init
    ;
-
-myLayout = dmz.ui.layout.createVBoxLayout();
-content.layout(myLayout);
-myLayout.addStretch(1);
 
 voteExpired = function (voteHandle) {
 
@@ -212,12 +209,15 @@ createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
 };
 
 resetLayout = function () {
-
-   var itor = 0
-     ;
+   var widget;
    if (content) {
 
-      while (myLayout.takeAt(0)) {};
+      widget = myLayout.takeAt(0);
+      while (widget) {
+
+         widget.hide();
+         widget = myLayout.takeAt(0);
+      };
    }
    myLayout.addStretch(1);
 };
@@ -253,7 +253,7 @@ getTopVote = function (hil) {
                  , advisorReason
                  , decisionHandle
                  , postItem = dmz.ui.loader.load("PostItem.ui")
-                 , buttonLayout = postItem.layout("buttonLayout")
+                 , buttonLayout = postItem.lookup("buttonLayout")
                  , postedByLabel = postItem.lookup("postedByLabel")
                  , postedAtLabel = postItem.lookup("postedAtLabel")
                  , avatarLabel = postItem.lookup("avatarLabel")
@@ -448,13 +448,18 @@ getPreviousVotes = function (hil) {
                  , status
                  , advisorReason
                  , decisionHandle
-                 , postItem = dmz.ui.loader.load("PostItem.ui")
-                 , postedByLabel = postItem.lookup("postedByLabel")
-                 , postedAtLabel = postItem.lookup("postedAtLabel")
+                 , yesVotes
+                 , noVotes
+                 , postItem = dmz.ui.loader.load("VoteViewPost.ui")
+                 , postedByLabel = postItem.lookup("postedBy")
+                 , startTimeLabel = postItem.lookup("startTime")
+                 , endTimeLabel = postItem.lookup("endTime")
+                 , questionLabel = postItem.lookup("question")
+                 , statusLabel = postItem.lookup("status")
+                 , yesVotesLabel = postItem.lookup("yesVotes")
+                 , noVotesLabel = postItem.lookup("noVotes")
+                 , reasonLabel = postItem.lookup("reason")
                  , avatarLabel = postItem.lookup("avatarLabel")
-                 , extraInfoLabel = postItem.lookup("extraInfoLabel")
-                 , messageLabel = postItem.lookup("messageLabel")
-                 , commentAddLabel = postItem.lookup("commentAddLabel")
                  , userPicture
                  , tempHandles
                  ;
@@ -484,6 +489,11 @@ getPreviousVotes = function (hil) {
                      endTime = dmz.object.timeStamp(handle, dmz.stance.EndedAtServerTimeHandle);
                      duration = endTime - startTime; //might not work, check later
                      advisorReason = dmz.object.text(handle, dmz.stance.TextHandle);
+                     yesVotes = dmz.object.superLinks(handle, dmz.stance.YesHandle);
+                     noVotes = dmz.object.superLinks(handle, dmz.stance.NoHandle);
+
+                     yesVotes = (yesVotes) ? yesVotes.length : 0;
+                     noVotes = (noVotes) ? noVotes.length : 0;
                   });
                }
                // create the post item
@@ -504,11 +514,20 @@ getPreviousVotes = function (hil) {
                         break;
                   }
                }
+               self.log.error("Setting Stuff!");
                avatarLabel.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile(userPicture)));
+               self.log.error("Setting Stuff!");
                postedByLabel.text("Posted By: " + createdBy);
-               postedAtLabel.text("  Posted At: " + startTime + " --- Ended At: " + endTime);
-               extraInfoLabel.text(question);
-               messageLabel.text(dmz.stance.STATE_STR[status]);
+               self.log.error("Setting Stuff!");
+               startTimeLabel.text("Posted At: " + startTime);
+               endTimeLabel.text("Ended At: " + endTime);
+               self.log.error("Setting Stuff!");
+               questionLabel.text("Poll Question: " + question);
+               self.log.error("Setting Stuff!");
+               statusLabel.text("Current Status: " + dmz.stance.STATE_STR[status]);
+               reasonLabel.text("Advisor Reply: " + advisorReason);
+               yesVotesLabel.text("Yes Votes: " + yesVotes);
+               noVotesLabel.text("No Votes: "+ noVotes);
 
                PastVotes.push(
                     { handle: handle
@@ -592,3 +611,12 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          );
    }
 });
+
+init = function () {
+
+   myLayout = dmz.ui.layout.createVBoxLayout();
+   content.layout(myLayout);
+   myLayout.addStretch(1);
+};
+
+init();
