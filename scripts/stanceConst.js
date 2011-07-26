@@ -117,6 +117,7 @@ var dmz =
              , "Active"
              , "Passed"
              , "Failed"
+             , "Expired"
              ]
          }
    , getDisplayName
