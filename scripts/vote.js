@@ -32,12 +32,6 @@ var dmz =
    , content = scrollArea.widget()
    , myLayout = dmz.ui.layout.createVBoxLayout()
 
-   //, postItem = dmz.ui.loader.load("PostItem.ui")
-   //, avatarLabel = postItem.lookup("avatarLabel")
-   //, postItem2 = dmz.ui.loader.load("PostItem.ui")
-
-   // Functions
-
    // Variables
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
       /* VoteObject =

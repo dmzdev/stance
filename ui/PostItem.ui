@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>256</width>
-    <height>134</height>
+    <height>122</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -240,9 +240,6 @@
          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
         </property>
        </widget>
-      </item>
-      <item row="5" column="1">
-       <layout class="QHBoxLayout" name="buttonLayout"/>
       </item>
      </layout>
     </widget>
