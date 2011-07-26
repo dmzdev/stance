@@ -81,11 +81,11 @@ voteExpired = function (voteHandle) {
 
    if (noVotes.length >= yesVotes.length) {
 
-      dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
+      dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
    }
    else{
 
-      dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
+      dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
    }
 };
 
@@ -213,12 +213,14 @@ getTopVote = function (hil) {
            , noButton = dmz.ui.button.createPushButton("Deny")
            , timeBox = dmz.ui.spinBox.createSpinBox("timeBox")
            , decisionReason = dmz.ui.textEdit.create("decisionReason")
+           , advisorAvatarLabel = postItem.lookup("advisorAvatarLabel")
            , previouslyVoted = false
            , tempHandles
            , userLinks
            , userHandles
            , decisionHandle
            , userPicture
+           , tempAdvisorHandles
            , voteState = dmz.object.scalar(voteHandle, dmz.stance.VoteState)
            ;
 
@@ -293,6 +295,13 @@ getTopVote = function (hil) {
                   noButton.hide();
                }
 
+               // Set the advisor avatar label
+               tempAdvisorHandles = dmz.object.subLinks(voteHandle, dmz.stance.VoteLinkHandle) || [];
+               tempAdvisorHandles.forEach(function (advisorHandle) {
+
+                  userPicture = dmz.object.text(advisorHandle, dmz.stance.PictureHandle);
+                  advisorAvatarLabel.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile(userPicture)).scaled(25, 25));
+               });
                /* Set various text values */
                decisionHandle = handle;
                postItem.setStyleSheet("* { background-color: rgb(210, 210, 30); border-width: 5px; }");
@@ -351,17 +360,19 @@ getPreviousVotes = function (hil) {
            , noVotesLabel = postItem.lookup("noVotes")
            , reasonLabel = postItem.lookup("reason")
            , avatarLabel = postItem.lookup("avatarLabel")
+           , advisorAvatarLabel = postItem.lookup("advisorAvatarLabel")
            , userPicture
            , tempHandles
            , tempVotes
+           , tempAdvisorHandles
            ;
 
-         // Get the vote creators name
+         // Get the vote creators name and picture
          tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle) || [];
-         tempHandles.forEach(function (handle) {
+         tempHandles.forEach(function (userHandle) {
 
-            postedByLabel.text("Posted By: " + dmz.object.text(handle, dmz.stance.DisplayNameHandle));
-            userPicture = dmz.object.text(handle, dmz.stance.PictureHandle);
+            postedByLabel.text("Posted By: " + dmz.object.text(userHandle, dmz.stance.DisplayNameHandle));
+            userPicture = dmz.object.text(userHandle, dmz.stance.PictureHandle);
             avatarLabel.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile(userPicture)));
          });
          // Get the question and status of the vote
@@ -379,6 +390,13 @@ getPreviousVotes = function (hil) {
             yesVotesLabel.text("Yes Votes: " + tempVotes.length);
             tempVotes = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
             noVotesLabel.text("No Votes: " + tempVotes.length);
+            // Set the advisor avatar label
+            tempAdvisorHandles = dmz.object.subLinks(voteHandle, dmz.stance.VoteLinkHandle) || [];
+            tempAdvisorHandles.forEach(function (advisorHandle) {
+
+               userPicture = dmz.object.text(advisorHandle, dmz.stance.PictureHandle);
+               advisorAvatarLabel.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile(userPicture)).scaled(25, 25));
+            });
          });
          // Set the post item CSS
          if (voteState === dmz.stance.VOTE_YES) {
