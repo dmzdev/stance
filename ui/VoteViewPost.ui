@@ -102,7 +102,7 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0" rowspan="4">
+      <item row="1" column="0" rowspan="5">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QLabel" name="avatarLabel">
@@ -153,21 +153,21 @@
       <item row="1" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QLabel" name="unreadLabel">
+         <widget class="QLabel" name="postedBy">
           <property name="text">
-           <string/>
+           <string>PostedBy:</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="postedByLabel">
+         <widget class="QLabel" name="startTime">
           <property name="text">
-           <string>postedBy</string>
+           <string>startTime</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="postedAtLabel">
+         <widget class="QLabel" name="endTime">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -175,7 +175,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>-  postedAt</string>
+           <string>endTime</string>
           </property>
           <property name="textInteractionFlags">
            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
@@ -184,43 +184,8 @@
         </item>
        </layout>
       </item>
-      <item row="4" column="1">
-       <widget class="QLabel" name="commentAddLabel">
-        <property name="text">
-         <string>&lt;a href=&quot;javascript://&quot;&gt;Comment&lt;/a&gt;</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-        <property name="textInteractionFlags">
-         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="messageLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>message</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-        <property name="textInteractionFlags">
-         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="1">
-       <widget class="QLabel" name="extraInfoLabel">
+       <widget class="QLabel" name="question">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
@@ -228,7 +193,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>extra</string>
+         <string>questionLabel</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -238,11 +203,47 @@
         </property>
         <property name="textInteractionFlags">
          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="reason">
+        <property name="text">
+         <string>reasonLabel</string>
         </property>
        </widget>
       </item>
       <item row="5" column="1">
-       <layout class="QHBoxLayout" name="buttonLayout"/>
+       <layout class="QVBoxLayout" name="textLayout">
+        <item>
+         <layout class="QHBoxLayout" name="buttonLayout"/>
+        </item>
+       </layout>
+      </item>
+      <item row="3" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="status">
+          <property name="text">
+           <string>status</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="yesVotes">
+          <property name="text">
+           <string>yesVotes</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="noVotes">
+          <property name="text">
+           <string>noVotes</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
