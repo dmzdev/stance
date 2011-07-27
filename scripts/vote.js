@@ -64,6 +64,7 @@ var dmz =
    , voteExpired
    , voteObserveFunction
    , init
+   , checkForTopVote
    ;
 
 voteExpired = function (voteHandle) {
@@ -75,7 +76,7 @@ voteExpired = function (voteHandle) {
      ;
 
    yesVotes = dmz.object.superLinks(decisionHandle, dmz.stance.YesHandle) || [];
-   noVote = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
+   noVotes = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
 
    if (noVotes.length >= yesVotes.length) {
 
@@ -85,6 +86,7 @@ voteExpired = function (voteHandle) {
 
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
    }
+   initVoteForm();
 };
 
 // Super = usertype, sub = decisiontype
@@ -130,7 +132,45 @@ voteObserveFunction = function (linkHandle, attrHandle, superHandle, subHandle) 
 };
 
 dmz.object.link.observe(self, dmz.stance.YesHandle, voteObserveFunction);
+
 dmz.object.link.observe(self, dmz.stance.NoHandle, voteObserveFunction);
+
+dmz.object.scalar.observe(self, dmz.stance.VoteState,
+function (objHandle, attrHandle, newVal, prevVal) {
+
+   if (newVal === dmz.stance.VOTE_EXPIRED) {
+
+      voteExpired(objHandle);
+   }
+});
+
+dmz.object.create.observe(self, function (objHandle, objType) {
+
+   if (objType.isOfType(dmz.stance.DecisionType)) {
+
+      var hil = dmz.object.hil()
+        , userGroup = dmz.stance.getUserGroupHandle(dmz.object.hil())
+        , decisionGroupHandle
+        , tempUserHandles
+        , tempGroupHandles
+        ;
+      if (!dmz.object.flag(hil, dmz.stance.AdminHandle)) {
+
+         tempUserHandles = dmz.object.subLinks(objHandle, dmz.stance.CreatedByHandle) || [];
+         tempUserHandles.forEach(function (userHandle) {
+
+            tempGroupHandles = dmz.object.subLinks(userHandle, dmz.stance.GroupMembersHandle) || [];
+            tempGroupHandles.forEach(function (groupHandle) {
+
+               if (groupHandle === userGroup) {
+
+                  MainModule.highlight("Vote");
+               }
+            });
+         });
+      }
+   }
+});
 
 userVoted = function (userHandle, decisionHandle, vote) {
 
@@ -311,6 +351,10 @@ getTopVote = function (hil) {
             });
             ActiveVotes.push({ postItem: postItem });
          }
+         else if (voteState === dmz.stance.VOTE_EXPIRED) {
+
+            voteExpired(voteHandle);
+         }
       });
    });
 };
@@ -402,6 +446,11 @@ getPreviousVotes = function (hil) {
             endTimeLabel.text("");
             postItem.setStyleSheet("* { background-color: rgb(180, 40, 40); border-width: 5px; }");
          }
+         else if (voteState === dmz.stance.VOTE_EXPIRED) {
+
+            voteExpired(voteHandle);
+            return;
+         }
 
          PastVotes.push( {postItem: postItem} );
       }
@@ -419,7 +468,6 @@ displayPastVotes = function (hil) {
       ApprovalVotes.forEach(function (item) {
 
          myLayout.insertWidget(itor, item.postItem);
-         MainModule.highlight("Vote");
          itor += 1;
       });
    }
@@ -427,7 +475,6 @@ displayPastVotes = function (hil) {
    ActiveVotes.forEach(function (item) {
 
       myLayout.insertWidget(itor, item.postItem);
-      MainModule.highlight("Vote");
       itor += 1;
    });
 
@@ -438,6 +485,38 @@ displayPastVotes = function (hil) {
    });
 
 };
+
+/*
+checkForTopVote = function () {
+
+   var groupHandle = dmz.stance.getUserGroupHandle(dmz.object.hil())
+     , groupAdvisorHandles = dmz.object.superLinks(groupHandle, dmz.stance.AdvisorGroupHandle) || []
+     , advisorVoteHandles
+     ;
+
+   groupAdvisorHandles.forEach(function (advisorHandle) {
+
+      advisorVoteHandles = dmz.object.superLinks(advisorHandle, dmz.stance.VoteLinkHandle) || [];
+      advisorVoteHandles.forEach(function (voteHandle) {
+
+         if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
+
+            if (dmz.object.scalar(voteHandle, dmz.stance.VoteState) === dmz.stance.VOTE_APPROVAL_PENDING) {
+
+               MainModule.highlight("Vote");
+            }
+         }
+         else {
+
+            if (dmz.object.scalar(voteHandle, dmz.stance.VoteState) === dmz.stance.Vote_ACTIVE) {
+
+               MainModule.highlight("Vote");
+            }
+         }
+      });
+   });
+};
+*/
 
 initVoteForm = function () {
 
@@ -465,6 +544,7 @@ init = function () {
    myLayout = dmz.ui.layout.createVBoxLayout();
    content.layout(myLayout);
    myLayout.addStretch(1);
+   //checkForTopVote();
 };
 
 init();
