@@ -52,6 +52,8 @@ var dmz =
    , PinIconList = []
    , PinQueue = []
    , HaveActivatedMap = false
+   , IsCurrentWindow = false
+   , DoHighlight = false
    , GroupHandleList = []
    , GroupQueue = {}
 
@@ -323,7 +325,8 @@ function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
       count = dmz.object.scalar(hil, dmz.stance.PinTotalHandle) || 0;
       if (!dmz.object.flag(hil, dmz.stance.AdminHandle) && (count < list.length)) {
 
-         MainModule.highlight("Map");
+         if (IsCurrentWindow) { DoHighlight = true; }
+         else { MainModule.highlight("Map"); }
       }
    }
 });
@@ -352,7 +355,8 @@ function (objHandle, attrHandle, value) {
       count = dmz.object.scalar(objHandle, dmz.stance.PinTotalHandle) || 0;
       if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) && (count < list.length)) {
 
-         MainModule.highlight("Map");
+         if (IsCurrentWindow) { DoHighlight = true; }
+         else { MainModule.highlight("Map"); }
       }
    }
 });
@@ -371,6 +375,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
       mapClickFn = function () {
 
+         IsCurrentWindow = true;
          if (!HaveActivatedMap) {
 
             page = map.page();
@@ -389,6 +394,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
                }
             });
          }
+         else { populateMapFromGroup(dmz.stance.getUserGroupHandle(dmz.object.hil())); }
       };
 
       mapHomeFn = function () {
@@ -398,6 +404,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            , list
            ;
 
+         if (DoHighlight) { module.highlight("Map"); }
+         DoHighlight = false;
+         IsCurrentWindow = false;
          if (hilGroup) {
 
             list = dmz.object.superLinks(hilGroup, dmz.stance.GroupPinHandle) || [];
