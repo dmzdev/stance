@@ -133,7 +133,7 @@ createAdvisorWindow = function (windowStr) {
       , highlight: function () { MainModule.highlight(windowStr); }
       , onNewPost: function (handle) { dmz.object.scalar(handle, dmz.stance.VoteState, VOTE_APPROVAL_PENDING); }
       , canReplyTo: function (replyToHandle) { return false; }
-      , canPost: function () {
+      , postBlocked: function () {
 
            var hil = dmz.object.hil()
              , advisors
@@ -142,6 +142,11 @@ createAdvisorWindow = function (windowStr) {
              ;
 
            result = hil && !dmz.object.flag(hil, dmz.stance.AdminHandle);
+           if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
+
+              result = "New votes cannot be created by admin users.";
+           }
+
            advisors = dmz.object.superLinks(dmz.stance.getUserGroupHandle(hil), dmz.stance.AdvisorGroupHandle) || [];
            advisors.forEach(function (advisorHandle) {
 
@@ -162,11 +167,12 @@ createAdvisorWindow = function (windowStr) {
                        (voteState !== VOTE_NO) &&
                        (voteState !== VOTE_DENIED))) {
 
-                    result = false;
+                    result = "New tasks cannot be submitted while your group has an active task.";
                  }
               });
            }
-           return result && !LoginSkipped;
+           if (LoginSkipped || !hil) { result = "New tasks cannot be created without logging in."; }
+           return result;
         }
       , extraInfo: function (handle) {
 
@@ -229,26 +235,25 @@ createAdvisorWindow = function (windowStr) {
            return dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) && type &&
               type.isOfType(dmz.stance.QuestionType) && !getQuestionAnswer(replyToHandle);
         }
-      , canPost: function (advisorHandle) {
+      , postBlocked: function (advisorHandle) {
 
            var questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionHandle)
-             , result = dmz.object.hil()
+             , result
              ;
 
-//           self.log.warn (result, "["+questions+"]");
            if (questions) {
 
               questions.forEach(function (questionHandle) {
 
-//                 self.log.warn ("--", getQuestionAnswer(questionHandle), dmz.stance.getAuthorHandle(questionHandle));
                  if (!getQuestionAnswer(questionHandle) &&
                     !dmz.object.flag(dmz.stance.getAuthorHandle(questionHandle), dmz.stance.AdminHandle)) {
 
-                    result = false;
+                    result = "New questions cannot be submitted while another question is active with the current advisor.";
                  }
               });
            }
-           return result && !LoginSkipped;
+           if (LoginSkipped || !dmz.object.hil()) { result = "New questions cannot be created without logging in."; }
+           return result;
         }
       });
 
@@ -270,7 +275,6 @@ createAdvisorWindow = function (windowStr) {
 
    data.update = function (advisorHandle) {
 
-      self.log.warn ("Update:", dmz.stance.getDisplayName(advisorHandle));
       data.infoWindow.name.text(dmz.object.text(advisorHandle, dmz.stance.NameHandle));
       data.infoWindow.bio.text(dmz.object.text(advisorHandle, dmz.stance.BioHandle));
       data.infoWindow.title.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
