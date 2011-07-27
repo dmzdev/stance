@@ -6,6 +6,7 @@ var dmz =
       , graph: require("dmz/ui/graph")
       , inputDialog: require("dmz/ui/inputDialog")
       , layout: require("dmz/ui/layout")
+      , label: require("dmz/ui/label")
       , loader: require('dmz/ui/uiLoader')
       , messageBox: require("dmz/ui/messageBox")
       , mainWindow: require('dmz/ui/mainWindow')
@@ -65,6 +66,7 @@ var dmz =
    , voteObserveFunction
    , init
    , checkForTopVote
+   , numberOfNonAdminUsers
    ;
 
 voteExpired = function (voteHandle) {
@@ -217,6 +219,20 @@ resetLayout = function () {
    myLayout.addStretch(1);
 };
 
+numberOfNonAdminUsers = function (groupHandle) {
+
+   var userHandles = dmz.object.superLinks(groupHandle, dmz.stance.GroupMembersHandle) || []
+     , users = userHandles.length
+     ;
+
+   userHandles.forEach(function (userHandle) {
+
+      if (dmz.object.flag(userHandle, dmz.stance.AdminHandle)) { users -= 1; }
+   });
+
+   return users;
+}
+
 getTopVote = function (hil) {
 
    var groupHandle = dmz.stance.getUserGroupHandle(hil)
@@ -243,11 +259,14 @@ getTopVote = function (hil) {
            , statusLabel = postItem.lookup("status")
            , yesVotesLabel = postItem.lookup("yesVotes")
            , noVotesLabel = postItem.lookup("noVotes")
+           , undecidedVotesLabel = postItem.lookup("undecidedVotes")
            , reasonLabel = postItem.lookup("reason")
            , yesButton = dmz.ui.button.createPushButton("Approve")
            , noButton = dmz.ui.button.createPushButton("Deny")
            , timeBox = dmz.ui.spinBox.createSpinBox("timeBox")
+           , timeBoxLabel = dmz.ui.label.create("timeBoxLabel")
            , decisionReason = dmz.ui.textEdit.create("decisionReason")
+           , decisionReasonLabel = dmz.ui.label.create("decisionReasonLabel")
            , advisorAvatarLabel = postItem.lookup("advisorAvatarLabel")
            , previouslyVoted = false
            , tempHandles
@@ -256,10 +275,12 @@ getTopVote = function (hil) {
            , decisionHandle
            , userPicture
            , tempAdvisorHandles
+           , totalUsers = 0
            , voteState = dmz.object.scalar(voteHandle, dmz.stance.VoteState)
            ;
 
-         decisionReason.text("Decision Reason: ");
+         decisionReason.text("");
+         decisionReasonLabel.text("Decision Reason: ")
          yesButton.setStyleSheet("* { background-color: rgb(90, 230, 90); border-width: 5px; }");
          noButton.setStyleSheet("* { background-color: rgb(230, 90, 90); border-width: 5px; }");
          buttonLayout.insertWidget(0, yesButton);
@@ -279,10 +300,17 @@ getTopVote = function (hil) {
 
             postItem.setStyleSheet("* { background-color: rgb(230, 230, 230); border-width: 5px; }");
             startTimeLabel.text("Posted At: " + dmz.object.timeStamp(voteHandle, dmz.stance.CreatedAtServerTimeHandle));
-            timeBox.maximum(48);
-            timeBox.minimum(1);
-            buttonLayout.insertWidget(2, timeBox);
-            textLayout.insertWidget(0, decisionReason);
+            timeBox.maximum(72);
+            timeBox.minimum(24);
+            timeBox.setSingleStep(24);
+            timeBox.setSuffix("hrs");
+            timeBoxLabel.text("Duration: ");
+            timeBoxLabel.sizePolicy(4,0);
+            buttonLayout.insertWidget(2, timeBoxLabel);
+            buttonLayout.insertWidget(3, timeBox);
+            textLayout.insertWidget(0, decisionReasonLabel);
+            decisionReason.fixedSize(700, 100);
+            textLayout.insertWidget(1, decisionReason);
             startTimeLabel.text("");
             endTimeLabel.text("");
             reasonLabel.text("");
@@ -311,13 +339,19 @@ getTopVote = function (hil) {
             tempHandles.forEach(function (handle) {
 
                /* see if user has voted befre or is a admin */
+               totalUsers = numberOfNonAdminUsers(groupHandle);
+
                userHandles = dmz.object.superLinks(handle, dmz.stance.NoHandle) || [];
                noVotesLabel.text("No Votes: " + userHandles.length);
+               totalUsers -= userHandles.length;
                if (userHandles.indexOf(hil) !== -1) { previouslyVoted = true; }
 
                userHandles = dmz.object.superLinks(handle, dmz.stance.YesHandle) || [];
                yesVotesLabel.text("Yes Votes: " + userHandles.length);
+               totalUsers -= userHandles.length;
                if (userHandles.indexOf(hil) !== -1) { previouslyVoted = true; }
+
+               undecidedVotesLabel.text("Undecided Votes: " + totalUsers);
 
                if (previouslyVoted || dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
@@ -392,6 +426,7 @@ getPreviousVotes = function (hil) {
            , statusLabel = postItem.lookup("status")
            , yesVotesLabel = postItem.lookup("yesVotes")
            , noVotesLabel = postItem.lookup("noVotes")
+           , undecidedVotesLabel = postItem.lookup("undecidedVotes")
            , reasonLabel = postItem.lookup("reason")
            , avatarLabel = postItem.lookup("avatarLabel")
            , advisorAvatarLabel = postItem.lookup("advisorAvatarLabel")
@@ -399,6 +434,7 @@ getPreviousVotes = function (hil) {
            , tempHandles
            , tempVotes
            , tempAdvisorHandles
+           , totalUsers = 0
            ;
 
          // Get the vote creators name and picture
@@ -417,13 +453,26 @@ getPreviousVotes = function (hil) {
          tempHandles.forEach(function (decisionHandle) {
 
             // Get the start time, end time, reason and duration of the vote
+            totalUsers = numberOfNonAdminUsers(groupHandle);
             startTimeLabel.text("Posted At: " + dmz.object.timeStamp(decisionHandle, dmz.stance.CreatedAtServerTimeHandle));
             endTimeLabel.text("Ended At: " + dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle));
             reasonLabel.text("Advisor Reply: " + dmz.object.text(decisionHandle, dmz.stance.TextHandle));
             tempVotes = dmz.object.superLinks(decisionHandle, dmz.stance.YesHandle) || [];
             yesVotesLabel.text("Yes Votes: " + tempVotes.length);
+            totalUsers -= tempVotes.length;
             tempVotes = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
             noVotesLabel.text("No Votes: " + tempVotes.length);
+            totalUsers -= tempVotes.length;
+            if (voteState !== dmz.stance.VOTE_DENIED) {
+
+               undecidedVotesLabel.text("Undecided Votes: " + totalUsers);
+            }
+            else {
+
+               undecidedVotesLabel.text("");
+               yesVotesLabel.text("");
+               noVotesLabel.text("");
+            }
             // Set the advisor avatar label
             tempAdvisorHandles = dmz.object.subLinks(voteHandle, dmz.stance.VoteLinkHandle) || [];
             tempAdvisorHandles.forEach(function (advisorHandle) {
