@@ -253,9 +253,11 @@
    </resource>
    <resource name="Business_memos" file="Business_memos.png">
       <loc x="982" y="458"/>
+      <offset x="0" y="10"/>
    </resource>
    <resource name="Business_newspaper" file="Business_newspaper.png">
       <loc x="256" y="508"/>
+      <offset x="0" y="15"/>
    </resource>
 <!--
    <resource name="Business_resources" file="Business_resources.png">
@@ -267,6 +269,7 @@
    </resource>
    <resource name="Business_videophone" file="Business_vidphone.png">
       <loc x="12" y="418"/>
+      <offset x="0" y="15"/>
    </resource>
    <resource name="Business_vote" file="Business_vote.png">
       <loc x="1027" y="252"/>
