@@ -38,16 +38,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _postTextEdit = false
      , _submitButton = false
      , _commentAdd = false
-     , _NoPostWarning =
-          dmz.ui.messageBox.create(
-             { type: dmz.ui.messageBox.Warning
-              , text: "You must log in to the server to add new posts!"
-              , informativeText: "If you want to add a new post, please restart STANCE."
-              , standardButtons: [dmz.ui.messageBox.Ok]
-              , defaultButton: dmz.ui.messageBox.Ok
-              }
-              , dmz.ui.mainWindow.centralWidget()
-              )
 
      // Object Lists
      , _master = { items: [], posts: [], comments: [], forums: [] }
@@ -380,7 +370,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                _commentAdd.textEdit.setFocus();
             });
          }
-         else { _NoPostWarning.open(_Self, function () {}); }
       };
 
       _updatePostedBy = function (handle) {
@@ -431,8 +420,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             item.postedAt.text(
                "<span style=\"color:#939393;\">- " +
                toDate(data.postedAt).toString("MMM-dd-yyyy hh:mm:ss tt") +
-               "</span>"
-               );
+               "</span>");
             if (data.postedAt && (data.postedAt > _LatestTimeStamp)) {
 
                item.unread.show();
