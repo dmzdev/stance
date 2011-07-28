@@ -107,19 +107,21 @@ pushVote = function (voteHandle) {
      , postedTime
      ;
 
+   // the return statement errors only appear once for each user, TODO find what callback
+   // causes it
    tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle);
-   if (!tempHandles) { self.log.error("pushVote: Error, no createdBy object") };
+   if (!tempHandles) { self.log.error("pushVote: Error, no createdBy object"); return ;}
    postedByHandle = tempHandles[0];
    postedBy = dmz.object.text(postedByHandle, dmz.stance.DisplayNameHandle);
    userAvatar = dmz.object.text(postedByHandle, dmz.stance.PictureHandle);
 
    self.log.error(postedBy, userAvatar);
    tempHandles = dmz.object.subLinks(postedByHandle, dmz.stance.GroupMembersHandle);
-   if (!tempHandles) { self.log.error("pushVote: Error, vote creator has no group") };
+   if (!tempHandles) { self.log.error("pushVote: Error, vote creator has no group"); return; }
    groupHandle = tempHandles[0];
 
    tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.VoteLinkHandle);
-   if (!tempHandle) { self.log.error("pushVote: Error, vote has no advisor") };
+   if (!tempHandle) { self.log.error("pushVote: Error, vote has no advisor"); return; }
    advisorHandle = tempHandles[0];
 
    advisorAvatar = dmz.object.text(advisorHandle, dmz.stance.PictureHandle);
