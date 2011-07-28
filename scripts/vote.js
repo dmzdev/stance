@@ -1,3 +1,5 @@
+require("datejs/date");
+
 var dmz =
    { ui:
       { button: require("dmz/ui/button")
@@ -55,6 +57,7 @@ var dmz =
    , ActiveVotes = []
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
    // Functions
+   , toDate = dmz.util.timeStampToDate
    , resetLayout
    , initVoteForm
    , getTopVote
@@ -67,7 +70,103 @@ var dmz =
    , init
    , checkForTopVote
    , numberOfNonAdminUsers
+   , newObjectAttrFunction
+   , newObjectLinkFunction
+   , pushVote
    ;
+
+pushVote = function (voteHandle) {
+
+   var status = dmz.object.scalar(voteHandle, dmz.stance.VoteState)
+     , postedByHandle
+     , postedBy
+     , question = dmz.object.text(voteHandle, dmz.stance.TextHandle)
+     , grouphHandle
+     , tempHandles
+     , tempVariable
+     , advisorHandle
+     , advisorAvatar
+     , userAvatar
+     , postItem = dmz.ui.loader.load("VoteViewPost.ui")
+     ;
+
+   tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle);
+   if (!tempHandles) { self.log.error("pushVote: Error, no createdBy object") };
+   postedByHandle = tempHandles[0];
+   postedBy = dmz.object.text(postedByHandle, dmz.stance.DisplayNameHandle);
+   userAvatar = dmz.object.text(postedByHandle, dmz.stance.PictureHandle);
+
+   tempHandles = dmz.object.subLinks(createdByHandle, dmz.stance.GroupMembersHandle);
+   if (!tempHandles) { self.log.error("pushVote: Error, vote creator has no group") };
+   groupHandle = tempHandles[0];
+
+   tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.VoteLinkHandle);
+   if (!tempHandle) { self.log.error("pushVote: Error, vote has no advisor") };
+   advisorHandle = tempHandles[0];
+
+   advisorAvatar = dmz.object.text(advisorHandle, dmz.stance.PictureHandle);
+
+   if (status === dmz.stance.VOTE_YES || status === dmz.stance.VOTE_NO ||
+       status === dmz.stance.VOTE_DENIED) {
+
+      var decisionHandle
+        , startTime
+        , endTime
+        , yesVotes
+        , noVotes
+        , undecidedVotes
+        , advisorReason
+        ;
+
+
+      tempHandles = dmz.object.superLinks(voteHandle, dmz.stance.VoteLinkHandle);
+      if (!tempHandles) { self.log.error("pushVote: Error, no decision object"); }
+      decisionHandle = tempHandles[0];
+      startTime = dmz.object.timeStamp(decisionHandle, dmz.stance.CreatedAtServerTimeHandle);
+      endTime = dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle);
+      tempHandles = dmz.object.superLinks(decisionHandle, dmz.stance.YesHandle) || [];
+      yesVotes = tempHandles.length;
+      tempHandles = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
+      noVotes = tempHandles.length;
+      tempVariable = numberOfNonAdminUsers(groupHandle);
+      undecidedVotes = tempVariable - yesVotes - noVotes;
+      advisorReason = dmz.object.text(decisionHandle, dmz.stance.TextHandle);
+
+      PastVotes.push (
+            { handle:voteHandle
+            , userAvatar: userAvatar
+            , postedBy: postedBy
+            , startTime: startTime
+            , endTime: endTime
+            , question: question
+            , status: status
+            , yesVotes: yesVotes
+            , noVotes: noVotes
+            , undecidedVotes: undecidedVotes
+            , advisorAvatar: advisorAvatar
+            , advisorReason: advisorReason
+            , postItem: postItem
+            });
+
+   } else if (status === dmz.stance.VOTE_APPROVAL_PENDING) {
+
+      var postedTime
+        , yesButton = dmz.ui.button.createPushButton("Approve")
+        , noButton = dmz.ui.button.createPushButton("Deny")
+        , buttonLayout = postItem.lookup("buttonLayout")
+        , textLayout = postItem.lookup("textLayout")
+        , timeBox = dmz.ui.spinBox.createSpinBox("timeBox")
+        , timeBoxLabel = dmz.ui.label.create("timeBoxLabel")
+        , decisionReason = dmz.ui.textEdit.create("decisionReason")
+        , decisionReasonLabel = dmz.ui.label.create("decisionReasonLabel")
+        ;
+
+      ApprovalVotes.push ( {handle:voteHandle} );
+   } else if (status === dmz.stance.VOTE_ACTIVE) {
+
+      ActiveVotes.push ( {handle:voteHandle} );
+   }
+};
 
 voteExpired = function (voteHandle) {
 
@@ -131,11 +230,81 @@ voteObserveFunction = function (linkHandle, attrHandle, superHandle, subHandle) 
       });
       dmz.object.flag(subHandle, dmz.stance.UpdateEndTimeHandle, true);
    }
+   /* refresh view for everyone */
+   initVoteForm();
 };
 
 dmz.object.link.observe(self, dmz.stance.YesHandle, voteObserveFunction);
 
 dmz.object.link.observe(self, dmz.stance.NoHandle, voteObserveFunction);
+
+newObjectAttrFunction = function (objHandle, attrHandle, prevVal, newVal) {
+
+   if (dmz.object.type(objHandle).isOfType(dmz.stance.VoteType)) {
+
+      if (dmz.object.text(objHandle, dmz.stance.TextHandle)
+         && dmz.object.timeStamp(objHandle, dmz.stance.CreatedAtServerTimeHandle) !== undefined
+         && dmz.object.flag(objHandle, dmz.stance.UpdateStartTimeHandle) !== undefined
+         && dmz.object.subLinks(objHandle, dmz.stance.CreatedByHandle)
+         && dmz.object.hil()) {
+
+         initVoteForm();
+         MainModule.highlight("Vote");
+      }
+   }
+   else if (dmz.object.type(objHandle).isOfType(dmz.stance.DecisionType)) {
+
+      if (dmz.object.text(objHandle, dmz.stance.TextHandle)
+         && dmz.object.timeStamp(objHandle, dmz.stance.CreatedAtServerTimeHandle) !== undefined
+         && dmz.object.flag(objHandle, dmz.stance.UpdateStartTimeHandle) !== undefined
+         && dmz.object.subLinks(objHandle, dmz.stance.VoteLinkHandle)
+         && dmz.object.subLinks(objHandle, dmz.stance.CreatedByHandle)
+         && dmz.object.hil()) {
+
+         initVoteForm();
+         MainModule.highlight("Vote");
+      }
+   }
+};
+
+newObjectLinkFunction = function (linkHandle, attrHandle, supHandle, subHandle) {
+
+   if (dmz.object.type(supHandle).isOfType(dmz.stance.VoteType)) {
+
+      if (dmz.object.text(supHandle, dmz.stance.TextHandle)
+         && dmz.object.timeStamp(supHandle, dmz.stance.CreatedAtServerTimeHandle) !== undefined
+         && dmz.object.flag(supHandle, dmz.stance.UpdateStartTimeHandle) !== undefined
+         && dmz.object.subLinks(supHandle, dmz.stance.CreatedByHandle)
+         && dmz.object.hil()) {
+
+         initVoteForm();
+         MainModule.highlight("Vote");
+      }
+   }
+   else if (dmz.object.type(supHandle).isOfType(dmz.stance.DecisionType)) {
+
+      if (dmz.object.text(supHandle, dmz.stance.TextHandle)
+         && dmz.object.timeStamp(supHandle, dmz.stance.CreatedAtServerTimeHandle) !== undefined
+         && dmz.object.flag(supHandle, dmz.stance.UpdateStartTimeHandle) !== undefined
+         && dmz.object.subLinks(supHandle, dmz.stance.VoteLinkHandle)
+         && dmz.object.subLinks(supHandle, dmz.stance.CreatedByHandle)
+         && dmz.object.hil()) {
+
+         initVoteForm();
+         MainModule.highlight("Vote");
+      }
+   }
+};
+
+dmz.object.text.observe(self, dmz.stance.TextHandle, newObjectAttrFunction);
+
+dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, newObjectAttrFunction);
+
+dmz.object.flag.observe(self, dmz.stance.UpdateStartTimeHandle, newObjectAttrFunction);
+
+dmz.object.link.observe(self, dmz.stance.VoteLinkHandle, newObjectLinkFunction);
+
+dmz.object.link.observe(self, dmz.stance.CreatedByHandle, newObjectLinkFunction);
 
 dmz.object.scalar.observe(self, dmz.stance.VoteState,
 function (objHandle, attrHandle, newVal, prevVal) {
@@ -148,6 +317,11 @@ function (objHandle, attrHandle, newVal, prevVal) {
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
+   if (objType.isOfType(dmz.stance.VoteType)) {
+
+      initVoteForm();
+   }
+
    if (objType.isOfType(dmz.stance.DecisionType)) {
 
       var hil = dmz.object.hil()
@@ -156,6 +330,8 @@ dmz.object.create.observe(self, function (objHandle, objType) {
         , tempUserHandles
         , tempGroupHandles
         ;
+
+      initVoteForm();
       if (!dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
          tempUserHandles = dmz.object.subLinks(objHandle, dmz.stance.CreatedByHandle) || [];
@@ -280,7 +456,7 @@ getTopVote = function (hil) {
            ;
 
          decisionReason.text("");
-         decisionReasonLabel.text("Decision Reason: ")
+         decisionReasonLabel.text("<b>Decision Reason:</b> ")
          yesButton.setStyleSheet("* { background-color: rgb(90, 230, 90); border-width: 5px; }");
          noButton.setStyleSheet("* { background-color: rgb(230, 90, 90); border-width: 5px; }");
          buttonLayout.insertWidget(0, yesButton);
@@ -289,22 +465,22 @@ getTopVote = function (hil) {
          tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle) || [];
          tempHandles.forEach(function (handle) {
 
-            postedByLabel.text("Posted By: " + dmz.object.text(handle, dmz.stance.DisplayNameHandle));
+            postedByLabel.text("<b>Posted By:</b> " + dmz.object.text(handle, dmz.stance.DisplayNameHandle));
             userPicture = dmz.object.text(handle, dmz.stance.PictureHandle);
             avatarLabel.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile(userPicture)));
          });
-         questionLabel.text("Poll Question: " + dmz.object.text(voteHandle, dmz.stance.TextHandle));
-         statusLabel.text("Current Status: " + dmz.stance.STATE_STR[voteState]);
+         questionLabel.text("<b>Poll Question:</b> " + dmz.object.text(voteHandle, dmz.stance.TextHandle));
+         statusLabel.text("<b>Current Status:</b> " + dmz.stance.STATE_STR[voteState]);
 
          if (voteState === dmz.stance.VOTE_APPROVAL_PENDING) {
 
             postItem.setStyleSheet("* { background-color: rgb(230, 230, 230); border-width: 5px; }");
-            startTimeLabel.text("Posted At: " + dmz.object.timeStamp(voteHandle, dmz.stance.CreatedAtServerTimeHandle));
+            startTimeLabel.text("<b>Posted At:</b> " + toDate(dmz.object.timeStamp(decisionHandle, dmz.stance.CreatedAtServerTimeHandle)).toString("MMM-dd-yyyy hh:mm:ss tt"));
             timeBox.maximum(72);
             timeBox.minimum(24);
             timeBox.setSingleStep(24);
             timeBox.setSuffix("hrs");
-            timeBoxLabel.text("Duration: ");
+            timeBoxLabel.text("<b>Duration:</b> ");
             timeBoxLabel.sizePolicy(4,0);
             buttonLayout.insertWidget(2, timeBoxLabel);
             buttonLayout.insertWidget(3, timeBox);
@@ -316,6 +492,7 @@ getTopVote = function (hil) {
             reasonLabel.text("");
             yesVotesLabel.text("");
             noVotesLabel.text("");
+            undecidedVotesLabel.text("");
             yesButton.observe(self, "clicked", function () {
 
                var duration = timeBox.value()
@@ -338,20 +515,20 @@ getTopVote = function (hil) {
             tempHandles = dmz.object.superLinks(voteHandle, dmz.stance.VoteLinkHandle) || [];
             tempHandles.forEach(function (handle) {
 
-               /* see if user has voted befre or is a admin */
+               // see if user has voted befre or is a admin
                totalUsers = numberOfNonAdminUsers(groupHandle);
 
                userHandles = dmz.object.superLinks(handle, dmz.stance.NoHandle) || [];
-               noVotesLabel.text("No Votes: " + userHandles.length);
+               noVotesLabel.text("<b>No Votes:</b> " + userHandles.length);
                totalUsers -= userHandles.length;
                if (userHandles.indexOf(hil) !== -1) { previouslyVoted = true; }
 
                userHandles = dmz.object.superLinks(handle, dmz.stance.YesHandle) || [];
-               yesVotesLabel.text("Yes Votes: " + userHandles.length);
+               yesVotesLabel.text("<b>Yes Votes:</b> " + userHandles.length);
                totalUsers -= userHandles.length;
                if (userHandles.indexOf(hil) !== -1) { previouslyVoted = true; }
 
-               undecidedVotesLabel.text("Undecided Votes: " + totalUsers);
+               undecidedVotesLabel.text("<b>Undecided Votes:</b> " + totalUsers);
 
                if (previouslyVoted || dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
@@ -366,12 +543,12 @@ getTopVote = function (hil) {
                   userPicture = dmz.object.text(advisorHandle, dmz.stance.PictureHandle);
                   advisorAvatarLabel.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile(userPicture)).scaled(25, 25));
                });
-               /* Set various text values */
+               // Set various text values
                decisionHandle = handle;
                postItem.setStyleSheet("* { background-color: rgb(210, 210, 30); border-width: 5px; }");
-               startTimeLabel.text("Posted At: " + dmz.object.timeStamp(handle, dmz.stance.CreatedAtServerTimeHandle));
-               endTimeLabel.text("Ending At: " + dmz.object.timeStamp(handle, dmz.stance.EndedAtServerTimeHandle));
-               reasonLabel.text("Advisor Reply: " + dmz.object.text(handle, dmz.stance.TextHandle));
+               startTimeLabel.text("<b>Posted At:</b> " + toDate(dmz.object.timeStamp(decisionHandle, dmz.stance.CreatedAtServerTimeHandle)).toString("MMM-dd-yyyy hh:mm:ss tt"));
+               endTimeLabel.text("<b>Ended At:</b> " + toDate(dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle)).toString("MMM-dd-yyyy hh:mm:ss tt"));
+               reasonLabel.text("<b>Advisor Reply:</b> " + dmz.object.text(handle, dmz.stance.TextHandle));
             });
             yesButton.observe(self, "clicked", function () {
 
@@ -441,31 +618,31 @@ getPreviousVotes = function (hil) {
          tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle) || [];
          tempHandles.forEach(function (userHandle) {
 
-            postedByLabel.text("Posted By: " + dmz.object.text(userHandle, dmz.stance.DisplayNameHandle));
+            postedByLabel.text("<b>Posted By:</b> " + dmz.object.text(userHandle, dmz.stance.DisplayNameHandle));
             userPicture = dmz.object.text(userHandle, dmz.stance.PictureHandle);
             avatarLabel.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile(userPicture)));
          });
          // Get the question and status of the vote
-         questionLabel.text("Poll Question: " + dmz.object.text(voteHandle, dmz.stance.TextHandle));
-         statusLabel.text("Current Status: " + dmz.stance.STATE_STR[voteState]);
+         questionLabel.text("<b>Poll Question:</b> " + dmz.object.text(voteHandle, dmz.stance.TextHandle));
+         statusLabel.text("<b>Current Status:</b> " + dmz.stance.STATE_STR[voteState]);
          // Get the advisor reason from the decision object
          tempHandles = dmz.object.superLinks(voteHandle, dmz.stance.VoteLinkHandle) || [];
          tempHandles.forEach(function (decisionHandle) {
 
             // Get the start time, end time, reason and duration of the vote
             totalUsers = numberOfNonAdminUsers(groupHandle);
-            startTimeLabel.text("Posted At: " + dmz.object.timeStamp(decisionHandle, dmz.stance.CreatedAtServerTimeHandle));
-            endTimeLabel.text("Ended At: " + dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle));
-            reasonLabel.text("Advisor Reply: " + dmz.object.text(decisionHandle, dmz.stance.TextHandle));
+            startTimeLabel.text("<b>Posted At:</b> " + toDate(dmz.object.timeStamp(decisionHandle, dmz.stance.CreatedAtServerTimeHandle)).toString("MMM-dd-yyyy hh:mm:ss tt"));
+            endTimeLabel.text("<b>Ended At:</b> " + toDate(dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle)).toString("MMM-dd-yyyy hh:mm:ss tt"));
+            reasonLabel.text("<b>Advisor Reply:</b> " + dmz.object.text(decisionHandle, dmz.stance.TextHandle));
             tempVotes = dmz.object.superLinks(decisionHandle, dmz.stance.YesHandle) || [];
-            yesVotesLabel.text("Yes Votes: " + tempVotes.length);
+            yesVotesLabel.text("<b>Yes Votes:</b> " + tempVotes.length);
             totalUsers -= tempVotes.length;
             tempVotes = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
-            noVotesLabel.text("No Votes: " + tempVotes.length);
+            noVotesLabel.text("<b>No Votes:</b> " + tempVotes.length);
             totalUsers -= tempVotes.length;
             if (voteState !== dmz.stance.VOTE_DENIED) {
 
-               undecidedVotesLabel.text("Undecided Votes: " + totalUsers);
+               undecidedVotesLabel.text("<b>Undecided Votes:</b> " + totalUsers);
             }
             else {
 
@@ -493,7 +670,7 @@ getPreviousVotes = function (hil) {
          else if (voteState === dmz.stance.VOTE_DENIED) {
 
             endTimeLabel.text("");
-            postItem.setStyleSheet("* { background-color: rgb(180, 40, 40); border-width: 5px; }");
+            postItem.setStyleSheet("* { background-color: rgb(20, 20, 20); border-width: 5px; color: white; }");
          }
          else if (voteState === dmz.stance.VOTE_EXPIRED) {
 
@@ -597,3 +774,5 @@ init = function () {
 };
 
 init();
+
+

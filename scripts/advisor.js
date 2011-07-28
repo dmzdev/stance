@@ -141,7 +141,6 @@ createAdvisorWindow = function (windowStr) {
              , votes = []
              ;
 
-           result = hil && !dmz.object.flag(hil, dmz.stance.AdminHandle);
            if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
               result = "New votes cannot be created by admin users.";
