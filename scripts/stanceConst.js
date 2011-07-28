@@ -110,6 +110,7 @@ var dmz =
         , addUITextLimit: false
         , getVoteStatus: false
         , userAttribute: false
+        , getLastTimeStamp: false
         }
 
    , Constants =
@@ -137,7 +138,22 @@ var dmz =
    , getVoteStatus
    , addUITextLimit
    , userAttribute
+   , getLastTimeStamp
    ;
+
+getLastTimeStamp = function (handleList) {
+
+   var last = 0;
+   if (handleList && handleList.length) {
+
+      handleList.forEach(function (handle) {
+
+         var time = dmz.object.timeStamp(handle, Handles.CreatedAtServerTimeHandle);
+         if (time && (time > last)) { last = time; }
+      });
+   }
+   return last;
+};
 
 getVoteStatus = function (handle) {
 
@@ -237,6 +253,7 @@ Functions.getUserGroupHandle = getUserGroupHandle;
 Functions.addUITextLimit = addUITextLimit;
 Functions.getVoteStatus = getVoteStatus;
 Functions.userAttribute = userAttribute;
+Functions.getLastTimeStamp = getLastTimeStamp;
 
 (function () {
 

@@ -316,15 +316,12 @@ pinMovedMessage.subscribe(self, receivePositionUpdate);
 dmz.object.link.observe(self, dmz.stance.GroupPinHandle,
 function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
 
-   var hil = dmz.object.hil()
-     , list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle) || []
-     , count
-     ;
-
+   var hil = dmz.object.hil();
    if (dmz.stance.getUserGroupHandle(hil) === groupHandle) {
 
-      count = dmz.object.scalar(hil, dmz.stance.PinTotalHandle) || 0;
-      if (!dmz.object.flag(hil, dmz.stance.AdminHandle) && (count < list.length)) {
+      if (!dmz.object.flag(hil, dmz.stance.AdminHandle) &&
+         (dmz.stance.userAttribute(objHandle, dmz.stance.PinTimeHandle) <
+            dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle))) {
 
          if (IsCurrentWindow) { DoHighlight = true; }
          else { MainModule.highlight("Map"); }
@@ -346,15 +343,13 @@ populateMapFromGroup = function (groupHandle) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   var count
-     , list
-     ;
-
+   var list;
    if (value) {
 
       list = dmz.object.superLinks(dmz.stance.getUserGroupHandle(objHandle), dmz.stance.GroupPinHandle) || [];
-      count = dmz.object.scalar(objHandle, dmz.stance.PinTotalHandle) || 0;
-      if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) && (count < list.length)) {
+      if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) &&
+         (dmz.stance.userAttribute(objHandle, dmz.stance.PinTimeHandle) <
+            dmz.stance.getLastTimeStamp(list))) {
 
          if (IsCurrentWindow) { DoHighlight = true; }
          else { MainModule.highlight("Map"); }
