@@ -233,10 +233,7 @@ userAttribute = function (handle, attribute, value) {
 
          dataHandle =
             dmz.object.linkAttributeObject(
-               dmz.object.linkHandle(
-                  Handles.DataLinkHandle,
-                  adminHandle,
-                  getUserGroupHandle(handle)));
+               dmz.object.linkHandle(Handles.DataLinkHandle, handle, getUserGroupHandle(handle)));
       }
       else { dataHandle = handle; }
 

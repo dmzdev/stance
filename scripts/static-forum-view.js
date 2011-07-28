@@ -424,7 +424,10 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             if (data.postedAt && (data.postedAt > _LatestTimeStamp)) {
 
                item.unread.show();
-               if (!IsCurrentWindow) { _Highlight(); }
+               if (!IsCurrentWindow && (data.authorHandle && (data.authorHandle !== hil))) {
+
+                  _Highlight();
+               }
             }
             else { item.unread.hide(); }
          }

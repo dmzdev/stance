@@ -21,6 +21,7 @@
    <object-type name="question"/>
    <object-type name="answer"/>
    <object-type name="decision"/>
+   <object-type name="data"/>
    <message name="AddPinMessage"/>
    <message name="PinAddedMessage"/>
    <message name="RemovePinMessage"/>
