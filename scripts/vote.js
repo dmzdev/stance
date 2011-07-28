@@ -82,7 +82,7 @@ pushVote = function (voteHandle) {
      , postedByHandle
      , postedBy
      , question = dmz.object.text(voteHandle, dmz.stance.TextHandle)
-     , grouphHandle
+     , groupHandle
      , tempHandles
      , tempVariable
      , advisorHandle
@@ -115,13 +115,12 @@ pushVote = function (voteHandle) {
    postedBy = dmz.object.text(postedByHandle, dmz.stance.DisplayNameHandle);
    userAvatar = dmz.object.text(postedByHandle, dmz.stance.PictureHandle);
 
-   self.log.error(postedBy, userAvatar);
    tempHandles = dmz.object.subLinks(postedByHandle, dmz.stance.GroupMembersHandle);
    if (!tempHandles) { self.log.error("pushVote: Error, vote creator has no group"); return; }
    groupHandle = tempHandles[0];
 
    tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.VoteLinkHandle);
-   if (!tempHandle) { self.log.error("pushVote: Error, vote has no advisor"); return; }
+   if (!tempHandles) { self.log.error("pushVote: Error, vote has no advisor"); return; }
    advisorHandle = tempHandles[0];
 
    advisorAvatar = dmz.object.text(advisorHandle, dmz.stance.PictureHandle);
@@ -129,17 +128,17 @@ pushVote = function (voteHandle) {
 
    if (status === dmz.stance.VOTE_YES || status === dmz.stance.VOTE_NO) {
 
-      if (voteState === dmz.stance.VOTE_YES) {
+      if (status === dmz.stance.VOTE_YES) {
 
          postItem.setStyleSheet("* { background-color: rgb(90, 230, 90); border-width: 5px; }");
       }
-      else if (voteState === dmz.stance.VOTE_NO) {
+      else if (status === dmz.stance.VOTE_NO) {
 
          postItem.setStyleSheet("* { background-color: rgb(230, 90, 90); border-width: 5px; }");
       }
 
       tempHandles = dmz.object.superLinks(voteHandle, dmz.stance.VoteLinkHandle);
-      if (!tempHandles) { self.log.error("pushVote: Error, no decision object"); }
+      if (!tempHandles) { self.log.error("pushVote: Error, no decision object"); return;}
       decisionHandle = tempHandles[0];
       startTime = dmz.object.timeStamp(decisionHandle, dmz.stance.CreatedAtServerTimeHandle);
       endTime = dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle);
@@ -169,7 +168,7 @@ pushVote = function (voteHandle) {
             });
 
 
-   } else if (status === dnm.stance.VOTE_DENIED) {
+   } else if (status === dmz.stance.VOTE_DENIED) {
 
       postItem.setStyleSheet("* { background-color: rgb(20, 20, 20); border-width: 5px; color: white; }");
       postedTime = dmz.object.timeStamp(voteHandle, dmz.stance.CreatedAtServerTimeHandle);
@@ -536,8 +535,10 @@ linkHandleFilter = function (linkHandle, attrHandle, supHandle, subHandle) {
 
       //subHandle is a decision object
       tempHandles = dmz.object.subLinks(subHandle, dmz.stance.VoteLinkHandle);
-      voteHandle = tempHandles[0];
-      isObjectInMap(voteHandle, attrHandle);
+      if (tempHandles) {
+         voteHandle = tempHandles[0];
+         isObjectInMap(voteHandle, attrHandle);
+      }
    }
    // if createdByHandle, get VoteObject Handle
    if (attrHandle === dmz.stance.CreatedByHandle) {
