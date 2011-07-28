@@ -5,6 +5,7 @@ var dmz =
       { consts: require('dmz/ui/consts')
       , graph: require("dmz/ui/graph")
       , inputDialog: require("dmz/ui/inputDialog")
+      , label: require("dmz/ui/label")
       , layout: require("dmz/ui/layout")
       , loader: require('dmz/ui/uiLoader')
       , messageBox: require("dmz/ui/messageBox")
@@ -25,16 +26,6 @@ var dmz =
    }
 
    // UI Elements
-   , _NoContentWarning =
-        dmz.ui.messageBox.create(
-           { type: dmz.ui.messageBox.Warning
-            , text: "You must log in to the server to interact with this!"
-            , informativeText: "If you want to interact with this, please restart STANCE and log in."
-            , standardButtons: [dmz.ui.messageBox.Ok]
-            , defaultButton: dmz.ui.messageBox.Ok
-            }
-            , dmz.ui.mainWindow.centralWidget()
-            )
    , AdvisorWindows = []
 
    // Consts
@@ -68,6 +59,7 @@ var dmz =
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
+   , WasBlocked = false
    , extraInfoList = []
    , observerLists =
         { create: []
@@ -83,20 +75,70 @@ var dmz =
    , getVoteDecision
    , getQuestionAnswer
    , getAvatarPixmap
-
    , getHILAdvisor
-
-   , addPost
-   , addComment
-
-   , updateCreatedAt
-   , updateCreatedBy
-   , updateMessage
-   , updateAvatar
-
-   , setupForumView
-
+   , taskBlocked
+   , setUserAvatar
    ;
+
+setUserAvatar = function (userHandle, labelWidget) {
+
+   var avatar = AvatarDefault
+     , resource
+     ;
+
+   if (labelWidget) {
+
+      if (userHandle) {
+
+         resource = dmz.object.text(userHandle, dmz.stance.PictureHandle);
+         resource = dmz.resources.findFile(resource);
+         if (resource) { avatar = dmz.ui.graph.createPixmap(resource); }
+         if (avatar) { avatar = avatar.scaled(50, 50); }
+      }
+      labelWidget.pixmap(avatar);
+   }
+};
+
+taskBlocked = function () {
+
+   var hil = dmz.object.hil()
+     , advisors
+     , result
+     , votes = []
+     ;
+
+   if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
+
+      result = "New votes cannot be created by admin users.";
+   }
+
+   advisors = dmz.object.superLinks(dmz.stance.getUserGroupHandle(hil), dmz.stance.AdvisorGroupHandle) || [];
+   advisors.forEach(function (advisorHandle) {
+
+      var links = dmz.object.superLinks(advisorHandle, dmz.stance.VoteLinkHandle) || [];
+      votes = votes.concat(links);
+   });
+   if (votes && votes.length) {
+
+      votes.forEach(function (voteHandle) {
+
+         var decision = getVoteDecision(voteHandle)
+           , voteState = dmz.object.scalar(decision, dmz.stance.VoteState)
+           , result = dmz.object.hil()
+           ;
+
+         if (!decision ||
+            ((voteState !== VOTE_YES) &&
+               (voteState !== VOTE_NO) &&
+               (voteState !== VOTE_DENIED))) {
+
+            result = "New tasks cannot be submitted while your group has an active task.";
+         }
+      });
+   }
+   if (LoginSkipped || !hil) { result = "New tasks cannot be created without logging in."; }
+   return result;
+};
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
@@ -107,7 +149,7 @@ createAdvisorWindow = function (windowStr) {
    data.update = function () { self.log.error ("Could not update", windowStr); }
    data.onHome = function () { self.log.error ("Could not do onHome for", windowStr); }
    data.window = dmz.ui.widget.create();
-   data.layout = dmz.ui.layout.createGridLayout();
+   data.layout = dmz.ui.layout.createVBoxLayout();
    data.window.layout(data.layout);
    data.infoWindow = { widget: dmz.ui.loader.load("AdvisorWindow.ui") }
    data.infoWindow.name = data.infoWindow.widget.lookup("nameLabel");
@@ -116,103 +158,78 @@ createAdvisorWindow = function (windowStr) {
    data.infoWindow.picture = data.infoWindow.widget.lookup("pictureLabel");
    data.infoWindow.picture.pixmap(AvatarDefault);
 
-   data.task = dmz.forumView.setupForumView(
-      { self: self
-      , postType: dmz.stance.VoteType
-      , commentType: dmz.stance.DecisionType
-      , forumType: dmz.stance.AdvisorType
-      , parentHandle: dmz.stance.VoteLinkHandle
-      , groupLinkHandle: dmz.stance.AdvisorGroupHandle
-      , useForumData: true
-      , timeHandle: dmz.stance.VoteTimeHandle
-      , messageLength: MAX_TASK_STR_LEN
-      , replyLength: MAX_TASK_REPLY_LEN
-      , highlight: function () { MainModule.highlight(windowStr); }
-      , onNewPost: function (handle) { dmz.object.scalar(handle, dmz.stance.VoteState, dmz.stance.VOTE_APPROVAL_PENDING); }
-      , canReplyTo: function (replyToHandle) { return false; }
-      , canPost: function () {
+   data.task = { widget: dmz.ui.loader.load("CommentAdd.ui") };
+   data.task.avatar = data.task.widget.lookup("avatarLabel");
+   data.task.text = data.task.widget.lookup("textEdit");
+   data.task.submit = data.task.widget.lookup("submitButton");
+   data.task.widget.lookup("cancelButton").hide();
+   data.task.widget.lookup("labelLayout").addWidget(dmz.ui.label.create("Submit Task for Voting:"))
+   dmz.stance.addUITextLimit
+      ( self
+      , MAX_TASK_STR_LEN
+      , data.task.text
+      , data.task.submit
+      , data.task.widget.lookup("currentCharAmt")
+      , data.task.widget.lookup("totalCharAmt")
+      );
 
-           var hil = dmz.object.hil()
-             , advisors
-             , result
-             , votes = []
-             ;
+//   data.task = dmz.forumView.setupForumView(
+//      { self: self
+//      , postType: dmz.stance.VoteType
+//      , commentType: dmz.stance.DecisionType
+//      , forumType: dmz.stance.AdvisorType
+//      , parentHandle: dmz.stance.VoteLinkHandle
+//      , groupLinkHandle: dmz.stance.AdvisorGroupHandle
+//      , useForumData: true
+//      , messageLength: MAX_TASK_STR_LEN
+//      , replyLength: MAX_TASK_REPLY_LEN
+//      , highlight: function () { MainModule.highlight(windowStr); }
+//      , onNewPost: function (handle) { dmz.object.scalar(handle, dmz.stance.VoteState, VOTE_APPROVAL_PENDING); }
+//      , canReplyTo: function (replyToHandle) { return false; }
+//      ,
+//      , extraInfo: function (handle) {
 
-           result = hil && !dmz.object.flag(hil, dmz.stance.AdminHandle);
-           advisors = dmz.object.superLinks(dmz.stance.getUserGroupHandle(hil), dmz.stance.AdvisorGroupHandle) || [];
-           advisors.forEach(function (advisorHandle) {
+//           var type = dmz.object.type(handle)
+//             , state = -1
+//             , result = ""
+//             , links
+//             , total = 0
+//             , expire
+//             ;
 
-              var links = dmz.object.superLinks(advisorHandle, dmz.stance.VoteLinkHandle) || [];
-              votes = votes.concat(links);
-           });
-           if (votes && votes.length) {
+//           if (type && type.isOfType(dmz.stance.DecisionType)) {
 
-              votes.forEach(function (voteHandle) {
+//              state = dmz.object.scalar(handle, dmz.stance.VoteState);
+//              if ((state === VOTE_APPROVAL_PENDING) || (state === VOTE_DENIED)) {
 
-                 var decision = getVoteDecision(voteHandle)
-                   , voteState = dmz.object.scalar(decision, dmz.stance.VoteState)
-                   , result = dmz.object.hil()
-                   ;
+//                 result = STATE_STR[state];
+//              }
+//              else if ((state === VOTE_ACTIVE) || (state === VOTE_YES) || (state === VOTE_NO)) {
 
-                 if (!decision ||
-                    ((voteState !== dmz.stance.VOTE_YES) &&
-                       (voteState !== dmz.stance.VOTE_NO) &&
-                       (voteState !== dmz.stance.VOTE_DENIED))) {
+//                 result = STATE_STR[state];
+//                 links = dmz.object.subLinks(handle, dmz.stance.YesHandle);
+//                 total += links ? links.length : 0;
+//                 result += " - Y: " + (links ? links.length : 0);
 
-                    result = false;
-                 }
-              });
-           }
-           return result && !LoginSkipped;
-        }
-      , extraInfo: function (handle) {
+//                 links = dmz.object.subLinks(handle, dmz.stance.NoHandle);
+//                 total += links ? links.length : 0;
+//                 result += " N: " + (links ? links.length : 0);
 
-           var type = dmz.object.type(handle)
-             , state = -1
-             , result = ""
-             , links
-             , total = 0
-             , expire
-             , vote
-             ;
+//                 links = dmz.object.scalar(handle, dmz.stance.TotalHandle);
+//                 result += " U: " + (links ? (links - total) : "?");
 
-           if (type && type.isOfType(dmz.stance.DecisionType)) {
+//                 expire = dmz.object.timeStamp(handle, dmz.stance.ExpireHandle);
+//                 if (expire) {
 
-              vote = dmz.object.subLinks(handle, dmz.stance.VoteLinkHandle) || [undefined];
-              vote = vote[0];
-              state = dmz.object.scalar(vote, dmz.stance.VoteState);
-              if ((state === dmz.stance.VOTE_APPROVAL_PENDING) || (state === dmz.stance.VOTE_DENIED)) {
-
-                 result = dmz.stance.STATE_STR[vote];
-              }
-              else if ((state === dmz.stance.VOTE_ACTIVE) ||
-                      (state === dmz.stance.VOTE_YES) ||
-                      (state === dmz.stance.VOTE_NO)) {
-
-                 result = dmz.stance.STATE_STR[vote];
-                 links = dmz.object.subLinks(handle, dmz.stance.YesHandle) || [];
-                 total += links.length;
-                 result += " - Y: " + links.length;
-
-                 links = dmz.object.subLinks(handle, dmz.stance.NoHandle) || [];
-                 total += links.length;
-                 result += " - N: " + links.length;
-
-                 links = dmz.object.scalar(handle, dmz.stance.TotalHandle) || total;
-                 result += " U: " + (links - total);
-
-                 expire = dmz.object.timeStamp(handle, dmz.stance.ExpireHandle);
-                 if (expire) {
-
-                    result += " - Ends: " +
-                       dmz.util.timeStampToDate(expire).toString("MMM-dd-yyyy hh:mm:ss tt");
-                 }
-              }
-           }
-           return result;
-        }
-      });
-   if (data.task.updateExtraInfo) { extraInfoList.push(data.task.updateExtraInfo); }
+//                    result += " - Ends: " +
+//                       dmz.util.timeStampToDate(expire).toString("MMM-dd-yyyy hh:mm:ss tt");
+//                 }
+//              }
+//           }
+//           return result;
+//        }
+//      });
+//   if (data.task.updateExtraInfo) { extraInfoList.push(data.task.updateExtraInfo); }
 
    data.question = dmz.forumView.setupForumView(
       { self: self
@@ -232,10 +249,10 @@ createAdvisorWindow = function (windowStr) {
            return dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) && type &&
               type.isOfType(dmz.stance.QuestionType) && !getQuestionAnswer(replyToHandle);
         }
-      , canPost: function (advisorHandle) {
+      , postBlocked: function (advisorHandle) {
 
            var questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionHandle)
-             , result = dmz.object.hil()
+             , result
              ;
 
            if (questions) {
@@ -245,18 +262,14 @@ createAdvisorWindow = function (windowStr) {
                  if (!getQuestionAnswer(questionHandle) &&
                     !dmz.object.flag(dmz.stance.getAuthorHandle(questionHandle), dmz.stance.AdminHandle)) {
 
-                    result = false;
+                    result = "New questions cannot be submitted while another question is active with the current advisor.";
                  }
               });
            }
-           return result && !LoginSkipped;
+           if (LoginSkipped || !dmz.object.hil()) { result = "New questions cannot be created without logging in."; }
+           return result;
         }
       });
-
-   Object.keys(data.task.observers).forEach(function (key) {
-
-      observerLists[key].push(data.task.observers[key]);
-   });
 
    Object.keys(data.question.observers).forEach(function (key) {
 
@@ -266,26 +279,73 @@ createAdvisorWindow = function (windowStr) {
    data.onHome = function () {
 
       if (data.question && data.question.onHome) { data.question.onHome(); }
-      if (data.task && data.task.onHome) { data.task.onHome(); }
    };
 
    data.update = function (advisorHandle) {
 
+      data.advisor = advisorHandle;
       data.infoWindow.name.text(dmz.object.text(advisorHandle, dmz.stance.NameHandle));
       data.infoWindow.bio.text(dmz.object.text(advisorHandle, dmz.stance.BioHandle));
       data.infoWindow.title.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
       data.infoWindow.picture.pixmap(getAvatarPixmap(advisorHandle));
 
       if (data.question && data.question.update) { data.question.update(advisorHandle); }
-      if (data.task && data.task.update) { data.task.update(advisorHandle); }
+      data.task.submit.observe(self, "clicked", function () {
+
+         var handle
+           , text = data.task.text.text()
+           ;
+         if (text.length) {
+
+            handle = dmz.object.create(dmz.stance.VoteType);
+            dmz.object.scalar(handle, dmz.stance.VoteState, dmz.stance.VOTE_APPROVAL_PENDING);
+            dmz.object.text(handle, dmz.stance.TextHandle, text);
+            dmz.object.timeStamp(handle, dmz.stance.CreatedAtServerTimeHandle, 0);
+            dmz.object.flag(handle, dmz.stance.UpdateStartTimeHandle, true);
+            dmz.object.link(dmz.stance.VoteLinkHandle, handle, advisorHandle);
+            dmz.object.link(dmz.stance.CreatedByHandle, handle, dmz.object.hil());
+            dmz.object.activate(handle);
+         }
+      });
+      setUserAvatar(dmz.object.hil(), data.task.avatar);
    };
 
-   data.layout.addWidget(data.infoWindow.widget, 0, 0, 1, 2);
-   if (data.task && data.task.widget) { data.layout.addWidget(data.task.widget, 1, 0); }
+   dmz.time.setRepeatingTimer(self, 1, function () {
+
+      var msg = taskBlocked(data.advisor);
+      if (!msg && WasBlocked) {
+
+         data.task.text.clear();
+         data.task.text.enabled(true);
+         data.task.submit.enabled(true);
+         WasBlocked = false;
+      }
+      else if (msg) {
+
+         data.task.text.text("<font color=\"red\">" + msg + "</font>");
+         data.task.text.enabled(false);
+         data.task.submit.enabled(false);
+         WasBlocked = true;
+      }
+   });
+
+   data.topLayout = dmz.ui.layout.createHBoxLayout();
+   data.topLayout.insertWidget(0, data.infoWindow.widget);
+   data.topLayout.insertWidget(1, data.task.widget);
+//   data.layout.insertLayout(0, data.topLayout);
+   data.layout.addLayout(data.topLayout);
    if (data.question && data.question.widget) {
 
-      data.layout.addWidget(data.question.widget, 1, 1);
+      data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
+//      data.layout.insertWidget(2, data.question.widget);
+      data.layout.addWidget(data.question.widget);
    }
+//   data.layout.addWidget(data.infoWindow.widget, 0, 0, 1, 2);
+//   if (data.task && data.task.widget) { data.layout.addWidget(data.task.widget, 0, 1); }
+//   if (data.question && data.question.widget) {
+
+//      data.layout.addWidget(data.question.widget, 1, 1);
+//   }
 
    return data;
 };

@@ -229,6 +229,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QLabel" name="undecidedVotes">
+          <property name="text">
+           <string>undecided</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item row="4" column="1" rowspan="2">

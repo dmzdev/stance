@@ -74,10 +74,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _TimeHandle
 
      , _LatestTimeStamp = 0
+     , _WasBlocked = false
 
      // Functions
      , _CanReplyTo
-     , _CanPost
+     , _PostBlocked
      , _Highlight
      , _ExtraInfo
      , _OnNewPost
@@ -107,7 +108,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    _ForumLinkHandle = forumData.groupLinkHandle;
    _ParentLinkHandle = forumData.parentHandle;
    _CanReplyTo = forumData.canReplyTo;
-   _CanPost = forumData.canPost;
+   _PostBlocked = forumData.postBlocked;
    _UseForumDataForAdmin = forumData.useForumData;
    _TimeHandle = forumData.timeHandle;
    _Highlight = forumData.highlight;
@@ -118,7 +119,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    MaxReplyLength = forumData.replyLength || MaxMessageLength;
 
    if (_Self && _PostType && _CommentType && _ForumType && _ParentLinkHandle &&
-      _CanReplyTo && _CanPost && _Highlight && _TimeHandle) {
+      _CanReplyTo && _PostBlocked && _Highlight && _TimeHandle) {
 
       _view = dmz.ui.loader.load("ForumView.ui");
       retData.widget = _view;
@@ -177,7 +178,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          if (item) {
 
             info = _ExtraInfo(handle);
-//            _Self.log.warn ("uEI:", handle, info);
             if (info && info.length && item.extra) {
 
                item.extra.text (info);
@@ -242,9 +242,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          _updatePostedBy(postHandle);
          _updatePostedAt(postHandle);
          _updateMessage(postHandle);
-//         _Self.log.warn ("call UEI", postHandle);
          _updateExtraInfo(postHandle);
-//         _Self.log.warn ("leaving UEI", postHandle);
       };
 
       _addComment = function (postHandle, commentHandle) {
@@ -294,7 +292,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             _updatePostedBy(commentHandle);
             _updatePostedAt(commentHandle);
             _updateMessage(commentHandle);
-//            _Self.log.warn ("call comment UEI", commentHandle, dmz.object.type(commentHandle));
             _updateExtraInfo(commentHandle);
             if (!_CanReplyTo(postHandle)) { post.commentAddLabel.hide(); }
          }
@@ -565,8 +562,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            ;
 
          _LatestTimeStamp = dmz.stance.userAttribute(userHandle, _TimeHandle) || 0;
-
-         _Self.log.warn ("Update forum for user:", dmz.stance.getDisplayName(userHandle));
          group = dmz.stance.getUserGroupHandle(userHandle);
 
          if (avatar) { _setUserAvatar(userHandle, avatar); }
@@ -592,20 +587,20 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
       dmz.time.setRepeatingTimer(_Self, 1, function () {
 
-         var msg =
-            "<font color=\"red\">This action can not be used while a " + _PostType +
-            " is active.</font>";
-         if (_CanPost(_forumHandle)) {
+         var msg = _PostBlocked(_forumHandle);
+         if (!msg && _WasBlocked) {
 
-            if (_postTextEdit.text() == msg) { _postTextEdit.clear(); }
+            _postTextEdit.clear();
             _postTextEdit.enabled(true);
             _submitButton.enabled(true);
+            _WasBlocked = false;
          }
-         else {
+         else if (msg) {
 
-            _postTextEdit.text(msg);
+            _postTextEdit.text("<font color=\"red\">" + msg + "</font>");
             _postTextEdit.enabled(false);
             _submitButton.enabled(false);
+            _WasBlocked = true;
          }
       });
 
@@ -743,7 +738,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
       _Self.log.error ("_ParentLinkHandle", forumData.parentHandle);
       _Self.log.error ("MaxMessageLength", forumData.messageLength);
       _Self.log.error ("_CanReplyTo", forumData.canReplyTo ? true : false);
-      _Self.log.error ("_CanPost", forumData.canPost ? true : false);
+      _Self.log.error ("_PostBlocked", forumData.postBlocked ? true : false);
       _Self.log.error ("_Highlight", forumData.highlight ? true : false);
    }
 

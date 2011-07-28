@@ -174,6 +174,7 @@ getUserGroupHandle = function (userHandle) {
      , retval = 0
      , type = dmz.object.type(userHandle)
      ;
+
    if (type && type.isOfType(ObjectTypes.UserType)) {
 
       userGroupHandle = dmz.object.subLinks(userHandle, Handles.GroupMembersHandle);

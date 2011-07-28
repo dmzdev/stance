@@ -52,6 +52,8 @@ var dmz =
    , PinIconList = []
    , PinQueue = []
    , HaveActivatedMap = false
+   , IsCurrentWindow = false
+   , DoHighlight = false
    , GroupHandleList = []
    , GroupQueue = {}
 
@@ -209,6 +211,7 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
 
    map.contextMenuPolicy(dmz.ui.consts.NoContextMenu);
    map.name(self.config.string("webview.name"));
+   map.setHtml("<center><b>Loading...</b></center>");
    map.eventFilter(self, function (object, event) {
 
       var type
@@ -323,7 +326,8 @@ function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
       count = dmz.object.scalar(hil, dmz.stance.PinTotalHandle) || 0;
       if (!dmz.object.flag(hil, dmz.stance.AdminHandle) && (count < list.length)) {
 
-         MainModule.highlight("Map");
+         if (IsCurrentWindow) { DoHighlight = true; }
+         else { MainModule.highlight("Map"); }
       }
    }
 });
@@ -352,7 +356,8 @@ function (objHandle, attrHandle, value) {
       count = dmz.object.scalar(objHandle, dmz.stance.PinTotalHandle) || 0;
       if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) && (count < list.length)) {
 
-         MainModule.highlight("Map");
+         if (IsCurrentWindow) { DoHighlight = true; }
+         else { MainModule.highlight("Map"); }
       }
    }
 });
@@ -371,6 +376,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
       mapClickFn = function () {
 
+         IsCurrentWindow = true;
          if (!HaveActivatedMap) {
 
             page = map.page();
@@ -389,6 +395,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
                }
             });
          }
+         else { populateMapFromGroup(dmz.stance.getUserGroupHandle(dmz.object.hil())); }
       };
 
       mapHomeFn = function () {
@@ -399,6 +406,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            , list
            ;
 
+         if (DoHighlight) { module.highlight("Map"); }
+         DoHighlight = false;
+         IsCurrentWindow = false;
          if (hilGroup) {
 
             list = dmz.object.superLinks(hilGroup, dmz.stance.GroupPinHandle) || [];

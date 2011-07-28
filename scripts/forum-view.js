@@ -46,7 +46,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , groupLinkHandle: dmz.stance.ForumLink
          , highlight: function () { module.highlight("Forum"); }
          , canReplyTo: function () { return true; }
-         , canPost: function () { return true; }
+         , postBlocked: function () { return false; }
          , messageLength: MaxMessageLength
          };
       RetData = dmz.forumView.setupForumView(forumData);
