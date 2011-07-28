@@ -438,10 +438,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                item.unread.show();
                if (!IsCurrentWindow) { _Highlight(); }
             }
-            else {
-               item.unread.hide();
-
-            }
+            else { item.unread.hide(); }
          }
       };
 
