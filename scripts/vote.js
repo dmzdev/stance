@@ -267,7 +267,7 @@ pushVote = function (voteHandle) {
       decisionHandle = tempHandles[0];
       advisorReason = dmz.object.text(decisionHandle, dmz.object.TextHandle);
 
-      if (!hasUserVoted(dmz.object.hil(), decisionHandle)) {
+      if (!hasUserVoted(dmz.object.hil(), decisionHandle) && !dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
 
          buttonLayout.insertWidget(0, yesButton);
          buttonLayout.insertWidget(1, noButton);
@@ -467,22 +467,17 @@ voteLinkChanged = function (objHandle) {
    tempValue = tempHandles[0];
    totalUsers = numberOfNonAdminUsers(tempValue);
 
-   self.log.error("No Votes: " + noVotes + " Yes Votes: " + yesVotes + "Total Users: " + totalUsers);
-
    if (noVotes >= (totalUsers / 2)) {
 
-      self.log.error("No Vote Limit Reached");
       dmz.object.scalar(objHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
    }
    else if (yesVotes > (totalUsers / 2)) {
 
-      self.log.error("Yes Vote Limit Reached");
       dmz.object.scalar(objHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
    }
    else {
 
-      self.log.error("Vote Inconclusive");
-      updateFields(objHandle);
+      removeFromMaps(objHandle);
    }
 };
 
@@ -573,7 +568,6 @@ updateFields = function (objHandle) {
 
    if (voteItem) {
 
-      self.log.error("Updating fields of: " + voteItem);
       if (state === dmz.stance.VOTE_YES || dmz.stance.VOTE_NO || dmz.stance.VOTE_ACTIVE) {
 
          voteItem.startTime = dmz.object.timeStamp(objHandle, dmz.stance.CreatedAtServerTimeHandle);
@@ -617,24 +611,20 @@ isObjectInMap = function (objHandle, attrHandle) {
          if (voteItem.handle === objHandle) { inMap = true; }
       });
 
-      self.log.error("Is Object In Map?: " + inMap);
-
       if (attrHandle === dmz.stance.VoteState && inMap) {
 
          // Removes and adds the object, hence refreshing its properties in the Map
-         self.log.error("Vote State Changed");
          removeFromMaps(objHandle);
       }
       else if (inMap) {
 
          if (attrHandle === dmz.stance.YesHandle || attrHandle === dmz.stance.NoHandle) {
 
-            self.log.error("User Has Voted");
             voteLinkChanged(objHandle);
          }
          else {
 
-            updateFields(objHandle);
+            removeFromMaps(objHandle);
          }
       }
       else if (isCompleteNewVote(objHandle)) {
