@@ -125,7 +125,6 @@ pushVote = function (voteHandle) {
 
    advisorAvatar = dmz.object.text(advisorHandle, dmz.stance.PictureHandle);
 
-
    if (status === dmz.stance.VOTE_YES || status === dmz.stance.VOTE_NO) {
 
       if (status === dmz.stance.VOTE_YES) {
@@ -167,6 +166,27 @@ pushVote = function (voteHandle) {
             , groupHandle: groupHandle
             });
 
+      /*
+      ApprovalVotes.forEach(function (vote) {
+
+         self.log.error("\n");
+         self.log.error(vote.handle);
+         self.log.error(vote.userAvatar);
+         self.log.error(vote.postedBy);
+         self.log.error(vote.startTime);
+         self.log.error(vote.endTime);
+         self.log.error(vote.question);
+         self.log.error(vote.status);
+         self.log.error(vote.yesVotes);
+         self.log.error(vote.noVotes);
+         self.log.error(vote.undecidedVotes);
+         self.log.error(vote.advisorAvatar);
+         self.log.error(vote.advisorReason);
+         self.log.error(vote.postItem);
+         self.log.error(vote.groupHandle);
+         self.log.error("\n");
+      });
+      */
 
    } else if (status === dmz.stance.VOTE_DENIED) {
 
@@ -269,6 +289,27 @@ resetLayout = function () {
       };
    }
    myLayout.addStretch(1);
+
+
+   /*if (content) {
+
+      ApprovalVotes.forEach(function (voteItem) {
+
+         voteItem.postItem.hide();
+         myLayout.removeWidget(voteItem.postItem);
+      });
+      ActiveVotes.forEach(function (voteItem) {
+
+         voteItem.postItem.hide();
+         myLayout.removeWidget(voteItem.postItem);
+      });
+      PastVotes.forEach(function (voteItem) {
+
+         voteItem.postItem.hide();
+         myLayout.removeWidget(voteItem.postItem);
+      });
+   }
+   */
 };
 
 refreshView = function () {
@@ -292,11 +333,12 @@ refreshView = function () {
      , postItem
      , setLabels
      , setGlobalLabels
+     , questionLabel
      , itor = 0
      ;
 
-   restLayout();
-   setLabels = function (postItem) {
+   resetLayout();
+   setLabels = function (postItem, voteItem) {
 
       avatarLabel = postItem.lookup("avatarLabel");
       postedByLabel = postItem.lookup("postedBy");
@@ -307,12 +349,9 @@ refreshView = function () {
       yesVotesLabel = postItem.lookup("yesVotes");
       noVotesLabel = postItem.lookup("noVotes");
       undecidedVotesLabel = postItem.lookup("undecidedVotes");
-      advisorLabel = postItem.lookup("advisorLabel");
-      advisorReasonLabel = postItem.lookup("advisorReason");
-   };
-   setGlobalLabels = function (voteItem) {
+      advisorAvatarLabel = postItem.lookup("advisorAvatarLabel");
+      advisorReasonLabel = postItem.lookup("reason");
 
-      // do avatar label later
       postedByLabel.text(voteItem.postedBy);
       questionLabel.text(voteItem.question);
       statusLabel.text(voteItem.status);
@@ -323,26 +362,23 @@ refreshView = function () {
       ApprovalVotes.forEach(function (voteItem) {
 
          postItem = voteItem.postItem;
-         setLabels (postItem);
-         setGlobalLabels(voteItem);
-         myLayout.addWidget(itor, postItem);
+         setLabels (postItem, voteItem);
+         myLayout.addWidget(postItem);
          itor += 1;
-      })
+      });
    }
    ActiveVotes.forEach(function (voteItem) {
 
       postItem = voteItem.postItem;
-      setLabels (postItem);
-      setGlobalLabels(voteItem);
-      myLayout.addWidget(itor, postItem);
+      setLabels (postItem, voteItem);
+      myLayout.addWidget(postItem);
       itor += 1;
    });
    PastVotes.forEach(function (voteItem) {
 
       postItem = voteItem.postItem;
-      setLabels (postItem);
-      setGlobalLabels(voteItem);
-      myLayout.addWidget(itor, postItem);
+      setLabels (postItem, voteItem);
+      myLayout.addWidget(postItem);
       itor += 1;
    });
 };
@@ -410,6 +446,7 @@ removeFromMaps = function (objHandle) {
          voteItem = vote;
          PastVotes.splice(itor, 1);
          pushVote(objHandle);
+         refreshView();
          return;
       }
       itor += 1;
@@ -423,6 +460,7 @@ removeFromMaps = function (objHandle) {
          voteItem = vote;
          ActiveVotes.splice(itor, 1);
          pushVote(objHandle);
+         refreshView();
          return;
       }
       itor += 1;
@@ -436,6 +474,7 @@ removeFromMaps = function (objHandle) {
          voteItem = vote;
          ApprovalVotes.splice(itor, 1);
          pushVote(objHandle);
+         refreshView();
          return;
       }
       itor += 1;
@@ -523,6 +562,7 @@ isObjectInMap = function (objHandle, attrHandle) {
    else if (isCompleteNewVote(objHandle)) {
 
       pushVote(objHandle);
+      refreshView();
    }
 };
 
@@ -633,7 +673,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
 init = function () {
 
-   myLayout = dmz.ui.layout.createVBoxLayout();
    content.layout(myLayout);
    myLayout.addStretch(1);
 };
