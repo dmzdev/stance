@@ -211,7 +211,7 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
 
    map.contextMenuPolicy(dmz.ui.consts.NoContextMenu);
    map.name(self.config.string("webview.name"));
-   map.setHtml("<center><b>Loading...</b></center>");
+//   map.setHtml("<center><b>Loading...</b></center>");
    map.eventFilter(self, function (object, event) {
 
       var type
