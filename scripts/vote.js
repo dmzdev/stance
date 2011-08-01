@@ -31,9 +31,10 @@ var dmz =
 
    // UI
    , voteForm = dmz.ui.loader.load("VoteForm.ui")
-   , scrollArea= voteForm.lookup("scrollArea")
+   , scrollArea = voteForm.lookup("scrollArea")
    , content = scrollArea.widget()
    , myLayout = dmz.ui.layout.createVBoxLayout()
+   , debugMissile = voteForm.lookup("debugMissile")
 
    // Variables
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
@@ -76,6 +77,22 @@ var dmz =
    , numberOfNonAdminUsers
    , init
    ;
+
+debugMissile.observe(self, "clicked", function () {
+
+   PastVotes.forEach(function (vote) {
+
+      self.log.error("Past Vote Handle: " + vote.handle);
+   });
+   ActiveVotes.forEach(function (vote) {
+
+      self.log.error("Active Vote Handle: " + vote.handle);
+   });
+   ApprovalVotes.forEach(function (vote) {
+
+      self.log.error("Approval Vote Handle: " + vote.handle);
+   });
+});
 
 pushVote = function (voteHandle) {
 
@@ -325,26 +342,6 @@ resetLayout = function () {
    }
    myLayout.addStretch(1);
 
-
-   /*if (content) {
-
-      ApprovalVotes.forEach(function (voteItem) {
-
-         voteItem.postItem.hide();
-         myLayout.removeWidget(voteItem.postItem);
-      });
-      ActiveVotes.forEach(function (voteItem) {
-
-         voteItem.postItem.hide();
-         myLayout.removeWidget(voteItem.postItem);
-      });
-      PastVotes.forEach(function (voteItem) {
-
-         voteItem.postItem.hide();
-         myLayout.removeWidget(voteItem.postItem);
-      });
-   }
-   */
 };
 
 refreshView = function () {
@@ -400,7 +397,8 @@ refreshView = function () {
          postItem = voteItem.postItem;
          setLabels (postItem, voteItem);
 
-         myLayout.addWidget(postItem);
+         postItem.show();
+         myLayout.insertWidget(itor, postItem);
          itor += 1;
       });
    }
@@ -416,7 +414,8 @@ refreshView = function () {
       undecidedVotesLabel.text("<b>Undecided Votes: </b>" + voteItem.undecidedVotes);
       advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisolReason);
 
-      myLayout.addWidget(postItem);
+      postItem.show();
+      myLayout.insertWidget(itor, postItem);
       itor += 1;
    });
    PastVotes.forEach(function (voteItem) {
@@ -440,7 +439,8 @@ refreshView = function () {
          advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
       }
 
-      myLayout.addWidget(postItem);
+      postItem.show();
+      myLayout.insertWidget(itor, postItem);
       itor += 1;
    });
 };
