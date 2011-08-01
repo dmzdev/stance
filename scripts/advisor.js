@@ -173,64 +173,6 @@ createAdvisorWindow = function (windowStr) {
       , data.task.widget.lookup("totalCharAmt")
       );
 
-//   data.task = dmz.forumView.setupForumView(
-//      { self: self
-//      , postType: dmz.stance.VoteType
-//      , commentType: dmz.stance.DecisionType
-//      , forumType: dmz.stance.AdvisorType
-//      , parentHandle: dmz.stance.VoteLinkHandle
-//      , groupLinkHandle: dmz.stance.AdvisorGroupHandle
-//      , useForumData: true
-//      , messageLength: MAX_TASK_STR_LEN
-//      , replyLength: MAX_TASK_REPLY_LEN
-//      , highlight: function () { MainModule.highlight(windowStr); }
-//      , onNewPost: function (handle) { dmz.object.scalar(handle, dmz.stance.VoteState, VOTE_APPROVAL_PENDING); }
-//      , canReplyTo: function (replyToHandle) { return false; }
-//      ,
-//      , extraInfo: function (handle) {
-
-//           var type = dmz.object.type(handle)
-//             , state = -1
-//             , result = ""
-//             , links
-//             , total = 0
-//             , expire
-//             ;
-
-//           if (type && type.isOfType(dmz.stance.DecisionType)) {
-
-//              state = dmz.object.scalar(handle, dmz.stance.VoteState);
-//              if ((state === VOTE_APPROVAL_PENDING) || (state === VOTE_DENIED)) {
-
-//                 result = STATE_STR[state];
-//              }
-//              else if ((state === VOTE_ACTIVE) || (state === VOTE_YES) || (state === VOTE_NO)) {
-
-//                 result = STATE_STR[state];
-//                 links = dmz.object.subLinks(handle, dmz.stance.YesHandle);
-//                 total += links ? links.length : 0;
-//                 result += " - Y: " + (links ? links.length : 0);
-
-//                 links = dmz.object.subLinks(handle, dmz.stance.NoHandle);
-//                 total += links ? links.length : 0;
-//                 result += " N: " + (links ? links.length : 0);
-
-//                 links = dmz.object.scalar(handle, dmz.stance.TotalHandle);
-//                 result += " U: " + (links ? (links - total) : "?");
-
-//                 expire = dmz.object.timeStamp(handle, dmz.stance.ExpireHandle);
-//                 if (expire) {
-
-//                    result += " - Ends: " +
-//                       dmz.util.timeStampToDate(expire).toString("MMM-dd-yyyy hh:mm:ss tt");
-//                 }
-//              }
-//           }
-//           return result;
-//        }
-//      });
-//   if (data.task.updateExtraInfo) { extraInfoList.push(data.task.updateExtraInfo); }
-
    data.question = dmz.forumView.setupForumView(
       { self: self
       , postType: dmz.stance.QuestionType
@@ -332,21 +274,12 @@ createAdvisorWindow = function (windowStr) {
    data.topLayout = dmz.ui.layout.createHBoxLayout();
    data.topLayout.insertWidget(0, data.infoWindow.widget);
    data.topLayout.insertWidget(1, data.task.widget);
-//   data.layout.insertLayout(0, data.topLayout);
    data.layout.addLayout(data.topLayout);
    if (data.question && data.question.widget) {
 
       data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
-//      data.layout.insertWidget(2, data.question.widget);
       data.layout.addWidget(data.question.widget);
    }
-//   data.layout.addWidget(data.infoWindow.widget, 0, 0, 1, 2);
-//   if (data.task && data.task.widget) { data.layout.addWidget(data.task.widget, 0, 1); }
-//   if (data.question && data.question.widget) {
-
-//      data.layout.addWidget(data.question.widget, 1, 1);
-//   }
-
    return data;
 };
 

@@ -395,7 +395,7 @@ pauseCurrent = function () {
 stopCurrentOnHome = function () {
 
    stopCurrent();
-//   dmz.time.setTimer(self, 1, function () { if (source.hasVideo ()) { source.stop(); }});
+   dmz.time.setTimer(self, 1, function () { if (source.hasVideo ()) { source.stop(); }});
 }
 
 stopCurrent = function () {
