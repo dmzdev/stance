@@ -99,11 +99,6 @@ taskBlocked = function () {
      , votes = []
      ;
 
-   if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
-
-      result = "New votes cannot be created by admin users.";
-   }
-
    advisors = dmz.object.superLinks(dmz.stance.getUserGroupHandle(hil), dmz.stance.AdvisorGroupHandle) || [];
    advisors.forEach(function (advisorHandle) {
 
@@ -115,17 +110,22 @@ taskBlocked = function () {
       votes.forEach(function (voteHandle) {
 
          var decision = getVoteDecision(voteHandle)
-           , voteState = dmz.object.scalar(decision, dmz.stance.VoteState)
+           , voteState = dmz.object.scalar(voteHandle, dmz.stance.VoteState)
            ;
 
+//         self.log.warn ("State:", voteHandle, voteState, dmz.stance.STATE_STR[voteState]);
          if (!decision ||
-            ((voteState !== dmz.stance.VOTE_YES) &&
-               (voteState !== dmz.stance.VOTE_NO) &&
-               (voteState !== dmz.stance.VOTE_DENIED))) {
+            ((voteState === dmz.stance.VOTE_APPROVAL_PENDING) &&
+               (voteState !== dmz.stance.VOTE_ACTIVE))) {
 
             result = "New tasks cannot be submitted while your group has an active task.";
          }
       });
+   }
+
+   if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
+
+      result = "New votes cannot be created by admin users.";
    }
    if (LoginSkipped || !hil) { result = "New tasks cannot be created without logging in."; }
    return result;
