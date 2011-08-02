@@ -35,14 +35,6 @@ var dmz =
    , MAX_TASK_STR_LEN = 144
    , MAX_TASK_REPLY_LEN = 500
 
-   , STATE_STR =
-        [ "Submitted"
-        , "Denied"
-        , "Active"
-        , "Passed"
-        , "Failed"
-        ]
-
    // Variables
    , master =
         { items: {}
@@ -124,7 +116,6 @@ taskBlocked = function () {
 
          var decision = getVoteDecision(voteHandle)
            , voteState = dmz.object.scalar(decision, dmz.stance.VoteState)
-           , result = dmz.object.hil()
            ;
 
          if (!decision ||
