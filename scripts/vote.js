@@ -368,6 +368,19 @@ refreshView = function () {
    PastVotes.sort(function (obj1, obj2) {
 
       var result = obj2.startTime - obj1.startTime;
+      if (obj1.startTime === 0 && obj2.startTime === 0) {
+
+         return 0;
+      }
+      else if (obj1.startTime === 0) {
+
+         return -1;
+      }
+      else if (obj2.startTime === 0) {
+
+         return 1;
+      }
+
       return result ? result : 0;
    });
 
