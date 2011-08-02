@@ -211,7 +211,7 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
 
    map.contextMenuPolicy(dmz.ui.consts.NoContextMenu);
    map.name(self.config.string("webview.name"));
-   map.setHtml("<center><b>Loading...</b></center>");
+//   map.setHtml("<center><b>Loading...</b></center>");
    map.eventFilter(self, function (object, event) {
 
       var type
@@ -316,15 +316,12 @@ pinMovedMessage.subscribe(self, receivePositionUpdate);
 dmz.object.link.observe(self, dmz.stance.GroupPinHandle,
 function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
 
-   var hil = dmz.object.hil()
-     , list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle) || []
-     , count
-     ;
-
+   var hil = dmz.object.hil();
    if (dmz.stance.getUserGroupHandle(hil) === groupHandle) {
 
-      count = dmz.object.scalar(hil, dmz.stance.PinTotalHandle) || 0;
-      if (!dmz.object.flag(hil, dmz.stance.AdminHandle) && (count < list.length)) {
+      if (!dmz.object.flag(hil, dmz.stance.AdminHandle) &&
+         (dmz.stance.userAttribute(objHandle, dmz.stance.PinTimeHandle) <
+            dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle))) {
 
          if (IsCurrentWindow) { DoHighlight = true; }
          else { MainModule.highlight("Map"); }
@@ -346,15 +343,13 @@ populateMapFromGroup = function (groupHandle) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   var count
-     , list
-     ;
-
+   var list;
    if (value) {
 
       list = dmz.object.superLinks(dmz.stance.getUserGroupHandle(objHandle), dmz.stance.GroupPinHandle) || [];
-      count = dmz.object.scalar(objHandle, dmz.stance.PinTotalHandle) || 0;
-      if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) && (count < list.length)) {
+      if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) &&
+         (dmz.stance.userAttribute(objHandle, dmz.stance.PinTimeHandle) <
+            dmz.stance.getLastTimeStamp(list))) {
 
          if (IsCurrentWindow) { DoHighlight = true; }
          else { MainModule.highlight("Map"); }
@@ -402,6 +397,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
          var hil = dmz.object.hil()
            , hilGroup = dmz.stance.getUserGroupHandle(hil)
+           , latest = 0
            , list
            ;
 
@@ -411,7 +407,12 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          if (hilGroup) {
 
             list = dmz.object.superLinks(hilGroup, dmz.stance.GroupPinHandle) || [];
-            dmz.object.scalar(hil, dmz.stance.PinTotalHandle, list.length);
+            list.forEach(function (pinHandle) {
+
+               var time = dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle);
+               if (time && (time > latest)) { latest = time; }
+            });
+            dmz.stance.userAttribute(hil, dmz.stance.PinTimeHandle, latest);
          }
       };
 

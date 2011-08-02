@@ -686,6 +686,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
         , str
         , advisorImages
         , file
+        , admins
         ;
 
       if (value) {
@@ -697,6 +698,17 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
          advisorImages = advisorImages ? advisorImages : [];
          dmz.object.activate(group);
          dmz.object.link(dmz.stance.GameGroupHandle, group, CurrentGameHandle);
+
+         admins = dmz.object.subLinks(CurrentGameHandle, dmz.stance.AdminHandle) || [];
+         admins.forEach(function (adminHandle) {
+
+            var linkHandle = dmz.object.link(dmz.stance.DataLinkHandle, adminHandle, group)
+              , data = dmz.object.create(dmz.stance.DataType)
+              ;
+
+            dmz.object.activate(data);
+            dmz.object.linkAttributeObject(linkHandle, data);
+         });
 
          for (idx = 0; idx < AdvisorCount; idx += 1) {
 
