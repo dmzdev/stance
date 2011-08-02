@@ -108,27 +108,13 @@ sendMessage = function (message, handle) {
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
-   var pos
-     , title
-     , description
-     , file
-     , data
-     , layout
-     , widget
-     , button
-     , label
-     ;
-
    if (objType) {
 
       if (objType.isOfType(dmz.stance.PinType)) {
 
          master.pins[objHandle] = { handle: objHandle, active: false };
       }
-      else if (objType.isOfType(dmz.stance.GroupType)) {
-
-         GroupQueue[objHandle] = true;
-      }
+      else if (objType.isOfType(dmz.stance.GroupType)) { GroupQueue[objHandle] = true; }
    }
 });
 
@@ -180,9 +166,7 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
 // Dialog setup
 (function () {
 
-   var iconList = self.config.get("icon-type.icon")
-     ;
-
+   var iconList = self.config.get("icon-type.icon");
    if (iconList) {
 
       iconList.forEach(function (icon) {
@@ -211,7 +195,6 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
 
    map.contextMenuPolicy(dmz.ui.consts.NoContextMenu);
    map.name(self.config.string("webview.name"));
-//   map.setHtml("<center><b>Loading...</b></center>");
    map.eventFilter(self, function (object, event) {
 
       var type
@@ -233,10 +216,7 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
                   newPinDialog.open(self, function (value, dialog) {
 
                      var data
-                       , title
-                       , desc
                        , count = groupFLayout.rowCount()
-                       , widget
                        , idx
                        , indexCounter
                        , handle
@@ -244,13 +224,9 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
 
                      if (value) {
 
-                        title = titleEdit.text();
-                        desc = descEdit.text();
-
                         handle = dmz.object.create(dmz.stance.PinType);
-//                        dmz.object.position(handle, dmz.stance.PositionHandle, [x, y, 0]);
-                        dmz.object.text(handle, dmz.stance.TitleHandle, title);
-                        dmz.object.text(handle, dmz.stance.TextHandle, desc);
+                        dmz.object.text(handle, dmz.stance.TitleHandle, titleEdit.text());
+                        dmz.object.text(handle, dmz.stance.TextHandle, descEdit.text());
                         dmz.object.text(handle, dmz.stance.PictureHandle, PinIconList[typeList.currentIndex()].webfile);
                         dmz.object.timeStamp(handle, dmz.stance.CreatedAtServerTimeHandle, 0);
                         dmz.object.flag(handle, dmz.stance.UpdateStartTimeHandle, true);
@@ -366,7 +342,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
      , browser
      ;
 
-
    if (Mode === dmz.module.Activate) {
 
       mapClickFn = function () {
@@ -427,7 +402,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       browserDialog.observe(self, "forwardButton", "clicked", browser.forward);
       map.observe(self, "linkClicked", function (urlString) {
 
-         // Open browser dialog.
          browser.page().mainFrame().load(urlString);
          browserDialog.open(self, function () {});
       });

@@ -152,7 +152,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                resource = dmz.object.text(userHandle, dmz.stance.PictureHandle);
                resource = dmz.resources.findFile(resource);
                if (resource) { avatar = dmz.ui.graph.createPixmap(resource); }
-               if (avatar) { avatar = avatar.scaled(50, 50); }
+               if (avatar) { avatar = avatar.scaled(AVATAR_WIDTH, AVATAR_HEIGHT); }
             }
             labelWidget.pixmap(avatar);
          }

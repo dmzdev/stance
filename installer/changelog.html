@@ -58,12 +58,14 @@
    <li>Game time removed.</li>
    <li>All objects which require a timestamp now receive their timestamp from the server in order to provide proper synchronization. Any of these objects created while not logged in will not receive a timestamp until reaching the server for the first time.<li>
    <li>Removed the "Time" tab from the admin Edit Scenario window. The Start/End game button now sends out emails to students and sets flags for the server to set an appropriate start or end time for AAR graphs.</li>
+   <li>Removed desk calendar.</li>
 </ul>
 
 <h3>Bugs fixed</h3>
 <ul>
    <li>Modified the locations of memo and newspaper notifications for WHC.</li>
    <li>Modified the locations of lobbyist, newspaper, and memo notifications for Biz.</li>
+   <li>Map code has been greatly simplified. As a consequence, though, it will only update when the map is opened -- any updates received while the map is open will not be shown until the next time that the window is opened.</li>
 </ul>
 
 <hr noshade size='1'>

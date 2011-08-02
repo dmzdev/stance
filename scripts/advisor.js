@@ -35,14 +35,6 @@ var dmz =
    , MAX_TASK_STR_LEN = 144
    , MAX_TASK_REPLY_LEN = 500
 
-   , STATE_STR =
-        [ "Submitted"
-        , "Denied"
-        , "Active"
-        , "Passed"
-        , "Failed"
-        ]
-
    // Variables
    , master =
         { items: {}
@@ -124,13 +116,12 @@ taskBlocked = function () {
 
          var decision = getVoteDecision(voteHandle)
            , voteState = dmz.object.scalar(decision, dmz.stance.VoteState)
-           , result = dmz.object.hil()
            ;
 
          if (!decision ||
-            ((voteState !== VOTE_YES) &&
-               (voteState !== VOTE_NO) &&
-               (voteState !== VOTE_DENIED))) {
+            ((voteState !== dmz.stance.VOTE_YES) &&
+               (voteState !== dmz.stance.VOTE_NO) &&
+               (voteState !== dmz.stance.VOTE_DENIED))) {
 
             result = "New tasks cannot be submitted while your group has an active task.";
          }
