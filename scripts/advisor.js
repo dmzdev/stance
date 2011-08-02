@@ -113,7 +113,6 @@ taskBlocked = function () {
            , voteState = dmz.object.scalar(voteHandle, dmz.stance.VoteState)
            ;
 
-//         self.log.warn ("State:", voteHandle, voteState, dmz.stance.STATE_STR[voteState]);
          if (!decision ||
             ((voteState === dmz.stance.VOTE_APPROVAL_PENDING) &&
                (voteState !== dmz.stance.VOTE_ACTIVE))) {
