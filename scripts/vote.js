@@ -282,10 +282,12 @@ pushVote = function (voteHandle) {
          yesButton.observe(self, "clicked", function () {
 
             userVoted(dmz.object.hil(), decisionHandle, true);
+            refreshView();
          });
          noButton.observe(self, "clicked", function () {
 
             userVoted(dmz.object.hil(), decisionHandle, false);
+            refreshView();
          });
       }
 
@@ -539,7 +541,8 @@ voteLinkChanged = function (objHandle) {
    }
    else {
 
-      removeFromMaps(objHandle);
+      // change to update fields later
+      updateFields(objHandle);
    }
 };
 
@@ -610,8 +613,17 @@ updateFields = function (objHandle) {
 
    var state = dmz.object.scalar(objHandle, dmz.stance.VoteState)
      , voteItem
+     , postItem
      , tempHandles
      , tempValue
+     , decisionHandle
+
+     , startTimeLabel
+     , endTimeLabel
+     , yesVotesLabel
+     , noVotesLabel
+     , undecidedVotesLabel
+     , statusLabel
      ;
 
    PastVotes.forEach(function (vote) {
@@ -630,25 +642,63 @@ updateFields = function (objHandle) {
 
    if (voteItem) {
 
-      if (state === dmz.stance.VOTE_YES || dmz.stance.VOTE_NO || dmz.stance.VOTE_ACTIVE) {
+      if (state === dmz.stance.VOTE_YES || state === dmz.stance.VOTE_NO || state === dmz.stance.VOTE_ACTIVE) {
 
-         // if we use this again later, below should be decision object time
-         voteItem.startTime = dmz.object.timeStamp(objHandle, dmz.stance.CreatedAtServerTimeHandle);
-         voteItem.endTime = dmz.object.timeStamp(objHandle, dmz.stance.EndedAtServerTimeHandle);
+         tempHandles = dmz.object.superLinks(objHandle, dmz.stance.VoteLinkHandle);
+         decisionHandle = tempHandles[0];
+         voteItem.startTime = dmz.object.timeStamp(decisionHandle, dmz.stance.CreatedAtServerTimeHandle);
+         voteItem.endTime = dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle);
          voteItem.status = state;
-         tempHandles = dmz.object.superLinks(objHandle, dmz.stance.YesHandle) || [];
+         tempHandles = dmz.object.superLinks(decisionHandle, dmz.stance.YesHandle) || [];
          voteItem.yesVotes = tempHandles.length;
-         tempHandles = dmz.object.superLinks(objHandle, dmz.stance.NoHandle) || [];
+         tempHandles = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
          voteItem.noVotes = tempHandles.length;
          tempValue = numberOfNonAdminUsers(voteItem.groupHandle);
          voteItem.undecidedVotes = tempValue - voteItem.yesVotes - voteItem.noVotes;
+
+         postItem = voteItem.postItem;
+         startTimeLabel = postItem.lookup("startTime");
+         endTimeLabel = postItem.lookup("endTime");
+         yesVotesLabel = postItem.lookup("yesVotes");
+         noVotesLabel = postItem.lookup("noVotes");
+         undecidedVotesLabel = postItem.lookup("undecidedVotes");
+
+         if (voteItem.startTime === 0) {
+
+         startTimeLabel.text("<b>Start Time: </b>Less than 5 min ago")
+         }
+         else {
+
+            startTimeLabel.text("<b>Start Time: </b>" + toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt"));
+         }
+         if (voteItem.endTime === 0) {
+
+            endTimeLabel.text("<b>End Time: </b>calculating...")
+         }
+         else {
+
+            endTimeLabel.text("<b>End Time:</b>" + toDate(voteItem.endTime).toString("MMM-dd-yyyy hh:mm:ss tt"));
+         }
+         yesVotesLabel.text("<b>Yes Votes: </b>" + voteItem.yesVotes);
+         noVotesLabel.text("<b>No Votes: </b>" + voteItem.noVotes);
+         undecidedVotesLabel.text("<b>Undecided Votes: </b>" + voteItem.undecidedVotes);
       }
       else if (state === dmz.stance.VOTE_APPROVAL_PENDING || state === dmz.stance.VOTE_DENIED) {
 
          voteItem.startTime = dmz.object.timeStamp(objHandle, dmz.stance.CreatedAtServerTimeHandle);
          voteItem.status = state;
+         postItem = voteItem.postItem;
+         startTimeLabel = postItem.lookup("startTime");
+
+         if (voteItem.startTime === 0) {
+
+            startTimeLabel.text("<b>Posted At: </b>Less than 5 min ago")
+         }
+         else {
+
+            startTimeLabel.text("<b>Posted At: </b>" + toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt"));
+         }
       }
-      refreshView();
    }
 };
 
@@ -681,6 +731,7 @@ isObjectInMap = function (objHandle, attrHandle) {
       }
       else if (inMap) {
 
+         updateFields(objHandle);
          if (attrHandle === dmz.stance.YesHandle || attrHandle === dmz.stance.NoHandle) {
 
             voteLinkChanged(objHandle);
@@ -844,5 +895,3 @@ init = function () {
 };
 
 init();
-
-

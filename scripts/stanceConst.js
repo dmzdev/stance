@@ -122,7 +122,7 @@ var dmz =
         , VOTE_EXPIRED: 5
         , VOTE_ERROR: 6
         , STATE_STR:
-             [ "Submitted"
+             [ "Approval Pending"
              , "Denied"
              , "Active"
              , "Passed"
