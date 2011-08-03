@@ -240,9 +240,12 @@ pushVote = function (voteHandle) {
       decisionHandle = tempHandles[0];
       advisorReason = dmz.object.text(decisionHandle, dmz.stance.TextHandle);
 
-      if (!hasUserVoted(dmz.object.hil(), decisionHandle)
+      self.log.error(dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle));
+      self.log.error(hasUserVoted(dmz.object.hil(), decisionHandle));
+      if (hasUserVoted(dmz.object.hil(), decisionHandle)
           && !dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
 
+         self.log.error("HERRO!")
          buttonLayout.insertWidget(0, yesButton);
          buttonLayout.insertWidget(1, noButton);
          yesButton.observe(self, "clicked", function () {
@@ -850,14 +853,15 @@ userVoted = function (userHandle, decisionHandle, vote) {
 hasUserVoted = function (userHandle, decisionHandle) {
 
    var tempHandles = dmz.object.subLinks(userHandle, dmz.stance.YesHandle) || []
-     , userVoted = false;
+     , userVotedFlag = false
+     ;
 
-   if (tempHandles.indexOf(decisionHandle)) { userVoted = true; }
+   if (tempHandles.indexOf(decisionHandle)) { userVotedFlag = true; }
 
    tempHandles = dmz.object.subLinks(userHandle, dmz.stance.NoHandle) || [];
-   if (tempHandles.indexOf(decisionHandle)) { userVoted = true; }
+   if (tempHandles.indexOf(decisionHandle)) { userVotedFlag = true; }
 
-   return userVoted;
+   return userVotedFlag;
 };
 
 createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
