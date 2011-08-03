@@ -64,6 +64,7 @@ var dmz =
    , isCompleteNewVote
    , voteLinkChanged
    , isObjectInMap
+   , attrCallback
    , removeFromMaps
    , updateFields
    , linkHandleFilter
@@ -75,6 +76,8 @@ var dmz =
    , createDecisionObject
    , resetLayout
    , numberOfNonAdminUsers
+   , updateLastSeen
+   , highlightNew
    , init
    ;
 
@@ -503,9 +506,9 @@ refreshView = function () {
    });
 };
 
-voteLinkChanged = function (objHandle) {
+voteLinkChanged = function (decisionHandle) {
 
-   var decisionHandle
+   var voteHandle
      , tempHandles
      , tempValue
      , yesVotes
@@ -513,13 +516,13 @@ voteLinkChanged = function (objHandle) {
      , totalUsers
      ;
 
-   tempHandles = dmz.object.superLinks(objHandle, dmz.stance.VoteLinkHandle) || [];
-   decisionHandle = tempHandles[0];
+   tempHandles = dmz.object.subLinks(decisionHandle, dmz.stance.VoteLinkHandle) || [];
+   voteHandle = tempHandles[0];
    yesVotes = dmz.object.superLinks(decisionHandle, dmz.stance.YesHandle) || [];
    yesVotes = yesVotes.length;
    noVotes = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
    noVotes = noVotes.length;
-   tempHandles = dmz.object.subLinks(objHandle, dmz.stance.CreatedByHandle) || [];
+   tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle) || [];
    tempValue = tempHandles[0];
    tempHandles = dmz.object.subLinks(tempValue, dmz.stance.GroupMembersHandle) || [];
    tempValue = tempHandles[0];
@@ -527,22 +530,21 @@ voteLinkChanged = function (objHandle) {
 
    if (noVotes >= (totalUsers / 2)) {
 
-      dmz.object.scalar(objHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
+      dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
       dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
    }
    else if (yesVotes > (totalUsers / 2)) {
 
-      dmz.object.scalar(objHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
+      dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
       dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
    }
-   else if (dmz.object.scalar(objHandle, dmz.stance.VoteState) === 5) {
+   else if (dmz.object.scalar(voteHandle, dmz.stance.VoteState) === 5) {
 
-      dmz.object.scalar(objHandle, dmz.stance.VoteState, (noVotes > yesVotes) ? dmz.stance.VOTE_NO : dmz.stance.VOTE_YES);
+      dmz.object.scalar(voteHandle, dmz.stance.VoteState, (noVotes > yesVotes) ? dmz.stance.VOTE_NO : dmz.stance.VOTE_YES);
    }
    else {
 
-      // change to update fields later
-      updateFields(objHandle);
+      updateFields(voteHandle);
    }
 };
 
@@ -665,7 +667,7 @@ updateFields = function (objHandle) {
 
          if (voteItem.startTime === 0) {
 
-         startTimeLabel.text("<b>Start Time: </b>Less than 5 min ago")
+            startTimeLabel.text("<b>Start Time: </b>Less than 5 min ago")
          }
          else {
 
@@ -702,119 +704,111 @@ updateFields = function (objHandle) {
    }
 };
 
-isObjectInMap = function (objHandle, attrHandle) {
+isObjectInMap = function (objHandle) {
 
-   var fullNewObject = false
-     , inMap = false
-     , objectType = dmz.object.type(objHandle)
-     ;
+   var inMap = false;
+   PastVotes.forEach(function (voteItem) {
 
-   if (objectType.isOfType(dmz.stance.VoteType) || objectType.isOfType(dmz.stance.DecisionType)) {
+      if (voteItem.handle === objHandle) { inMap = true; };
+   });
+   ApprovalVotes.forEach(function (voteItem) {
 
-      PastVotes.forEach(function (voteItem) {
+      if (voteItem.handle === objHandle) { inMap = true; };
+   });
+   ActiveVotes.forEach(function (voteItem) {
 
-         if (voteItem.handle === objHandle) { inMap = true; }
-      });
-      ActiveVotes.forEach(function (voteItem) {
+      if (voteItem.handle === objHandle) { inMap = true; };
+   });
 
-         if (voteItem.handle === objHandle) { inMap = true; }
-      });
-      ApprovalVotes.forEach(function (voteItem) {
+   return inMap;
+};
 
-         if (voteItem.handle === objHandle) { inMap = true; }
-      });
+attrCallback = function (objHandle, attrHandle, newVal, prevVal) {
 
-      if (attrHandle === dmz.stance.VoteState && inMap) {
+   if (!isObjectInMap(objHandle)) {
 
-         // Removes and adds the object, hence refreshing its properties in the Map
-         removeFromMaps(objHandle);
-      }
-      else if (inMap) {
-
-         updateFields(objHandle);
-         if (attrHandle === dmz.stance.YesHandle || attrHandle === dmz.stance.NoHandle) {
-
-            voteLinkChanged(objHandle);
-         }
-         else {
-
-            removeFromMaps(objHandle);
-         }
-      }
-      else if (isCompleteNewVote(objHandle)) {
+      if (isCompleteNewVote(objHandle)) {
 
          pushVote(objHandle);
          refreshView();
       }
    }
-};
+   else {
 
-linkHandleFilter = function (linkHandle, attrHandle, supHandle, subHandle) {
-
-   var voteHandle
-     , tempHandles
-     ;
-
-   self.log.error(dmz.defs.lookupNamedHandleName(attrHandle));
-
-   if (attrHandle === dmz.stance.YesHandle || attrHandle === dmz.stance.NoHandle) {
-
-      //subHandle is a decision object
-      tempHandles = dmz.object.subLinks(subHandle, dmz.stance.VoteLinkHandle);
-      if (tempHandles) {
-
-         voteHandle = tempHandles[0];
-         isObjectInMap(voteHandle, attrHandle);
-      }
-   }
-   // if createdByHandle, get VoteObject Handle
-   if (attrHandle === dmz.stance.CreatedByHandle) {
-
-      //supHandle is vote object
-      isObjectInMap(supHandle, attrHandle);
-   }
-   // if VoteLinkHandlle, get VoteObject Handle
-   if (attrHandle === dmz.stance.VoteLinkHandle) {
-
-      //subHandle is vote object
-      if (dmz.object.type(subHandle).isOfType(dmz.stance.VoteType)) {
-
-         isObjectInMap(subHandle, attrHandle);
-      }
+      updateFields();
    }
 };
 
-attrHandleFilter = function (objHandle, attrHandle, prevVal, newVal) {
+dmz.object.scalar.observe(self, dmz.stance.VoteState,
+function (objHandle, attrHandleFilter, newVal, prevVal) {
 
-   if (attrHandle === dmz.stance.VoteState && newVal === dmz.stance.VOTE_EXPIRED) {
+   if (!isObjectInMap(objHandle)) {
 
-      voteExpired(objHandle);
+      if (isCompleteNewVote(objHandle)) {
+
+         pushVote(objHandle);
+         refreshView();
+      }
    }
    else {
 
-      isObjectInMap(objHandle, attrHandle);
+      removeFromMaps(objHandle);
    }
-};
+});
 
-dmz.object.text.observe(self, dmz.stance.TextHandle, attrHandleFilter);
+dmz.object.text.observe(self, dmz.stance.TextHandle, attrCallback);
 
-dmz.object.scalar.observe(self, dmz.stance.VoteState, attrHandleFilter);
+dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, attrCallback);
 
-dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, attrHandleFilter);
+dmz.object.timeStamp.observe(self, dmz.stance.EndedAtServerTimeHandle, attrCallback);
 
-dmz.object.timeStamp.observe(self, dmz.stance.EndedAtServerTimeHandle, attrHandleFilter);
+dmz.object.flag.observe(self, dmz.stance.UpdateEndTimeHandle, attrCallback);
 
-dmz.object.flag.observe(self, dmz.stance.UpdateEndTimeHandle, attrHandleFilter);
+dmz.object.flag.observe(self, dmz.stance.UpdateStartTimeHandle, attrCallback);
 
-dmz.object.flag.observe(self, dmz.stance.UpdateStartTimeHandle, attrHandleFilter);
+dmz.object.link.observe(self, dmz.stance.VoteLinkHandle,
+function (linkHandle, attrHandle, supHandle, subHandle) {
 
-dmz.object.link.observe(self, dmz.stance.VoteLinkHandle, linkHandleFilter);
+   if (!isObjectInMap(subHandle)) {
 
-dmz.object.link.observe(self, dmz.stance.CreatedByHandle, linkHandleFilter);
+      if (isCompleteNewVote(subHandle)) {
 
-dmz.object.link.observe(self, dmz.stance.YesHandle, linkHandleFilter);
+         pushVote(subHandle);
+         refreshView();
+      }
+   }
+   else {
 
-dmz.object.link.observe(self, dmz.stance.NoHandle, linkHandleFilter);
+      removeFromMaps(subHandle);
+   }
+});
+
+dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
+function (linkHandle, attrHandle, supHandle, subHandle) {
+
+   if (!isObjectInMap(supHandle)) {
+
+      if (isCompleteNewVote(supHandle)) {
+
+         pushVote(supHandle);
+         refreshView();
+      }
+   }
+});
+
+dmz.object.link.observe(self, dmz.stance.YesHandle,
+function (linkHandle, attrHandle, supHandle, subHandle) {
+
+   voteLinkChanged(subHandle);
+   refreshView();
+});
+
+dmz.object.link.observe(self, dmz.stance.NoHandle,
+function (linkHandle, attrHandle, supHandle, subHandle) {
+
+   voteLinkChanged(subHandle);
+   refreshView();
+});
 
 userVoted = function (userHandle, decisionHandle, vote) {
 
@@ -876,6 +870,49 @@ numberOfNonAdminUsers = function (groupHandle) {
    return users;
 }
 
+updateLastSeen = function () {
+
+   var latestTime = 0;
+
+   PastVotes.forEach(function (voteItem) {
+
+      if (voteItem.startTime > latestTime) { latestTime = voteItem.startTime; }
+   });
+   ActiveVotes.forEach(function (voteItem) {
+
+      if (voteItem.startTime > latestTime) { latestTime = voteItem.startTime; }
+   });
+   ApprovalVotes.forEach(function (voteItem) {
+
+      if (voteItem.startTime > latestTime) { latestTime = voteItem.startTime; }
+   });
+
+   dmz.object.timeStamp(dmz.object.hil(), dmz.stance.VoteTimeHandle, latestTime);
+};
+
+highlightNew = function () {
+
+   var latestSeen = dmz.object.timeStamp(dmz.object.hil(), dmz.stance.VoteTimeHandle);
+
+   if (!latestSeen) {
+
+      dmz.object.timeStamp(dmz.object.hil(), dmz.stance.VoteTimeHandle, 0);
+   }
+
+   PastVotes.forEach(function (voteItem) {
+
+      if (voteItem.startTime > latestSeen) { self.log.error(voteItem.startTime, latestSeen); MainModule.highlight("Vote"); }
+   });
+   ActiveVotes.forEach(function (voteItem) {
+
+      if (voteItem.startTime > latestSeen) { self.log.error(voteItem.startTime, latestSeen); MainModule.highlight("Vote"); }
+   });
+   ApprovalVotes.forEach(function (voteItem) {
+
+      if (voteItem.startTime > latestSeen) { self.log.error(voteItem.startTime, latestSeen); MainModule.highlight("Vote"); }
+   });
+};
+
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
    var list;
@@ -883,7 +920,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
       list = MainModule.list;
       MainModule = module;
-      module.addPage("Vote", voteForm);
+      module.addPage("Vote", voteForm, updateLastSeen);
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
