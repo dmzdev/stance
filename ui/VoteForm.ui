@@ -34,17 +34,10 @@
         <x>0</x>
         <y>0</y>
         <width>610</width>
-        <height>420</height>
+        <height>454</height>
        </rect>
       </property>
      </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="debugMissile">
-     <property name="text">
-      <string>Debug Missile</string>
-     </property>
     </widget>
    </item>
   </layout>
