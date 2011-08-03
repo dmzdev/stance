@@ -817,18 +817,20 @@ userVoted = function (userHandle, decisionHandle, vote) {
 
 hasUserVoted = function (userHandle, decisionHandle) {
 
-   var tempHandles = dmz.object.subLinks(userHandle, dmz.stance.YesHandle) || [];
+   var tempHandles = dmz.object.subLinks(userHandle, dmz.stance.YesHandle) || []
+     , userVoted = false;
 
    tempHandles.forEach(function(handle) {
 
-      if (handle === decisionHandle) { return true; }
+      if (handle === decisionHandle) { userVoted = true; }
    });
    tempHandles = dmz.object.subLinks(userHandle, dmz.stance.NoHandle) || [];
    tempHandles.forEach(function(handle) {
 
-      if (handle === decisionHandle) { return true; }
+      if (handle === decisionHandle) { userVoted = true; }
    });
-   return false;
+
+   return userVoted;
 };
 
 createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
