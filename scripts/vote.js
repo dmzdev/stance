@@ -171,21 +171,21 @@ pushVote = function (voteHandle) {
       advisorReason = dmz.object.text(decisionHandle, dmz.stance.TextHandle);
 
       PastVotes.push (
-            { handle:voteHandle
-            , userAvatar: userAvatar
-            , postedBy: postedBy
-            , startTime: startTime
-            , endTime: endTime
-            , question: question
-            , status: status
-            , yesVotes: yesVotes
-            , noVotes: noVotes
-            , undecidedVotes: undecidedVotes
-            , advisorAvatar: advisorAvatar
-            , advisorReason: advisorReason
-            , postItem: postItem
-            , groupHandle: groupHandle
-            });
+         { handle: voteHandle
+         , userAvatar: userAvatar
+         , postedBy: postedBy
+         , startTime: startTime
+         , endTime: endTime
+         , question: question
+         , status: status
+         , yesVotes: yesVotes
+         , noVotes: noVotes
+         , undecidedVotes: undecidedVotes
+         , advisorAvatar: advisorAvatar
+         , advisorReason: advisorReason
+         , postItem: postItem
+         , groupHandle: groupHandle
+         });
 
    }
    else if (status === dmz.stance.VOTE_DENIED) {
@@ -200,17 +200,17 @@ pushVote = function (voteHandle) {
       advisorReason = dmz.object.text(decisionHandle, dmz.stance.TextHandle);
 
       PastVotes.push (
-            { handle: voteHandle
-            , userAvatar: userAvatar
-            , postedBy: postedBy
-            , startTime: postedTime
-            , question: question
-            , status: status
-            , advisorAvatar: advisorAvatar
-            , advisorReason: advisorReason
-            , postItem: postItem
-            , groupHandle: groupHandle
-            });
+         { handle: voteHandle
+         , userAvatar: userAvatar
+         , postedBy: postedBy
+         , startTime: postedTime
+         , question: question
+         , status: status
+         , advisorAvatar: advisorAvatar
+         , advisorReason: advisorReason
+         , postItem: postItem
+         , groupHandle: groupHandle
+         });
 
    }
    else if (status === dmz.stance.VOTE_APPROVAL_PENDING) {
@@ -254,15 +254,15 @@ pushVote = function (voteHandle) {
       postedTime = dmz.object.timeStamp(voteHandle, dmz.stance.CreatedAtServerTimeHandle);
 
       ApprovalVotes.push (
-            { handle: voteHandle
-            , userAvatar: userAvatar
-            , postedBy: postedBy
-            , startTime: postedTime
-            , question: question
-            , status: status
-            , postItem: postItem
-            , groupHandle: groupHandle
-            });
+         { handle: voteHandle
+         , userAvatar: userAvatar
+         , postedBy: postedBy
+         , startTime: postedTime
+         , question: question
+         , status: status
+         , postItem: postItem
+         , groupHandle: groupHandle
+         });
 
    }
    else if (status === dmz.stance.VOTE_ACTIVE) {
@@ -306,21 +306,21 @@ pushVote = function (voteHandle) {
       undecidedVotes = tempVariable - yesVotes - noVotes;
 
       ActiveVotes.push (
-            { handle:voteHandle
-            , userAvatar: userAvatar
-            , postedBy: postedBy
-            , startTime: startTime
-            , endTime: endTime
-            , question: question
-            , status: status
-            , yesVotes: yesVotes
-            , noVotes: noVotes
-            , undecidedVotes: undecidedVotes
-            , advisorAvatar: advisorAvatar
-            , advisorReason: advisorReason
-            , postItem: postItem
-            , groupHandle: groupHandle
-            });
+         { handle:voteHandle
+         , userAvatar: userAvatar
+         , postedBy: postedBy
+         , startTime: startTime
+         , endTime: endTime
+         , question: question
+         , status: status
+         , yesVotes: yesVotes
+         , noVotes: noVotes
+         , undecidedVotes: undecidedVotes
+         , advisorAvatar: advisorAvatar
+         , advisorReason: advisorReason
+         , postItem: postItem
+         , groupHandle: groupHandle
+         });
    }
 };
 
@@ -856,19 +856,26 @@ createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
    }
 };
 
+//numberOfNonAdminUsers = function (groupHandle) {
+
+//   var userHandles = dmz.object.superLinks(groupHandle, dmz.stance.GroupMembersHandle) || []
+//     , users = userHandles.length
+//     ;
+
+//   userHandles.forEach(function (userHandle) {
+
+//      if (dmz.object.flag(userHandle, dmz.stance.AdminHandle)) { users -= 1; }
+//   });
+
+//   return users;
+//}
+
 numberOfNonAdminUsers = function (groupHandle) {
 
-   var userHandles = dmz.object.superLinks(groupHandle, dmz.stance.GroupMembersHandle) || []
-     , users = userHandles.length
-     ;
-
-   userHandles.forEach(function (userHandle) {
-
-      if (dmz.object.flag(userHandle, dmz.stance.AdminHandle)) { users -= 1; }
-   });
-
-   return users;
-}
+   var userHandles = dmz.object.superLinks(groupHandle, dmz.stance.GroupMembersHandle) || [];
+   userHandles = userHandles.filter(function (userHandle) { return !dmz.object.flag(userHandle, dmz.stance.AdminHandle); });
+   return userHandles.length;
+};
 
 updateLastSeen = function () {
 
@@ -887,13 +894,14 @@ updateLastSeen = function () {
       if (voteItem.startTime > latestTime) { latestTime = voteItem.startTime; }
    });
 
+   self.log.error ("Need to adjust Latest vote timestamp update to userAttribute call");
    dmz.object.timeStamp(dmz.object.hil(), dmz.stance.VoteTimeHandle, latestTime);
 };
 
 highlightNew = function () {
 
    var latestSeen = dmz.object.timeStamp(dmz.object.hil(), dmz.stance.VoteTimeHandle);
-
+   self.log.error ("Need to adjust Latest seen call to userAttribute call");
    if (!latestSeen) {
 
       dmz.object.timeStamp(dmz.object.hil(), dmz.stance.VoteTimeHandle, 0);

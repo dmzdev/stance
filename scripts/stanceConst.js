@@ -175,11 +175,8 @@ getDisplayName = function (handle) {
 
 getAuthorHandle = function (handle) {
 
-   var parentLinks = dmz.object.superLinks (handle, Handles.CreatedByHandle)
-     , parent = (parentLinks && parentLinks.length) ? parentLinks[0] : undefined
-     ;
-
-   return parent;
+   var parentLinks = dmz.object.subLinks (handle, Handles.CreatedByHandle) || [];
+   return parentLinks[0];
 };
 
 getAuthorName = function (handle) { return getDisplayName(getAuthorHandle(handle)); }
