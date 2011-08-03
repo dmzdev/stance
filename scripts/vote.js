@@ -239,12 +239,12 @@ pushVote = function (voteHandle) {
 
       yesButton.observe(self, "clicked", function () {
 
-         createDecisionObject(true, voteHandle, timeBox.value(), decisionReason.text());
+         createDecisionObject(true, voteHandle, timeBox.value(), decisionReason.text() || "Okay.");
          refreshView();
       });
       noButton.observe(self, "clicked", function () {
 
-         createDecisionObject(false, voteHandle, timeBox.value(), decisionReason.text());
+         createDecisionObject(false, voteHandle, timeBox.value(), decisionReason.text() || "No.");
          refreshView();
       });
 

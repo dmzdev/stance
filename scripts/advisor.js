@@ -275,42 +275,32 @@ createAdvisorWindow = function (windowStr) {
 
 getVoteDecision = function (voteHandle) {
 
-   var result = dmz.object.superLinks(voteHandle, dmz.stance.VoteLinkHandle);
-   return (result && result.length) ? result[0] : false;
+   var result = dmz.object.superLinks(voteHandle, dmz.stance.VoteLinkHandle) || [];
+   return result[0];
 };
 
 getQuestionAnswer = function (questionHandle) {
 
    var type = dmz.object.type(questionHandle)
-     , result = dmz.object.superLinks(questionHandle, dmz.stance.QuestionLinkHandle)
+     , result = dmz.object.superLinks(questionHandle, dmz.stance.QuestionLinkHandle) || []
      ;
-   return (type && type.isOfType(dmz.stance.QuestionType) && result && result.length) ?
-      result[0] : false;
+   return (type && type.isOfType(dmz.stance.QuestionType)) ? result[0] : false;
 };
 
 getAvatarPixmap = function (handle) {
 
-   var resource = dmz.resources.findFile(dmz.object.text(handle, dmz.stance.PictureHandle))
-     , pixmap = dmz.ui.graph.createPixmap(resource)
-     ;
-
-   return pixmap ? pixmap : AvatarDefault;
+   var resource = dmz.resources.findFile(dmz.object.text(handle, dmz.stance.PictureHandle));
+   return dmz.ui.graph.createPixmap(resource) || AvatarDefault;
 };
 
 getHILAdvisor = function (index) {
 
    var groupHandle = dmz.stance.getUserGroupHandle(dmz.object.hil())
-     , advisors = dmz.object.superLinks(groupHandle, dmz.stance.AdvisorGroupHandle)
+     , advisors = dmz.object.superLinks(groupHandle, dmz.stance.AdvisorGroupHandle) || []
      ;
 
-   if (advisors) {
-
-      advisors = advisors.filter(function (element) {
-
-         return master.advisors[element].ID === index;
-      });
-   }
-   return (advisors && advisors.length) ? advisors[0] : false;
+   advisors = advisors.filter(function (element) { return master.advisors[element].ID === index; });
+   return advisors[0];
 };
 
 dmz.object.create.observe(self, function (handle, type) {
@@ -368,36 +358,24 @@ dmz.object.scalar.observe(self, dmz.stance.ID, function (handle, attr, value) {
 
 dmz.object.scalar.observe(self, dmz.stance.VoteState, function (handle, attr, value) {
 
-   if (master.decisions[handle]) {
-
-      extraInfoList.forEach(function (fnc) { fnc(handle); });
-   }
+   if (master.decisions[handle]) { extraInfoList.forEach(function (fnc) { fnc(handle); }); }
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.ExpireHandle, function (handle, attr, value) {
 
-   if (master.decisions[handle]) {
-
-      extraInfoList.forEach(function (fnc) { fnc(handle); });
-   }
+   if (master.decisions[handle]) { extraInfoList.forEach(function (fnc) { fnc(handle); }); }
 });
 
 dmz.object.link.observe(self, dmz.stance.YesHandle,
 function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
 
-   if (master.decisions[decisionHandle]) {
-
-      extraInfoList.forEach(function (fnc) { fnc(decisionHandle); });
-   }
+   if (master.decisions[decisionHandle]) { extraInfoList.forEach(function (fnc) { fnc(decisionHandle); }); }
 });
 
 dmz.object.link.observe(self, dmz.stance.NoHandle,
 function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
 
-   if (master.decisions[decisionHandle]) {
-
-      extraInfoList.forEach(function (fnc) { fnc(decisionHandle); });
-   }
+   if (master.decisions[decisionHandle]) { extraInfoList.forEach(function (fnc) { fnc(decisionHandle); }); }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
@@ -409,11 +387,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
          (function (index) {
 
-            var data
-              , str
+            var str = "Advisor" + idx
+              , data = createAdvisorWindow(str)
               ;
-            str = "Advisor" + idx;
-            data = createAdvisorWindow(str);
             AdvisorWindows.push(data);
             module.addPage
                ( str
