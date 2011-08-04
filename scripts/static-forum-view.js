@@ -415,11 +415,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             data = _master.comments[handle];
          }
 
-         if (item && item.postedAt && data && data.postedAt) {
+         if (item && item.postedAt && data) {
 
             item.postedAt.text(
                "<span style=\"color:#939393;\">- " +
-               toDate(data.postedAt).toString("MMM-dd-yyyy hh:mm:ss tt") +
+               (data.postedAt ? toDate(data.postedAt).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago") +
                "</span>");
             if (data.postedAt && (data.postedAt > _LatestTimeStamp)) {
 

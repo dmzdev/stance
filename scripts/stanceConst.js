@@ -251,6 +251,7 @@ Functions.getLastTimeStamp = getLastTimeStamp;
 
 (function () {
 
+   dmz.object.allowDefaultAttribute(false);
    Object.keys(ObjectTypes).forEach(function (objectTypeName) {
 
       dmz.util.defineConst(exports, objectTypeName, ObjectTypes[objectTypeName]);
