@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>283</width>
+    <width>495</width>
     <height>149</height>
    </rect>
   </property>
@@ -105,7 +105,7 @@
       <item row="1" column="0" rowspan="6">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QLabel" name="avatarLabel">
+         <widget class="QLabel" name="userPictureLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -153,21 +153,21 @@
       <item row="1" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QLabel" name="postedBy">
+         <widget class="QLabel" name="postedByLabel">
           <property name="text">
-           <string>PostedBy:</string>
+           <string>PostedByLabel</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="startTime">
+         <widget class="QLabel" name="startTimeLabel">
           <property name="text">
-           <string>startTime</string>
+           <string>startTimeLabel</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="endTime">
+         <widget class="QLabel" name="endTimeLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -175,7 +175,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>endTime</string>
+           <string>endTimeLabel</string>
           </property>
           <property name="textInteractionFlags">
            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
@@ -185,7 +185,7 @@
        </layout>
       </item>
       <item row="2" column="1">
-       <widget class="QLabel" name="question">
+       <widget class="QLabel" name="questionLabel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
@@ -209,30 +209,30 @@
       <item row="3" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QLabel" name="status">
+         <widget class="QLabel" name="stateLabel">
           <property name="text">
-           <string>status</string>
+           <string>stateLabel</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="yesVotes">
+         <widget class="QLabel" name="yesVotesLabel">
           <property name="text">
-           <string>yesVotes</string>
+           <string>yesVotesLabel</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="noVotes">
+         <widget class="QLabel" name="noVotesLabel">
           <property name="text">
-           <string>noVotes</string>
+           <string>noVotesLabel</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="undecidedVotes">
+         <widget class="QLabel" name="undecidedVotesLabel">
           <property name="text">
-           <string>undecided</string>
+           <string>undecidedVotesLabel</string>
           </property>
          </widget>
         </item>
@@ -241,7 +241,7 @@
       <item row="4" column="1" rowspan="2">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QLabel" name="advisorAvatarLabel">
+         <widget class="QLabel" name="advisorPictureLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -266,7 +266,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="reason">
+         <widget class="QLabel" name="advisorReasonLabel">
           <property name="text">
            <string>reasonLabel</string>
           </property>

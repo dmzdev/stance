@@ -45,13 +45,20 @@ var dmz =
             , noButton: button
             }
       */
+   , VoteObjects = []
+   , DecisionObjects = []
+
    , AllVotes = []
    , PastVotes = []
    , ApprovalVotes = []
    , ActiveVotes = []
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
-   , currentHil = 0
    // Functions
+   , insertItems
+   , populateAllVotes
+   , setItemLabels
+   , isCompleteItem
+   , populateSubLists
    , resetLayout
    , userVoted
    , hasUserVoted
@@ -65,7 +72,15 @@ debug = function () {
 
    AllVotes.forEach(function (item) {
 
-      self.log.error(item.question);
+      self.log.error(item);
+   });
+   VoteObjects.forEach(function (item) {
+
+      self.log.error(item);
+   });
+   DecisionObjects.forEach(function (item) {
+
+      self.log.error(item);
    });
 };
 
@@ -85,17 +100,268 @@ resetLayout = function () {
    contentLayout.addStretch(1);
 };
 
+insertItems = function () {
+
+   var itor = 0;
+
+   populateAllVotes();
+   populateSubLists();
+   resetLayout();
+   ApprovalVotes.forEach(function (voteItem) {
+
+      contentLayout.insertWidget(itor, voteItem.postItem);
+      itor += 1;
+   });
+   ActiveVotes.forEach(function (voteItem) {
+
+      contentLayout.insertWidget(itor, voteItem.postItem);
+      itor += 1;
+   });
+   PastVotes.forEach(function (voteItem) {
+
+      contentLayout.insertWidget(itor, voteItem.postItem);
+      itor += 1;
+   });
+};
+
+populateAllVotes = function () {
+
+   AllVotes = [];
+
+   VoteObjects.forEach(function (voteObject) {
+
+      var voteItem = {}
+        , decisionObject
+        ;
+
+      if ((voteObject.userHandle)
+         && dmz.stance.getUserGroupHandle(voteObject.userHandle) === dmz.stance.getUserGroupHandle(dmz.object.hil())) {
+
+         if (!voteItem.userPicture) {
+
+            voteItem.userPicture = dmz.object.text(voteObject.userHandle, dmz.stance.PictureHandle);
+         }
+         if (!voteItem.postedBy) {
+
+            voteItem.postedBy = dmz.stance.getDisplayName(voteObject.userHandle);
+         }
+         if (!voteItem.groupHandle) {
+
+            voteItem.groupHandle = dmz.stance.getUserGroupHandle(voteObject.userHandle);
+         }
+
+         if (voteObject.state) {
+
+            voteItem.state = voteObject.state;
+         }
+         if (voteObject.question) {
+
+            voteItem.question = voteObject.question;
+         }
+         if (voteObject.postedTime) {
+
+            voteItem.postedTime = voteObject.postedTime;
+         }
+         if (voteObject.advisorHandle) {
+
+            if (!voteItem.advisorPicture) {
+
+               voteItem.advisorPicture = dmz.object.text(voteObject.advisorHandle, dmz.stance.PictureHandle);
+            }
+         }
+         if (voteObject.decisionHandle) {
+
+            decisionObject = DecisionObjects[voteObject.decisionHandle];
+            if (decisionObject.startTime) {
+
+               voteItem.startTime = decisionObject.startTime;
+            }
+            if (decisionObject.endTime) {
+
+               voteItem.endTime = decisionObject.endTime;
+            }
+            if (decisionObject.advisorReason) {
+
+               voteItem.advisorReason = decisionObject.advisorReason;
+            }
+            if (decisionObject.yesVotes !== undefined) {
+
+               voteItem.yesVotes = decisionObject.yesVotes;
+            }
+            if (decisionObject.noVotes !== undefined) {
+
+               voteItem.noVotes = decisionObject.noVotes;
+            }
+         }
+
+         if (isCompleteItem(voteItem)) {
+
+            AllVotes.push(voteItem);
+         }
+      }
+   });
+};
+
+setItemLabels = function (voteItem) {
+
+   var postItem
+     , pic
+     ;
+
+   if (!voteItem.postItem) {
+
+      voteItem.postItem = dmz.ui.loader.load("VoteViewPost.ui");
+      voteItem.userPictureLabel = voteItem.postItem.lookup("userPictureLabel");
+      voteItem.postedByLabel = voteItem.postItem.lookup("postedByLabel");
+      voteItem.startTimeLabel = voteItem.postItem.lookup("startTimeLabel");
+      voteItem.endTimeLabel = voteItem.postItem.lookup("endTimeLabel");
+      voteItem.questionLabel = voteItem.postItem.lookup("questionLabel");
+      voteItem.stateLabel = voteItem.postItem.lookup("stateLabel");
+      voteItem.yesVotesLabel = voteItem.postItem.lookup("yesVotesLabel");
+      voteItem.noVotesLabel = voteItem.postItem.lookup("noVotesLabel");
+      voteItem.undecidedVotesLabel = voteItem.postItem.lookup("undecidedVotesLabel");
+      voteItem.advisorPictureLabel = voteItem.postItem.lookup("advisorPictureLabel");
+      voteItem.advisorReasonLabel = voteItem.postItem.lookup("advisorReasonLabel");
+   }
+
+   if ((voteItem.state === dmz.stance.VOTE_NO) || (voteItem.state === dmz.stance.VOTE_YES)) {
+
+      if (voteItem.state === dmz.stance.VOTE_NO) {
+         voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 70, 70); }")
+      }
+      else {
+         voteItem.postItem.setStyleSheet("* { background-color: rgb(70, 240, 70); }")
+      }
+      // do user avatar
+      pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
+      voteItem.userPictureLabel.pixmap(pic);
+      voteItem.postedByLabel.text(voteItem.postedBy);
+      voteItem.startTimeLabel.text(voteItem.startTime);
+      voteItem.endTimeLabel.text(voteItem.endTime);
+      voteItem.questionLabel.text(voteItem.question);
+      voteItem.stateLabel.text(dmz.stance.STATE_STR[voteItem.state]);
+      voteItem.yesVotesLabel.text(voteItem.yesVotes);
+      voteItem.noVotesLabel.text(voteItem.noVotes);
+      // do undecided votes
+      // do advisor avatar
+      voteItem.advisorReasonLabel.text(voteItem.advisorReason);
+   }
+   else if (voteItem.state === dmz.stance.VOTE_DENIED) {
+
+      voteItem.postItem.setStyleSheet("* { background-color: rgb(70, 70, 70); color: white; }")
+      //do user avatar
+      voteItem.postedByLabel.text(voteItem.postedBy);
+      voteItem.startTimeLabel.text(voteItem.postedTime);
+      voteItem.questionLabel.text(voteItem.question);
+      voteItem.stateLabel.text(dmz.stance.STATE_STR[voteItem.state]);
+      // do advisor picture
+      voteItem.advisorReasonLabel.text(voteItem.advisorReason);
+   }
+   else if (voteItem.state === VOTE_APPROVAL_PENDING) {
+
+      voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 240); }")
+      // do user avatar
+      voteItem.postedByLabel.text(voteItem.postedBy);
+      voteItem.startTimeLabel.text(voteItem.postedTime);
+      voteItem.questionLabel.text(voteItem.question);
+      voteItem.state.text(dmz.stance.STATE_STR[voteItem.state]);
+   }
+   else if (voteItem.state === dmz.stance.VOTE_ACTIVE) {
+
+      voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 70); }")
+      // do user avatar
+      voteItem.postedByLabel.text(voteItem.postedBy);
+      voteItem.startTimeLabel.text(voteItem.startTime);
+      voteItem.endTimeLabel.text(voteItem.endTime);
+      voteItem.question.text(voteItem.question);
+      voteItem.status.text(dmz.stance.STATE_STR[voteItem.state]);
+      voteItem.yesVotes.text(voteItem.yesVotes);
+      voteItem.noVotes.text(voteItem.noVotes);
+      // do undecided votes
+      // do advisor avatar
+      voteItem.advisorReason.text(voteItem.advisorReason);
+   }
+};
+
+isCompleteItem = function (voteItem) {
+
+   var completeFlag = false;
+
+   self.log.error(voteItem.userPicture , voteItem.postedBy , voteItem.question
+      , voteItem.state)
+   if (voteItem.userPicture && voteItem.postedBy && voteItem.question
+      && voteItem.state !== undefined) {
+
+      if ((voteItem.state === dmz.stance.VOTE_NO) || (voteItem.state === dmz.stance.VOTE_YES)
+         || (voteItem.state === dmz.stance.VOTE_ACTIVE)) {
+
+         self.log.error((voteItem.startTime) , (voteItem.endTime) , (voteItem.yesVotes !== undefined)
+            , (voteItem.noVotes !== undefined) , (voteItem.advisorReason) , (voteItem.advisorPicture));
+         if ((voteItem.startTime) && (voteItem.endTime) && (voteItem.yesVotes !== undefined)
+            && (voteItem.noVotes !== undefined) && (voteItem.advisorReason) && (voteItem.advisorPicture)) {
+
+            self.log.error("HERRO!");
+            completeFlag = true;
+         }
+      }
+      else if (voteItem.state === dmz.stance.VOTE_DENIED) {
+
+         if (voteItem.postedTime && voteItem.advisorReason && voteItem.advisorPicture) {
+
+            completeFlag = true;
+         }
+      }
+      else if (voteItem.state === dmz.stance.VOTE_APPROVAL_PENDING) {
+
+         if (voteItem.postedTime) {
+
+            completeFlag = true;
+         }
+      }
+   }
+   return completeFlag;
+};
+
+populateSubLists = function () {
+
+   var hil = dmz.object.hil()
+     , groupHandle = dmz.stance.getUserGroupHandle(hil)
+     ;
+
+   PastVotes = [];
+   ActiveVotes = [];
+   ApprovalVotes = [];
+   AllVotes.forEach(function (voteItem) {
+
+      setItemLabels(voteItem);
+
+      if ((voteItem.state === dmz.stance.VOTE_YES) || (voteItem.state === dmz.stance.VOTE_NO)
+         || (voteItem.state === dmz.stance.VOTE_DENIED)) {
+
+         PastVotes.push(voteItem);
+      }
+      else if (voteItem.state === dmz.stance.VOTE_APPROVAL_PENDING) {
+
+         ApprovalVotes.push(voteItem);
+      }
+      else if (voteItem.state === dmz.stance.VOTE_ACTIVE) {
+
+         ActiveVotes.push(voteItem);
+      }
+   });
+};
+
 dmz.object.scalar.observe(self, dmz.stance.VoteState,
 function (objHandle, attrHandle, newVal, prevVal) {
 
-   if (AllVotes[objHandle]) {
+   if (VoteObjects[objHandle]) {
 
-      AllVotes[objHandle].state = newVal;
+      VoteObjects[objHandle].state = newVal;
    }
    else {
 
-      AllVotes[objHandle] = {};
-      AllVotes[objHandle].state = newVal;
+      VoteObjects[objHandle] = {};
+      VoteObjects[objHandle].state = newVal;
    }
 });
 
@@ -113,29 +379,26 @@ function (objHandle, attrHandle, newVal, prevVal) {
 
    if (objType.isOfType(dmz.stance.VoteType)) {
 
-      if (AllVotes[objHandle]) {
+      if (VoteObjects[objHandle]) {
 
-         AllVotes[objHandle].question = newVal;
+         VoteObjects[objHandle].question = newVal;
       }
       else {
 
-         AllVotes[objHandle] = {};
-         AllVotes[objHandle].question = newVal;
+         VoteObjects[objHandle] = {};
+         VoteObjects[objHandle].question = newVal;
       }
    }
    else if (objType.isOfType(dmz.stance.DecisionType)) {
 
-      voteHandle = dmz.object.subLinks(objHandle, dmz.stance.VoteLinkHandle);
-      if (AllVotes[voteHandle]) {
+      if (DecisionObjects[objHandle]) {
 
-         AllVotes[voteHandle].decisionHandle = objHandle;
-         AllVotes[voteHandle].advisorReason = newVal;
+         DecisionObjects[objHandle].advisorReason = newVal;
       }
       else {
 
-         AllVotes[voteHandle] = {};
-         AllVotes[voteHandle].decisionHandle = objHandle;
-         AllVotes[voteHandle].advisorReason = newVal;
+         DecisionObjects[objHandle] = {};
+         DecisionObjects[objHandle].advisorReason = newVal;
       }
    }
 });
@@ -143,35 +406,30 @@ function (objHandle, attrHandle, newVal, prevVal) {
 dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, prevVal) {
 
-   var objType = dmz.object.type(objHandle)
-     , voteHandle
-     ;
+   var objType = dmz.object.type(objHandle);
 
    if (objType.isOfType(dmz.stance.VoteType)) {
 
-      if (AllVotes[objHandle]) {
+      if (VoteObjects[objHandle]) {
 
-         AllVotes[objHandle].postedTime = newVal;
+         VoteObjects[objHandle].postedTime = newVal;
       }
       else {
 
-         AllVotes[objHandle] = {};
-         AllVotes[objHandle].postedTime = newVal;
+         VoteObjects[objHandle] = {};
+         VoteObjects[objHandle].postedTime = newVal;
       }
    }
    else if (objType.isOfType(dmz.stance.DecisionType)) {
 
-      voteHandle = dmz.object.subLinks(objHandle, dmz.stance.VoteLinkHandle);
-      if (AllVotes[voteHandle]) {
+      if (DecisionObjects[objHandle]) {
 
-         AllVotes[voteHandle].decisionHandle = objHandle;
-         AllVotes[voteHandle].startTime = newVal;
+         DecisionObjects[objHandle].startTime = newVal;
       }
       else {
 
-         AllVotes[voteHandle] = {};
-         AllVotes[voteHandle].decisionHandle = objHandle;
-         AllVotes[voteHandle].startTime = newVal;
+         DecisionObjects[objHandle] = {};
+         DecisionObjects[objHandle].startTime = newVal;
       }
    }
 });
@@ -179,23 +437,18 @@ function (objHandle, attrHandle, newVal, prevVal) {
 dmz.object.timeStamp.observe(self, dmz.stance.EndedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, prevVal) {
 
-   var objType = dmz.object.type(objHandle)
-     , voteHandle
-     ;
+   var objType = dmz.object.type(objHandle);
 
    if (objType.isOfType(dmz.stance.DecisionType)) {
 
-      voteHandle = dmz.object.subLinks(objHandle, dmz.stance.VoteLinkHandle);
-      if (AllVotes[voteHandle]) {
+      if (DecisionObjects[objHandle]) {
 
-         AllVotes[voteHandle].decisionHandle = objHandle;
-         AllVotes[voteHandle].endTime = newVal;
+         DecisionObjects[objHandle].endTime = newVal;
       }
       else {
 
-         AllVotes[voteHandle] = {};
-         AllVotes[voteHandle].decisionHandle = objHandle;
-         AllVotes[voteHandle].endTime = newVal;
+         DecisionObjects[objHandle] = {};
+         DecisionObjects[objHandle].endTime = newVal;
       }
    }
 });
@@ -211,28 +464,118 @@ function (objHandle, attrHandle, newVal, prevVal) {
 });
 
 dmz.object.link.observe(self, dmz.stance.VoteLinkHandle,
-function (linkHandle, attrHandle, supHandle, subhandle) {
+function (linkHandle, attrHandle, supHandle, subHandle) {
 
+   if (dmz.object.type(supHandle).isOfType(dmz.stance.VoteType)) {
+
+      if (VoteObjects[supHandle]) {
+
+         VoteObjects[supHandle].advisorHandle = subHandle;
+      }
+      else {
+
+         VoteObjects[supHandle] = {};
+         VoteObjects[supHandle].advisorHandle = subHandle;
+      }
+   }
+   else if (dmz.object.type(supHandle).isOfType(dmz.stance.DecisionType)) {
+
+      if (DecisionObjects[supHandle]) {
+
+         DecisionObjects[supHandle].voteHandle = subHandle;
+      }
+      else {
+
+         DecisionObjects[supHandle] = {};
+         DecisionObjects[supHandle].voteHandle = subHandle;
+      }
+      if (VoteObjects[subHandle]) {
+
+         VoteObjects[subHandle].decisionHandle = supHandle;
+      }
+      else {
+
+         VoteObjects[subHandle] = {};
+         VoteObjects[subHandle].decisionHandle = supHandle;
+      }
+   }
 });
 
 dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
-function (linkHandle, attrHandle, supHandle, subhandle) {
+function (linkHandle, attrHandle, supHandle, subHandle) {
 
+   if (dmz.object.type(supHandle).isOfType(dmz.stance.VoteType)) {
+
+      if (VoteObjects[supHandle]) {
+
+         VoteObjects[supHandle].userHandle = subHandle;
+      }
+      else {
+
+         VoteObjects[supHandle] = {};
+         VoteObjects[supHandle].userHandle = subHandle;
+      }
+   }
 });
 
 dmz.object.link.observe(self, dmz.stance.YesHandle,
-function (linkHandle, attrHandle, supHandle, subhandle) {
+function (linkHandle, attrHandle, supHandle, subHandle) {
 
+   var voteHandles
+     , voteHandle
+     ;
+
+   if (dmz.object.type(subHandle).isOfType(dmz.stance.DecisionType)) {
+
+      if (!DecisionObjects[subHandle]) {
+
+         DecisionObjects[subHandle] = {};
+      }
+      else {
+
+         if (DecisionObjects[subHandle].yesVotes) {
+
+            DecisionObjects[subHandle].yesVotes += 1;
+         }
+         else {
+
+            DecisionObjects[subHandle].yesVotes = 1;
+         }
+      }
+   }
 });
 
 dmz.object.link.observe(self, dmz.stance.NoHandle,
-function (linkHandle, attrHandle, supHandle, subhandle) {
+function (linkHandle, attrHandle, supHandle, subHandle) {
 
+   var voteHandles
+     , voteHandle
+     ;
+
+   if (dmz.object.type(subHandle).isOfType(dmz.stance.DecisionType)) {
+
+      if (!DecisionObjects[subHandle]) {
+
+         DecisionObjects[subHandle] = {};
+      }
+      else {
+
+         if (DecisionObjects[subHandle].noVotes) {
+
+            DecisionObjects[subHandle].noVotes += 1;
+         }
+         else {
+
+            DecisionObjects[subHandle].noVotes = 1;
+         }
+      }
+   }
 });
 
 userVoted = function (userHandle, decisionHandle, vote) {
 
    dmz.object.link(vote ? dmz.stance.YesHandle : dmz.stance.NoHandle, userHandle, decisionHandle);
+
 };
 
 hasUserVoted = function (userHandle, decisionHandle) {
@@ -337,7 +680,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
       list = MainModule.list;
       MainModule = module;
-      module.addPage("Vote", voteForm, debug);
+      module.addPage("Vote", voteForm, insertItems);
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
