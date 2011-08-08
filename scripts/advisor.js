@@ -244,25 +244,6 @@ createAdvisorWindow = function (windowStr) {
       setUserAvatar(dmz.object.hil(), data.task.avatar);
    };
 
-   dmz.time.setRepeatingTimer(self, 1, function () {
-
-      var msg = taskBlocked(data.advisor);
-      if (!msg && WasBlocked) {
-
-         data.task.text.clear();
-         data.task.text.enabled(true);
-         data.task.submit.enabled(true);
-         WasBlocked = false;
-      }
-      else if (msg) {
-
-         data.task.text.text("<font color=\"red\">" + msg + "</font>");
-         data.task.text.enabled(false);
-         data.task.submit.enabled(false);
-         WasBlocked = true;
-      }
-   });
-
    data.topLayout = dmz.ui.layout.createHBoxLayout();
    data.topLayout.insertWidget(0, data.infoWindow.widget);
    data.topLayout.insertWidget(1, data.task.widget);
@@ -380,7 +361,9 @@ function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
-   var idx;
+   var idx
+     ;
+
    if (Mode === dmz.module.Activate) {
 
       for (idx = 0; idx < ADVISOR_COUNT; idx += 1) {
@@ -398,6 +381,28 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
                , function () { data.onHome(); }
                );
          }(idx));
-      };
+      }
+
+      dmz.time.setRepeatingTimer(self, 1, function () {
+
+         var msg = taskBlocked();
+         AdvisorWindows.forEach(function (data) {
+
+            if (!msg && data.task.wasBlocked) {
+
+               data.task.text.clear();
+               data.task.text.enabled(true);
+               data.task.submit.enabled(true);
+               data.task.wasBlocked = false;
+            }
+            else if (msg) {
+
+               data.task.text.text("<font color=\"red\">" + msg + "</font>");
+               data.task.text.enabled(false);
+               data.task.submit.enabled(false);
+               data.task.wasBlocked = true;
+            }
+         });
+      });
    }
 });
