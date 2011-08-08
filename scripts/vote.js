@@ -84,8 +84,8 @@ resetLayout = function () {
          widget.hide();
          widget = contentLayout.takeAt(0);
       };
+      contentLayout.addStretch(1);
    }
-   contentLayout.addStretch(1);
 };
 
 insertItems = function () {
@@ -125,16 +125,19 @@ insertItems = function () {
 
    ApprovalVotes.forEach(function (voteItem) {
 
+      voteItem.postItem.show();
       contentLayout.insertWidget(itor, voteItem.postItem);
       itor += 1;
    });
    ActiveVotes.forEach(function (voteItem) {
 
+      voteItem.postItem.show();
       contentLayout.insertWidget(itor, voteItem.postItem);
       itor += 1;
    });
    PastVotes.forEach(function (voteItem) {
 
+      voteItem.postItem.show();
       contentLayout.insertWidget(itor, voteItem.postItem);
       itor += 1;
    });
@@ -187,9 +190,10 @@ populateAllVotes = function () {
                voteItem.noVotes = decisionObject.noVotes || 0;
             }
          }
+
          if (isCompleteItem(voteItem) && !AllVotes[voteItem.handle]) {
 
-            AllVotes.push(voteItem);
+            AllVotes[voteItem.handle] = voteItem;
          }
       }
    });
@@ -232,7 +236,6 @@ setItemLabels = function (voteItem) {
          voteItem.decisionReason.fixedSize(750, 100);
          voteItem.decisionReasonLabel = dmz.ui.label.create("<b>Decision Reason:</b>");
       }
-
       if ((voteItem.state === dmz.stance.VOTE_NO) || (voteItem.state === dmz.stance.VOTE_YES)) {
 
          if (voteItem.state === dmz.stance.VOTE_NO) {
@@ -324,7 +327,7 @@ setItemLabels = function (voteItem) {
          voteItem.yesVotesLabel.text("<b>Yes Votes: </b>" + voteItem.yesVotes);
          voteItem.noVotesLabel.text("<b>No Votes: </b>" + voteItem.noVotes);
          voteItem.undecidedVotesLabel.text("<b>Undecided Votes: </b>" +
-            numberOfNonAdminUsers(voteItem.groupHandle) - (voteItem.yesVotes + voteItem.noVotes));
+            (numberOfNonAdminUsers(voteItem.groupHandle) - (voteItem.yesVotes + voteItem.noVotes)));
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.advisorPicture));
          pic = pic.scaled(25, 25);
          voteItem.advisorPictureLabel.pixmap(pic);
