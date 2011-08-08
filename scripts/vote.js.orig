@@ -157,6 +157,13 @@ populateAllVotes = function () {
          if (!voteItem.userPicture) {
 
             voteItem.userPicture = dmz.object.text(voteObject.userHandle, dmz.stance.PictureHandle);
+<<<<<<< HEAD
+         }
+         if (!voteItem.postedBy) {
+
+            voteItem.postedBy = dmz.stance.getDisplayName(voteObject.userHandle);
+=======
+>>>>>>> anotherVoteView
          }
          if (!voteItem.postedBy) { voteItem.postedBy = dmz.stance.getDisplayName(voteObject.userHandle); }
          if (!voteItem.groupHandle) {
@@ -250,54 +257,98 @@ setItemLabels = function (voteItem) {
          }
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          voteItem.userPictureLabel.pixmap(pic);
-         voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
-         voteItem.startTimeLabel.text("<b>Start Time: </b>" + voteItem.startTime);
-         voteItem.endTimeLabel.text("<b>End Time: </b>" + voteItem.endTime);
-         voteItem.questionLabel.text("<b>Question: </b>" + voteItem.question);
-         voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
-         voteItem.yesVotesLabel.text("<b>Yes Votes: </b>" + voteItem.yesVotes);
-         voteItem.noVotesLabel.text("<b>No Votes: </b>" + voteItem.noVotes);
-         voteItem.undecidedVotesLabel.text("<b>Undecided Votes: </b>" + numberOfNonAdminUsers
+         voteItem.postedByLabel.text(voteItem.postedBy);
+         voteItem.startTimeLabel.text(voteItem.startTime);
+         voteItem.endTimeLabel.text(voteItem.endTime);
+         voteItem.questionLabel.text(voteItem.question);
+         voteItem.stateLabel.text(dmz.stance.STATE_STR[voteItem.state]);
+         voteItem.yesVotesLabel.text(voteItem.yesVotes);
+         voteItem.noVotesLabel.text(voteItem.noVotes);
+         voteItem.undecidedVotesLabel.text(numberOfNonAdminUsers
             (voteItem.groupHandle - voteItem.yesVotes - voteItem.noVote));
-         pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.advisorPicture));
+         pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          pic = pic.scaled(25, 25);
          voteItem.advisorPictureLabel.pixmap(pic);
-         voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
+         voteItem.advisorReasonLabel.text(voteItem.advisorReason);
       }
       else if (voteItem.state === dmz.stance.VOTE_DENIED) {
 
          voteItem.postItem.setStyleSheet("* { background-color: rgb(70, 70, 70); color: white; }")
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          voteItem.userPictureLabel.pixmap(pic);
-         voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
-         voteItem.startTimeLabel.text("<b>Posted At: </b>" + voteItem.postedTime);
-         voteItem.questionLabel.text("<b>Qustion: </b>" + voteItem.question);
-         voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
-         pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.advisorPicture));
+         voteItem.postedByLabel.text(voteItem.postedBy);
+         voteItem.startTimeLabel.text(voteItem.postedTime);
+         voteItem.questionLabel.text(voteItem.question);
+         voteItem.stateLabel.text(dmz.stance.STATE_STR[voteItem.state]);
+         pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          pic = pic.scaled(25, 25);
          voteItem.advisorPictureLabel.pixmap(pic);
-         voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
-         voteItem.endTimeLabel.text("");
-         voteItem.yesVotesLabel.text("");
-         voteItem.noVotesLabel.text("");
-         voteItem.undecidedVotesLabel.text("");
+         voteItem.advisorReasonLabel.text(voteItem.advisorReason);
       }
+<<<<<<< HEAD
+      pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
+      voteItem.userPictureLabel.pixmap(pic);
+      voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
+      voteItem.startTimeLabel.text("<b>Start Time: </b>" + voteItem.startTime);
+      voteItem.endTimeLabel.text("<b>End Time: </b>" + voteItem.endTime);
+      voteItem.questionLabel.text("<b>Question: </b>" + voteItem.question);
+      voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
+      voteItem.yesVotesLabel.text("<b>Yes Votes: </b>" + voteItem.yesVotes);
+      voteItem.noVotesLabel.text("<b>No Votes: </b>" + voteItem.noVotes);
+      voteItem.undecidedVotesLabel.text("<b>Undecided Votes: </b>" + numberOfNonAdminUsers(voteItem.groupHandle
+         - voteItem.yesVotes - voteItem.noVote));
+      pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
+      pic = pic.scaled(25, 25);
+      voteItem.advisorPictureLabel.pixmap(pic);
+      voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
+   }
+   else if (voteItem.state === dmz.stance.VOTE_DENIED) {
+
+      voteItem.postItem.setStyleSheet("* { background-color: rgb(70, 70, 70); color: white; }")
+      pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
+      voteItem.userPictureLabel.pixmap(pic);
+      voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
+      voteItem.startTimeLabel.text("<b>Posted At: </b>" + voteItem.postedTime);
+      voteItem.questionLabel.text("<b>Qustion: </b>" + voteItem.question);
+      voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
+      pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
+      pic = pic.scaled(25, 25);
+      voteItem.advisorPictureLabel.pixmap(pic);
+      voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
+
+      voteItem.endTimeLabel.text("");
+      voteItem.yesVotesLabel.text("");
+      voteItem.noVotesLabel.text("");
+      voteItem.undecidedVotesLabel.text("");
+   }
+   else if (voteItem.state === dmz.stance.VOTE_APPROVAL_PENDING) {
+
+      voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 240); }")
+      pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
+      voteItem.userPictureLabel.pixmap(pic);
+      voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
+      voteItem.startTimeLabel.text("<b>Posted Time: </b>" + voteItem.postedTime);
+      voteItem.questionLabel.text("<b>Question: </b>" + voteItem.question);
+      voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
+
+      voteItem.yesVotesLabel.text("");
+      voteItem.noVotesLabel.text("");
+      voteItem.undecidedVotesLabel.text("");
+      voteItem.endTimeLabel.text("");
+      voteItem.advisorReasonLabel.text("");
+=======
       else if (voteItem.state === dmz.stance.VOTE_APPROVAL_PENDING) {
 
          voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 240); }")
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          voteItem.userPictureLabel.pixmap(pic);
-         voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
-         voteItem.startTimeLabel.text("<b>Posted Time: </b>" + voteItem.postedTime);
-         voteItem.questionLabel.text("<b>Question: </b>" + voteItem.question);
-         voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
-         voteItem.yesVotesLabel.text("");
-         voteItem.noVotesLabel.text("");
-         voteItem.undecidedVotesLabel.text("");
-         voteItem.endTimeLabel.text("");
-         voteItem.advisorReasonLabel.text("");
+         voteItem.postedByLabel.text(voteItem.postedBy);
+         voteItem.startTimeLabel.text(voteItem.postedTime);
+         voteItem.questionLabel.text(voteItem.question);
+         voteItem.stateLabel.text(dmz.stance.STATE_STR[voteItem.state]);
+>>>>>>> anotherVoteView
 
-         if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
+         if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
 
             voteItem.buttonLayout.insertWidget(0, voteItem.yesButton);
             voteItem.buttonLayout.insertWidget(1, voteItem.noButton);
@@ -306,7 +357,13 @@ setItemLabels = function (voteItem) {
             voteItem.textLayout.insertWidget(0, voteItem.decisionReasonLabel);
             voteItem.textLayout.insertWidget(1, voteItem.decisionReason);
 
+<<<<<<< HEAD
+         voteItem.yesButton.setStyleSheet("* { background-color: rgb(70, 240, 70); }");
+         voteItem.noButton.setStyleSheet("* { background-color: rgb(240, 70, 70); }");
+         voteItem.yesButton.observe(self, "clicked", function () {
+=======
             voteItem.yesButton.observe(self, "clicked", function () {
+>>>>>>> anotherVoteView
 
                createDecisionObject(true, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "Okay.");
             });
@@ -316,32 +373,68 @@ setItemLabels = function (voteItem) {
             });
          }
       }
+<<<<<<< HEAD
+   }
+   else if (voteItem.state === dmz.stance.VOTE_ACTIVE) {
+
+      voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 70); }")
+      pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
+      voteItem.userPictureLabel.pixmap(pic);
+      voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
+      voteItem.startTimeLabel.text("<b>Start Time: </b>" + voteItem.startTime);
+      voteItem.endTimeLabel.text("<b>End Time: </b>" + voteItem.endTime);
+      voteItem.questionLabel.text("<b>Question: </b>" + voteItem.question);
+      voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
+      voteItem.yesVotesLabel.text("<b>Yes Votes: </b>" + voteItem.yesVotes);
+      voteItem.noVotesLabel.text("<b>No Votes: </b>" + voteItem.noVotes);
+      voteItem.undecidedVotesLabel.text("<b>Undecided Votes: </b>" + numberOfNonAdminUsers(voteItem.groupHandle
+         - voteItem.yesVotes - voteItem.noVote));
+      pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
+      pic = pic.scaled(25, 25);
+      voteItem.advisorPictureLabel.pixmap(pic);
+      voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
+
+      if ((!hasUserVoted(dmz.object.hil(), voteItem.decisionHandle))
+         && (!dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle))) {
+
+         voteItem.buttonLayout.insertWidget(0, voteItem.yesButton);
+         voteItem.buttonLayout.insertWidget(1, voteItem.noButton);
+         voteItem.yesButton.setStyleSheet("* { background-color: rgb(70, 240, 70); }");
+         voteItem.noButton.setStyleSheet("* { background-color: rgb(240, 70, 70); }");
+
+         voteItem.yesButton.observe(self, "clicked", function () {
+
+            userVoted(dmz.object.hil(), voteItem.decisionHandle, true);
+         });
+         voteItem.noButton.observe(self, "clicked", function () {
+
+            userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
+         });
+=======
       else if (voteItem.state === dmz.stance.VOTE_ACTIVE) {
 
          voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 70); }")
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          voteItem.userPictureLabel.pixmap(pic);
-         voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
-         voteItem.startTimeLabel.text("<b>Start Time: </b>" + voteItem.startTime);
-         voteItem.endTimeLabel.text("<b>End Time: </b>" + voteItem.endTime);
-         voteItem.questionLabel.text("<b>Question: </b>" + voteItem.question);
-         voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
-         voteItem.yesVotesLabel.text("<b>Yes Votes: </b>" + voteItem.yesVotes);
-         voteItem.noVotesLabel.text("<b>No Votes: </b>" + voteItem.noVotes);
-         voteItem.undecidedVotesLabel.text("<b>Undecided Votes: </b>" + numberOfNonAdminUsers
-         (voteItem.groupHandle - voteItem.yesVotes - voteItem.noVote));
-         pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.advisorPicture));
+         voteItem.postedByLabel.text(voteItem.postedBy);
+         voteItem.startTimeLabel.text(voteItem.startTime);
+         voteItem.endTimeLabel.text(voteItem.endTime);
+         voteItem.questionLabel.text(voteItem.question);
+         voteItem.stateLabel.text(dmz.stance.STATE_STR[voteItem.state]);
+         voteItem.yesVotesLabel.text(voteItem.yesVotes);
+         voteItem.noVotesLabel.text(voteItem.noVotes);
+         voteItem.undecidedVotesLabel.text(numberOfNonAdminUsers(voteItem.groupHandle
+            - voteItem.yesVotes - voteItem.noVote));
+         pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          pic = pic.scaled(25, 25);
          voteItem.advisorPictureLabel.pixmap(pic);
-         voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
+         voteItem.advisorReasonLabel.text(voteItem.advisorReason);
 
          if ((!hasUserVoted(hil, voteItem.decisionHandle))
             && (!dmz.object.flag(hil, dmz.stance.AdminHandle))) {
 
             voteItem.buttonLayout.insertWidget(0, voteItem.yesButton);
             voteItem.buttonLayout.insertWidget(1, voteItem.noButton);
-            voteItem.yesButton.setStyleSheet("* { background-color: rgb(70, 240, 70); }");
-            voteItem.noButton.setStyleSheet("* { background-color: rgb(240, 70, 70); }");
 
             voteItem.yesButton.observe(self, "clicked", function () {
 
@@ -352,6 +445,7 @@ setItemLabels = function (voteItem) {
                userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
             });
          }
+>>>>>>> anotherVoteView
       }
    }
 };
@@ -360,14 +454,23 @@ isCompleteItem = function (voteItem) {
 
    var completeFlag = false;
 
+<<<<<<< HEAD
+   if ((voteItem.userPicture) && (voteItem.postedBy) && (voteItem.question)
+=======
    if (voteItem.userPicture && voteItem.postedBy && voteItem.question
+>>>>>>> anotherVoteView
       && (voteItem.state !== undefined)) {
 
       if ((voteItem.state === dmz.stance.VOTE_NO) || (voteItem.state === dmz.stance.VOTE_YES)
          || (voteItem.state === dmz.stance.VOTE_ACTIVE)) {
 
+<<<<<<< HEAD
+         if ((voteItem.startTime) && (voteItem.endTime) && (voteItem.yesVotes !== undefined)
+            && (voteItem.noVotes !== undefined) && (voteItem.advisorReason) && (voteItem.advisorPicture)) {
+=======
          if (voteItem.startTime && voteItem.endTime && (voteItem.yesVotes !== undefined)
             && (voteItem.noVotes !== undefined) && voteItem.advisorReason && voteItem.advisorPicture) {
+>>>>>>> anotherVoteView
 
             completeFlag = true;
          }
@@ -434,20 +537,28 @@ isVoteOver = function (decisionHandle) {
       noVotes = decisionData.noVotes || 0;
       voteHandle = decisionData.voteHandle;
 
+<<<<<<< HEAD
+         dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
+         dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
+      }
+      else if (noVotes >= (totalUsers / 2)) {
+
+         dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
+         dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
+=======
       if (voteHandle) {
 
          if (yesVotes > (totalUsers / 2)) {
 
-				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
-			dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
-			}
-			else if (noVotes >= (totalUsers / 2)) {
+            dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
+         }
+         else if (noVotes >= (totalUsers / 2)) {
 
-				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
-			dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
-			}
-		}
-	}
+            dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
+         }
+>>>>>>> anotherVoteView
+      }
+   }
 };
 
 dmz.object.scalar.observe(self, dmz.stance.VoteState,
@@ -490,7 +601,10 @@ function (objHandle, attrHandle, value) {
          }
          else {
 
-            if (voteItem.startTime > lastUserTime) { MainModule.highlight("Vote"); }
+            if (voteItem.startTime > lastUserTime) {
+
+               MainModule.highlight("Vote");
+            }
          }
       }
    });
@@ -539,7 +653,7 @@ function (objHandle, attrHandle, newVal, prevVal) {
          VoteObjects[objHandle].postedTime = newVal;
       }
       insertItems();
-      if (newVal > dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
+      if (newVal > dmz.object.timeStamp(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
 
          MainModule.highlight("Vote");
       }
@@ -551,7 +665,12 @@ function (objHandle, attrHandle, newVal, prevVal) {
          DecisionObjects[objHandle].startTime = newVal;
       }
       insertItems();
-      if (newVal > dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
+<<<<<<< HEAD
+   }
+   if (newVal > dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
+=======
+      if (newVal > dmz.object.timeStamp(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
+>>>>>>> anotherVoteView
 
          MainModule.highlight("Vote");
       }
