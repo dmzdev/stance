@@ -192,12 +192,6 @@ createAdvisorWindow = function (windowStr) {
 
               questions.forEach(function (questionHandle) {
 
-                 self.log.warn
-                    ( questionHandle
-                    , "Author:", dmz.stance.getAuthorHandle(questionHandle)
-                    , getQuestionAnswer(questionHandle)
-                    , dmz.object.flag(dmz.stance.getAuthorHandle(questionHandle), dmz.stance.AdminHandle)
-                    );
                  if (!getQuestionAnswer(questionHandle) &&
                     !dmz.object.flag(dmz.stance.getAuthorHandle(questionHandle), dmz.stance.AdminHandle)) {
 
