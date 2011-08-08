@@ -361,9 +361,7 @@ function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
-   var idx
-     ;
-
+   var idx;
    if (Mode === dmz.module.Activate) {
 
       for (idx = 0; idx < ADVISOR_COUNT; idx += 1) {
