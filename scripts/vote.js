@@ -792,6 +792,7 @@ updateLastSeen = function () {
       if (voteItem.startTime > latestTime) { latestTime = voteItem.startTime; }
    });
 
+   self.log.error ("Need to adjust Latest vote timestamp update to userAttribute call");
    dmz.object.timeStamp(dmz.object.hil(), dmz.stance.VoteTimeHandle, latestTime);
 };
 

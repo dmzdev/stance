@@ -183,14 +183,21 @@ createAdvisorWindow = function (windowStr) {
         }
       , postBlocked: function (advisorHandle) {
 
-           var questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionHandle)
+           var questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
+             , hil = dmz.object.hil()
              , result
              ;
 
-           if (questions) {
+           if (!dmz.object.flag(hil, dmz.stance.AdminHandle)) {
 
               questions.forEach(function (questionHandle) {
 
+                 self.log.warn
+                    ( questionHandle
+                    , "Author:", dmz.stance.getAuthorHandle(questionHandle)
+                    , getQuestionAnswer(questionHandle)
+                    , dmz.object.flag(dmz.stance.getAuthorHandle(questionHandle), dmz.stance.AdminHandle)
+                    );
                  if (!getQuestionAnswer(questionHandle) &&
                     !dmz.object.flag(dmz.stance.getAuthorHandle(questionHandle), dmz.stance.AdminHandle)) {
 
@@ -198,7 +205,8 @@ createAdvisorWindow = function (windowStr) {
                  }
               });
            }
-           if (LoginSkipped || !dmz.object.hil()) { result = "New questions cannot be created without logging in."; }
+
+           if (LoginSkipped || !hil) { result = "New questions cannot be created without logging in."; }
            return result;
         }
       });
@@ -281,10 +289,8 @@ getVoteDecision = function (voteHandle) {
 
 getQuestionAnswer = function (questionHandle) {
 
-   var type = dmz.object.type(questionHandle)
-     , result = dmz.object.superLinks(questionHandle, dmz.stance.QuestionLinkHandle) || []
-     ;
-   return (type && type.isOfType(dmz.stance.QuestionType)) ? result[0] : false;
+   var result = dmz.object.superLinks(questionHandle, dmz.stance.QuestionLinkHandle) || [];
+   return result[0];
 };
 
 getAvatarPixmap = function (handle) {

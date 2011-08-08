@@ -175,11 +175,8 @@ getDisplayName = function (handle) {
 
 getAuthorHandle = function (handle) {
 
-   var parentLinks = dmz.object.superLinks (handle, Handles.CreatedByHandle)
-     , parent = (parentLinks && parentLinks.length) ? parentLinks[0] : undefined
-     ;
-
-   return parent;
+   var parentLinks = dmz.object.subLinks (handle, Handles.CreatedByHandle) || [];
+   return parentLinks[0];
 };
 
 getAuthorName = function (handle) { return getDisplayName(getAuthorHandle(handle)); }
@@ -254,6 +251,7 @@ Functions.getLastTimeStamp = getLastTimeStamp;
 
 (function () {
 
+   dmz.object.allowDefaultAttribute(false);
    Object.keys(ObjectTypes).forEach(function (objectTypeName) {
 
       dmz.util.defineConst(exports, objectTypeName, ObjectTypes[objectTypeName]);
