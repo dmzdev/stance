@@ -218,7 +218,6 @@ setUserPlayList = function (userHandle) {
          });
       }
 
-
       /* Sort the list so the newest object is first */
       combinedMediaList.sort(function (obj1, obj2) {
 
@@ -273,6 +272,7 @@ loadCurrentPrint = function () {
      , hil = dmz.object.hil()
      , item
      ;
+
    if (!SourceList.length) { webpage.setHtml("<center><b>No Current Items</b></center>"); }
 
    if (CurrentIndex < SourceList.length) {
