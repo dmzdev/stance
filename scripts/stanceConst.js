@@ -114,21 +114,21 @@ var dmz =
         }
 
    , Constants =
-        { VOTE_APPROVAL_PENDING: 0
-        , VOTE_DENIED: 1
-        , VOTE_ACTIVE: 2
-        , VOTE_YES: 3
-        , VOTE_NO: 4
-        , VOTE_EXPIRED: 5
-        , VOTE_ERROR: 6
+        { VOTE_ERROR: 0
+        , VOTE_APPROVAL_PENDING: 1
+        , VOTE_DENIED: 2
+        , VOTE_ACTIVE: 3
+        , VOTE_YES: 4
+        , VOTE_NO: 5
+        , VOTE_EXPIRED: 6
         , STATE_STR:
-             [ "Approval Pending"
+             [ "ERROR"
+             , "Approval Pending"
              , "Denied"
              , "Active"
              , "Passed"
              , "Failed"
              , "Expired"
-             , "ERROR"
              ]
          }
    , getDisplayName
