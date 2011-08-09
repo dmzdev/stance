@@ -70,7 +70,16 @@ var dmz =
    , updateLastSeen
    , highlightNew
    , init
+   , debug
    ;
+
+debug = function () {
+
+   AllVotes.forEach(function (voteItem) {
+
+      self.log.error(voteItem.handle);
+   });
+};
 
 resetLayout = function () {
 
@@ -299,6 +308,8 @@ setItemLabels = function (voteItem) {
 
             voteItem.buttonLayout.insertWidget(0, voteItem.yesButton);
             voteItem.buttonLayout.insertWidget(1, voteItem.noButton);
+            voteItem.yesButton.setStyleSheet("* { background-color: rgb(70, 240, 70); }");
+            voteItem.noButton.setStyleSheet("* { background-color: rgb(240, 70, 70); }");
             voteItem.buttonLayout.insertWidget(2, voteItem.timeBoxLabel);
             voteItem.buttonLayout.insertWidget(3, voteItem.timeBox);
             voteItem.textLayout.insertWidget(0, voteItem.decisionReasonLabel);
@@ -417,20 +428,36 @@ populateSubLists = function () {
    });
 };
 
-isVoteOver = function (decisionHandle) {
+isVoteOver = function (objHandle) {
 
-   var decisionData = DecisionObjects[decisionHandle]
+   var decisionData
      , yesVotes
      , noVotes
      , totalUsers = numberOfNonAdminUsers(dmz.stance.getUserGroupHandle(dmz.object.hil()))
      , voteHandle
+     , voteItem
+     , decisionHandle
      ;
+
+   if (dmz.object.type(objHandle).isOfType(dmz.stance.VoteType)
+      && VoteObjects[objHandle] && VoteObjects[objHandle].decisionHandle) {
+
+      decisionData = DecisionObjects[VoteObjects[objHandle].decisionHandle];
+      decisionHandle = decisionData.handle;
+      voteHandle = objHandle;
+   }
+   else if (dmz.object.type(objHandle).isOfType(dmz.stance.DecisionType)
+      && DecisionObjects[objHandle] && DecisionObjects[objHandle].voteHandle) {
+
+      decisionData = DecisionObjects[objHandle]
+      voteHandle = decisionData.voteHandle;
+      decisionHandle = objHandle;
+   }
 
    if (decisionData) {
 
       yesVotes = decisionData.yesVotes || 0;
       noVotes = decisionData.noVotes || 0;
-      voteHandle = decisionData.voteHandle;
 
       if (voteHandle) {
 
@@ -444,16 +471,32 @@ isVoteOver = function (decisionHandle) {
 				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
 				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
 			}
+			else {
+
+				voteItem = AllVotes[voteHandle];
+				if (voteItem && voteItem.undecidedVotesLabel && voteItem.yesVotesLabel && voteItem.noVotesLabel) {
+
+					voteItem.yesVotes = yesVotes;
+					voteItem.noVotes = noVotes;
+					voteItem.undecidedVotesLabel.text("<b>Undecided Votes: </b>" +
+						(numberOfNonAdminUsers(voteItem.groupHandle) - (yesVotes + noVotes)));
+					voteItem.yesVotesLabel.text("<b>Yes Votes: </b>" + yesVotes);
+					voteItem.noVotesLabel.text("<b>No Votes: </b>" + noVotes);
+				}
+			}
 		}
 	}
 };
 
+/* VoteState is the only callback that refreshes the whole UI, while the isVoteOver
+	function does have the ability to modify specific labels */
 dmz.object.scalar.observe(self, dmz.stance.VoteState,
 function (objHandle, attrHandle, newVal, prevVal) {
 
    if (VoteObjects[objHandle]) {
 
-      VoteObjects[objHandle].state = newVal;
+      if (newVal === dmz.stance.VOTE_EXPIRED) { isVoteOver(objHandle); }
+      else { VoteObjects[objHandle].state = newVal; }
    }
    if (AllVotes[objHandle]) { AllVotes.splice(objHandle, 1); }
    insertItems();
@@ -471,6 +514,11 @@ function (objHandle, attrHandle, value) {
      , lastVoteTime = 0
      , adminHandle = dmz.object.flag(objHandle, dmz.stance.AdminHandle);
      ;
+
+   VoteObjects.forEach(function (voteItem) {
+
+      isVoteOver(voteItem.handle);
+   });
 
    PastVotes.forEach(function (voteItem) {
 
@@ -520,7 +568,6 @@ function (objHandle, attrHandle, newVal, prevVal) {
    if (VoteObjects[objHandle]) {
 
       VoteObjects[objHandle].postedTime = newVal;
-      insertItems();
       if (newVal > dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
 
          MainModule.highlight("Vote");
@@ -529,7 +576,6 @@ function (objHandle, attrHandle, newVal, prevVal) {
    if (DecisionObjects[objHandle]) {
 
       DecisionObjects[objHandle].startTime = newVal;
-      insertItems();
       if (newVal > dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
 
          MainModule.highlight("Vote");
@@ -543,7 +589,6 @@ function (objHandle, attrHandle, newVal, prevVal) {
    if (DecisionObjects[objHandle]) {
 
       DecisionObjects[objHandle].endTime = newVal;
-      insertItems();
    }
 });
 
@@ -576,42 +621,30 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 dmz.object.link.observe(self, dmz.stance.YesHandle,
 function (linkHandle, attrHandle, supHandle, subHandle) {
 
-   var voteHandles
-     , voteHandle
-     ;
-
    if (!DecisionObjects[subHandle]) {
 
       DecisionObjects[subHandle] = {yesVotes: 1};
       isVoteOver(subHandle);
-      insertItems();
    }
    else {
 
       DecisionObjects[subHandle].yesVotes = (DecisionObjects[subHandle].yesVotes || 0) + 1;
       isVoteOver(subHandle);
-      insertItems();
    }
 });
 
 dmz.object.link.observe(self, dmz.stance.NoHandle,
 function (linkHandle, attrHandle, supHandle, subHandle) {
 
-   var voteHandles
-     , voteHandle
-     ;
-
    if (!DecisionObjects[subHandle]) {
 
       DecisionObjects[subHandle] = { noVotes: 1 };
       isVoteOver(subHandle);
-      insertItems();
    }
    else {
 
-      DecisionObjects[subHandle].yesVotes = (DecisionObjects[subHandle].noVotes || 0) + 1;
+      DecisionObjects[subHandle].noVotes = (DecisionObjects[subHandle].noVotes || 0) + 1;
       isVoteOver(subHandle);
-      insertItems();
    }
 });
 
