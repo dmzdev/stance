@@ -56,6 +56,7 @@ var dmz =
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
 
    // Functions
+   , toDate = dmz.util.timeStampToDate
    , insertItems
    , populateAllVotes
    , setItemLabels
@@ -77,9 +78,9 @@ debug = function () {
 
    AllVotes.forEach(function (voteItem) {
 
-      self.log.error(voteItem.handle);
+      self.log.error(voteItem);
    });
-};
+}
 
 resetLayout = function () {
 
@@ -105,6 +106,7 @@ insertItems = function () {
    populateAllVotes();
    populateSubLists();
    resetLayout();
+   debug();
 
    PastVotes.sort(function (obj1, obj2) {
 
@@ -134,20 +136,20 @@ insertItems = function () {
 
    ApprovalVotes.forEach(function (voteItem) {
 
-      voteItem.postItem.show();
       contentLayout.insertWidget(itor, voteItem.postItem);
+      voteItem.postItem.show();
       itor += 1;
    });
    ActiveVotes.forEach(function (voteItem) {
 
-      voteItem.postItem.show();
       contentLayout.insertWidget(itor, voteItem.postItem);
+      voteItem.postItem.show();
       itor += 1;
    });
    PastVotes.forEach(function (voteItem) {
 
-      voteItem.postItem.show();
       contentLayout.insertWidget(itor, voteItem.postItem);
+      voteItem.postItem.show();
       itor += 1;
    });
 };
@@ -258,8 +260,10 @@ setItemLabels = function (voteItem) {
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          voteItem.userPictureLabel.pixmap(pic);
          voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
-         voteItem.startTimeLabel.text("<b>Start Time: </b>" + voteItem.startTime);
-         voteItem.endTimeLabel.text("<b>End Time: </b>" + voteItem.endTime);
+         voteItem.startTimeLabel.text("<b>Start Time: </b>"
+            + (voteItem.startTime ? toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
+         voteItem.endTimeLabel.text("<b>End Time: </b>"
+            + (voteItem.endTime ? toDate(voteItem.endTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
          voteItem.questionLabel.text("<b>Question: </b>" + voteItem.question);
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.yesVotesLabel.text("<b>Yes Votes: </b>" + voteItem.yesVotes);
@@ -277,7 +281,8 @@ setItemLabels = function (voteItem) {
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          voteItem.userPictureLabel.pixmap(pic);
          voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
-         voteItem.startTimeLabel.text("<b>Posted At: </b>" + voteItem.postedTime);
+         voteItem.startTimeLabel.text("<b>Posted At: </b>"
+            + (voteItem.postedTime ? toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
          voteItem.questionLabel.text("<b>Qustion: </b>" + voteItem.question);
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.advisorPicture));
@@ -295,7 +300,8 @@ setItemLabels = function (voteItem) {
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          voteItem.userPictureLabel.pixmap(pic);
          voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
-         voteItem.startTimeLabel.text("<b>Posted Time: </b>" + voteItem.postedTime);
+         voteItem.startTimeLabel.text("<b>Posted Time: </b>"
+            + (voteItem.postedTime ? toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
          voteItem.questionLabel.text("<b>Question: </b>" + voteItem.question);
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.yesVotesLabel.text("");
@@ -331,8 +337,10 @@ setItemLabels = function (voteItem) {
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
          voteItem.userPictureLabel.pixmap(pic);
          voteItem.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
-         voteItem.startTimeLabel.text("<b>Start Time: </b>" + voteItem.startTime);
-         voteItem.endTimeLabel.text("<b>End Time: </b>" + voteItem.endTime);
+         voteItem.startTimeLabel.text("<b>Start Time: </b>"
+            + (voteItem.startTime ? toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
+         voteItem.endTimeLabel.text("<b>End Time: </b>"
+            + (voteItem.endTime ? toDate(voteItem.endTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
          voteItem.questionLabel.text("<b>Question: </b>" + voteItem.question);
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.yesVotesLabel.text("<b>Yes Votes: </b>" + voteItem.yesVotes);
@@ -375,7 +383,7 @@ isCompleteItem = function (voteItem) {
       if ((voteItem.state === dmz.stance.VOTE_NO) || (voteItem.state === dmz.stance.VOTE_YES) ||
          (voteItem.state === dmz.stance.VOTE_ACTIVE)) {
 
-         if (voteItem.startTime && voteItem.endTime && (voteItem.yesVotes !== undefined) &&
+         if ((voteItem.startTime !== undefined) && (voteItem.endTime !== undefined) && (voteItem.yesVotes !== undefined) &&
             (voteItem.noVotes !== undefined) && voteItem.advisorReason && voteItem.advisorPicture) {
 
             completeFlag = true;
@@ -383,14 +391,14 @@ isCompleteItem = function (voteItem) {
       }
       else if (voteItem.state === dmz.stance.VOTE_DENIED) {
 
-         if (voteItem.postedTime && voteItem.advisorReason && voteItem.advisorPicture) {
+         if ((voteItem.postedTime !== undefined) && voteItem.advisorReason && voteItem.advisorPicture) {
 
             completeFlag = true;
          }
       }
       else if (voteItem.state === dmz.stance.VOTE_APPROVAL_PENDING) {
 
-         if (voteItem.postedTime) {
+         if (voteItem.postedTime !== undefined) {
 
             completeFlag = true;
          }
@@ -439,15 +447,15 @@ isVoteOver = function (objHandle) {
      , decisionHandle
      ;
 
-   if (dmz.object.type(objHandle).isOfType(dmz.stance.VoteType)
-      && VoteObjects[objHandle] && VoteObjects[objHandle].decisionHandle) {
+   if (dmz.object.type(objHandle).isOfType(dmz.stance.VoteType) &&
+      VoteObjects[objHandle] && VoteObjects[objHandle].decisionHandle) {
 
       decisionData = DecisionObjects[VoteObjects[objHandle].decisionHandle];
       decisionHandle = decisionData.handle;
       voteHandle = objHandle;
    }
-   else if (dmz.object.type(objHandle).isOfType(dmz.stance.DecisionType)
-      && DecisionObjects[objHandle] && DecisionObjects[objHandle].voteHandle) {
+   else if (dmz.object.type(objHandle).isOfType(dmz.stance.DecisionType) &&
+           DecisionObjects[objHandle] && DecisionObjects[objHandle].voteHandle) {
 
       decisionData = DecisionObjects[objHandle]
       voteHandle = decisionData.voteHandle;
@@ -500,8 +508,8 @@ function (objHandle, attrHandle, newVal, prevVal) {
    }
    if (AllVotes[objHandle]) { AllVotes.splice(objHandle, 1); }
    insertItems();
-   if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) ||
-      (newVal !== dmz.stance.VOTE_APPROVAL_PENDING)) {
+   if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)
+      || (newVal !== dmz.stance.VOTE_APPROVAL_PENDING)) {
 
       MainModule.highlight("Vote");
    }
@@ -517,7 +525,7 @@ function (objHandle, attrHandle, value) {
 
    VoteObjects.forEach(function (voteItem) {
 
-      isVoteOver(voteItem.handle);
+      if (voteItem.state !== dmz.stance.VOTE_DENIED) { isVoteOver(voteItem.handle); }
    });
 
    PastVotes.forEach(function (voteItem) {
@@ -565,12 +573,21 @@ function (objHandle, attrHandle, newVal, prevVal) {
 dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, prevVal) {
 
+   var voteItem;
+
    if (VoteObjects[objHandle]) {
 
       VoteObjects[objHandle].postedTime = newVal;
       if (newVal > dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
 
          MainModule.highlight("Vote");
+      }
+      if (AllVotes[objHandle] && (AllVotes[objHandle].postedTime !== undefined) && AllVotes[objHandle].startTimeLabel) {
+
+         voteItem = AllVotes[objHandle];
+         voteItem.postedTime = newVal;
+         voteItem.startTimeLabel.text("<b>Posted Time: </b>"
+            + (voteItem.postedTime ? toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
       }
    }
    if (DecisionObjects[objHandle]) {
@@ -580,16 +597,38 @@ function (objHandle, attrHandle, newVal, prevVal) {
 
          MainModule.highlight("Vote");
       }
+      if (DecisionObjects[objHandle].voteHandle && AllVotes[DecisionObjects[objHandle].voteHandle]) {
+
+         voteItem = AllVotes[DecisionObjects[objHandle].voteHandle];
+         if (voteItem.startTime && voteItem.startTimeLabel) {
+
+            voteItem.startTime = newVal;
+            voteItem.startTimeLabel.text("<b>Start Time: </b>"
+               + (voteItem.startTime ? toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
+         }
+      }
    }
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.EndedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, prevVal) {
 
+   var voteItem;
+
    if (DecisionObjects[objHandle]) {
 
       DecisionObjects[objHandle].endTime = newVal;
    }
+   if (DecisionObjects[objHandle].voteHandle && AllVotes[DecisionObjects[objHandle].voteHandle]) {
+
+         voteItem = AllVotes[DecisionObjects[objHandle].voteHandle];
+         if (voteItem.endTime && voteItem.endTimeLabel) {
+
+            voteItem.endTime = newVal;
+            voteItem.endTimeLabel.text("<b>End Time: </b>"
+               + (voteItem.endTime ? toDate(voteItem.endTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
+         }
+      }
 });
 
 dmz.object.link.observe(self, dmz.stance.VoteLinkHandle,
@@ -623,7 +662,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
    if (!DecisionObjects[subHandle]) {
 
-      DecisionObjects[subHandle] = {yesVotes: 1};
+      DecisionObjects[subHandle] = { yesVotes: 1};
       isVoteOver(subHandle);
    }
    else {
