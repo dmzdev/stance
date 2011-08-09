@@ -68,7 +68,6 @@ var dmz =
    , populateMapFromGroup
 
    , receivePositionUpdate
-   , updatePosition
    , updateTitle
    , updateText
    , updatePicture
@@ -97,7 +96,7 @@ sendMessage = function (message, handle) {
          msgData.vector(dmz.stance.PositionHandle, 0, data.screenPos);
          message.send(msgData);
       }
-      else if (data.pos) {
+      else if (data.pos && data.createdAt) {
 
          msgData.boolean(ScreenCoordHandle, 0, true);
          msgData.vector(dmz.stance.PositionHandle, 0, data.pos);
@@ -117,11 +116,6 @@ dmz.object.create.observe(self, function (objHandle, objType) {
       else if (objType.isOfType(dmz.stance.GroupType)) { GroupQueue[objHandle] = true; }
    }
 });
-
-updatePosition = function (handle) {
-
-   if (master.pins[handle]) { master.pins[handle].pos = dmz.object.position(handle, dmz.stance.PositionHandle); }
-};
 
 updateText = function (handle) {
 
@@ -144,7 +138,10 @@ dmz.object.text.observe(self, dmz.stance.PictureHandle, updatePicture);
 
 dmz.object.position.observe(self, dmz.stance.PositionHandle, function (handle, attr, value, prev) {
 
-   if (!prev || ((value.x !== prev.x) && (value.y !== prev.y))) { updatePosition(handle); }
+   if (master.pins[handle] && !prev || ((value.x !== prev.x) && (value.y !== prev.y))) {
+
+      master.pins[handle].pos = value;
+   }
 });
 
 dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, value) {
@@ -305,6 +302,23 @@ function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
    }
 });
 
+dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle,
+function (objHandle, attrHandle, newVal, prevVal) {
+
+   var hil;
+   if (master.pins[objHandle]) {
+
+      hil = dmz.object.hil();
+      master.pins[objHandle].createdAt = newVal;
+      if (newVal && (newVal > dmz.stance.userAttribute(hil, dmz.stance.AdminHandle)) &&
+         dmz.object.linkHandle(dmz.stance.GroupPinHandle, objHandle, dmz.stance.getUserGroupHandle(hil))) {
+
+         if (IsCurrentWindow) { DoHighlight = true; }
+         else { MainModule.highlight("Map"); }
+      }
+   }
+});
+
 populateMapFromGroup = function (groupHandle) {
 
    var list = dmz.object.superLinks(groupHandle, dmz.stance.GroupPinHandle) || [];
@@ -384,7 +398,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             list = dmz.object.superLinks(hilGroup, dmz.stance.GroupPinHandle) || [];
             list.forEach(function (pinHandle) {
 
-               var time = dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle);
+               var time = master.pins[pinHandle] ? master.pins[pinHandle].createdAt : 0;
                if (time && (time > latest)) { latest = time; }
             });
             dmz.stance.userAttribute(hil, dmz.stance.PinTimeHandle, latest);
