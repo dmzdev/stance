@@ -296,7 +296,7 @@ function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
    if (dmz.stance.getUserGroupHandle(hil) === groupHandle) {
 
       if (!dmz.object.flag(hil, dmz.stance.AdminHandle) &&
-         (dmz.stance.userAttribute(objHandle, dmz.stance.PinTimeHandle) <
+         (dmz.stance.userAttribute(hil, dmz.stance.PinTimeHandle) <
             dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle))) {
 
          if (IsCurrentWindow) { DoHighlight = true; }
