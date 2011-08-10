@@ -47,9 +47,9 @@ var dmz =
             }
       */
    , isWindowOpen = false
-   , VoteObjects = []
-   , DecisionObjects = []
-   , AllVotes = []
+   , VoteObjects = {}
+   , DecisionObjects = {}
+   , AllVotes = {}
    , PastVotes = []
    , ApprovalVotes = []
    , ActiveVotes = []
