@@ -529,7 +529,7 @@ isVoteOver = function (objHandle) {
       noVotes = decisionData.noVotes || 0;
 
       if (voteHandle && (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_NO) &&
-         (dmz.object.scalar(votehandle, dmz.stance.VoteState) !== dmz.stance.VOTE_YES)) {
+         (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_YES)) {
 
          if ((yesVotes) && (yesVotes > (totalUsers / 2))) {
 
