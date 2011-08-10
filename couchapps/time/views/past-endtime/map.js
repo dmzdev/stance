@@ -3,17 +3,17 @@ function(doc) {
    if ((doc.type === "object") && (doc.object) && (doc.object.attributes) && (doc.object_type === "decision")) {
 
       var currentTime = Math.round(new Date().getTime() / 1000)
-        , endTime
+        , expireTime
         ;
 
       doc.object.attributes.forEach(function (attr) {
 
-         if (attr.name === "ended_at_server_time") {
+         if (attr.name === "expire_time_handle") {
 
-           endTime = attr.timestamp.value;
+           expireTime = attr.timestamp.value;
          }
       });
-      if (endTime !== 0 && currentTime > endTime) {
+      if (endTime !== 0 && currentTime > expireTime) {
 
          emit(doc.object, null);
       }
