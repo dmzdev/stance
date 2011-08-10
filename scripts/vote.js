@@ -582,6 +582,8 @@ function (objHandle, attrHandle, value) {
      ;
 
    AllVotes = [];
+   populateAllVotes();
+   populateSubLists();
    if (lastUserTime !== 0) {
 
       Object.keys(VoteObjects).forEach(function (key) {
