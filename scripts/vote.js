@@ -148,7 +148,9 @@ showItems = function () {
      , groupHandle = dmz.stance.getUserGroupHandle(dmz.object.hil());
      ;
 
-   AllVotes.forEach(function (voteItem) {
+   Object.keys(AllVotes).forEach(function (key) {
+
+      var voteItem = AllVotes[key];
 
       setItemLabels(voteItem, false);
    });
@@ -189,7 +191,9 @@ refreshItemLabels = function () {
 
       populateAllVotes();
       populateSubLists();
-      AllVotes.forEach(function (voteItem) {
+      Object.keys(AllVotes).forEach(function (key) {
+
+         var voteItem = AllVotes[key];
 
          setItemLabels(voteItem, true);
       });
@@ -198,10 +202,11 @@ refreshItemLabels = function () {
 
 populateAllVotes = function () {
 
-   VoteObjects.forEach(function (voteObject) {
+   Object.keys(VoteObjects).forEach(function (key) {
 
       var voteItem
         , decisionObject
+        , voteObject = VoteObjects[key]
         ;
 
       if (voteObject.handle) {
@@ -486,7 +491,9 @@ populateSubLists = function () {
    PastVotes = [];
    ActiveVotes = [];
    ApprovalVotes = [];
-   AllVotes.forEach(function (voteItem) {
+   Object.keys(AllVotes).forEach(function (key) {
+
+      var voteItem = AllVotes[key];
 
       if ((voteItem.state === dmz.stance.VOTE_YES) || (voteItem.state === dmz.stance.VOTE_NO) ||
          (voteItem.state === dmz.stance.VOTE_DENIED)) {
@@ -586,7 +593,9 @@ function (objHandle, attrHandle, value) {
    AllVotes = [];
    if (lastUserTime !== 0) {
 
-      VoteObjects.forEach(function (voteItem) {
+      Object.keys(VoteObjects).forEach(function (key) {
+
+         var voteItem = VoteObjects[key];
 
          if (voteItem.state !== dmz.stance.VOTE_DENIED) { isVoteOver(voteItem.handle); }
       });
@@ -857,9 +866,3 @@ init = function () {
 };
 
 init();
-
-/*Object.keys(VoteObjects).forEach(function (key) {
-
-   var voteObject = VoteObjects[key];
-   self.log.error(voteObject);
-});*/
