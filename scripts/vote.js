@@ -148,12 +148,7 @@ showItems = function () {
      , groupHandle = dmz.stance.getUserGroupHandle(dmz.object.hil());
      ;
 
-   Object.keys(AllVotes).forEach(function (key) {
-
-      var voteItem = AllVotes[key];
-
-      setItemLabels(voteItem, false);
-   });
+   Object.keys(AllVotes).forEach(function (key) { setItemLabels(AllVotes[key], false); });
    ApprovalVotes.forEach(function (voteItem) {
 
       if (voteItem.postItem) {
@@ -185,18 +180,11 @@ showItems = function () {
 
 refreshItemLabels = function () {
 
-   var groupHandle = dmz.stance.getUserGroupHandle(dmz.object.hil());
-
    if (isWindowOpen) {
 
       populateAllVotes();
       populateSubLists();
-      Object.keys(AllVotes).forEach(function (key) {
-
-         var voteItem = AllVotes[key];
-
-         setItemLabels(voteItem, true);
-      });
+      Object.keys(AllVotes).forEach(function (key) { setItemLabels(AllVotes[key], true); });
    }
 };
 
@@ -727,13 +715,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 dmz.object.link.observe(self, dmz.stance.YesHandle,
 function (linkHandle, attrHandle, supHandle, subHandle) {
 
-   if (!DecisionObjects[subHandle]) {
-
-      DecisionObjects[subHandle] = { yesVotes: 1};
-      isVoteOver(subHandle);
-      refreshItemLabels();
-   }
-   else {
+   if (DecisionObjects[subHandle]) {
 
       DecisionObjects[subHandle].yesVotes = (DecisionObjects[subHandle].yesVotes || 0) + 1;
       isVoteOver(subHandle);
@@ -744,13 +726,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 dmz.object.link.observe(self, dmz.stance.NoHandle,
 function (linkHandle, attrHandle, supHandle, subHandle) {
 
-   if (!DecisionObjects[subHandle]) {
-
-      DecisionObjects[subHandle] = { noVotes: 1 };
-      isVoteOver(subHandle);
-      refreshItemLabels();
-   }
-   else {
+   if (DecisionObjects[subHandle]) {
 
       DecisionObjects[subHandle].noVotes = (DecisionObjects[subHandle].noVotes || 0) + 1;
       isVoteOver(subHandle);
@@ -762,11 +738,11 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
    if (objType.isOfType(dmz.stance.VoteType)) {
 
-      VoteObjects[objHandle] = { handle: objHandle};
+      VoteObjects[objHandle] = { handle: objHandle };
    }
    else if (objType.isOfType(dmz.stance.DecisionType)) {
 
-      DecisionObjects[objHandle] = { handle: objHandle};
+      DecisionObjects[objHandle] = { handle: objHandle };
    }
 });
 
