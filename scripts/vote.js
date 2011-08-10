@@ -571,9 +571,8 @@ function (objHandle, attrHandle, newVal, prevVal) {
    }
    if (AllVotes[objHandle]) { AllVotes.splice(objHandle, 1); }
    populateAllVotes();
-   if (isWindowOpen && AllVotes[objHandle] && AllVotes[objHandle] &&
-      AllVotes[objHandle].groupHandle
-      && AllVotes[objHandle].groupHandle === dmz.stance.getUserGroupHandle(dmz.object.hil())) {
+   if (isWindowOpen && AllVotes[objHandle] && AllVotes[objHandle].groupHandle &&
+      AllVotes[objHandle].groupHandle === dmz.stance.getUserGroupHandle(dmz.object.hil())) {
 
       openWindow();
    }
@@ -717,9 +716,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
       VoteObjects[supHandle].userHandle = subHandle;
       populateAllVotes();
-      if (isWindowOpen && AllVotes[supHandle] && AllVotes[supHandle] &&
-         AllVotes[supHandle].groupHandle
-         && AllVotes[supHandle].groupHandle === dmz.stance.getUserGroupHandle(dmz.object.hil())) {
+      if (isWindowOpen && AllVotes[supHandle] && AllVotes[supHandle].groupHandle &&
+         AllVotes[supHandle].groupHandle === dmz.stance.getUserGroupHandle(dmz.object.hil())) {
 
          openWindow();
       }
