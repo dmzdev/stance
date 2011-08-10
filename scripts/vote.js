@@ -325,7 +325,10 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.postItem.setStyleSheet("* { background-color: rgb(70, 70, 70); color: white; }")
          voteItem.startTimeLabel.text(
-            "<b>Start Time: </b>" + (voteItem.postedTime ? toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
+            "<b>Start Time: </b>" +
+            (voteItem.postedTime ?
+               toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               "Less than 5 min ago"));
          if (voteItem.advisorPicture) {
 
             pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.advisorPicture));
@@ -346,7 +349,10 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 240); }")
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
-            "<b>Start Time: </b>" + (voteItem.postedTime ? toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
+            "<b>Start Time: </b>" +
+            (voteItem.postedTime ?
+               toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               "Less than 5 min ago"));
          voteItem.yesVotesLabel.text("");
          voteItem.noVotesLabel.text("");
          voteItem.undecidedVotesLabel.text("");
@@ -379,9 +385,15 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 70); }")
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
-            "<b>Start Time: </b>" + (voteItem.startTime ? toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
+            "<b>Start Time: </b>" +
+            (voteItem.startTime ?
+               toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               "Less than 5 min ago"));
          voteItem.endTimeLabel.text(
-            "<b>End Time: </b>" + (voteItem.endTime ? toDate(voteItem.endTime).toString("MMM-dd-yyyy hh:mm:ss tt") : "Less than 5 min ago"));
+            "<b>End Time: </b>" +
+            (voteItem.endTime ?
+               toDate(voteItem.endTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               "Less than 5 min ago"));
          if (voteItem.yesVotes !== undefined) {
 
             voteItem.yesVotesLabel.text("<b>Yes Votes: </b>" + voteItem.yesVotes);
@@ -392,7 +404,8 @@ setItemLabels = function (voteItem, refresh) {
          }
          if ((voteItem.noVotes !== undefined) && (voteItem.yesVotes !== undefined)) {
 
-            voteItem.undecidedVotesLabel.text("<b>Undecided Votes: </b>" +
+            voteItem.undecidedVotesLabel.text(
+               "<b>Undecided Votes: </b>" +
                (numberOfNonAdminUsers(voteItem.groupHandle) - (voteItem.yesVotes + voteItem.noVotes)));
          }
          if (voteItem.advisorPicture) {
