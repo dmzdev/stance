@@ -130,6 +130,8 @@ insertItems = function () {
       return returnVal;
    });
 
+
+
    ApprovalVotes.forEach(function (voteItem) {
 
       contentLayout.insertWidget(itor, voteItem.postItem);
@@ -494,7 +496,7 @@ isVoteOver = function (objHandle) {
       decisionHandle = objHandle;
    }
 
-   if (decisionData) {
+   if (decisionData && totalUsers) {
 
       yesVotes = decisionData.yesVotes || 0;
       noVotes = decisionData.noVotes || 0;
@@ -546,6 +548,23 @@ function (objHandle, attrHandle, value) {
      , adminHandle = dmz.object.flag(objHandle, dmz.stance.AdminHandle);
      ;
 
+   /*self.log.error("LAST USER TIME:", lastUserTime);
+   PastVotes.forEach(function (voteItem) {
+
+      if (voteItem.state === dmz.stance.VOTE_DENIED) {
+
+         if (voteItem.postedTime > lastVoteTime) { lastVoteTime = voteItem.postedTime; }
+      }
+      else {
+
+         if (voteItem.endTime > lastVoteTime) { lastVoteTime = voteItem.endTime; }
+      }
+   });
+   if ((lastUserTime > lastVoteTime) && (lastVoteTime !== 0)) {
+
+      lastUserTime = lastVoteTime;
+      dmz.stance.userAttribute(objHandle, dmz.stance.VoteTimeHandle, lastVoteTime);
+   }*/
    if (lastUserTime !== 0) {
 
       VoteObjects.forEach(function (voteItem) {
@@ -784,6 +803,7 @@ updateLastSeen = function () {
 
    if (latestTime) {
 
+      self.log.error("UPDATE LAST TIME", latestTime);
       dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle, latestTime);
    }
 };
@@ -808,3 +828,9 @@ init = function () {
 };
 
 init();
+
+/*Object.keys(VoteObjects).forEach(function (key) {
+
+   var voteObject = VoteObjects[key];
+   self.log.error(voteObject);
+});*/
