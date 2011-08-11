@@ -248,13 +248,8 @@ mouseEvent = function (object, event) {
 
    if (object == gscene) {
 
-      if (type == dmz.ui.event.GraphicsSceneMouseDoubleClick) {
+      if (type == dmz.ui.event.GraphicsSceneMousePress) {
 
-//         self.log.warn ("Double click");
-      }
-      else if (type == dmz.ui.event.GraphicsSceneMousePress) {
-
-//         self.log.warn ("Mouse click");
          pos = event.scenePos();
          items =
             object.items(pos, dmz.ui.consts.IntersectsItemShape, dmz.ui.consts.DescendingOrder);
@@ -292,8 +287,6 @@ mouseEvent = function (object, event) {
          });
 
       }
-      else if (type == dmz.ui.event.GraphicsSceneMouseRelease) {}
-      else if (type == dmz.ui.event.GraphicsSceneMouseMove) {}
    }
    return false;
 };
