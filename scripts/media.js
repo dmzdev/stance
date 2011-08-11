@@ -484,7 +484,6 @@ checkNotifications = function () {
      , objType
      ;
 
-   self.log.error(groupMediaHandles, userMediaHandles);
    groupMediaHandles.forEach(function (mediaHandle) {
 
       if (userMediaHandles.indexOf(mediaHandle) === -1) {
