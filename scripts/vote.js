@@ -207,7 +207,7 @@ populateAllVotes = function () {
          }
          if (voteObject.state !== undefined) { voteItem.state = voteObject.state; }
          if (voteObject.question) { voteItem.question = voteObject.question; }
-         if (voteObject.postedTime) { voteItem.postedTime = voteObject.postedTime;  }
+         if (voteObject.postedTime) { voteItem.postedTime = voteObject.postedTime; }
 
          if (voteObject.advisorHandle) {
 
@@ -558,7 +558,8 @@ function (objHandle, attrHandle, newVal, prevVal) {
          VoteObjects[objHandle].state = newVal;
       }
    }
-   if (AllVotes[objHandle]) { AllVotes.splice(objHandle, 1); }
+//   if (AllVotes[objHandle]) { AllVotes.splice(objHandle, 1); }
+   if (AllVotes[objHandle]) { delete AllVotes[objHandle]; }
    populateAllVotes();
    if (isWindowOpen && AllVotes[objHandle] && AllVotes[objHandle].groupHandle &&
       (AllVotes[objHandle].groupHandle === dmz.stance.getUserGroupHandle(dmz.object.hil()))) {
