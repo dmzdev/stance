@@ -252,7 +252,7 @@ populateAllVotes = function () {
 
                   voteItem.expiredTime = decisionObject.expiredTime;
                }
-               if (decisionObject.advisorReason) {  voteItem.advisorReason = decisionObject.advisorReason; }
+               if (decisionObject.advisorReason) { voteItem.advisorReason = decisionObject.advisorReason; }
                voteItem.yesVotes = decisionObject.yesVotes || 0;
                voteItem.noVotes = decisionObject.noVotes || 0;
             }
@@ -573,17 +573,61 @@ function (objHandle, attrHandle, newVal, prevVal) {
    }*/
 });
 
+/* This is basically the admin notification function, it accounts for the
+   admin being able to switch groups
+*/
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   var lastUserTime = dmz.stance.userAttribute(objHandle, dmz.stance.VoteTimeHandle)
+   var lastUserTime
      , lastVoteTime = 0
-     , adminHandle = dmz.object.flag(objHandle, dmz.stance.AdminHandle);
+     , adminFlag = dmz.object.flag(objHandle, dmz.stance.AdminHandle)
+     , groupHandle = dmz.stance.getUserGroupHandle(objHandle)
      ;
 
-   AllVotes = [];
-   populateAllVotes();
-   populateSubLists();
+   if (value && adminFlag) {
+
+      lastUserTime = dmz.stance.userAttribute(objHandle, dmz.stance.VoteTimeHandle);
+
+      AllVotes = [];
+      populateAllVotes();
+      populateSubLists();
+      PastVotes.forEach(function (voteItem) {
+
+         if (voteItem.state === dmz.stance.VOTE_DENIED) {
+
+            if ((voteItem.postedTime > lastVoteTime) && (groupHandle === voteItem.groupHandle)) {
+
+               lastVoteTime = voteItem.postedTime;
+            }
+         }
+         else {
+
+            if ((voteItem.endTime > lastVoteTime) && (groupHandle === voteItem.groupHandle)) {
+
+               lastVoteTime = voteItem.endTime;
+            }
+         }
+      });
+      ActiveVotes.forEach(function (voteItem) {
+
+         if ((voteItem.startTime > lastVoteTime) && (groupHandle === voteItem.groupHandle)) {
+
+            lastVoteTime = voteItem.startTime;
+         }
+      });
+      ApprovalVotes.forEach(function (voteItem) {
+
+         if ((voteItem.postedTime > lastVoteTime) && (groupHandle === voteItem.groupHandle)) {
+
+            lastVoteTime = voteItem.postedTime;
+         }
+      });
+      if (lastVoteTime > lastUserTime) {
+
+         MainModule.highlight("Vote");
+      }
+   }
 });
 
 dmz.object.text.observe(self, dmz.stance.TextHandle,
@@ -604,22 +648,36 @@ function (objHandle, attrHandle, newVal, prevVal) {
 dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, prevVal) {
 
+   var voteItem
+     , hil
+     ;
+
    if (VoteObjects[objHandle]) {
 
       VoteObjects[objHandle].postedTime = newVal;
       refreshItemLabels();
-      if (newVal > dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
+      if (AllVotes[objHandle] && AllVotes[objHandle].groupHandle === dmz.stance.getUserGroupHandle(dmz.object.hil())) {
 
-         MainModule.highlight("Vote");
+         if (newVal > dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
+
+            MainModule.highlight("Vote");
+         }
       }
    }
    if (DecisionObjects[objHandle]) {
 
       DecisionObjects[objHandle].startTime = newVal;
       refreshItemLabels();
-      if (newVal > dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
 
-         MainModule.highlight("Vote");
+      if (DecisionObjects[objHandle].voteHandle && AllVotes[DecisionObjects[objHandle].voteHandle]) {
+
+         voteItem = AllVotes[DecisionObjects[objHandle].voteHandle];
+         hil = dmz.object.hil();
+         if ((voteItem.groupHandle === dmz.stance.getUserGroupHandle(hil)) &&
+            (newVal > dmz.stance.userAttribute(hil, dmz.stance.VoteTimeHandle))) {
+
+            MainModule.highlight("Vote");
+         }
       }
    }
 });
@@ -627,13 +685,23 @@ function (objHandle, attrHandle, newVal, prevVal) {
 dmz.object.timeStamp.observe(self, dmz.stance.EndedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, prevVal) {
 
+   var voteItem
+     , hil
+     ;
+
    if (DecisionObjects[objHandle]) {
 
       DecisionObjects[objHandle].endTime = newVal;
       refreshItemLabels();
-      if (newVal > dmz.stance.userAttribute(dmz.object.hil(), dmz.stance.VoteTimeHandle)) {
+      if (DecisionObjects[objHandle].voteHandle && AllVotes[DecisionObjects[objHandle].voteHandle]) {
 
-         MainModule.highlight("Vote");
+         voteItem = AllVotes[DecisionObjects[objHandle].voteHandle];
+         hil = dmz.object.hil();
+         if ((voteItem.groupHandle === dmz.stance.getUserGroupHandle(hil)) &&
+            (newVal > dmz.stance.userAttribute(hil, dmz.stance.VoteTimeHandle))) {
+
+            MainModule.highlight("Vote");
+         }
       }
    }
 });
