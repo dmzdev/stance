@@ -558,7 +558,6 @@ function (objHandle, attrHandle, newVal, prevVal) {
          VoteObjects[objHandle].state = newVal;
       }
    }
-//   if (AllVotes[objHandle]) { AllVotes.splice(objHandle, 1); }
    if (AllVotes[objHandle]) { delete AllVotes[objHandle]; }
    populateAllVotes();
    if (isWindowOpen && AllVotes[objHandle] && AllVotes[objHandle].groupHandle &&
