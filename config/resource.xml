@@ -627,63 +627,60 @@
    <resource name="ACLU_adv4_alt" file="ACLU_ad05_security.png"/>
 <!-- CBP IMAGES -->
    <resource name="CBP_adv0" file="CBP_ad01.png">
-      <loc x="345" y="72"/>
+      <loc x="347" y="92"/>
       <alt name="CBP_adv0_alt"/>
    </resource>
    <resource name="CBP_adv1" file="CBP_ad02.png">
-      <loc x="466" y="85"/>
+      <loc x="462" y="90"/>
       <alt name="CBP_adv1_alt"/>
    </resource>
    <resource name="CBP_adv2" file="CBP_ad03.png">
-      <loc x="588" y="68"/>
+      <loc x="587" y="92"/>
       <alt name="CBP_adv2_alt"/>
    </resource>
    <resource name="CBP_adv3" file="CBP_ad04.png">
-      <loc x="705" y="110"/>
+      <loc x="708" y="92"/>
       <alt name="CBP_adv3_alt"/>
    </resource>
    <resource name="CBP_adv4" file="CBP_ad05.png">
-      <loc x="821" y="84"/>
+      <loc x="823" y="92"/>
       <alt name="CBP_adv4_alt"/>
    </resource>
-   <resource name="CBP_calendar" file="CBP_calendar.png">
-      <loc x="795" y="375"/>
-      <month x="20" y="10"/>
-      <day x="0" y="25"/>
-      <year x="38" y="0" format="yy"/>
-      <font name="Times" size="25" weight="75"/>
-   </resource>
    <resource name="CBP_computer" file="CBP_computer.png">
-      <loc x="491" y="296"/>
+      <loc x="502" y="292"/>
+      <offset x="30" y="0"/>
    </resource>
    <resource name="CBP_exit" file="CBP_exit.png">
-      <loc x="211" y="0"/>
+      <loc x="209" y="0"/>
    </resource>
    <resource name="CBP_map" file="CBP_map.png">
-      <loc x="1052" y="76"/>
+      <loc x="1052" y="80"/>
+      <offset x="0" y="15"/>
    </resource>
-   <resource name="CBP_memos" file="CBP_memos.png">
-      <loc x="1012" y="495"/>
+   <resource name="CBP_memos" file="CBP_memo.png">
+      <loc x="1011" y="496"/>
    </resource>
-   <resource name="CBP_newspaper" file="CBP_newspaper.png">
-      <loc x="286" y="487"/>
+   <resource name="CBP_newspaper" file="CBP_news.png">
+      <loc x="282" y="487"/>
       <offset x="0" y="40"/>
    </resource>
 <!--
    <resource name="CBP_resources" file="CBP_resources.png">
-      <loc x="0" y="75"/>
+      <loc x="0" y="72"/>
    </resource>
 -->
    <resource name="CBP_tv" file="CBP_tv.png">
-      <loc x="284" y="247"/>
+      <loc x="282" y="241"/>
+      <offset x="0" y="90"/>
    </resource>
    <resource name="CBP_videophone" file="CBP_vidphone.png">
-      <loc x="72" y="364"/>
+      <loc x="71" y="363"/>
+      <offset x="50" y="10"/>
    </resource>
    <resource name="CBP_vote" file="CBP_vote.png">
-      <loc x="932" y="371"/>
+      <loc x="933" y="368"/>
    </resource>
-   <resource name="CBP_background" file="CBP_main.png">
+   <resource name="CBP_background" file="CBP_main.jpg">
       <loc x="0" y="0"/>
    </resource>
    <resource name="CBP_adv0_alt" file="CBP_ad01_outreach.png"/>

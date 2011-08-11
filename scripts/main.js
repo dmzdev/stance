@@ -317,7 +317,7 @@ function (objHandle, attrHandle, value) {
 
       Object.keys(PageLink).forEach(function (item) {
 
-         if (PageLink[item].highlight) { PageLink[item].highlight.hide(); }
+         if (PageLink[item].highlight) { PageLink[item].highlight.show(); }
       });
    }
 });
