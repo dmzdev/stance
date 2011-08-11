@@ -83,6 +83,7 @@ var dmz =
    , setCurrentType //
    , setActiveState //
    , setButtonBindings
+   , checkNotifications
    , init
    ;
 
@@ -474,6 +475,32 @@ setButtonBindings = function () {
    prevButton.observe(self, "clicked", skipBackward);
 };
 
+checkNotifications = function () {
+
+   var hil = dmz.object.hil()
+     , groupHandle = dmz.stance.getUserGroupHandle(hil)
+     , groupMediaHandles = dmz.object.superLinks(groupHandle, dmz.stance.MediaHandle) || []
+     , userMediaHandles = dmz.object.superLinks(hil, dmz.stance.MediaHandle) || []
+     , objType
+     ;
+
+   self.log.error(groupMediaHandles, userMediaHandles);
+   groupMediaHandles.forEach(function (mediaHandle) {
+
+      if (userMediaHandles.indexOf(mediaHandle) === -1) {
+
+         objType = dmz.object.type(mediaHandle);
+         Object.keys(TypesMap).forEach(function (key) {
+
+            if (TypesMap[key].isOfType(objType)) {
+
+               MainModule.highlight(key);
+            }
+         });
+      }
+   });
+};
+
 init = function () {
 
    // Layout Declarations
@@ -586,7 +613,11 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               setUserPlayList(dmz.object.hil());
               loadCurrentPrint();
            }
-         , function () { webpage.setHtml("<center><b>Loading...</b></center>"); }
+         , function () {
+
+              webpage.setHtml("<center><b>Loading...</b></center>");
+              checkNotifications();
+           }
          );
       module.addPage
          ( "Newspaper"
@@ -597,7 +628,11 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               setUserPlayList(dmz.object.hil());
               loadCurrentPrint();
            }
-         , function () { webpage.setHtml("<center><b>Loading...</b></center>"); }
+         , function () {
+
+              webpage.setHtml("<center><b>Loading...</b></center>");
+              checkNotifications();
+           }
          );
       module.addWidget
          ( "Video"
@@ -608,7 +643,11 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               setUserPlayList(dmz.object.hil());
               playCurrentVideo();
            }
-         , stopCurrentOnHome
+         , function () {
+
+              stopCurrentOnHome();
+              checkNotifications();
+           }
          );
       module.addPage
          ( "Lobbyist"
@@ -619,6 +658,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               setUserPlayList(dmz.object.hil());
               loadCurrentLobbyist();
            }
+         , checkNotifications
          );
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
