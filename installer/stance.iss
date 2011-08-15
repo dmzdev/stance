@@ -61,8 +61,6 @@ Source: {#DependDir}\bin\QtWebKit4.dll; DestDir: {app}\bin
 Source: {#DependDir}\bin\QtNetwork4.dll; DestDir: {app}\bin
 Source: {#DependDir}\bin\ssleay32.dll; DestDir: {app}\bin
 Source: {#DependDir}\bin\libeay32.dll; DestDir: {app}\bin
-Source: {#DependDir}\bin\phonon4.dll; DestDir: {app}\bin
-Source: {#DependDir}\bin\phonon_ds94.dll; DestDir: {app}\bin\plugins\phonon_backend
 Source: {#DependDir}\bin\qjpeg4.dll; DestDir: {app}\bin\plugins\imageformats
 Source: {#DependDir}\bin\qgif4.dll; DestDir: {app}\bin\plugins\imageformats
 Source: {#DependDir}\bin\qtiff4.dll; DestDir: {app}\bin\plugins\imageformats
