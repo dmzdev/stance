@@ -167,14 +167,14 @@ setUserPlayList = function (userHandle) {
 
    if (groupMediaList) {
 
-      for (itor = 0; itor < groupMediaList.length; itor+=1) {
+      for (itor = 0; itor < groupMediaList.length; itor += 1) {
 
          combinedMediaList.push(groupMediaList[itor]);
       }
    }
    if (userMediaList) {
 
-      for (itor = 0; itor < userMediaList.length; itor+=1) {
+      for (itor = 0; itor < userMediaList.length; itor +=1 ) {
 
          combinedMediaList.push(userMediaList[itor]);
       }
@@ -208,7 +208,7 @@ setUserPlayList = function (userHandle) {
       });
       combinedMediaList.forEach(function (handle) {
 
-         if (CurrentWindowName == "Video" || CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
+         if (CurrentWindowName !== "Lobbyist") {
 
             text = dmz.object.text(handle, dmz.stance.TextHandle);
             SourceList.push (
@@ -216,7 +216,7 @@ setUserPlayList = function (userHandle) {
                , source: text
                });
          }
-         if (CurrentWindowName == "Lobbyist") {
+         if (CurrentWindowName === "Lobbyist") {
 
             pic = dmz.object.text(handle, dmz.stance.PictureHandle);
             name = dmz.object.text(handle, dmz.stance.NameHandle);
@@ -274,7 +274,7 @@ loadCurrentLobbyist = function () {
      , pic
      ;
 
-   if (SourceList.length == 0) {
+   if (SourceList.length === 0) {
 
       messageText.text("");
       nameLabel.text("");
@@ -318,7 +318,7 @@ skipForward = function () {
 
             loadCurrentPrint();
          }
-         if (CurrentWindowName == "Lobbyist") {
+         if (CurrentWindowName === "Lobbyist") {
 
             loadCurrentLobbyist();
          }
@@ -340,7 +340,7 @@ skipBackward = function () {
 
             loadCurrentPrint();
          }
-         if (CurrentWindowName == "Lobbyist") {
+         if (CurrentWindowName === "Lobbyist") {
 
             loadCurrentLobbyist();
          }
@@ -442,7 +442,7 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
-      Object.keys(TypesMap).forEach (function (initType) {
+      Object.keys(TypesMap).forEach(function (initType) {
 
          setActiveState(initType);
          setUserPlayList(objHandle);
