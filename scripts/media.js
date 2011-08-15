@@ -79,13 +79,13 @@ var dmz =
    , init
    ;
 
-self.shutdown = function () { dmz.ui.phonon.clearPaths(); };
+/*self.shutdown = function () { dmz.ui.phonon.clearPaths(); };
 
 videoForm.observe(self, "homeButton", "clicked", function () {
 
    stopCurrentOnHome();
    VideoHomeMessage.send();
-});
+});*/
 
 setActiveState = function (state) {
 
@@ -322,10 +322,6 @@ skipForward = function () {
 
    if (CurrentIndex < SourceList.length) {
 
-      if (CurrentWindowName == "Video") {
-
-         stopCurrent();
-      }
       if ((CurrentIndex + 1) < SourceList.length) {
 
          CurrentIndex += 1;
