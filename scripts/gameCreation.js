@@ -939,10 +939,9 @@ mediaInjectButtons = function () {
 
                for (itor = 0; itor < count; itor += 1) {
 
-                  if(MediaGroupFLayout.at(itor, 1).isChecked()) {
+                  if (MediaGroupFLayout.at(itor, 1).isChecked()) {
 
                      somethingChecked = true;
-                     break;
                   }
                }
                if ((text.lastIndexOf(urlEnd) !== -1) && somethingChecked) {
