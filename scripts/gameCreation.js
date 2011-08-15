@@ -122,7 +122,7 @@ var dmz =
         { Video:
            { type: dmz.stance.VideoType
            , button: "addVideoInjectButton"
-           , urlEnd: ".com"
+           , urlEnd: ""
            , listItems: {}
            , list: videoList
            }
@@ -925,9 +925,9 @@ mediaInjectButtons = function () {
 
       return function () {
 
-         if (type == dmz.stance.NewspaperType
-          || type == dmz.stance.MemoType
-          || type == dmz.stance.VideoType) {
+         if (type.isOfType(dmz.stance.NewspaperType) ||
+            type.isOfType(dmz.stance.MemoType) ||
+            type.isOfType(dmz.stance.VideoType)) {
 
             MediaOkButton.observe(self, "clicked", function () {
 
@@ -936,6 +936,7 @@ mediaInjectButtons = function () {
                  , itor
                  , count = MediaGroupFLayout.rowCount()
                  ;
+
                for (itor = 0; itor < count; itor += 1) {
 
                   if(MediaGroupFLayout.at(itor, 1).isChecked()) {
@@ -944,12 +945,13 @@ mediaInjectButtons = function () {
                      break;
                   }
                }
-               if (text.lastIndexOf(urlEnd) != -1 && somethingChecked) {
+               if ((text.lastIndexOf(urlEnd) !== -1) && somethingChecked) {
 
                   CreateMediaInjectDialog.accept();
                }
                else {
-                  if (text.lastIndexOf(urlEnd) == -1) {
+
+                  if (text.lastIndexOf(urlEnd) === -1) {
 
                      MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
                   }
@@ -995,7 +997,7 @@ mediaInjectButtons = function () {
                   MediaTitleText.text("");
                   MediaUrlText.text("");
                   MediaURLWarning.text("");
-                  for (itor = 0; itor < count; itor+=1) {
+                  for (itor = 0; itor < count; itor += 1) {
 
                      MediaGroupFLayout.at(itor, 1).setChecked(false);
                   }
@@ -1003,7 +1005,7 @@ mediaInjectButtons = function () {
             });
          }
 
-         if (type == dmz.stance.LobbyistType) {
+         if (type.isOfType(dmz.stance.LobbyistType)) {
 
             editScenarioWidget.observe(self, "addLobbyistButton", "clicked", function () {
 
