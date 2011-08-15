@@ -44,6 +44,8 @@ var dmz =
    , totalLabel = webForm.lookup("totalLabel") //
 
    // Variables
+   , width = 0
+   , height = 0
    , VideoHomeMessage = dmz.message.create("VideoHome")
    , CurrentWindowName
    , CurrentIndex = 0
@@ -246,7 +248,16 @@ loadCurrentPrint = function () {
 
          if (NewSource) {
 
-            webpage.page().mainFrame().load(item.source);
+            if (CurrentWindowName === "Video") {
+
+               webpage.page().mainFrame().load(
+                  "http://www.chds.us/?stance:youtube&video=" + item.source +
+                  "&width=" + Math.floor(width * 0.85) +"&height=" + Math.floor(height * 0.67));
+            }
+            else {
+
+               webpage.page().mainFrame().load(item.source);
+            }
             NewSource = false;
             linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, item.handle, hil);
             if (!linkHandle) {
@@ -482,8 +493,10 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       module.addPage
          ( "Video"
          , "Memo" // Use the "Memo" dialog with the video functions
-         , function () {
+         , function (widthIn, heightIn) {
 
+              width = widthIn;
+              height = heightIn;
               setActiveState("Video");
               setUserPlayList(dmz.object.hil());
               loadCurrentPrint();
