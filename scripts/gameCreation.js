@@ -944,21 +944,17 @@ mediaInjectButtons = function () {
                      somethingChecked = true;
                   }
                }
-               if ((text.lastIndexOf(urlEnd) !== -1) && somethingChecked) {
 
-                  CreateMediaInjectDialog.accept();
+
+               if (text.lastIndexOf(urlEnd) === -1) {
+
+                  MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
                }
-               else {
+               else if (!somethingChecked) {
 
-                  if (text.lastIndexOf(urlEnd) === -1) {
-
-                     MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
-                  }
-                  if (!somethingChecked) {
-
-                     MediaURLWarning.text("<font color=\"red\"> Select at least one group.</font>");
-                  }
+                  MediaURLWarning.text("<font color=\"red\"> Select at least one group.</font>");
                }
+               else { CreateMediaInjectDialog.accept(); }
             });
 
             CreateMediaInjectDialog.open(self, function (value, dialog) {
