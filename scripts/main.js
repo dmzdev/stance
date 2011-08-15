@@ -174,7 +174,10 @@ setPixmapFromResource = function (graphicsItem, resourceName) {
       if (dmz.vector.isTypeOf(loc)) {
 
          name = graphicsItem.data(NAME_INDEX);
-         if (PageLink[name] && PageLink[name].highlight) { PageLink[name].highlight.pos(loc.x, loc.y); }
+         if (PageLink[name] && PageLink[name].highlight) {
+
+            PageLink[name].highlight.pos(loc.x, loc.y);
+         }
       }
    }
 };
@@ -454,7 +457,10 @@ _exports.addPage = function (name, widget, func, onHome) {
    var dialog;
    if (name && PageLink[name] && widget) {
 
-      if (PageLink[widget] && PageLink[widget].dialog) { PageLink[name].dialog = PageLink[widget].dialog; }
+      if (PageLink[widget] && PageLink[widget].dialog) {
+
+         PageLink[name].dialog = PageLink[widget].dialog;
+      }
       else if (widget.inherits("QDialog")) { PageLink[name].dialog = widget; }
       else {
 
@@ -537,7 +543,11 @@ function (objHandle, attrHandle, userHandle, groupHandle) {
 
       dmz.time.setTimer(self, 3, function () {
 
-         if (!LoggedIn && stackedWidget) { stackedWidget.currentIndex(HOME_INDEX); LoggedIn = true; }
+         if (!LoggedIn && stackedWidget) {
+
+            stackedWidget.currentIndex(HOME_INDEX);
+            LoggedIn = true;
+         }
       });
    }
 }());
