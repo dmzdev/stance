@@ -29,7 +29,8 @@ var dmz =
    , contentLayout = dmz.ui.layout.createVBoxLayout()
 
    // Variables
-   , openedOnce = false
+   , SEND_MAIL = false
+   , EmailMod = false
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
       /* VoteObject =
             { handle: handle
@@ -74,6 +75,7 @@ var dmz =
    , highlightNew
    , openWindow
    , closeWindow
+   , willVoteBeOVer
    , init
    ;
 
@@ -289,9 +291,9 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.buttonLayout = voteItem.postItem.lookup("buttonLayout");
          voteItem.textLayout = voteItem.postItem.lookup("textLayout");
          voteItem.timeBox = dmz.ui.spinBox.createSpinBox("timeBox");
-         voteItem.timeBox.minimum(24);
-         voteItem.timeBox.maximum(72);
-         voteItem.timeBox.setSingleStep(24);
+         voteItem.timeBox.minimum(5);
+         voteItem.timeBox.maximum(60);
+         voteItem.timeBox.setSingleStep(5);
          voteItem.timeBox.setSuffix("hrs");
          voteItem.timeBoxLabel = dmz.ui.label.create("<b>Duration: </b>");
          voteItem.timeBoxLabel.sizePolicy(8, 0);
@@ -459,11 +461,23 @@ setItemLabels = function (voteItem, refresh) {
 
             voteItem.yesButton.observe(self, "clicked", function () {
 
+               if (willVoteBeOVer(voteItem, true) && SEND_MAIL) {
+
+                  // email notif code will go here
+               }
                userVoted(dmz.object.hil(), voteItem.decisionHandle, true);
+               voteItem.yesButton.hide();
+               voteItem.noButton.hide();
             });
             voteItem.noButton.observe(self, "clicked", function () {
 
+               if (willVoteBeOVer(voteItem, false) && SEND_MAIL) {
+
+                  // email notif code will go here
+               }
                userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
+               voteItem.yesButton.hide();
+               voteItem.noButton.hide();
             });
          }
       }
@@ -499,6 +513,22 @@ populateSubLists = function () {
    });
 };
 
+willVoteBeOVer = function (voteItem, voteValue) {
+
+   var totalUsers = numberOfNonAdminUsers(dmz.stance.getUserGroupHandle(dmz.object.hil()))
+     , yesVotes = voteItem.yesVotes || 0
+     , notVotes = voteItem.noVotes || 0
+     , voteOver = false
+     ;
+
+   if (voteValue) { voteItem.yesVotes += 1; }
+   else { voteItem.noVotes += 1; }
+   if (voteItem.yesVotes > (totalUsers / 2)) { voteOver = true; }
+   else if (voteItem.noVotes >= (totalUsers / 2)) { voteOver = true; }
+
+   return voteOver;
+};
+
 isVoteOver = function (objHandle) {
 
    var decisionData
@@ -508,6 +538,7 @@ isVoteOver = function (objHandle) {
      , voteHandle
      , voteItem
      , decisionHandle
+     , tempHandles
      ;
 
    if (VoteObjects[objHandle] && VoteObjects[objHandle].decisionHandle) {
@@ -522,14 +553,16 @@ isVoteOver = function (objHandle) {
       voteHandle = decisionData.voteHandle;
       decisionHandle = objHandle;
    }
+   if (decisionHandle && totalUsers) {
 
-   if (decisionData && totalUsers) {
-
-      yesVotes = decisionData.yesVotes || 0;
-      noVotes = decisionData.noVotes || 0;
+      yesVotes = dmz.object.superLinks(decisionHandle, dmz.stance.YesHandle) || [];
+      noVotes = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
+      yesVotes = yesVotes.length;
+      noVotes = noVotes.length;
 
       if (voteHandle && (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_NO) &&
-         (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_YES)) {
+         (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_YES) &&
+         (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_EXPIRED)) {
 
          if ((yesVotes) && (yesVotes > (totalUsers / 2))) {
 
@@ -540,6 +573,23 @@ isVoteOver = function (objHandle) {
 
 				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
 				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
+			}
+		}
+		else if (voteHandle && (dmz.object.scalar(voteHandle, dmz.stance.VoteState) === dmz.stance.VOTE_EXPIRED)) {
+
+			if ((noVotes >= yesVotes) || ((yesVotes === 0) && (noVotes === 0))) {
+
+				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
+				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
+				dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle,
+					dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
+			}
+			else if (yesVotes > noVotes) {
+
+				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
+				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
+				dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle,
+					dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
 			}
 		}
 	}
@@ -585,11 +635,19 @@ function (objHandle, attrHandle, value) {
      , groupHandle = dmz.stance.getUserGroupHandle(objHandle)
      ;
 
+   if (value) {
+
+      Object.keys(AllVotes).forEach(function (key) {
+
+         var voteItem = AllVotes[key];
+         isVoteOver(voteItem.handle);
+      });
+   }
    if (value && adminFlag) {
 
       lastUserTime = dmz.stance.userAttribute(objHandle, dmz.stance.VoteTimeHandle);
 
-      AllVotes = [];
+      AllVotes = {};
       populateAllVotes();
       populateSubLists();
       PastVotes.forEach(function (voteItem) {
@@ -812,7 +870,8 @@ createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
       dmz.object.flag(decision, dmz.stance.UpdateExpiredTimeHandle, true);
       dmz.object.timeStamp(decision, dmz.stance.EndedAtServerTimeHandle, 0);
       dmz.object.flag(decision, dmz.stance.UpdateEndTimeHandle, false);
-      duration *= 3600; //convert to unix seconds
+      //duration *= 3600; //convert to unix seconds
+      duration *= 60;
       dmz.object.timeStamp(decision, dmz.stance.DurationHandle, duration);
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_ACTIVE);
    }
@@ -875,6 +934,11 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       module.addPage("Vote", voteForm, openWindow, closeWindow);
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
+});
+
+dmz.module.subscribe(self, "email", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) { EmailMod = module; }
 });
 
 init = function () {
