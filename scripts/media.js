@@ -8,7 +8,6 @@ var dmz =
       , loader: require('dmz/ui/uiLoader')
       , messageBox: require("dmz/ui/messageBox")
       , mainWindow: require('dmz/ui/mainWindow')
-      , phonon: require("dmz/ui/phonon")
       , treeWidget: require("dmz/ui/treeWidget")
       , webview: require("dmz/ui/webView")
       , widget: require("dmz/ui/widget")
