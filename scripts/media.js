@@ -27,7 +27,6 @@ var dmz =
 
    // UI Elements
    , webForm = dmz.ui.loader.load("PrintMediaForm.ui")
-   , videoForm = dmz.ui.loader.load("VideoForm.ui")
    , lobbyistForm = dmz.ui.loader.load("LobbyistWindow.ui")
 
    // WebForm specific UI
@@ -52,8 +51,6 @@ var dmz =
    , NewSource = false
    , SourceList = []
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
-   , MacVidExt = ".mov"
-   , WinVidExt = ".wmv"
    , CurrentType
    , TypesMap =
         { "Memo": dmz.stance.MemoType
@@ -157,12 +154,9 @@ setUserPlayList = function (userHandle) {
 
    // At this point, userMediaList containts previously viewed items, while groupMediaList
    // contains items not yet seen by the user.
-   if (groupMediaList) {
+   if (groupMediaList && groupMediaList.length) {
 
-      if (groupMediaList.length) {
-
-         MainModule.highlight(CurrentWindowName);
-      }
+      MainModule.highlight(CurrentWindowName);
    }
 
    if (groupMediaList) {
