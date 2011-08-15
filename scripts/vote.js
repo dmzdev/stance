@@ -318,12 +318,12 @@ setItemLabels = function (voteItem, refresh) {
          }
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
-            "<b>Start Time: </b>"
+            "<b>Started: </b>"
             + (voteItem.startTime ?
                toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
                "Less than 5 min ago"));
          voteItem.endTimeLabel.text(
-            "<b>End Time: </b>"
+            "<b>Ended: </b>"
             + (voteItem.endTime ?
                toDate(voteItem.endTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
                "Less than 5 min ago"));
@@ -356,7 +356,7 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.postItem.setStyleSheet("* { background-color: rgb(70, 70, 70); color: white; }")
          voteItem.startTimeLabel.text(
-            "<b>Start Time: </b>" +
+            "<b>Posted: </b>" +
             (voteItem.postedTime ?
                toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
                "Less than 5 min ago"));
@@ -380,7 +380,7 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 240); }")
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
-            "<b>Start Time: </b>" +
+            "<b>Posted: </b>" +
             (voteItem.postedTime ?
                toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
                "Less than 5 min ago"));
@@ -416,12 +416,12 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 70); }")
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
-            "<b>Start Time: </b>" +
+            "<b>Approved: </b>" +
             (voteItem.startTime ?
                toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
                "Less than 5 min ago"));
          voteItem.endTimeLabel.text(
-            "<b>End Time: </b>" +
+            "<b>Expires: </b>" +
             (voteItem.expiredTime ?
                toDate(voteItem.expiredTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
                "Less than 5 min ago"));
