@@ -65,10 +65,6 @@ var dmz =
    // object type.
    , loadCurrentPrint
    , loadCurrentLobbyist
-   , playCurrentVideo
-   , pauseCurrent
-   , stopCurrent
-   , stopCurrentOnHome
    , skipForward //
    , skipBackward //
    , setUserPlayList //
@@ -78,14 +74,6 @@ var dmz =
    , checkNotifications
    , init
    ;
-
-/*self.shutdown = function () { dmz.ui.phonon.clearPaths(); };
-
-videoForm.observe(self, "homeButton", "clicked", function () {
-
-   stopCurrentOnHome();
-   VideoHomeMessage.send();
-});*/
 
 setActiveState = function (state) {
 
