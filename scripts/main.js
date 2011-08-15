@@ -412,7 +412,7 @@ setupMainWindow = function () {
          }
       });
 
-      _addPage
+      _exports.addPage
          ( "Exit"
          , dmz.ui.messageBox.create(
               { type: dmz.ui.messageBox.Warning
