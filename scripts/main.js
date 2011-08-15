@@ -412,7 +412,7 @@ setupMainWindow = function () {
          }
       });
 
-      _exports.addPage
+      _addPage
          ( "Exit"
          , dmz.ui.messageBox.create(
               { type: dmz.ui.messageBox.Warning
@@ -464,18 +464,6 @@ _exports.addPage = function (name, widget, func, onHome) {
       }
       PageLink[name].onClicked = func;
       PageLink[name].onHome = onHome;
-      PageLink[name].pixmap.cursor(dmz.ui.consts.PointingHandCursor);
-   }
-   else { self.log.error(name, widget, PageLink[name]); }
-};
-
-_exports.addWidget = function (name, widget, func) {
-
-   if (name && PageLink[name] && widget) {
-
-      stackedWidget.add(widget);
-      PageLink[name].widget = widget;
-      PageLink[name].onClicked = func;
       PageLink[name].pixmap.cursor(dmz.ui.consts.PointingHandCursor);
    }
    else { self.log.error(name, widget, PageLink[name]); }
