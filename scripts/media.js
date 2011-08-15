@@ -168,7 +168,7 @@ setUserPlayList = function (userHandle) {
    }
    if (userMediaList) {
 
-      for (itor = 0; itor < userMediaList.length; itor +=1 ) {
+      for (itor = 0; itor < userMediaList.length; itor += 1) {
 
          combinedMediaList.push(userMediaList[itor]);
       }
@@ -196,8 +196,7 @@ setUserPlayList = function (userHandle) {
       /* Sort the list so the newest object is first */
       combinedMediaList.sort(function (obj1, obj2) {
 
-         var result =
-            dmz.object.scalar(obj2, dmz.stance.ID) - dmz.object.scalar(obj1, dmz.stance.ID);
+         var result = dmz.object.scalar(obj2, dmz.stance.ID) - dmz.object.scalar(obj1, dmz.stance.ID);
          return result ? result : 0;
       });
       combinedMediaList.forEach(function (handle) {
