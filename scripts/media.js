@@ -33,14 +33,6 @@ var dmz =
    // WebForm specific UI
    , webpage = dmz.ui.webview.create()
 
-   // Video Specific UI
-   , playButton = videoForm.lookup("playButton")
-   , pauseButton = videoForm.lookup("pauseButton")
-   , stopButton = videoForm.lookup("stopButton")
-   , stateLabel = videoForm.lookup("mediaStateLabel")
-   , video = dmz.ui.phonon.createVideoPlayer()
-   , source = dmz.ui.phonon.createMediaObject()
-
    // Lobbyist Specific UI
    , messageText = lobbyistForm.lookup("messageText")
    , nameLabel = lobbyistForm.lookup("nameLabel")
@@ -109,10 +101,10 @@ setActiveState = function (state) {
          break;
       case ("Video"):
 
-         nextButton = videoForm.lookup("nextButton");
-         prevButton = videoForm.lookup("prevButton");
-         currLabel = videoForm.lookup("currentLabel");
-         totalLabel = videoForm.lookup("totalLabel");
+         nextButton = webForm.lookup("nextButton");
+         prevButton = webForm.lookup("prevButton");
+         currLabel = webForm.lookup("currentLabel");
+         totalLabel = webForm.lookup("totalLabel");
          break;
       case ("Newspaper"):
 
@@ -231,15 +223,6 @@ setUserPlayList = function (userHandle) {
          if (CurrentWindowName == "Video" || CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
 
             text = dmz.object.text(handle, dmz.stance.TextHandle);
-            if (CurrentWindowName == "Video") {
-
-               stateLabel.text("");
-               if (dmz.defs.OperatingSystem && (dmz.defs.OperatingSystem === dmz.defs.Win32)) {
-
-                  text = text.replace(MacVidExt, WinVidExt);
-               }
-            }
-
             SourceList.push (
                { handle: handle
                , source: text
@@ -335,80 +318,6 @@ loadCurrentLobbyist = function () {
    }
 };
 
-playCurrentVideo = function () {
-
-   var video
-     , onVideo
-     ;
-
-   if (CurrentIndex < SourceList.length) {
-
-      video = SourceList[CurrentIndex];
-      if (video.source) {
-
-         onVideo = function (hasVideo, source) {
-
-            var linkHandle
-              , hil = dmz.object.hil();
-              ;
-
-            if (hasVideo) {
-               linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, video.handle, hil);
-               if (!linkHandle) {
-
-                  dmz.object.link(dmz.stance.MediaHandle, video.handle, hil);
-               }
-
-               dmz.time.setTimer(self, 1, function () { source.play(); });
-            }
-         };
-         if (NewSource) {
-
-            source.currentSource(video.source);
-            NewSource = false;
-         }
-         if (source.hasVideo()) { onVideo(true, source); }
-         pauseButton.enabled(true);
-         playButton.enabled(false);
-      }
-      else {
-
-         stateLabel.text("<font=\"red\">Video error.</font>");
-         self.log.error("Video error for object", SourceList[CurrentIndex].handle);
-      }
-   }
-};
-
-pauseCurrent = function () {
-
-   if (CurrentIndex < SourceList.length) {
-
-      if (source.hasVideo()) { source.pause(); }
-      playButton.enabled(true);
-      pauseButton.enabled(false);
-   }
-};
-
-/* This timer is to stop a bug involving the user pressing home before the current
-   video loads, thus causing the video to not stop (since it hasn't finished starting) and
-   it starts while the user is in the home screen
-*/
-stopCurrentOnHome = function () {
-
-   stopCurrent();
-   dmz.time.setTimer(self, 1, function () { if (source.hasVideo ()) { source.stop(); }});
-}
-
-stopCurrent = function () {
-
-   if (CurrentIndex < SourceList.length) {
-
-      if (source.hasVideo()) { source.stop(); }
-      playButton.enabled(true);
-      pauseButton.enabled(false);
-   }
-};
-
 skipForward = function () {
 
    if (CurrentIndex < SourceList.length) {
@@ -421,11 +330,7 @@ skipForward = function () {
 
          CurrentIndex += 1;
          NewSource = true;
-         if (CurrentWindowName == "Video") {
-
-            playCurrentVideo();
-         }
-         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
+         if (CurrentWindowName !== "Lobbyist") {
 
             loadCurrentPrint();
          }
@@ -443,19 +348,11 @@ skipBackward = function () {
 
    if (CurrentIndex < SourceList.length) {
 
-      if (CurrentWindowName == "Video") {
-
-         stopCurrent();
-      }
       if (CurrentIndex > 0) {
 
          CurrentIndex -= 1;
          NewSource = true;
-         if (CurrentWindowName == "Video") {
-
-            playCurrentVideo();
-         }
-         if (CurrentWindowName == "Memo" || CurrentWindowName == "Newspaper") {
+         if (CurrentWindowName !== "Lobbyist") {
 
             loadCurrentPrint();
          }
@@ -505,12 +402,6 @@ init = function () {
    // Layout Declarations
    webForm.lookup("vLayout").addWidget(webpage);
    webpage.setHtml("<center><b>Loading...</b></center>");
-   videoForm.lookup("vLayout").addWidget(video);
-   // Video Specific UI controls
-   dmz.ui.phonon.createPath(source, video);
-   playButton.standardIcon(dmz.ui.button.MediaPlay);
-   pauseButton.standardIcon(dmz.ui.button.MediaPause);
-   stopButton.standardIcon(dmz.ui.button.MediaStop);
    // Shared UI Items
    nextButton.standardIcon(dmz.ui.button.MediaSkipForward);
    prevButton.standardIcon(dmz.ui.button.MediaSkipBackward);
@@ -543,28 +434,7 @@ init = function () {
 };
 
 init();
-
-playButton.observe(self, "clicked", playCurrentVideo);
-pauseButton.observe(self, "clicked", pauseCurrent);
-stopButton.observe(self, "clicked", stopCurrent);
-source.observe(self, "finished", skipForward);
 setButtonBindings();
-
-source.observe(self, "stateChanged", function (newState) {
-
-   var str;
-   switch (newState) {
-
-      case 0: str = "Loading..."; break;
-      case 1: str = "Stopped"; break;
-      case 2: str = "Playing!"; break;
-      case 3: str = "Buffering."; break;
-      case 4: str = "Paused"; break;
-      case 5: str = "Error: " + source.errorString(); break;
-      default: str = "Video State error."; break;
-   }
-   stateLabel.text(str);
-});
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
 function (objHandle, attrHandle, value) {
@@ -633,18 +503,18 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               checkNotifications();
            }
          );
-      module.addWidget
+      module.addPage
          ( "Video"
-         , videoForm
+         , "Memo" // Use the "Memo" dialog with the video functions
          , function () {
 
               setActiveState("Video");
               setUserPlayList(dmz.object.hil());
-              playCurrentVideo();
+              loadCurrentPrint();
            }
          , function () {
 
-              stopCurrentOnHome();
+              webpage.setHtml("<center><b>Loading...</b></center>");
               checkNotifications();
            }
          );

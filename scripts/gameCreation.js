@@ -122,7 +122,7 @@ var dmz =
         { Video:
            { type: dmz.stance.VideoType
            , button: "addVideoInjectButton"
-           , urlEnd: ".mov"
+           , urlEnd: ".com"
            , listItems: {}
            , list: videoList
            }
