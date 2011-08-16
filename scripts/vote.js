@@ -75,7 +75,7 @@ var dmz =
    , highlightNew
    , openWindow
    , closeWindow
-   , willVoteBeOVer
+   , willVoteBeOver
    , init
    ;
 
@@ -461,7 +461,7 @@ setItemLabels = function (voteItem, refresh) {
 
             voteItem.yesButton.observe(self, "clicked", function () {
 
-               if (willVoteBeOVer(voteItem, true) && SEND_MAIL) {
+               if (willVoteBeOver(voteItem, true) && SEND_MAIL) {
 
                   // email notif code will go here
                }
@@ -471,7 +471,7 @@ setItemLabels = function (voteItem, refresh) {
             });
             voteItem.noButton.observe(self, "clicked", function () {
 
-               if (willVoteBeOVer(voteItem, false) && SEND_MAIL) {
+               if (willVoteBeOver(voteItem, false) && SEND_MAIL) {
 
                   // email notif code will go here
                }
@@ -513,7 +513,7 @@ populateSubLists = function () {
    });
 };
 
-willVoteBeOVer = function (voteItem, voteValue) {
+willVoteBeOver = function (voteItem, voteValue) {
 
    var totalUsers = numberOfNonAdminUsers(dmz.stance.getUserGroupHandle(dmz.object.hil()))
      , yesVotes = voteItem.yesVotes || 0
@@ -539,6 +539,7 @@ isVoteOver = function (objHandle) {
      , voteItem
      , decisionHandle
      , tempHandles
+     , voteState
      ;
 
    if (VoteObjects[objHandle] && VoteObjects[objHandle].decisionHandle) {
@@ -559,44 +560,49 @@ isVoteOver = function (objHandle) {
       noVotes = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
       yesVotes = yesVotes.length;
       noVotes = noVotes.length;
+      voteState = dmz.object.scalar(voteHandle, dmz.stance.VoteState);
 
-      if (voteHandle && (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_NO) &&
-         (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_YES) &&
-         (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_EXPIRED)) {
+      if (voteHandle && (voteState !== dmz.stance.VOTE_NO) &&
+         (voteState !== dmz.stance.VOTE_YES) &&
+         (voteState !== dmz.stance.VOTE_EXPIRED)) {
 
-         if ((yesVotes) && (yesVotes > (totalUsers / 2))) {
+         if (yesVotes && (yesVotes > (totalUsers / 2))) {
 
-				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
-				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
-			}
-			else if ((noVotes) && (noVotes >= (totalUsers / 2))) {
+            dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
+            dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
+         }
+         else if (noVotes && (noVotes >= (totalUsers / 2))) {
 
-				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
-				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
-			}
-		}
-		else if (voteHandle && (dmz.object.scalar(voteHandle, dmz.stance.VoteState) === dmz.stance.VOTE_EXPIRED)) {
+            dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
+            dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
+         }
+      }
+      else if (voteHandle && (voteState === dmz.stance.VOTE_EXPIRED)) {
 
-			if ((noVotes >= yesVotes) || ((yesVotes === 0) && (noVotes === 0))) {
+         if ((noVotes >= yesVotes) || ((yesVotes === 0) && (noVotes === 0))) {
 
-				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
-				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
-				dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle,
-					dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
-			}
-			else if (yesVotes > noVotes) {
+            dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
+            dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
+            dmz.object.timeStamp(decisionHandle,
+               dmz.stance.EndedAtServerTimeHandle,
+               dmz.object.timeStamp(decisionHandle,
+               dmz.stance.ExpiredTimeHandle));
+         }
+         else if (yesVotes > noVotes) {
 
-				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
-				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
-				dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle,
-					dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
-			}
-		}
-	}
+            dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
+            dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
+            dmz.object.timeStamp(
+               decisionHandle,
+               dmz.stance.EndedAtServerTimeHandle,
+               dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
+         }
+      }
+   }
 };
 
 /* VoteState is the only callback that refreshes the whole UI, while the isVoteOver
-	function does have the ability to modify specific labels */
+   function does have the ability to modify specific labels */
 dmz.object.scalar.observe(self, dmz.stance.VoteState,
 function (objHandle, attrHandle, newVal, prevVal) {
 
