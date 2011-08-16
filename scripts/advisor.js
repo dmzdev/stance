@@ -158,7 +158,6 @@ createAdvisorWindow = function (windowStr) {
    data.task.text.styleSheet(
       "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
       "QTextEdit { background-color: rgb(255, 255, 255); } ");
-   //data.task.submit.styleSheet("");
    dmz.stance.addUITextLimit
       ( self
       , MAX_TASK_STR_LEN
