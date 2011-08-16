@@ -579,14 +579,14 @@ isVoteOver = function (objHandle) {
       }
       else if (voteHandle && (voteState === dmz.stance.VOTE_EXPIRED)) {
 
-         if ((noVotes >= yesVotes) || ((yesVotes === 0) && (noVotes === 0))) {
+         if (noVotes >= yesVotes) {
 
             dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
             dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
-            dmz.object.timeStamp(decisionHandle,
+            dmz.object.timeStamp(
+               decisionHandle,
                dmz.stance.EndedAtServerTimeHandle,
-               dmz.object.timeStamp(decisionHandle,
-               dmz.stance.ExpiredTimeHandle));
+               dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
          }
          else if (yesVotes > noVotes) {
 
