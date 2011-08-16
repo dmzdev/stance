@@ -406,8 +406,9 @@ setItemLabels = function (voteItem, refresh) {
             voteItem.yesButton.observe(self, "clicked", function () {
 
                createDecisionObject(true, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "Okay.");
+               //send vote is approved/active email (2)
                if (SEND_MAIL) {
-                  //send vote is approved/active email (2)
+
                   var subject
                     , text
                     , groupUserList
@@ -442,8 +443,9 @@ setItemLabels = function (voteItem, refresh) {
             voteItem.noButton.observe(self, "clicked", function () {
 
                createDecisionObject(false, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "No.");
+               //send vote is denied email (3)
                if (SEND_MAIL) {
-                  //send vote is denied email (3)
+
                   var subject
                     , text
                     , groupUserList
