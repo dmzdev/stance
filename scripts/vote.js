@@ -408,13 +408,70 @@ setItemLabels = function (voteItem, refresh) {
                createDecisionObject(true, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "Okay.");
                if (SEND_MAIL) {
                   //send vote is approved/active email (2)
+                  var subject
+                    , text
+                    , groupUserList
+                    , sendList = []
+                    , groupName
+                    ;
+
+                  if (voteItem.groupHandle) {
+
+                     groupName = dmz.object.text(voteItem.groupHandle, dmz.stance.NameHandle);
+                     subject = "STANCE " + groupName + " has an active vote.";
+                     groupUserList = dmz.object.superLinks(voteItem.groupHandle, dmz.stance.GroupMembersHandle) || [];
+                     groupUsersList.forEach(function (userHandle) {
+
+                        if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
+
+                           sendList.push(userHandle);
+                        }
+                     });
+                  }
+                  if (voteItem.question) {
+
+                     text =
+                        "Question: " + voteItem.question +
+                        "\nAdvisor Response: " + (voteItem.decisionReason.text() || "Okay") +
+                        "\nDuration: " + voteItem.timeBox.value() + "hrs";
+                  }
+
+                  EmailMod.sendVoteEmail(sendList, subject, text, voteItem.handle, dmz.stance.PRIORITY_SECOND);
                }
             });
             voteItem.noButton.observe(self, "clicked", function () {
 
                createDecisionObject(false, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "No.");
                if (SEND_MAIL) {
-                  //send vote is denied email (2)
+                  //send vote is denied email (3)
+                  var subject
+                    , text
+                    , groupUserList
+                    , sendList = []
+                    , groupName
+                    ;
+
+                  if (voteItem.groupHandle) {
+
+                     groupName = dmz.object.text(voteItem.groupHandle, dmz.stance.NameHandle);
+                     subject = "STANCE " + groupName + " has had a vote denied.";
+                     groupUserList = dmz.object.superLinks(voteItem.groupHandle, dmz.stance.GroupMembersHandle) || [];
+                     groupUsersList.forEach(function (userHandle) {
+
+                        if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
+
+                           sendList.push(userHandle);
+                        }
+                     });
+                  }
+                  if (voteItem.question) {
+
+                     text =
+                        "Question: " + voteItem.question +
+                        "\nAdvisor Response: " + (voteItem.decisionReason.text() || "No");
+                  }
+
+                  EmailMod.sendVoteEmail(sendList, subject, text, voteItem.handle, dmz.stance.PRIORITY_THIRD);
                }
             });
          }

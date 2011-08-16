@@ -134,9 +134,9 @@ var dmz =
              , "Expired"
              , "ERROR"
              ]
-          , FIRST: 1
-          , SECOND: 2
-          , THIRD: 3
+          , PRIORITY_FIRST: 1
+          , PRIORITY_SECOND: 2
+          , PRIORITY_THIRD: 3
          }
    , getDisplayName
    , getAuthorHandle
