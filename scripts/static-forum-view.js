@@ -158,7 +158,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          }
       };
 
-      _updateExtraInfo =  function (handle) {
+      _updateExtraInfo = function (handle) {
 
          var item = _postList[handle]
            , info

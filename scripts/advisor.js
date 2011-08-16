@@ -153,7 +153,7 @@ createAdvisorWindow = function (windowStr) {
    data.task.text = data.task.widget.lookup("textEdit");
    data.task.submit = data.task.widget.lookup("submitButton");
    data.task.widget.lookup("cancelButton").hide();
-   data.task.widget.lookup("labelLayout").addWidget(dmz.ui.label.create("Submit Task for Voting:"))
+   data.task.widget.lookup("labelLayout").addWidget(dmz.ui.label.create("Submit Vote:"))
    dmz.stance.addUITextLimit
       ( self
       , MAX_TASK_STR_LEN
@@ -167,11 +167,11 @@ createAdvisorWindow = function (windowStr) {
       { self: self
       , postType: dmz.stance.QuestionType
       , commentType: dmz.stance.AnswerType
+      , timeHandle: dmz.stance.QuestionTimeHandle
       , forumType: dmz.stance.AdvisorType
       , parentHandle: dmz.stance.QuestionLinkHandle
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
       , useForumData: true
-      , timeHandle: dmz.stance.VoteTimeHandle
       , messageLength: MAX_QUESTION_STR_LEN
       , replyLength: MAX_QUESTION_REPLY_LEN
       , highlight: function () { MainModule.highlight(windowStr); }
@@ -250,7 +250,7 @@ createAdvisorWindow = function (windowStr) {
    data.layout.addLayout(data.topLayout);
    if (data.question && data.question.widget) {
 
-      data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
+      data.layout.addWidget(dmz.ui.label.create("Ask a Question:"));
       data.layout.addWidget(data.question.widget);
    }
    return data;

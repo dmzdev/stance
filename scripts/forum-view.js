@@ -68,15 +68,20 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       function (objHandle, attrHandle, value) {
 
          var type = dmz.object.type(objHandle);
-         if (type && type.isOfType(dmz.stance.UserType)) {
+         if (value && type && type.isOfType(dmz.stance.UserType)) {
 
-            RetData.updateForUser(value ? objHandle : undefined);
+            RetData.updateForUser(objHandle);
          }
       });
 
       if (RetData && RetData.update && RetData.onHome && RetData.widget) {
 
-         module.addPage("Forum", RetData.widget, RetData.update, RetData.onHome);
+         module.addPage
+            ( "Forum"
+            , RetData.widget
+            , function (width, height) { RetData.update(); }
+            , RetData.onHome
+            );
       }
    }
 });
