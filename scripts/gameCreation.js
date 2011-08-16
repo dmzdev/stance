@@ -490,6 +490,11 @@ dmz.object.flag.observe(self, dmz.stance.AdminHandle, function (handle, attr, va
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
 
    if (handle === CurrentGameHandle) { gameStateButton.text(value ? "End Game" : "Start Game"); }
+   else if (injectItems[handle]) {
+
+      injectItems[handle].active = value;
+      updateInjectTitle(handle);
+   }
 });
 
 setup = function () {

@@ -44,7 +44,6 @@
 
 <h3>New Features</h3>
 <ul>
-   <li>Video window now plays flash videos hosted on remote sites.</li>
    <li>When creating new users, admins now have the option to make the new user an admin.</li>
    <li>Advisor window overhaul.</li>
    <li>Vote window now contains a history of previous votes.</li>

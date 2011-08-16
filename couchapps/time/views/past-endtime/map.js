@@ -2,18 +2,27 @@ function(doc) {
 
    if ((doc.type === "object") && (doc.object) && (doc.object.attributes) && (doc.object_type === "decision")) {
 
-      var currentTime = Math.round(new Date().getTime() / 1000)
-        , expireTime
+      var updateStartTime = false
+        , updateEndTime = false
+        , updateExpireTime = false
         ;
 
       doc.object.attributes.forEach(function (attr) {
 
-         if (attr.name === "expire_time_handle") {
+         if (attr.name === "update_start_time_handle") {
 
-           expireTime = attr.timestamp.value;
+           updateStartTime = attr.flag.value;
+         }
+         if (attr.name === "update_end_time_handle") {
+
+            updateEndTime = attr.flag.value;
+         }
+         if (attr.name === "update_expire_time_handle") {
+
+            updateExpireTime = attr.flag.value;
          }
       });
-      if (endTime !== 0 && currentTime > expireTime) {
+      if (!updateStartTime && !updateEndTime && !updateExpireTime) {
 
          emit(doc.object, null);
       }

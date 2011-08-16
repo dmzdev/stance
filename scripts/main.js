@@ -272,7 +272,10 @@ mouseEvent = function (object, event) {
 
                         data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.9);
                      }
-                     if (data.onClicked) { data.onClicked(); }
+                     if (data.onClicked && rect.width && rect.height) {
+
+                        data.onClicked(rect.width, rect.height);
+                     }
                      data.dialog.open(self, function (value) {
 
                         if (data.highlight) { data.highlight.hide(); }
