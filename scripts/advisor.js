@@ -154,6 +154,11 @@ createAdvisorWindow = function (windowStr) {
    data.task.submit = data.task.widget.lookup("submitButton");
    data.task.widget.lookup("cancelButton").hide();
    data.task.widget.lookup("labelLayout").addWidget(dmz.ui.label.create("Submit Task for Voting:"))
+   data.task.widget.styleSheet("QFrame { background-color: rgb(230, 110, 110); }");
+   data.task.text.styleSheet(
+      "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
+      "QTextEdit { background-color: rgb(255, 255, 255); } ");
+   //data.task.submit.styleSheet("");
    dmz.stance.addUITextLimit
       ( self
       , MAX_TASK_STR_LEN
@@ -250,6 +255,12 @@ createAdvisorWindow = function (windowStr) {
    data.layout.addLayout(data.topLayout);
    if (data.question && data.question.widget) {
 
+      var postTextEditWidget = data.question.widget.lookup("postTextEdit")
+        , postFrameWidget = data.question.widget.lookup("postFrame")
+        ;
+
+      postFrameWidget.styleSheet("QFrame { background-color: rgb(231, 203, 118); }");
+      postTextEditWidget.styleSheet("QTextEdit { background-color: rgb(255, 255, 255); }");
       data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
       data.layout.addWidget(data.question.widget);
    }
