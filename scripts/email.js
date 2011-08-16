@@ -10,7 +10,6 @@ var dmz =
    , userFilterList = {}
    ;
 
-
 _exports.sendEmail = function (targets, title, text) {
 
    var userListStr = ""
@@ -42,6 +41,7 @@ _exports.sendEmail = function (targets, title, text) {
          dmz.object.activate(email);
       }
    }
+   return email;
 };
 
 _exports.sendTechEmail = function (targets, title, text) {
@@ -66,8 +66,16 @@ _exports.sendTechEmail = function (targets, title, text) {
          dmz.object.activate(email);
       }
    }
+   return email;
 };
 
+_exports.sendVoteEmail = function (targets, title, text, voteHandle, priority) {
+
+   var email = _exports.sendEmail(targets, title, text);
+
+   dmz.object.link(dmz.stance.VoteEmailLinkHandle, email, voteHandle);
+   dmz.object.scalar(email, dmz.stance.EmailPriorityHandle, priority);
+};
 
 (function () {
 

@@ -53,6 +53,7 @@ var dmz =
         , VoteState: dmz.defs.createNamedHandle("vote_state")
         , EmailRecipientHandle: dmz.defs.createNamedHandle("email_recipient")
         , PinTotalHandle: dmz.defs.createNamedHandle("pin_total")
+        , EmailPriorityHandle: dmz.defs.createNamedHandle("email_priority")
 
         // Link Attr Handles
         , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
@@ -62,6 +63,7 @@ var dmz =
         , GroupMembersHandle: dmz.defs.createNamedHandle("group_members")
         , GroupPinHandle: dmz.defs.createNamedHandle("group_pin")
         , VoteLinkHandle: dmz.defs.createNamedHandle("vote_link")
+        , VoteEmailLinkHandle: dmz.defs.createNamedHandle("vote_email_link")
         , YesHandle: dmz.defs.createNamedHandle("yes_link")
         , NoHandle: dmz.defs.createNamedHandle("no_link")
         , QuestionLinkHandle: dmz.defs.createNamedHandle("question_link")
@@ -132,6 +134,9 @@ var dmz =
              , "Expired"
              , "ERROR"
              ]
+          , FIRST: 1
+          , SECOND: 2
+          , THIRD: 3
          }
    , getDisplayName
    , getAuthorHandle

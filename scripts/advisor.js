@@ -235,6 +235,7 @@ createAdvisorWindow = function (windowStr) {
            ;
          if (text.length) {
 
+            // send vote proposed email (1)
             handle = dmz.object.create(dmz.stance.VoteType);
             dmz.object.scalar(handle, dmz.stance.VoteState, dmz.stance.VOTE_APPROVAL_PENDING);
             dmz.object.text(handle, dmz.stance.TextHandle, text);

@@ -406,10 +406,16 @@ setItemLabels = function (voteItem, refresh) {
             voteItem.yesButton.observe(self, "clicked", function () {
 
                createDecisionObject(true, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "Okay.");
+               if (SEND_MAIL) {
+                  //send vote is approved/active email (2)
+               }
             });
             voteItem.noButton.observe(self, "clicked", function () {
 
                createDecisionObject(false, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "No.");
+               if (SEND_MAIL) {
+                  //send vote is denied email (2)
+               }
             });
          }
       }
@@ -463,7 +469,7 @@ setItemLabels = function (voteItem, refresh) {
 
                if (willVoteBeOver(voteItem, true) && SEND_MAIL) {
 
-                  // email notif code will go here
+                  // send vote is successful email (3)
                }
                userVoted(dmz.object.hil(), voteItem.decisionHandle, true);
                voteItem.yesButton.hide();
@@ -473,7 +479,7 @@ setItemLabels = function (voteItem, refresh) {
 
                if (willVoteBeOver(voteItem, false) && SEND_MAIL) {
 
-                  // email notif code will go here
+                  // send vote failed email (3)
                }
                userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
                voteItem.yesButton.hide();
@@ -587,6 +593,7 @@ isVoteOver = function (objHandle) {
                decisionHandle,
                dmz.stance.EndedAtServerTimeHandle,
                dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
+            // send vote failed email (3)
          }
          else if (yesVotes > noVotes) {
 
@@ -596,6 +603,7 @@ isVoteOver = function (objHandle) {
                decisionHandle,
                dmz.stance.EndedAtServerTimeHandle,
                dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
+            // send vote is successful email (3)
          }
       }
    }
