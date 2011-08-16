@@ -313,11 +313,11 @@ setItemLabels = function (voteItem, refresh) {
 
          if (voteItem.state === dmz.stance.VOTE_NO) {
 
-            voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 70, 70); }")
+            voteItem.postItem.styleSheet("* { background-color: rgb(240, 70, 70); }");
          }
          else {
 
-            voteItem.postItem.setStyleSheet("* { background-color: rgb(70, 240, 70); }")
+            voteItem.postItem.styleSheet("* { background-color: rgb(70, 240, 70); }");
          }
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
@@ -357,7 +357,7 @@ setItemLabels = function (voteItem, refresh) {
       else if (voteItem.state === dmz.stance.VOTE_DENIED) {
 
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
-         voteItem.postItem.setStyleSheet("* { background-color: rgb(70, 70, 70); color: white; }")
+         voteItem.postItem.styleSheet("* { background-color: rgb(70, 70, 70); color: white; }")
          voteItem.startTimeLabel.text(
             "<b>Posted: </b>" +
             (voteItem.postedTime ?
@@ -380,7 +380,7 @@ setItemLabels = function (voteItem, refresh) {
       }
       else if (voteItem.state === dmz.stance.VOTE_APPROVAL_PENDING) {
 
-         voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 240); }")
+         voteItem.postItem.styleSheet("* { background-color: rgb(240, 240, 240); }")
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
             "<b>Posted: </b>" +
@@ -397,8 +397,8 @@ setItemLabels = function (voteItem, refresh) {
 
             voteItem.buttonLayout.insertWidget(0, voteItem.yesButton);
             voteItem.buttonLayout.insertWidget(1, voteItem.noButton);
-            voteItem.yesButton.setStyleSheet("* { background-color: rgb(70, 240, 70); }");
-            voteItem.noButton.setStyleSheet("* { background-color: rgb(240, 70, 70); }");
+            voteItem.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
+            voteItem.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
             voteItem.buttonLayout.insertWidget(2, voteItem.timeBoxLabel);
             voteItem.buttonLayout.insertWidget(3, voteItem.timeBox);
             voteItem.textLayout.insertWidget(0, voteItem.decisionReasonLabel);
@@ -416,7 +416,7 @@ setItemLabels = function (voteItem, refresh) {
       }
       else if (voteItem.state === dmz.stance.VOTE_ACTIVE) {
 
-         voteItem.postItem.setStyleSheet("* { background-color: rgb(240, 240, 70); }")
+         voteItem.postItem.styleSheet("* { background-color: rgb(240, 240, 70); }")
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
             "<b>Approved: </b>" +
@@ -457,8 +457,8 @@ setItemLabels = function (voteItem, refresh) {
 
             voteItem.buttonLayout.insertWidget(0, voteItem.yesButton);
             voteItem.buttonLayout.insertWidget(1, voteItem.noButton);
-            voteItem.yesButton.setStyleSheet("* { background-color: rgb(70, 240, 70); }");
-            voteItem.noButton.setStyleSheet("* { background-color: rgb(240, 70, 70); }");
+            voteItem.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
+            voteItem.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
 
             voteItem.yesButton.observe(self, "clicked", function () {
 
