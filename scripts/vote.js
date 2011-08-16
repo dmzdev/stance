@@ -29,6 +29,7 @@ var dmz =
    , contentLayout = dmz.ui.layout.createVBoxLayout()
 
    // Variables
+   , TimeFormat = "MMM-dd-yyyy hh:mm:ss tt"
    , SEND_MAIL = false
    , EmailMod = false
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
@@ -75,7 +76,7 @@ var dmz =
    , highlightNew
    , openWindow
    , closeWindow
-   , willVoteBeOVer
+   , willVoteBeOver
    , init
    ;
 
@@ -270,7 +271,7 @@ setItemLabels = function (voteItem, refresh) {
      , groupHandle = dmz.stance.getUserGroupHandle(hil);
      ;
 
-   if (voteItem && voteItem.groupHandle && voteItem.groupHandle === groupHandle) {
+   if (voteItem && voteItem.groupHandle && (voteItem.groupHandle === groupHandle)) {
 
       if (!voteItem.postItem) {
 
@@ -320,14 +321,14 @@ setItemLabels = function (voteItem, refresh) {
          }
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
-            "<b>Started: </b>"
-            + (voteItem.startTime ?
-               toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+            "<b>Started: </b>" +
+            (voteItem.startTime ?
+               toDate(voteItem.startTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          voteItem.endTimeLabel.text(
-            "<b>Ended: </b>"
-            + (voteItem.endTime ?
-               toDate(voteItem.endTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+            "<b>Ended: </b>" +
+            (voteItem.endTime ?
+               toDate(voteItem.endTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          if (voteItem.yesVotes !== undefined) {
 
@@ -360,7 +361,7 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.startTimeLabel.text(
             "<b>Posted: </b>" +
             (voteItem.postedTime ?
-               toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               toDate(voteItem.postedTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          if (voteItem.advisorPicture) {
 
@@ -384,7 +385,7 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.startTimeLabel.text(
             "<b>Posted: </b>" +
             (voteItem.postedTime ?
-               toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               toDate(voteItem.postedTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          voteItem.yesVotesLabel.text("");
          voteItem.noVotesLabel.text("");
@@ -420,12 +421,12 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.startTimeLabel.text(
             "<b>Approved: </b>" +
             (voteItem.startTime ?
-               toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               toDate(voteItem.startTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          voteItem.endTimeLabel.text(
             "<b>Expires: </b>" +
             (voteItem.expiredTime ?
-               toDate(voteItem.expiredTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               toDate(voteItem.expiredTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          if (voteItem.yesVotes !== undefined) {
 
@@ -461,7 +462,7 @@ setItemLabels = function (voteItem, refresh) {
 
             voteItem.yesButton.observe(self, "clicked", function () {
 
-               if (willVoteBeOVer(voteItem, true) && SEND_MAIL) {
+               if (willVoteBeOver(voteItem, true) && SEND_MAIL) {
 
                   // email notif code will go here
                }
@@ -471,7 +472,7 @@ setItemLabels = function (voteItem, refresh) {
             });
             voteItem.noButton.observe(self, "clicked", function () {
 
-               if (willVoteBeOVer(voteItem, false) && SEND_MAIL) {
+               if (willVoteBeOver(voteItem, false) && SEND_MAIL) {
 
                   // email notif code will go here
                }
@@ -513,7 +514,7 @@ populateSubLists = function () {
    });
 };
 
-willVoteBeOVer = function (voteItem, voteValue) {
+willVoteBeOver = function (voteItem, voteValue) {
 
    var totalUsers = numberOfNonAdminUsers(dmz.stance.getUserGroupHandle(dmz.object.hil()))
      , yesVotes = voteItem.yesVotes || 0
@@ -539,6 +540,7 @@ isVoteOver = function (objHandle) {
      , voteItem
      , decisionHandle
      , tempHandles
+     , voteState
      ;
 
    if (VoteObjects[objHandle] && VoteObjects[objHandle].decisionHandle) {
@@ -559,29 +561,32 @@ isVoteOver = function (objHandle) {
       noVotes = dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || [];
       yesVotes = yesVotes.length;
       noVotes = noVotes.length;
+      voteState = dmz.object.scalar(voteHandle, dmz.stance.VoteState);
 
-      if (voteHandle && (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_NO) &&
-         (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_YES) &&
-         (dmz.object.scalar(voteHandle, dmz.stance.VoteState) !== dmz.stance.VOTE_EXPIRED)) {
+      if (voteHandle && (voteState !== dmz.stance.VOTE_NO) &&
+         (voteState !== dmz.stance.VOTE_YES) &&
+         (voteState !== dmz.stance.VOTE_EXPIRED)) {
 
-         if ((yesVotes) && (yesVotes > (totalUsers / 2))) {
+         if (yesVotes && (yesVotes > (totalUsers / 2))) {
 
             dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
             dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
          }
-         else if ((noVotes) && (noVotes >= (totalUsers / 2))) {
+         else if (noVotes && (noVotes >= (totalUsers / 2))) {
 
             dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
             dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
          }
       }
-      else if (voteHandle && (dmz.object.scalar(voteHandle, dmz.stance.VoteState) === dmz.stance.VOTE_EXPIRED)) {
+      else if (voteHandle && (voteState === dmz.stance.VOTE_EXPIRED)) {
 
-         if ((noVotes >= yesVotes) || ((yesVotes === 0) && (noVotes === 0))) {
+         if (noVotes >= yesVotes) {
 
             dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
             dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
-            dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle,
+            dmz.object.timeStamp(
+               decisionHandle,
+               dmz.stance.EndedAtServerTimeHandle,
                dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
          }
          else if (yesVotes > noVotes) {
