@@ -566,37 +566,39 @@ isVoteOver = function (objHandle) {
 
          if ((yesVotes) && (yesVotes > (totalUsers / 2))) {
 
-				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
-				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
-			}
-			else if ((noVotes) && (noVotes >= (totalUsers / 2))) {
+            dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
+            dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
+         }
+         else if ((noVotes) && (noVotes >= (totalUsers / 2))) {
 
-				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
-				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
-			}
-		}
-		else if (voteHandle && (dmz.object.scalar(voteHandle, dmz.stance.VoteState) === dmz.stance.VOTE_EXPIRED)) {
+            dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
+            dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
+         }
+      }
+      else if (voteHandle && (dmz.object.scalar(voteHandle, dmz.stance.VoteState) === dmz.stance.VOTE_EXPIRED)) {
 
-			if ((noVotes >= yesVotes) || ((yesVotes === 0) && (noVotes === 0))) {
+         if ((noVotes >= yesVotes) || ((yesVotes === 0) && (noVotes === 0))) {
 
-				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
-				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
-				dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle,
-					dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
-			}
-			else if (yesVotes > noVotes) {
+            dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
+            dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
+            dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle,
+               dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
+         }
+         else if (yesVotes > noVotes) {
 
-				dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
-				dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
-				dmz.object.timeStamp(decisionHandle, dmz.stance.EndedAtServerTimeHandle,
-					dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
-			}
-		}
-	}
+            dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_YES);
+            dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, false);
+            dmz.object.timeStamp(
+               decisionHandle,
+               dmz.stance.EndedAtServerTimeHandle,
+               dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
+         }
+      }
+   }
 };
 
 /* VoteState is the only callback that refreshes the whole UI, while the isVoteOver
-	function does have the ability to modify specific labels */
+   function does have the ability to modify specific labels */
 dmz.object.scalar.observe(self, dmz.stance.VoteState,
 function (objHandle, attrHandle, newVal, prevVal) {
 
