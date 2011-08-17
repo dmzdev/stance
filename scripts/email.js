@@ -10,7 +10,6 @@ var dmz =
    , userFilterList = {}
    ;
 
-
 _exports.sendEmail = function (targets, title, text) {
 
    var userListStr = ""
@@ -42,6 +41,7 @@ _exports.sendEmail = function (targets, title, text) {
          dmz.object.activate(email);
       }
    }
+   return email;
 };
 
 _exports.sendTechEmail = function (targets, title, text) {
@@ -66,8 +66,110 @@ _exports.sendTechEmail = function (targets, title, text) {
          dmz.object.activate(email);
       }
    }
+   return email;
 };
 
+_exports.sendCustomVoteEmail = function (targets, title, text, voteHandle, priority) {
+
+   email = _exports.sendEmail(targets, title, text);
+   dmz.object.link(dmz.stance.VoteEmailLinkHandle, email, voteHandle);
+   dmz.object.scalar(email, dmz.stance.EmailPriorityHandle, priority);
+};
+
+_exports.sendVoteEmail = function (voteItem, state) {
+
+   var email
+     , subject
+     , text
+     , groupUserList
+     , sendList = []
+     , groupName
+     , yesVotes
+     , noVotes
+     , priority
+     ;
+
+   if (voteItem.groupHandle) {
+
+      groupName = dmz.object.text(voteItem.groupHandle, dmz.stance.NameHandle);
+      groupUserList = dmz.object.superLinks(voteItem.groupHandle, dmz.stance.GroupMembersHandle) || [];
+      if (state === dmz.stance.VOTE_APPROVAL_PENDING) {
+
+         priority = dmz.stance.PRIORITY_FIRST;
+         subject = "STANCE " + groupName + " needs a vote approved.";
+         sendList = groupUserList.filter(function (userHandle) {
+
+            return dmz.object.flag(userHandle, dmz.stance.AdminHandle);
+         });
+      }
+      else if (state === dmz.stance.VOTE_ACTIVE) {
+
+         priority = dmz.stance.PRIORITY_SECOND;
+         subject = "STANCE " + groupName + " has an active vote.";
+         sendList = groupUserList.filter(function (userHandle) {
+
+            return !dmz.object.flag(userHandle, dmz.stance.AdminHandle);
+         });
+      }
+      else if (state === dmz.stance.VOTE_DENIED) {
+
+         priority = dmz.stance.PRIORITY_THIRD;
+         subject = "STANCE " + groupName + " has had a vote denied.";
+         sendList = groupUserList.filter(function (userHandle) {
+
+            return !dmz.object.flag(userHandle, dmz.stance.AdminHandle);
+         });
+      }
+      else if (state === dmz.stance.VOTE_NO) {
+
+         priority = dmz.stance.PRIORITY_THIRD;
+         subject = "STANCE " + groupName + " has voted NO on the pending vote.";
+         sendList = groupUserList;
+      }
+      else if (state === dmz.stance.VOTE_YES) {
+
+         priority = dmz.stance.PRIORITY_THIRD;
+         subject = "STANCE " + groupName + " has voted YES on the pending vote.";
+         sendList = groupUserList;
+      }
+   }
+   if (voteItem.question) {
+
+      text = "Question: " + voteItem.question;
+      if (state === dmz.stance.VOTE_ACTIVE) {
+
+         text +=
+            "\nAdvisor Response: " + (voteItem.decisionReason.text() || "Okay") +
+            "\nDuration: " + voteItem.timeBox.value() + "hrs";
+      }
+      else if (state === dmz.stance.VOTE_DENIED) {
+
+         text += "\nAdvisor Response: " + (voteItem.decisionReason.text() || "No");
+      }
+      else if (state === dmz.stance.VOTE_NO) {
+
+         noVotes = voteItem.noVotes + 1;
+         text +=
+            "\nAdvisor Response: " + voteItem.advisorReason +
+            "\nYesVotes: " + voteItem.yesVotes +
+            "\nNoVotes: " + noVotes;
+      }
+      else if (state === dmz.stance.VOTE_YES) {
+
+         yesVotes = voteItem.yesVotes + 1;
+         text +=
+            "\nAdvisor Response: " + voteItem.advisorReason +
+            "\nYesVotes: " + yesVotes +
+            "\nNoVotes: " + voteItem.noVotes;
+      }
+   }
+   if (sendList.length && subject && text) {
+
+      email = _exports.sendEmail(sendList, subject, text);
+      dmz.object.link(dmz.stance.VoteEmailLinkHandle, email, voteItem.handle);
+      dmz.object.scalar(email, dmz.stance.EmailPriorityHandle, priority);
+   }
+};
 
 (function () {
 

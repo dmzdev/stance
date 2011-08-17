@@ -30,7 +30,7 @@ var dmz =
 
    // Variables
    , TimeFormat = "MMM-dd-yyyy hh:mm:ss tt"
-   , SEND_MAIL = false
+   , SEND_MAIL = true
    , EmailMod = false
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
       /* VoteObject =
@@ -292,9 +292,9 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.buttonLayout = voteItem.postItem.lookup("buttonLayout");
          voteItem.textLayout = voteItem.postItem.lookup("textLayout");
          voteItem.timeBox = dmz.ui.spinBox.createSpinBox("timeBox");
-         voteItem.timeBox.minimum(5);
+         voteItem.timeBox.minimum(1);
          voteItem.timeBox.maximum(60);
-         voteItem.timeBox.setSingleStep(5);
+         voteItem.timeBox.setSingleStep(1);
          voteItem.timeBox.setSuffix("hrs");
          voteItem.timeBoxLabel = dmz.ui.label.create("<b>Duration: </b>");
          voteItem.timeBoxLabel.sizePolicy(8, 0);
@@ -407,10 +407,20 @@ setItemLabels = function (voteItem, refresh) {
             voteItem.yesButton.observe(self, "clicked", function () {
 
                createDecisionObject(true, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "Okay.");
+               //send vote is approved/active email (2)
+               if (SEND_MAIL) {
+
+                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_ACTIVE);
+               }
             });
             voteItem.noButton.observe(self, "clicked", function () {
 
                createDecisionObject(false, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "No.");
+               //send vote is denied email (3)
+               if (SEND_MAIL) {
+
+                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_DENIED);
+               }
             });
          }
       }
@@ -464,7 +474,7 @@ setItemLabels = function (voteItem, refresh) {
 
                if (willVoteBeOver(voteItem, true) && SEND_MAIL) {
 
-                  // email notif code will go here
+                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_YES);
                }
                userVoted(dmz.object.hil(), voteItem.decisionHandle, true);
                voteItem.yesButton.hide();
@@ -474,7 +484,7 @@ setItemLabels = function (voteItem, refresh) {
 
                if (willVoteBeOver(voteItem, false) && SEND_MAIL) {
 
-                  // email notif code will go here
+                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_NO);
                }
                userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
                voteItem.yesButton.hide();
@@ -537,10 +547,10 @@ isVoteOver = function (objHandle) {
      , noVotes
      , totalUsers = numberOfNonAdminUsers(dmz.stance.getUserGroupHandle(dmz.object.hil()))
      , voteHandle
-     , voteItem
      , decisionHandle
      , tempHandles
      , voteState
+     , voteItem = {}
      ;
 
    if (VoteObjects[objHandle] && VoteObjects[objHandle].decisionHandle) {
@@ -588,6 +598,28 @@ isVoteOver = function (objHandle) {
                decisionHandle,
                dmz.stance.EndedAtServerTimeHandle,
                dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
+            // send vote failed email (3)
+            if (SEND_MAIL) {
+
+               tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle);
+               if (tempHandles) {
+
+                  tempHandles = dmz.object.subLinks(tempHandles[0], dmz.stance.GroupMembersHandle);
+                  if (tempHandles) { voteItem.groupHandle = tempHandles[0]; }
+               }
+               voteItem.question = dmz.object.text(voteHandle, dmz.stance.TextHandle);
+               voteItem.yesVotes = (dmz.object.superLinks(decisionHandle, dmz.stance.YesHandle) || []).length;
+               // the -1 is there to account for the fact that the mail function assumes that it is being
+               // called before the function the adds 1 to the vote.
+               voteItem.noVotes = (dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || []).length - 1;
+               voteItem.advisorReason = dmz.object.text(decisionHandle, dmz.stance.TextHandle);
+               voteItem.handle = voteHandle;
+               if (voteItem.groupHandle && voteItem.question && (voteItem.yesVotes !== undefined) &&
+                  (voteItem.noVotes !== undefined) && voteItem.advisorReason && voteItem.handle) {
+
+                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_NO);
+               }
+            }
          }
          else if (yesVotes > noVotes) {
 
@@ -597,6 +629,28 @@ isVoteOver = function (objHandle) {
                decisionHandle,
                dmz.stance.EndedAtServerTimeHandle,
                dmz.object.timeStamp(decisionHandle, dmz.stance.ExpiredTimeHandle));
+            // send vote is successful email (3)
+            if (SEND_MAIL) {
+
+               tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle);
+               if (tempHandles) {
+
+                  tempHandles = dmz.object.subLinks(tempHandles[0], dmz.stance.GroupMembersHandle);
+                  if (tempHandles) { voteItem.groupHandle = tempHandles[0]; }
+               }
+               voteItem.question = dmz.object.text(voteHandle, dmz.stance.TextHandle);
+               // the -1 is there to account for the fact that the mail function assumes that it is being
+               // called before the function the adds 1 to the vote.
+               voteItem.yesVotes = (dmz.object.superLinks(decisionHandle, dmz.stance.YesHandle) || []).length - 1;
+               voteItem.noVotes = (dmz.object.superLinks(decisionHandle, dmz.stance.NoHandle) || []).length;
+               voteItem.advisorReason = dmz.object.text(decisionHandle, dmz.stance.TextHandle);
+               voteItem.handle = voteHandle;
+               if (voteItem.groupHandle && voteItem.question && (voteItem.yesVotes !== undefined) &&
+                  (voteItem.noVotes !== undefined) && voteItem.advisorReason && voteItem.handle) {
+
+                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_YES);
+               }
+            }
          }
       }
    }
