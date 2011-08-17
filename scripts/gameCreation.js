@@ -774,9 +774,7 @@ groupAdvisorList.observe(self, "itemActivated", function (item) {
          pictureLabel.pixmap(
             dmz.ui.graph.createPixmap(
                dmz.resources.findFile(
-                  data.string(
-                     dmz.stance.AdvisorImageHandle,
-                     dmz.object.scalar(advisorHandle, dmz.stance.AdvisorImageHandle)))));
+                  dmz.object.text(advisorHandle, dmz.stance.PictureHandle))));
       }
       else { pictureLabel.clear(); }
 
