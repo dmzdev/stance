@@ -161,6 +161,16 @@
    </group-picture-set>
    <lobbyist-pictures>
       <picture name="lob_0"/>
+      <picture name="lob_1"/>
+      <picture name="lob_2"/>
+      <picture name="lob_3"/>
+      <picture name="lob_4"/>
+      <picture name="lob_5"/>
+      <picture name="lob_6"/>
+      <picture name="lob_7"/>
+      <picture name="lob_8"/>
+      <picture name="lob_9"/>
+      <picture name="lob_10"/>
    </lobbyist-pictures>
    <avatar-list>
       <avatar name="AvatarEye"/>
