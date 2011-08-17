@@ -115,8 +115,8 @@ taskBlocked = function () {
            ;
 
          if (!decision ||
-            ((voteState === dmz.stance.VOTE_APPROVAL_PENDING) &&
-               (voteState !== dmz.stance.VOTE_ACTIVE))) {
+            ((voteState === dmz.stance.VOTE_APPROVAL_PENDING) ||
+               (voteState === dmz.stance.VOTE_ACTIVE))) {
 
             result = "New tasks cannot be submitted while your group has an active task.";
          }
@@ -154,7 +154,7 @@ createAdvisorWindow = function (windowStr) {
    data.task.text = data.task.widget.lookup("textEdit");
    data.task.submit = data.task.widget.lookup("submitButton");
    data.task.widget.lookup("cancelButton").hide();
-   data.task.widget.lookup("labelLayout").addWidget(dmz.ui.label.create("Submit Task for Voting:"))
+   data.task.widget.lookup("labelLayout").addWidget(dmz.ui.label.create("Submit Vote:"))
    data.task.widget.styleSheet("QFrame { background-color: rgb(230, 110, 110); }");
    data.task.text.styleSheet(
       "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
@@ -172,11 +172,11 @@ createAdvisorWindow = function (windowStr) {
       { self: self
       , postType: dmz.stance.QuestionType
       , commentType: dmz.stance.AnswerType
+      , timeHandle: dmz.stance.QuestionTimeHandle
       , forumType: dmz.stance.AdvisorType
       , parentHandle: dmz.stance.QuestionLinkHandle
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
       , useForumData: true
-      , timeHandle: dmz.stance.VoteTimeHandle
       , messageLength: MAX_QUESTION_STR_LEN
       , replyLength: MAX_QUESTION_REPLY_LEN
       , highlight: function () { MainModule.highlight(windowStr); }
@@ -270,7 +270,9 @@ createAdvisorWindow = function (windowStr) {
         ;
 
       postFrameWidget.styleSheet("QFrame { background-color: rgb(231, 203, 118); }");
-      postTextEditWidget.styleSheet("QTextEdit { background-color: rgb(255, 255, 255); }");
+      postTextEditWidget.styleSheet(
+         "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
+         "QTextEdit { background-color: rgb(255, 255, 255); } ");
       data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
       data.layout.addWidget(data.question.widget);
    }

@@ -29,6 +29,7 @@ var dmz =
    , contentLayout = dmz.ui.layout.createVBoxLayout()
 
    // Variables
+   , TimeFormat = "MMM-dd-yyyy hh:mm:ss tt"
    , SEND_MAIL = true
    , EmailMod = false
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
@@ -270,7 +271,7 @@ setItemLabels = function (voteItem, refresh) {
      , groupHandle = dmz.stance.getUserGroupHandle(hil);
      ;
 
-   if (voteItem && voteItem.groupHandle && voteItem.groupHandle === groupHandle) {
+   if (voteItem && voteItem.groupHandle && (voteItem.groupHandle === groupHandle)) {
 
       if (!voteItem.postItem) {
 
@@ -320,14 +321,14 @@ setItemLabels = function (voteItem, refresh) {
          }
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
-            "<b>Started: </b>"
-            + (voteItem.startTime ?
-               toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+            "<b>Started: </b>" +
+            (voteItem.startTime ?
+               toDate(voteItem.startTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          voteItem.endTimeLabel.text(
-            "<b>Ended: </b>"
-            + (voteItem.endTime ?
-               toDate(voteItem.endTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+            "<b>Ended: </b>" +
+            (voteItem.endTime ?
+               toDate(voteItem.endTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          if (voteItem.yesVotes !== undefined) {
 
@@ -360,7 +361,7 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.startTimeLabel.text(
             "<b>Posted: </b>" +
             (voteItem.postedTime ?
-               toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               toDate(voteItem.postedTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          if (voteItem.advisorPicture) {
 
@@ -384,7 +385,7 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.startTimeLabel.text(
             "<b>Posted: </b>" +
             (voteItem.postedTime ?
-               toDate(voteItem.postedTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               toDate(voteItem.postedTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          voteItem.yesVotesLabel.text("");
          voteItem.noVotesLabel.text("");
@@ -430,12 +431,12 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.startTimeLabel.text(
             "<b>Approved: </b>" +
             (voteItem.startTime ?
-               toDate(voteItem.startTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               toDate(voteItem.startTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          voteItem.endTimeLabel.text(
             "<b>Expires: </b>" +
             (voteItem.expiredTime ?
-               toDate(voteItem.expiredTime).toString("MMM-dd-yyyy hh:mm:ss tt") :
+               toDate(voteItem.expiredTime).toString(TimeFormat) :
                "Less than 5 min ago"));
          if (voteItem.yesVotes !== undefined) {
 
@@ -602,6 +603,7 @@ isVoteOver = function (objHandle) {
 
                tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle);
                if (tempHandles) {
+
                   tempHandles = dmz.object.subLinks(tempHandles[0], dmz.stance.GroupMembersHandle);
                   if (tempHandles) { voteItem.groupHandle = tempHandles[0]; }
                }
@@ -632,6 +634,7 @@ isVoteOver = function (objHandle) {
 
                tempHandles = dmz.object.subLinks(voteHandle, dmz.stance.CreatedByHandle);
                if (tempHandles) {
+
                   tempHandles = dmz.object.subLinks(tempHandles[0], dmz.stance.GroupMembersHandle);
                   if (tempHandles) { voteItem.groupHandle = tempHandles[0]; }
                }

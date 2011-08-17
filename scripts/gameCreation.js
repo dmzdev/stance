@@ -1005,45 +1005,42 @@ mediaInjectButtons = function () {
 
          if (type.isOfType(dmz.stance.LobbyistType)) {
 
-            editScenarioWidget.observe(self, "addLobbyistButton", "clicked", function () {
+            lobbyistPictureList.currentIndex(0);
+            lobbyistGroupList.currentIndex(0);
+            lobbyistMessage.text("");
+            lobbyistTitle.text("");
+            lobbyistName.text("");
 
-               lobbyistPictureList.currentIndex(0);
-               lobbyistGroupList.currentIndex(0);
-               lobbyistMessage.text("");
-               lobbyistTitle.text("");
-               lobbyistName.text("");
+            editLobbyistDialog.open(self, function (result) {
 
-               editLobbyistDialog.open(self, function (result) {
+               var groupIndex = lobbyistGroupList.currentIndex()
+                 , links
+                 , text
+                 , lobbyistHandle
+                 ;
 
-                  var groupIndex = lobbyistGroupList.currentIndex()
-                    , links
-                    , text
-                    , lobbyistHandle
-                    ;
+               if (result) {
 
-                  if (result) {
+                  lobbyistHandle = dmz.object.create(dmz.stance.LobbyistType);
+                  text = lobbyistPictureList.currentText();
+                  dmz.object.text(lobbyistHandle, dmz.stance.PictureHandle, text);
+                  dmz.object.text(lobbyistHandle, dmz.stance.NameHandle, lobbyistName.text());
+                  dmz.object.text(lobbyistHandle, dmz.stance.TitleHandle, lobbyistTitle.text());
+                  dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
+                  dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
+                  dmz.object.flag(lobbyistHandle, dmz.stance.UpdateStartTimeHandle, true);
+                  links = dmz.object.superLinks(CurrentGameHandle, dmz.stance.MediaHandle);
+                  dmz.object.scalar(lobbyistHandle, dmz.stance.ID, links ? links.length : 0);
+                  dmz.object.flag(lobbyistHandle, dmz.stance.ActiveHandle, true);
+                  dmz.object.activate(lobbyistHandle);
 
-                     lobbyistHandle = dmz.object.create(dmz.stance.LobbyistType);
-                     text = lobbyistPictureList.currentText();
-                     dmz.object.text(lobbyistHandle, dmz.stance.PictureHandle, text);
-                     dmz.object.text(lobbyistHandle, dmz.stance.NameHandle, lobbyistName.text());
-                     dmz.object.text(lobbyistHandle, dmz.stance.TitleHandle, lobbyistTitle.text());
-                     dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
-                     dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
-                     dmz.object.flag(lobbyistHandle, dmz.stance.UpdateStartTimeHandle, true);
-                     links = dmz.object.superLinks(CurrentGameHandle, dmz.stance.MediaHandle);
-                     dmz.object.scalar(lobbyistHandle, dmz.stance.ID, links ? links.length : 0);
-                     dmz.object.flag(lobbyistHandle, dmz.stance.ActiveHandle, true);
-                     dmz.object.activate(lobbyistHandle);
-
-                     dmz.object.link(dmz.stance.MediaHandle, lobbyistHandle, groupList[groupIndex]);
-                     dmz.object.link(dmz.stance.MediaHandle, lobbyistHandle, CurrentGameHandle);
-                  }
-               });
+                  dmz.object.link(dmz.stance.MediaHandle, lobbyistHandle, groupList[groupIndex]);
+                  dmz.object.link(dmz.stance.MediaHandle, lobbyistHandle, CurrentGameHandle);
+               }
             });
          }
       };
-   }
+   };
 
    Object.keys(MediaTypes).forEach(function (type) {
 

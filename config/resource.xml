@@ -677,7 +677,16 @@
    <resource name="CBP_adv4_alt" file="CBP_ad05_infrastructure.png"/>
 <!-- LOBBYIST IMAGES -->
    <resource name="lob_0" file="lobbyist_avatar.png"/>
-<!--   <resource name="lob_" file=""/> -->
+   <resource name="lob_1" file="lobbyist_01.jpg"/>
+   <resource name="lob_2" file="lobbyist_02.jpg"/>
+   <resource name="lob_3" file="lobbyist_03.jpg"/>
+   <resource name="lob_4" file="lobbyist_04.jpg"/>
+   <resource name="lob_5" file="lobbyist_05.jpg"/>
+   <resource name="lob_6" file="lobbyist_06.jpg"/>
+   <resource name="lob_7" file="lobbyist_07.jpg"/>
+   <resource name="lob_8" file="lobbyist_08.jpg"/>
+   <resource name="lob_9" file="lobbyist_09.jpg"/>
+   <resource name="lob_10" file="lobbyist_10.jpg"/>
 </resource-map>
 </runtime>
 </dmz>
