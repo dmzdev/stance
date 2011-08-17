@@ -270,7 +270,9 @@ createAdvisorWindow = function (windowStr) {
         ;
 
       postFrameWidget.styleSheet("QFrame { background-color: rgb(231, 203, 118); }");
-      postTextEditWidget.styleSheet("QTextEdit { background-color: rgb(255, 255, 255); }");
+      postTextEditWidget.styleSheet(
+         "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
+         "QTextEdit { background-color: rgb(255, 255, 255); } ");
       data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
       data.layout.addWidget(data.question.widget);
    }

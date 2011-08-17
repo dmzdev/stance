@@ -69,13 +69,6 @@ _exports.sendTechEmail = function (targets, title, text) {
    return email;
 };
 
-_exports.sendCustomVoteEmail = function (targets, title, text, voteHandle, priority) {
-
-   email = _exports.sendEmail(targets, title, text);
-   dmz.object.link(dmz.stance.VoteEmailLinkHandle, email, voteHandle);
-   dmz.object.scalar(email, dmz.stance.EmailPriorityHandle, priority);
-};
-
 _exports.sendVoteEmail = function (voteItem, state) {
 
    var email
@@ -91,7 +84,7 @@ _exports.sendVoteEmail = function (voteItem, state) {
 
    if (voteItem.groupHandle) {
 
-      groupName = dmz.object.text(voteItem.groupHandle, dmz.stance.NameHandle);
+      groupName = dmz.stance.getDisplayName(voteItem.groupHandle);
       groupUserList = dmz.object.superLinks(voteItem.groupHandle, dmz.stance.GroupMembersHandle) || [];
       if (state === dmz.stance.VOTE_APPROVAL_PENDING) {
 
