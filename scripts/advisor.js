@@ -114,8 +114,8 @@ taskBlocked = function () {
            ;
 
          if (!decision ||
-            ((voteState === dmz.stance.VOTE_APPROVAL_PENDING) &&
-               (voteState !== dmz.stance.VOTE_ACTIVE))) {
+            ((voteState === dmz.stance.VOTE_APPROVAL_PENDING) ||
+               (voteState === dmz.stance.VOTE_ACTIVE))) {
 
             result = "New tasks cannot be submitted while your group has an active task.";
          }
