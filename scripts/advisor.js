@@ -52,6 +52,7 @@ var dmz =
    , LoginSkipped = false
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
    , WasBlocked = false
+   , EmailMod = false
    , extraInfoList = []
    , observerLists =
         { create: []
@@ -232,18 +233,27 @@ createAdvisorWindow = function (windowStr) {
 
          var handle
            , text = data.task.text.text()
+           , hil = dmz.object.hil()
+           , voteItem = {}
+           , tempHandles
            ;
+
          if (text.length) {
 
-            // send vote proposed email (1)
             handle = dmz.object.create(dmz.stance.VoteType);
             dmz.object.scalar(handle, dmz.stance.VoteState, dmz.stance.VOTE_APPROVAL_PENDING);
             dmz.object.text(handle, dmz.stance.TextHandle, text);
             dmz.object.timeStamp(handle, dmz.stance.CreatedAtServerTimeHandle, 0);
             dmz.object.flag(handle, dmz.stance.UpdateStartTimeHandle, true);
             dmz.object.link(dmz.stance.VoteLinkHandle, handle, advisorHandle);
-            dmz.object.link(dmz.stance.CreatedByHandle, handle, dmz.object.hil());
+            dmz.object.link(dmz.stance.CreatedByHandle, handle, hil);
             dmz.object.activate(handle);
+            // send approval email (1)
+            voteItem.handle = handle;
+            tempHandles = dmz.object.subLinks(hil, dmz.stance.GroupMembersHandle);
+            if (tempHandles) { voteItem.groupHandle = tempHandles[0]; }
+            voteItem.question = text;
+            EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_APPROVAL_PENDING);
          }
       });
       setUserAvatar(dmz.object.hil(), data.task.avatar);
@@ -414,4 +424,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          });
       });
    }
+});
+
+dmz.module.subscribe(self, "email", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) { EmailMod = module; }
 });
