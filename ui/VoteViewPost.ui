@@ -272,6 +272,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QLabel" name="advisorTitleLabel">
+          <property name="text">
+           <string>advisorTitleLabel</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item row="6" column="1">
