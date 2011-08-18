@@ -294,7 +294,6 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.undecidedVotesLabel = voteItem.postItem.lookup("undecidedVotesLabel");
          voteItem.advisorPictureLabel = voteItem.postItem.lookup("advisorPictureLabel");
          voteItem.advisorReasonLabel = voteItem.postItem.lookup("advisorReasonLabel");
-         voteItem.advisorTitleLabel = voteItem.postItem.lookup("advisorTitleLabel");
          voteItem.yesButton = dmz.ui.button.createPushButton("Approve");
          voteItem.noButton = dmz.ui.button.createPushButton("Deny");
          voteItem.buttonLayout = voteItem.postItem.lookup("buttonLayout");
@@ -358,11 +357,17 @@ setItemLabels = function (voteItem, refresh) {
             pic = pic.scaled(25, 25);
             voteItem.advisorPictureLabel.pixmap(pic);
          }
-         if (voteItem.advisorReason) {
+         if (voteItem.advisorReason && voteItem.advisorName && voteItem.advisorTitle) {
 
-            voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
+            voteItem.advisorReasonLabel.text(
+               "<b>" +
+               voteItem.advisorName +
+                " (" +
+                voteItem.advisorTitle +
+                 "): </b>" +
+                 voteItem.advisorReason);
+            //voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
          }
-         voteItem.advisorTitleLabel.text("");
       }
       else if (voteItem.state === dmz.stance.VOTE_DENIED) {
 
@@ -379,15 +384,21 @@ setItemLabels = function (voteItem, refresh) {
             pic = pic.scaled(25, 25);
             voteItem.advisorPictureLabel.pixmap(pic);
          }
-         if (voteItem.advisorReason) {
+         if (voteItem.advisorReason && voteItem.advisorName && voteItem.advisorTitle) {
 
-            voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
+            voteItem.advisorReasonLabel.text(
+               "<b>" +
+               voteItem.advisorName +
+                " (" +
+                voteItem.advisorTitle +
+                 "): </b>" +
+                 voteItem.advisorReason);
+            //voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
          }
          voteItem.endTimeLabel.text("");
          voteItem.yesVotesLabel.text("");
          voteItem.noVotesLabel.text("");
          voteItem.undecidedVotesLabel.text("");
-         voteItem.advisorTitleLabel.text("");
       }
       else if (voteItem.state === dmz.stance.VOTE_APPROVAL_PENDING) {
 
@@ -405,13 +416,15 @@ setItemLabels = function (voteItem, refresh) {
             pic = pic.scaled(25, 25);
             voteItem.advisorPictureLabel.pixmap(pic);
          }
-         if (voteItem.advisorName) {
+         if (voteItem.advisorName && voteItem.advisorTitle) {
 
-            voteItem.advisorReasonLabel.text("<b>Advisor Name: </b>" +  voteItem.advisorName);
-         }
-         if (voteItem.advisorTitle) {
-
-            voteItem.advisorTitleLabel.text("<b>Advisor Title: </b>" + voteItem.advisorTitle);
+            voteItem.advisorReasonLabel.text(
+               "<b>" +
+               voteItem.advisorName +
+                " (" +
+                voteItem.advisorTitle +
+                 ") </b>");
+            //voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
          }
          voteItem.yesVotesLabel.text("");
          voteItem.noVotesLabel.text("");
@@ -483,11 +496,17 @@ setItemLabels = function (voteItem, refresh) {
             pic = pic.scaled(25, 25);
             voteItem.advisorPictureLabel.pixmap(pic);
          }
-         if (voteItem.advisorReason) {
+         if (voteItem.advisorReason && voteItem.advisorName && voteItem.advisorTitle) {
 
-            voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
+            voteItem.advisorReasonLabel.text(
+               "<b>" +
+               voteItem.advisorName +
+                " (" +
+                voteItem.advisorTitle +
+                 "): </b>" +
+                 voteItem.advisorReason);
+            //voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
          }
-         voteItem.advisorTitleLabel.text("");
          if (!hasUserVoted(hil, voteItem.decisionHandle) &&
             !dmz.object.flag(hil, dmz.stance.AdminHandle) && !refresh) {
 

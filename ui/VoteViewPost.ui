@@ -260,8 +260,14 @@
             <height>25</height>
            </size>
           </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="text">
            <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
           </property>
          </widget>
         </item>
@@ -270,12 +276,8 @@
           <property name="text">
            <string>reasonLabel</string>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="advisorTitleLabel">
-          <property name="text">
-           <string>advisorTitleLabel</string>
+          <property name="wordWrap">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
