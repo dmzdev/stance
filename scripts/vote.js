@@ -445,7 +445,7 @@ setItemLabels = function (voteItem, refresh) {
             if (!LoginSkipped) {
 
                voteItem.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
-            voteItem.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
+               voteItem.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
                voteItem.yesButton.observe(self, "clicked", function () {
 
                   createDecisionObject(true, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "Okay.");
