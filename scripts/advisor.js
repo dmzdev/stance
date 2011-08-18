@@ -286,6 +286,8 @@ createAdvisorWindow = function (windowStr) {
       data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
       data.layout.addWidget(data.question.widget);
    }
+//   data.layout.margins(0);
+//   data.layout.property("spacing", 0);
    return data;
 };
 
