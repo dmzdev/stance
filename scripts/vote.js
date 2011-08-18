@@ -29,7 +29,6 @@ var dmz =
    , contentLayout = dmz.ui.layout.createVBoxLayout()
 
    // Variables
-   , TimeFormat = "MMM-dd-yyyy hh:mm:ss tt"
    , SEND_MAIL = true
    , EmailMod = false
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
@@ -219,6 +218,14 @@ populateAllVotes = function () {
 
                voteItem.advisorPicture = dmz.object.text(voteObject.advisorHandle, dmz.stance.PictureHandle);
             }
+            if (!voteItem.advisorName) {
+
+               voteItem.advisorName = dmz.object.text(voteObject.advisorHandle, dmz.stance.NameHandle);
+            }
+            if (!voteItem.advisorTitle) {
+
+               voteItem.advisorTitle = dmz.object.text(voteObject.advisorHandle, dmz.stance.TitleHandle);
+            }
          }
          if (voteObject.userHandle) {
 
@@ -287,6 +294,7 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.undecidedVotesLabel = voteItem.postItem.lookup("undecidedVotesLabel");
          voteItem.advisorPictureLabel = voteItem.postItem.lookup("advisorPictureLabel");
          voteItem.advisorReasonLabel = voteItem.postItem.lookup("advisorReasonLabel");
+         voteItem.advisorTitleLabel = voteItem.postItem.lookup("advisorTitleLabel");
          voteItem.yesButton = dmz.ui.button.createPushButton("Approve");
          voteItem.noButton = dmz.ui.button.createPushButton("Deny");
          voteItem.buttonLayout = voteItem.postItem.lookup("buttonLayout");
@@ -299,7 +307,8 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.timeBoxLabel = dmz.ui.label.create("<b>Duration: </b>");
          voteItem.timeBoxLabel.sizePolicy(8, 0);
          voteItem.decisionReason = dmz.ui.textEdit.create("");
-         voteItem.decisionReason.fixedSize(750, 100);
+         voteItem.decisionReason.sizePolicy(7, 0);
+         voteItem.decisionReason.fixedHeigth(90);
          voteItem.decisionReasonLabel = dmz.ui.label.create("<b>Decision Reason:</b>");
       }
       if (voteItem.userPicture) {
@@ -323,12 +332,12 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.startTimeLabel.text(
             "<b>Started: </b>" +
             (voteItem.startTime ?
-               toDate(voteItem.startTime).toString(TimeFormat) :
+               toDate(voteItem.startTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
          voteItem.endTimeLabel.text(
             "<b>Ended: </b>" +
             (voteItem.endTime ?
-               toDate(voteItem.endTime).toString(TimeFormat) :
+               toDate(voteItem.endTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
          if (voteItem.yesVotes !== undefined) {
 
@@ -353,6 +362,7 @@ setItemLabels = function (voteItem, refresh) {
 
             voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
          }
+         voteItem.advisorTitleLabel.text("");
       }
       else if (voteItem.state === dmz.stance.VOTE_DENIED) {
 
@@ -361,7 +371,7 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.startTimeLabel.text(
             "<b>Posted: </b>" +
             (voteItem.postedTime ?
-               toDate(voteItem.postedTime).toString(TimeFormat) :
+               toDate(voteItem.postedTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
          if (voteItem.advisorPicture) {
 
@@ -377,6 +387,7 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.yesVotesLabel.text("");
          voteItem.noVotesLabel.text("");
          voteItem.undecidedVotesLabel.text("");
+         voteItem.advisorTitleLabel.text("");
       }
       else if (voteItem.state === dmz.stance.VOTE_APPROVAL_PENDING) {
 
@@ -385,13 +396,27 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.startTimeLabel.text(
             "<b>Posted: </b>" +
             (voteItem.postedTime ?
-               toDate(voteItem.postedTime).toString(TimeFormat) :
+               toDate(voteItem.postedTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
+
+         if (voteItem.advisorPicture) {
+
+            pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.advisorPicture));
+            pic = pic.scaled(25, 25);
+            voteItem.advisorPictureLabel.pixmap(pic);
+         }
+         if (voteItem.advisorName) {
+
+            voteItem.advisorReasonLabel.text("<b>Advisor Name: </b>" +  voteItem.advisorName);
+         }
+         if (voteItem.advisorTitle) {
+
+            voteItem.advisorTitleLabel.text("<b>Advisor Title: </b>" + voteItem.advisorTitle);
+         }
          voteItem.yesVotesLabel.text("");
          voteItem.noVotesLabel.text("");
          voteItem.undecidedVotesLabel.text("");
          voteItem.endTimeLabel.text("");
-         voteItem.advisorReasonLabel.text("");
 
          if (dmz.object.flag(hil, dmz.stance.AdminHandle) && !refresh) {
 
@@ -431,12 +456,12 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.startTimeLabel.text(
             "<b>Approved: </b>" +
             (voteItem.startTime ?
-               toDate(voteItem.startTime).toString(TimeFormat) :
+               toDate(voteItem.startTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
          voteItem.endTimeLabel.text(
             "<b>Expires: </b>" +
             (voteItem.expiredTime ?
-               toDate(voteItem.expiredTime).toString(TimeFormat) :
+               toDate(voteItem.expiredTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
          if (voteItem.yesVotes !== undefined) {
 
@@ -462,6 +487,7 @@ setItemLabels = function (voteItem, refresh) {
 
             voteItem.advisorReasonLabel.text("<b>Advisor Reason: </b>" + voteItem.advisorReason);
          }
+         voteItem.advisorTitleLabel.text("");
          if (!hasUserVoted(hil, voteItem.decisionHandle) &&
             !dmz.object.flag(hil, dmz.stance.AdminHandle) && !refresh) {
 

@@ -137,6 +137,7 @@ var dmz =
           , PRIORITY_FIRST: 1
           , PRIORITY_SECOND: 2
           , PRIORITY_THIRD: 3
+          , TIME_FORMAT: "MMM-dd hh:mm tt"
          }
    , getDisplayName
    , getAuthorHandle
