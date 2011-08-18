@@ -145,6 +145,7 @@ createAdvisorWindow = function (windowStr) {
    data.infoWindow = { widget: dmz.ui.loader.load("AdvisorWindow.ui") }
    data.infoWindow.name = data.infoWindow.widget.lookup("nameLabel");
    data.infoWindow.bio = data.infoWindow.widget.lookup("bioText");
+   data.infoWindow.bio2 = data.infoWindow.widget.lookup("bioTextOverflow");
    data.infoWindow.title = data.infoWindow.widget.lookup("specialtyLabel");
    data.infoWindow.picture = data.infoWindow.widget.lookup("pictureLabel");
    data.infoWindow.picture.pixmap(AvatarDefault);
@@ -154,7 +155,7 @@ createAdvisorWindow = function (windowStr) {
    data.task.text = data.task.widget.lookup("textEdit");
    data.task.submit = data.task.widget.lookup("submitButton");
    data.task.widget.lookup("cancelButton").hide();
-   data.task.widget.lookup("labelLayout").addWidget(dmz.ui.label.create("Submit Vote:"))
+   data.task.widget.lookup("gridLayout").addWidget(dmz.ui.label.create("Submit Vote:"), 0, 1, 1, 3);
    data.task.widget.styleSheet("QFrame { background-color: rgb(230, 110, 110); }");
    data.task.text.styleSheet(
       "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
@@ -222,8 +223,17 @@ createAdvisorWindow = function (windowStr) {
 
    data.update = function (advisorHandle) {
 
+      var text;
       data.advisor = advisorHandle;
       data.infoWindow.name.text(dmz.object.text(advisorHandle, dmz.stance.NameHandle));
+//      text = dmz.object.text(advisorHandle, dmz.stance.BioHandle);
+//      if (text && text.length >= 230) {
+
+//         data.infoWindow.bio.text(text.substr(0, 229));
+//         data.infoWindow.bio2.text(text.substr(229));
+//      }
+//      else { data.infoWindow.bio.text(dmz.object.text(advisorHandle, dmz.stance.BioHandle)); }
+
       data.infoWindow.bio.text(dmz.object.text(advisorHandle, dmz.stance.BioHandle));
       data.infoWindow.title.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
       data.infoWindow.picture.pixmap(getAvatarPixmap(advisorHandle));
