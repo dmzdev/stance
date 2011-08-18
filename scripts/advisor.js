@@ -154,7 +154,7 @@ createAdvisorWindow = function (windowStr) {
    data.task.text = data.task.widget.lookup("textEdit");
    data.task.submit = data.task.widget.lookup("submitButton");
    data.task.widget.lookup("cancelButton").hide();
-   data.task.widget.lookup("labelLayout").addWidget(dmz.ui.label.create("Submit Vote:"))
+   data.task.widget.lookup("gridLayout").addWidget(dmz.ui.label.create("Submit Vote:"), 0, 1, 1, 3);
    data.task.widget.styleSheet("QFrame { background-color: rgb(230, 110, 110); }");
    data.task.text.styleSheet(
       "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
@@ -222,6 +222,7 @@ createAdvisorWindow = function (windowStr) {
 
    data.update = function (advisorHandle) {
 
+      var text;
       data.advisor = advisorHandle;
       data.infoWindow.name.text(dmz.object.text(advisorHandle, dmz.stance.NameHandle));
       data.infoWindow.bio.text(dmz.object.text(advisorHandle, dmz.stance.BioHandle));
@@ -276,6 +277,8 @@ createAdvisorWindow = function (windowStr) {
       data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
       data.layout.addWidget(data.question.widget);
    }
+//   data.layout.margins(0);
+//   data.layout.property("spacing", 0);
    return data;
 };
 

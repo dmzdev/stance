@@ -9,7 +9,7 @@
 </plugin-list>
 <archive-module>
    <clear-archive message="dmzClearArchiveMessage"/>
-   <archive version="5" clear-old="true"/>
+   <archive version="6" clear-old="true"/>
 </archive-module>
 <archive-object>
    <filter>

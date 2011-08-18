@@ -270,7 +270,7 @@ mouseEvent = function (object, event) {
                      var rect = main.rect();
                      if (rect.width && rect.height) {
 
-                        data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.9);
+                        data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
                      }
                      if (data.onClicked && rect.width && rect.height) {
 
