@@ -16,6 +16,7 @@ var dmz =
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
    , module: require("dmz/runtime/module")
+   , message: require("dmz/runtime/messaging")
    , resources: require("dmz/runtime/resources")
    , time: require("dmz/runtime/time")
    , util: require("dmz/types/util")
@@ -54,6 +55,8 @@ var dmz =
    , PastVotes = []
    , ApprovalVotes = []
    , ActiveVotes = []
+   , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
+   , LoginSkipped = false
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
 
    // Functions
@@ -78,6 +81,8 @@ var dmz =
    , willVoteBeOver
    , init
    ;
+
+LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
 resetLayout = function () {
 
@@ -432,31 +437,39 @@ setItemLabels = function (voteItem, refresh) {
 
             voteItem.buttonLayout.insertWidget(0, voteItem.yesButton);
             voteItem.buttonLayout.insertWidget(1, voteItem.noButton);
-            voteItem.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
-            voteItem.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
             voteItem.buttonLayout.insertWidget(2, voteItem.timeBoxLabel);
             voteItem.buttonLayout.insertWidget(3, voteItem.timeBox);
             voteItem.textLayout.insertWidget(0, voteItem.decisionReasonLabel);
             voteItem.textLayout.insertWidget(1, voteItem.decisionReason);
 
-            voteItem.yesButton.observe(self, "clicked", function () {
+            if (!LoginSkipped) {
 
-               createDecisionObject(true, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "Okay.");
-               //send vote is approved/active email (2)
-               if (SEND_MAIL) {
+               voteItem.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
+               voteItem.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
+               voteItem.yesButton.observe(self, "clicked", function () {
 
-                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_ACTIVE);
-               }
-            });
-            voteItem.noButton.observe(self, "clicked", function () {
+                  createDecisionObject(true, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "Okay.");
+                  //send vote is approved/active email (2)
+                  if (SEND_MAIL) {
 
-               createDecisionObject(false, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "No.");
-               //send vote is denied email (3)
-               if (SEND_MAIL) {
+                     EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_ACTIVE);
+                  }
+               });
+               voteItem.noButton.observe(self, "clicked", function () {
 
-                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_DENIED);
-               }
-            });
+                  createDecisionObject(false, voteItem.handle, voteItem.timeBox.value(), voteItem.decisionReason.text() || "No.");
+                  //send vote is denied email (3)
+                  if (SEND_MAIL) {
+
+                     EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_DENIED);
+                  }
+               });
+            }
+            else {
+
+               voteItem.yesButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
+               voteItem.noButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
+            }
          }
       }
       else if (voteItem.state === dmz.stance.VOTE_ACTIVE) {
@@ -508,29 +521,36 @@ setItemLabels = function (voteItem, refresh) {
 
             voteItem.buttonLayout.insertWidget(0, voteItem.yesButton);
             voteItem.buttonLayout.insertWidget(1, voteItem.noButton);
-            voteItem.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
-            voteItem.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
+            if (!LoginSkipped) {
 
-            voteItem.yesButton.observe(self, "clicked", function () {
+               voteItem.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
+               voteItem.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
+               voteItem.yesButton.observe(self, "clicked", function () {
 
-               if (willVoteBeOver(voteItem, true) && SEND_MAIL) {
+                  if (willVoteBeOver(voteItem, true) && SEND_MAIL) {
 
-                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_YES);
-               }
-               userVoted(dmz.object.hil(), voteItem.decisionHandle, true);
-               voteItem.yesButton.hide();
-               voteItem.noButton.hide();
-            });
-            voteItem.noButton.observe(self, "clicked", function () {
+                     EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_YES);
+                  }
+                  userVoted(dmz.object.hil(), voteItem.decisionHandle, true);
+                  voteItem.yesButton.hide();
+                  voteItem.noButton.hide();
+               });
+               voteItem.noButton.observe(self, "clicked", function () {
 
-               if (willVoteBeOver(voteItem, false) && SEND_MAIL) {
+                  if (willVoteBeOver(voteItem, false) && SEND_MAIL) {
 
-                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_NO);
-               }
-               userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
-               voteItem.yesButton.hide();
-               voteItem.noButton.hide();
-            });
+                     EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_NO);
+                  }
+                  userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
+                  voteItem.yesButton.hide();
+                  voteItem.noButton.hide();
+               });
+            }
+            else {
+
+               voteItem.yesButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
+               voteItem.noButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
+            }
          }
       }
    }
