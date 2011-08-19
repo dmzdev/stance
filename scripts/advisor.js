@@ -36,6 +36,7 @@ var dmz =
    , MAX_TASK_REPLY_LEN = 500
 
    // Variables
+   , MainModule
    , master =
         { items: {}
         , votes: {}
@@ -133,12 +134,14 @@ taskBlocked = function () {
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
-createAdvisorWindow = function (windowStr) {
+createAdvisorWindow = function (windowStr, idx) {
 
    var data = {};
 
    data.update = function () { self.log.error ("Could not update", windowStr); }
    data.onHome = function () { self.log.error ("Could not do onHome for", windowStr); }
+   data.windowStr = windowStr;
+   data.advisorIndex = idx;
    data.window = dmz.ui.widget.create();
    data.layout = dmz.ui.layout.createVBoxLayout();
    data.window.layout(data.layout);
@@ -385,17 +388,60 @@ function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
    if (master.decisions[decisionHandle]) { extraInfoList.forEach(function (fnc) { fnc(decisionHandle); }); }
 });
 
+dmz.object.flag.observe(self, dmz.object.HILAttribute,
+function (objHandle, attrHandle, value) {
+
+   var type = dmz.object.type(objHandle)
+     , userTime
+     ;
+   if (value && type && type.isOfType(dmz.stance.UserType)) {
+
+      userTime = dmz.stance.userAttribute(objHandle, dmz.stance.QuestionTimeHandle) || 0;
+      AdvisorWindows.forEach(function (data) {
+
+         var advisorHandle = getHILAdvisor(data.advisorIndex)
+           , posts = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
+           ;
+
+         posts.forEach(function (postHandle) {
+
+            var time = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle) || 0
+              , comments
+              ;
+
+            if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, postHandle, objHandle)) {
+
+               MainModule.highlight(data.windowStr);
+            }
+            else {
+
+               comments = dmz.object.superLinks(postHandle, dmz.stance.QuestionLinkHandle) || [];
+               comments.forEach(function (commentHandle) {
+
+                  var time = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
+                  if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, commentHandle, objHandle)) {
+
+                     MainModule.highlight(data.windowStr);
+                  }
+               });
+            }
+         });
+      });
+   }
+});
+
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
    var idx;
    if (Mode === dmz.module.Activate) {
 
+      MainModule = module;
       for (idx = 0; idx < ADVISOR_COUNT; idx += 1) {
 
          (function (index) {
 
             var str = "Advisor" + idx
-              , data = createAdvisorWindow(str)
+              , data = createAdvisorWindow(str, idx)
               ;
             AdvisorWindows.push(data);
             module.addPage
