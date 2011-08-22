@@ -711,7 +711,7 @@ function (objHandle, attrHandle, newVal, prevVal) {
       else {
 
          var emailHandles
-           , filteredHandles
+           , filteredHandles = []
            ;
 
          self.log.error(dmz.object.superLinks(objHandle, dmz.stance.VoteEmailLinkHandle));
