@@ -715,11 +715,15 @@ function (objHandle, attrHandle, newVal, prevVal) {
             populateAllVotes();
             if (newVal === dmz.stance.VOTE_YES) {
 
+               AllVotes[objHandle].yesVotes -= 1;
                EmailMod.sendVoteEmail(AllVotes[objHandle], dmz.stance.VOTE_YES);
+               AllVotes[objHandle].noVotes += 1;
             }
             else if (newVal === dmz.stance.VOTE_NO) {
 
+               AllVotes[objHandle].noVotes -= 1;
                EmailMod.sendVoteEmail(AllVotes[objHandle], dmz.stance.VOTE_NO);
+               AllVotes[objHandle].noVotes += 1;
             }
          }
          VoteObjects[objHandle].state = newVal;
