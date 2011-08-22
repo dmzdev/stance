@@ -718,7 +718,7 @@ function (objHandle, attrHandle, newVal, prevVal) {
 
                AllVotes[objHandle].yesVotes -= 1;
                EmailMod.sendVoteEmail(AllVotes[objHandle], dmz.stance.VOTE_YES);
-               AllVotes[objHandle].noVotes += 1;
+               AllVotes[objHandle].yesVotes += 1;
             }
             else if (newVal === dmz.stance.VOTE_NO) {
 
