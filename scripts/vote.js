@@ -710,7 +710,8 @@ function (objHandle, attrHandle, newVal, prevVal) {
       }
       else {
 
-         if ((prevVal === dmz.stance.VOTE_ACTIVE) && AllVotes[objHandle] && SEND_MAIL) {
+         if ((prevVal === dmz.stance.VOTE_ACTIVE) && AllVotes[objHandle] && SEND_MAIL
+            && !(dmz.object.superLinks(objHandle, dmz.stance.VoteEmailLinkHandle) || [])) {
 
             populateAllVotes();
             if (newVal === dmz.stance.VOTE_YES) {
