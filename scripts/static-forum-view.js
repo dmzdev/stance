@@ -406,16 +406,17 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   (data.authorHandle && (data.authorHandle !== hil))) {
 
                   item.unread.show();
+                  if (!IsCurrentWindow) { _Highlight(); }
                }
                else { item.unread.hide(); }
             }
 
-            if (!IsCurrentWindow && data.postedAt &&
-               (data.postedAt > _LatestTimeStamp) &&
-               (data.authorHandle && (data.authorHandle !== hil))) {
+//            if (!IsCurrentWindow && data.postedAt &&
+//               (data.postedAt > _LatestTimeStamp) &&
+//               (data.authorHandle && (data.authorHandle !== hil))) {
 
-               _Highlight();
-            }
+//               _Highlight();
+//            }
          }
 
       };
@@ -447,16 +448,17 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   (data.authorHandle && (data.authorHandle !== hil))) {
 
                   item.unread.show();
+                  if (!IsCurrentWindow) { _Highlight(); }
                }
                else { item.unread.hide(); }
             }
 
-            if (!IsCurrentWindow && data.postedAt &&
-               (data.postedAt > _LatestTimeStamp) &&
-               (data.authorHandle && (data.authorHandle !== hil))) {
+//            if (!IsCurrentWindow && data.postedAt &&
+//               (data.postedAt > _LatestTimeStamp) &&
+//               (data.authorHandle && (data.authorHandle !== hil))) {
 
-               _Highlight();
-            }
+//               _Highlight();
+//            }
          }
       };
 
