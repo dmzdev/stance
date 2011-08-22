@@ -527,20 +527,12 @@ setItemLabels = function (voteItem, refresh) {
                voteItem.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
                voteItem.yesButton.observe(self, "clicked", function () {
 
-                  if (willVoteBeOver(voteItem, true) && SEND_MAIL) {
-
-                     EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_YES);
-                  }
                   userVoted(dmz.object.hil(), voteItem.decisionHandle, true);
                   voteItem.yesButton.hide();
                   voteItem.noButton.hide();
                });
                voteItem.noButton.observe(self, "clicked", function () {
 
-                  if (willVoteBeOver(voteItem, false) && SEND_MAIL) {
-
-                     EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_NO);
-                  }
                   userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
                   voteItem.yesButton.hide();
                   voteItem.noButton.hide();
@@ -735,6 +727,17 @@ function (objHandle, attrHandle, newVal, prevVal) {
       }
       else {
 
+         if ((prevVal === dmz.stance.VOTE_ACTIVE) && AllVotes[objHandle] && SEND_MAIL) {
+
+            if (newVal === dmz.stance.VOTE_YES) {
+
+               EmailMod.sendVoteEmail(AllVotes[objHandle], dmz.stance.VOTE_YES);
+            }
+            else if (newVal === dmz.stance.VOTE_NO) {
+
+               EmailMod.sendVoteEmail(AllVotes[objHandle], dmz.stance.VOTE_NO);
+            }
+         }
          VoteObjects[objHandle].state = newVal;
       }
    }
