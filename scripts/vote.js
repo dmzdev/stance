@@ -78,7 +78,6 @@ var dmz =
    , highlightNew
    , openWindow
    , closeWindow
-   , willVoteBeOver
    , init
    ;
 
@@ -575,22 +574,6 @@ populateSubLists = function () {
          ActiveVotes.push(voteItem);
       }
    });
-};
-
-willVoteBeOver = function (voteItem, voteValue) {
-
-   var totalUsers = numberOfNonAdminUsers(dmz.stance.getUserGroupHandle(dmz.object.hil()))
-     , yesVotes = voteItem.yesVotes || 0
-     , notVotes = voteItem.noVotes || 0
-     , voteOver = false
-     ;
-
-   if (voteValue) { voteItem.yesVotes += 1; }
-   else { voteItem.noVotes += 1; }
-   if (voteItem.yesVotes > (totalUsers / 2)) { voteOver = true; }
-   else if (voteItem.noVotes >= (totalUsers / 2)) { voteOver = true; }
-
-   return voteOver;
 };
 
 isVoteOver = function (objHandle) {
