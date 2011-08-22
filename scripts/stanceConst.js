@@ -83,12 +83,12 @@ var dmz =
         // Notification Time Handles
         , PinTimeHandle: dmz.defs.createNamedHandle("pin_time")
         , ForumTimeHandle: dmz.defs.createNamedHandle("forum_time")
-        , QuestionTimeHandle: dmz.defs.createNamedHandle("question_time")
         , VoteTimeHandle: dmz.defs.createNamedHandle("vote_time")
-        , NewspaperTimeHandle: dmz.defs.createNamedHandle("newspaper_time")
-        , MemoTimeHandle: dmz.defs.createNamedHandle("memo_time")
-        , VideoTimeHandle: dmz.defs.createNamedHandle("video_time")
-        , LobbyistTimeHandle: dmz.defs.createNamedHandle("lobbyist_time")
+        , Advisor0TimeHandle: dmz.defs.createNamedHandle("advisor0_time")
+        , Advisor1TimeHandle: dmz.defs.createNamedHandle("advisor1_time")
+        , Advisor2TimeHandle: dmz.defs.createNamedHandle("advisor2_time")
+        , Advisor3TimeHandle: dmz.defs.createNamedHandle("advisor3_time")
+        , Advisor4TimeHandle: dmz.defs.createNamedHandle("advisor4_time")
 
         // Group Office Image handles
         , BackgroundImageHandle: dmz.defs.createNamedHandle("background_image")

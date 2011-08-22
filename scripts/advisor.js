@@ -63,6 +63,13 @@ var dmz =
         , forumLink: []
         , parentLink: []
         }
+   , AdvisorTimeHandles =
+        [ dmz.stance.Advisor0TimeHandle
+        , dmz.stance.Advisor1TimeHandle
+        , dmz.stance.Advisor2TimeHandle
+        , dmz.stance.Advisor3TimeHandle
+        , dmz.stance.Advisor4TimeHandle
+        ]
 
    // Functions
    , createAdvisorWindow
@@ -175,7 +182,7 @@ createAdvisorWindow = function (windowStr, idx) {
       { self: self
       , postType: dmz.stance.QuestionType
       , commentType: dmz.stance.AnswerType
-      , timeHandle: dmz.stance.QuestionTimeHandle
+      , timeHandle: AdvisorTimeHandles[idx]
       , forumType: dmz.stance.AdvisorType
       , parentHandle: dmz.stance.QuestionLinkHandle
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
@@ -396,36 +403,39 @@ function (objHandle, attrHandle, value) {
      ;
    if (value && type && type.isOfType(dmz.stance.UserType)) {
 
-      userTime = dmz.stance.userAttribute(objHandle, dmz.stance.QuestionTimeHandle) || 0;
       AdvisorWindows.forEach(function (data) {
 
          var advisorHandle = getHILAdvisor(data.advisorIndex)
+           , userTime = dmz.stance.userAttribute(objHandle, AdvisorTimeHandles[data.advisorIndex]) || 0
            , posts = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
            ;
 
-         posts.forEach(function (postHandle) {
+//         self.log.warn ("index:", data.advisorIndex, "time:", userTime);
+//         posts.forEach(function (postHandle) {
 
-            var time = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle) || 0
-              , comments
-              ;
+//            var time = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle) || 0
+//              , comments
+//              ;
 
-            if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, postHandle, objHandle)) {
+//            if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, postHandle, objHandle)) {
 
-               MainModule.highlight(data.windowStr);
-            }
-            else {
+//               MainModule.highlight(data.windowStr);
+//            }
+//            else {
 
-               comments = dmz.object.superLinks(postHandle, dmz.stance.QuestionLinkHandle) || [];
-               comments.forEach(function (commentHandle) {
+//               comments = dmz.object.superLinks(postHandle, dmz.stance.QuestionLinkHandle) || [];
+//               comments.forEach(function (commentHandle) {
 
-                  var time = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
-                  if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, commentHandle, objHandle)) {
+//                  var time = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
+//                  if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, commentHandle, objHandle)) {
 
-                     MainModule.highlight(data.windowStr);
-                  }
-               });
-            }
-         });
+//                     MainModule.highlight(data.windowStr);
+//                  }
+//               });
+//            }
+//         });
+
+         data.question.updateForUser(objHandle, advisorHandle);
       });
    }
 });
@@ -438,6 +448,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       MainModule = module;
       for (idx = 0; idx < ADVISOR_COUNT; idx += 1) {
 
+         self.log.warn ("AdvisorTimeHandle" + idx + ":", AdvisorTimeHandles[idx]);
          (function (index) {
 
             var str = "Advisor" + idx

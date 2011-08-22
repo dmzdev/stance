@@ -402,6 +402,13 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   item.postedBy.text ("<b>" + data.postedBy + "</b>");
                   _setUserAvatar(data.authorHandle, item.avatar);
                }
+               if (data.postedAt && (data.postedAt > _LatestTimeStamp) &&
+                  (data.authorHandle && (data.authorHandle !== hil))) {
+
+                  _Self.log.warn (handle, data.postedAt, _LatestTimeStamp);
+                  item.unread.show();
+               }
+               else { item.unread.hide(); }
             }
 
             if (!IsCurrentWindow && data.postedAt &&
@@ -437,7 +444,12 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   "<span style=\"color:#939393;\">- " +
                   (data.postedAt ? toDate(data.postedAt).toString(dmz.stance.TIME_FORMAT) : "Less than 5 min ago") +
                   "</span>");
-               if (data.postedAt && (data.postedAt > _LatestTimeStamp)) { item.unread.show(); }
+               if (data.postedAt && (data.postedAt > _LatestTimeStamp) &&
+                  (data.authorHandle && (data.authorHandle !== hil))) {
+
+                  _Self.log.warn (handle, data.postedAt, _LatestTimeStamp);
+                  item.unread.show();
+               }
                else { item.unread.hide(); }
             }
 
@@ -562,7 +574,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
          var posts = dmz.object.superLinks(_forumHandle, _ParentLinkHandle) || []
            , latest = 0
-           , timestamp = dmz.stance.userAttribute(dmz.object.hil(), _TimeHandle) || 0
+           , hil = dmz.object.hil()
            ;
 
          posts.forEach(function (postHandle) {
@@ -571,11 +583,19 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
               , timestamp = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle) || 0
               ;
 
-            if (timestamp > latest) { latest = timestamp; }
+            if ((timestamp > latest) &&
+               !dmz.object.linkHandle(dmz.stance.CreatedByHandle, postHandle, hil)) {
+
+               latest = timestamp;
+            }
             comments.forEach(function (commentHandle) {
 
-               var timestamp = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
-               if (timestamp > latest) { latest = timestamp; }
+               var timestamp = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
+               if ((timestamp > latest) &&
+                  !dmz.object.linkHandle(dmz.stance.CreatedByHandle, commentHandle, hil)) {
+
+                  latest = timestamp;
+               }
             });
          });
          if (latest > _LatestTimeStamp) { _Highlight(); }
@@ -590,6 +610,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            ;
 
          _LatestTimeStamp = dmz.stance.userAttribute(userHandle, _TimeHandle) || 0;
+         _Self.log.warn ("LatestTimeStamp:", _TimeHandle, _LatestTimeStamp);
          group = dmz.stance.getUserGroupHandle(userHandle);
 
          if (avatar) { _setUserAvatar(userHandle, avatar); }
@@ -746,7 +767,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                _postList[postHandle].unread.hide();
                comments.forEach(function (commentHandle) {
 
-                  var timestamp = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle);
+                  var timestamp = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle);
                   if (timestamp && (timestamp > latest)) { latest = timestamp; }
                   if (_commentList[commentHandle]) {
 
