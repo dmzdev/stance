@@ -410,13 +410,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                }
                else { item.unread.hide(); }
             }
-
-//            if (!IsCurrentWindow && data.postedAt &&
-//               (data.postedAt > _LatestTimeStamp) &&
-//               (data.authorHandle && (data.authorHandle !== hil))) {
-
-//               _Highlight();
-//            }
          }
 
       };
@@ -452,13 +445,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                }
                else { item.unread.hide(); }
             }
-
-//            if (!IsCurrentWindow && data.postedAt &&
-//               (data.postedAt > _LatestTimeStamp) &&
-//               (data.authorHandle && (data.authorHandle !== hil))) {
-
-//               _Highlight();
-//            }
          }
       };
 
