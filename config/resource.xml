@@ -309,7 +309,7 @@
       <loc x="501" y="283"/>
    </resource>
    <resource name="Cartel1_exit" file="Cartel1_exit.png">
-      <loc x="215" y="19"/>
+      <loc x="213" y="19"/>
    </resource>
    <resource name="Cartel1_map" file="Cartel1_map.png">
       <loc x="1085" y="85"/>
