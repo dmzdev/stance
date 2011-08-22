@@ -649,7 +649,7 @@ isVoteOver = function (objHandle) {
             dmz.object.flag(decisionHandle, dmz.stance.UpdateEndTimeHandle, true);
          }
       }
-      else if (voteHandle && (voteState === dmz.stance.VOTE_EXPIRED)) {
+      else if (voteHandle && (voteState === dmz.stance.VOTE_EXPIRED) && !LoginSkipped) {
 
          if (noVotes >= yesVotes) {
 
@@ -724,7 +724,15 @@ function (objHandle, attrHandle, newVal, prevVal) {
 
    if (VoteObjects[objHandle]) {
 
-      if (newVal === dmz.stance.VOTE_EXPIRED) { isVoteOver(objHandle); }
+      if (newVal === dmz.stance.VOTE_EXPIRED) {
+
+         /* callback couldn't handle recieving and changing a vote state
+            at the same time, this is a tempporary workaround */
+         dmz.time.setTimer(self, function () {
+
+            isVoteOver(objHandle);
+         });
+      }
       else {
 
          VoteObjects[objHandle].state = newVal;
