@@ -61,7 +61,11 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
       function (linkObjHandle, attrHandle, userHandle, groupHandle) {
 
-         if (dmz.object.hil() === userHandle) { RetData.updateForUser(userHandle); }
+         if (dmz.object.hil() === userHandle) {
+
+            RetData.updateForUser(userHandle);
+            RetData.checkHighlight();
+         }
       });
 
       dmz.object.flag.observe(self, dmz.object.HILAttribute,
@@ -71,6 +75,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          if (value && type && type.isOfType(dmz.stance.UserType)) {
 
             RetData.updateForUser(objHandle);
+            RetData.checkHighlight();
          }
       });
 

@@ -410,32 +410,29 @@ function (objHandle, attrHandle, value) {
            , posts = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
            ;
 
-//         self.log.warn ("index:", data.advisorIndex, "time:", userTime);
-//         posts.forEach(function (postHandle) {
+         posts.forEach(function (postHandle) {
 
-//            var time = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle) || 0
-//              , comments
-//              ;
+            var time = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle) || 0
+              , comments
+              ;
 
-//            if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, postHandle, objHandle)) {
+            if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, postHandle, objHandle)) {
 
-//               MainModule.highlight(data.windowStr);
-//            }
-//            else {
+               MainModule.highlight(data.windowStr);
+            }
+            else {
 
-//               comments = dmz.object.superLinks(postHandle, dmz.stance.QuestionLinkHandle) || [];
-//               comments.forEach(function (commentHandle) {
+               comments = dmz.object.superLinks(postHandle, dmz.stance.QuestionLinkHandle) || [];
+               comments.forEach(function (commentHandle) {
 
-//                  var time = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
-//                  if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, commentHandle, objHandle)) {
+                  var time = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
+                  if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, commentHandle, objHandle)) {
 
-//                     MainModule.highlight(data.windowStr);
-//                  }
-//               });
-//            }
-//         });
-
-         data.question.updateForUser(objHandle, advisorHandle);
+                     MainModule.highlight(data.windowStr);
+                  }
+               });
+            }
+         });
       });
    }
 });
@@ -448,7 +445,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       MainModule = module;
       for (idx = 0; idx < ADVISOR_COUNT; idx += 1) {
 
-         self.log.warn ("AdvisorTimeHandle" + idx + ":", AdvisorTimeHandles[idx]);
          (function (index) {
 
             var str = "Advisor" + idx

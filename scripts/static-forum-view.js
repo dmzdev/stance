@@ -405,7 +405,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                if (data.postedAt && (data.postedAt > _LatestTimeStamp) &&
                   (data.authorHandle && (data.authorHandle !== hil))) {
 
-                  _Self.log.warn (handle, data.postedAt, _LatestTimeStamp);
                   item.unread.show();
                }
                else { item.unread.hide(); }
@@ -447,7 +446,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                if (data.postedAt && (data.postedAt > _LatestTimeStamp) &&
                   (data.authorHandle && (data.authorHandle !== hil))) {
 
-                  _Self.log.warn (handle, data.postedAt, _LatestTimeStamp);
                   item.unread.show();
                }
                else { item.unread.hide(); }
@@ -577,6 +575,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , hil = dmz.object.hil()
            ;
 
+         _LatestTimeStamp = dmz.stance.userAttribute(hil, _TimeHandle) || 0;
          posts.forEach(function (postHandle) {
 
             var comments = dmz.object.superLinks(postHandle, _ParentLinkHandle) || []
@@ -610,7 +609,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            ;
 
          _LatestTimeStamp = dmz.stance.userAttribute(userHandle, _TimeHandle) || 0;
-         _Self.log.warn ("LatestTimeStamp:", _TimeHandle, _LatestTimeStamp);
          group = dmz.stance.getUserGroupHandle(userHandle);
 
          if (avatar) { _setUserAvatar(userHandle, avatar); }
@@ -630,7 +628,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
             if (_forumHandle) { _load(); }
          }
-         else { retData.checkHighlight(); }
       };
 
       retData.updateForUser = _updateForumForUser;
