@@ -712,6 +712,7 @@ function (objHandle, attrHandle, newVal, prevVal) {
 
          if ((prevVal === dmz.stance.VOTE_ACTIVE) && AllVotes[objHandle] && SEND_MAIL) {
 
+            populateAllVotes();
             if (newVal === dmz.stance.VOTE_YES) {
 
                EmailMod.sendVoteEmail(AllVotes[objHandle], dmz.stance.VOTE_YES);
