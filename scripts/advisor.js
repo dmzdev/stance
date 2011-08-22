@@ -410,30 +410,6 @@ function (objHandle, attrHandle, value) {
            , posts = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
            ;
 
-//         posts.forEach(function (postHandle) {
-
-//            var time = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle) || 0
-//              , comments
-//              ;
-
-//            if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, postHandle, objHandle)) {
-
-//               MainModule.highlight(data.windowStr);
-//            }
-//            else {
-
-//               comments = dmz.object.superLinks(postHandle, dmz.stance.QuestionLinkHandle) || [];
-//               comments.forEach(function (commentHandle) {
-
-//                  var time = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
-//                  if ((time > userTime) && !dmz.object.linkHandle(dmz.stance.CreatedByHandle, commentHandle, objHandle)) {
-
-//                     MainModule.highlight(data.windowStr);
-//                  }
-//               });
-//            }
-//         });
-
          data.question.updateForUser(objHandle, advisorHandle);
          data.question.checkHighlight();
       });
