@@ -78,7 +78,6 @@ var dmz =
    , highlightNew
    , openWindow
    , closeWindow
-   , willVoteBeOver
    , init
    ;
 
@@ -527,20 +526,12 @@ setItemLabels = function (voteItem, refresh) {
                voteItem.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
                voteItem.yesButton.observe(self, "clicked", function () {
 
-                  if (willVoteBeOver(voteItem, true) && SEND_MAIL) {
-
-                     EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_YES);
-                  }
                   userVoted(dmz.object.hil(), voteItem.decisionHandle, true);
                   voteItem.yesButton.hide();
                   voteItem.noButton.hide();
                });
                voteItem.noButton.observe(self, "clicked", function () {
 
-                  if (willVoteBeOver(voteItem, false) && SEND_MAIL) {
-
-                     EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_NO);
-                  }
                   userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
                   voteItem.yesButton.hide();
                   voteItem.noButton.hide();
@@ -583,22 +574,6 @@ populateSubLists = function () {
          ActiveVotes.push(voteItem);
       }
    });
-};
-
-willVoteBeOver = function (voteItem, voteValue) {
-
-   var totalUsers = numberOfNonAdminUsers(dmz.stance.getUserGroupHandle(dmz.object.hil()))
-     , yesVotes = voteItem.yesVotes || 0
-     , notVotes = voteItem.noVotes || 0
-     , voteOver = false
-     ;
-
-   if (voteValue) { voteItem.yesVotes += 1; }
-   else { voteItem.noVotes += 1; }
-   if (voteItem.yesVotes > (totalUsers / 2)) { voteOver = true; }
-   else if (voteItem.noVotes >= (totalUsers / 2)) { voteOver = true; }
-
-   return voteOver;
 };
 
 isVoteOver = function (objHandle) {
@@ -735,6 +710,17 @@ function (objHandle, attrHandle, newVal, prevVal) {
       }
       else {
 
+         if ((prevVal === dmz.stance.VOTE_ACTIVE) && AllVotes[objHandle] && SEND_MAIL) {
+
+            if (newVal === dmz.stance.VOTE_YES) {
+
+               EmailMod.sendVoteEmail(AllVotes[objHandle], dmz.stance.VOTE_YES);
+            }
+            else if (newVal === dmz.stance.VOTE_NO) {
+
+               EmailMod.sendVoteEmail(AllVotes[objHandle], dmz.stance.VOTE_NO);
+            }
+         }
          VoteObjects[objHandle].state = newVal;
       }
    }
