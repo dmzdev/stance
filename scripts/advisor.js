@@ -435,7 +435,7 @@ function (objHandle, attrHandle, value) {
 //         });
 
          data.question.updateForUser(objHandle, advisorHandle);
-//         data.
+         data.question.checkHighlight();
       });
    }
 });
