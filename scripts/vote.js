@@ -711,7 +711,7 @@ function (objHandle, attrHandle, newVal, prevVal) {
       else {
 
          var emailHandles
-           , filteredHandles = []
+           , filteredHandles
            ;
 
          self.log.error(dmz.object.superLinks(objHandle, dmz.stance.VoteEmailLinkHandle));
@@ -723,7 +723,7 @@ function (objHandle, attrHandle, newVal, prevVal) {
                return (dmz.object.scalar(emailHandle, dmz.stance.EmailPriorityHandle) === dmz.stance.PRIORITY_THIRD);
             });
             self.log.error(filteredHandles);
-            if (!filteredHandles) {
+            if ((filteredHandles === undefined) || !filteredHandles.length) {
 
                populateAllVotes();
                if (newVal === dmz.stance.VOTE_YES) {
