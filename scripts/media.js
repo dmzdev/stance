@@ -326,7 +326,6 @@ skipForward = function () {
             loadCurrentLobbyist();
          }
       }
-      else { CurrentIndex = 0; }
       currLabel.text(CurrentIndex + 1);
    }
 };
@@ -348,7 +347,6 @@ skipBackward = function () {
             loadCurrentLobbyist();
          }
       }
-      else { CurrentIndex = 0; }
       currLabel.text(CurrentIndex + 1);
    }
 };
