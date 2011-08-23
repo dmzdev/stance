@@ -715,14 +715,14 @@ function (objHandle, attrHandle, newVal, prevVal) {
            ;
 
          self.log.error(dmz.object.superLinks(objHandle, dmz.stance.VoteEmailLinkHandle));
-         if ((prevVal === dmz.stance.VOTE_ACTIVE) && AllVotes[objHandle] && SEND_MAIL
-            && !(dmz.object.superLinks(objHandle, dmz.stance.VoteEmailLinkHandle) || [])) {
+         if ((prevVal === dmz.stance.VOTE_ACTIVE) && AllVotes[objHandle] && SEND_MAIL) {
 
             emailHandles = dmz.object.superLinks(objHandle, dmz.stance.VoteEmailLinkHandle) || [];
             filteredHandles = emailHandles.filter(function (emailHandle) {
 
                return (dmz.object.scalar(emailHandle, dmz.stance.EmailPriorityHandle) === dmz.stance.PRIORITY_THIRD);
             });
+            self.log.error(filteredHandles);
             if (!filteredHandles) {
 
                populateAllVotes();
