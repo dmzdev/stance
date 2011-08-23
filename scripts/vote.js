@@ -35,14 +35,19 @@ var dmz =
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , VoteObjects = {}
    , DecisionObjects = {}
-   , PastVotes = []
-   , ApprovalVotes = []
-   , ActiveVotes = []
+   , DisplayedVotes = []
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
+   , hil
+   , userGrouphandle
 
    //Functions
+   , openWindow
+   , initiateVoteUI
+   , updateYesVotes
+   , updateNoVotes
+   , updateState
    ;
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
@@ -135,6 +140,33 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
    if (VoteObjects[supHandle]) {
 
       VoteObjects[supHandle].createdByHandle = subHandle;
+   }
+});
+
+dmz.object.link.observe(self, dmz.stance.VoteGroupHandle,
+function (linkHandle, attrHandle, supHandle, subHandle) {
+
+   if (VoteObjects[supHandle]) {
+
+      VoteObjects[supHandle].groupHandle = subHandle;
+   }
+});
+
+dmz.object.link.observe(self, dmz.stance.NoHandle,
+function (linkHandle, attrHandle, supHandle, subHandle) {
+
+   if (DecisionObjects[subHandle]) {
+
+      DecisionObjects[subHandle].noVotes = (DecisionObjects[subHandle].noVotes || 0) + 1;
+   }
+});
+
+dmz.object.link.observe(self, dmz.stance.YesHandle,
+function (linkHandle, attrHandle, supHandle, subHandle) {
+
+   if (DecisionObjects[subHandle]) {
+
+      DecisionObjects[subHandle].yesVotes = (DecisionObjects[subHandle].yesVotes || 0) + 1;
    }
 });
 
