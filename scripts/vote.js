@@ -303,9 +303,9 @@ setItemLabels = function (voteItem, refresh) {
          voteItem.buttonLayout = voteItem.postItem.lookup("buttonLayout");
          voteItem.textLayout = voteItem.postItem.lookup("textLayout");
          voteItem.timeBox = dmz.ui.spinBox.createSpinBox("timeBox");
-         voteItem.timeBox.minimum(1);
-         voteItem.timeBox.maximum(60);
-         voteItem.timeBox.setSingleStep(1);
+         voteItem.timeBox.minimum(24);
+         voteItem.timeBox.maximum(72);
+         voteItem.timeBox.setSingleStep(24);
          voteItem.timeBox.setSuffix("hrs");
          voteItem.timeBoxLabel = dmz.ui.label.create("<b>Duration: </b>");
          voteItem.timeBoxLabel.sizePolicy(8, 0);
@@ -1006,8 +1006,8 @@ createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
       dmz.object.flag(decision, dmz.stance.UpdateExpiredTimeHandle, true);
       dmz.object.timeStamp(decision, dmz.stance.EndedAtServerTimeHandle, 0);
       dmz.object.flag(decision, dmz.stance.UpdateEndTimeHandle, false);
-      //duration *= 3600; //convert to unix seconds
-      duration *= 60;
+      duration *= 3600; //convert to unix seconds
+      //duration *= 60; //convert to minutes (for testing)
       dmz.object.timeStamp(decision, dmz.stance.DurationHandle, duration);
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_ACTIVE);
    }
