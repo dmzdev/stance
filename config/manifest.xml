@@ -14,5 +14,5 @@
    <config file="config/game.xml"/>
    <config file="config/updater.xml"/>
    <config file="config/webservices.xml"/>
-   <config file="config/graph.xml"/>
+<!--   <config file="config/graph.xml"/> -->
 </manifest>
