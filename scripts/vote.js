@@ -117,6 +117,22 @@ setYesNoLabels = function (voteHandle) {
             "<b>Vote status: </b>" +
             dmz.stance.STATE_STR[voteItem.state]);
       }
+      if (decisionItem.startTime !== undefined) {
+
+         voteItem.ui.startTimeLabel.text(
+            "<b>Started: </b>" +
+            (decisionItem.startTime ?
+               toDate(decisionItem.startTime).toString(dmz.stance.TIME_FORMAT) :
+               "Less than 5 min ago"));
+      }
+      if (decisionItem.endTime !== undefined) {
+
+         voteItem.ui.endTimeLabel.text(
+            "<b>Ended: </b>" +
+            (decisionItem.endTime ?
+               toDate(decisionItem.endTime).toString(dmz.stance.TIME_FORMAT) :
+               "Less than 5 min ago"));
+      }
    }
 };
 
@@ -187,6 +203,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    if (objType.isOfType(dmz.stance.VoteType)) {
 
       VoteObjects[objHandle] = { handle: objHandle };
+      self.log.error("1");
    }
    else if (objType.isOfType(dmz.stance.DecisionType)) {
 
@@ -199,6 +216,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
 
    if (VoteObjects[objHandle]) {
 
+      self.log.error("2");
       VoteObjects[objHandle].question = newVal;
    }
    else if (DecisionObjects[objHandle]) {
@@ -212,6 +230,8 @@ function (objHandle, attrHandle, newVal, prevVal) {
 
    if (VoteObjects[objHandle]) {
 
+      self.log.error("3");
+      self.log.error(dmz.object.text(objHandle, dmz.stance.TextHandle));
       VoteObjects[objHandle].state = newVal;
    }
 });
@@ -221,6 +241,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
 
    if (VoteObjects[objHandle]) {
 
+      self.log.error("4");
       VoteObjects[objHandle].postedTime = newVal;
    }
    else if (DecisionObjects[objHandle]) {
@@ -252,7 +273,13 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
    if (VoteObjects[supHandle]) {
 
+      self.log.error("5");
       VoteObjects[supHandle].advisorHandle = subHandle;
+      /*self.log.error(dmz.object.text(subHandle, dmz.stance.NameHandle));
+      self.log.error(dmz.object.text(subHandle, dmz.stance.PictureHandle));
+      self.log.error(dmz.object.text(subHandle, dmz.stance.BioHandle));
+      self.log.error(dmz.object.text(subHandle, dmz.stance.TitleHandle));
+      self.log.error(dmz.object.scalar(subHandle, dmz.stance.ID));*/
    }
    else if (DecisionObjects[supHandle]) {
 
@@ -269,6 +296,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
    if (VoteObjects[supHandle]) {
 
+      self.log.error("6");
       VoteObjects[supHandle].createdByHandle = subHandle;
    }
 });
@@ -278,6 +306,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
    if (VoteObjects[supHandle]) {
 
+      self.log.error("7");
       VoteObjects[supHandle].groupHandle = subHandle;
    }
 });
