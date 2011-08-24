@@ -3,21 +3,14 @@
 <plugin-list>
    <plugin name="dmzWebServicesModuleQt" scope="web-services"/>
    <plugin name="dmzWebServicesPluginObject" scope="web-services-object"/>
-<!--   <plugin name="dmzQtPluginLoginDialog" scope="login-dialog"/>-->
    <plugin name="dmzQtPluginLoginChds" scope="chds-login"/>
 </plugin-list>
 <main>
    <login value="1"/>
 </main>
 <web-services>
-<!--   <server host="localhost" port="5984">-->
-<!--   <server host="http://172.20.89.96:5984/" port="5984"/> -->
-<!--   <server host="dmz.couchone.com" port="80">-->
    <server host="games.chds.us" port="443" path="/db/" login="stance_default_user" password="GLOck26">
-<!--   <server host="205.155.65.16" port="443" path="/db/" login="stance_default_user" password="GLOck26">-->
-<!--      <proxy host="localhost" port="8888"/>-->
    </server>
-<!--   <login-target name="dmzQtPluginLoginDialog"/>-->
    <login-target name="dmzQtPluginLoginChds"/>
 </web-services>
 <web-services-object>
@@ -37,12 +30,10 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-<!--   <db app="ns4755_1001_1002_2"/> -->
-   <db app="stance_beta2"/>
+   <db app="stance_1003_1004"/>
 </web-services-object>
 <archive-module>
-<!--   <db app="ns4755_1001_1002_2"/> -->
-   <db app="stance_beta2"/>
+   <db app="stance_1003_1004"/>
 </archive-module>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>

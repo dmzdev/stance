@@ -57,6 +57,7 @@ var dmz =
 
         // Link Attr Handles
         , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
+        , VoteGroupHandle: dmz.defs.createNamedHandle("vote_group")
         , ForumLink: dmz.defs.createNamedHandle("group_forum_link")
         , GameGroupHandle: dmz.defs.createNamedHandle("game_group")
         , GameUngroupedUsersHandle: dmz.defs.createNamedHandle("game_ungrouped_users")

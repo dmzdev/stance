@@ -258,6 +258,7 @@ createAdvisorWindow = function (windowStr, idx) {
             dmz.object.flag(handle, dmz.stance.UpdateStartTimeHandle, true);
             dmz.object.link(dmz.stance.VoteLinkHandle, handle, advisorHandle);
             dmz.object.link(dmz.stance.CreatedByHandle, handle, hil);
+            dmz.object.link(dmz.stance.VoteGroupHandle, handle, dmz.stance.getUserGroupHandle(hil));
             dmz.object.activate(handle);
             // send approval email (1)
             voteItem.handle = handle;
