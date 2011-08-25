@@ -473,7 +473,7 @@ setItemLabels = function (voteItem, refresh) {
       }
       else if (voteItem.state === dmz.stance.VOTE_ACTIVE) {
 
-         voteItem.postItem.styleSheet("* { background-color: rgb(240, 240, 70); }")
+         voteItem.postItem.styleSheet("* { background-color: rgb(240, 240, 70); }");
          voteItem.stateLabel.text("<b>Vote Status: </b>" + dmz.stance.STATE_STR[voteItem.state]);
          voteItem.startTimeLabel.text(
             "<b>Approved: </b>" +
@@ -993,7 +993,6 @@ createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
 
    var decision = dmz.object.create(dmz.stance.DecisionType);
 
-   dmz.object.activate(decision);
    dmz.object.link(dmz.stance.VoteLinkHandle, decision, voteHandle);
    dmz.object.text(decision, dmz.stance.TextHandle, reason);
    dmz.object.link(dmz.stance.CreatedByHandle, decision, dmz.object.hil());
@@ -1015,6 +1014,7 @@ createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
 
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_DENIED);
    }
+   dmz.object.activate(decision);
 };
 
 numberOfNonAdminUsers = function (groupHandle) {

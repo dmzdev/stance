@@ -132,12 +132,12 @@ _exports.sendVoteEmail = function (voteItem, state) {
       if (state === dmz.stance.VOTE_ACTIVE) {
 
          text +=
-            "\nAdvisor Response: " + (voteItem.decisionReason.text() || "Okay") +
+            "\nAdvisor Response: " + (voteItem.decisionTextEdit.text() || "Okay") +
             "\nDuration: " + voteItem.timeBox.value() + "hrs";
       }
       else if (state === dmz.stance.VOTE_DENIED) {
 
-         text += "\nAdvisor Response: " + (voteItem.decisionReason.text() || "No");
+         text += "\nAdvisor Response: " + (voteItem.decisionTextEdit.text() || "No");
       }
       else if (state === dmz.stance.VOTE_NO) {
 
