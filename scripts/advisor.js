@@ -189,7 +189,29 @@ createAdvisorWindow = function (windowStr, idx) {
       , useForumData: true
       , messageLength: MAX_QUESTION_STR_LEN
       , replyLength: MAX_QUESTION_REPLY_LEN
-      , highlight: function () { MainModule.highlight(windowStr); }
+      , highlight: function (handle) {
+
+           var advisorHandle
+             , type
+             , str
+             ;
+           if (!handle) { MainModule.highlight(windowStr); }
+           else {
+
+              type = dmz.object.type(handle);
+              if (type.isOfType(dmz.stance.AnswerType)) {
+
+                 handle = (dmz.object.subLinks(handle, dmz.stance.QuestionLinkHandle) || [])[0];
+              }
+              advisorHandle = (dmz.object.subLinks(handle, dmz.stance.QuestionLinkHandle) || [])[0];
+              if (advisorHandle) {
+
+                 str = "Advisor" + dmz.object.scalar(advisorHandle, dmz.stance.ID);
+                 self.log.warn ("Highlight:", str);
+                 MainModule.highlight(str);
+              }
+           }
+        }
       , canReplyTo: function (replyToHandle) {
 
            var type = dmz.object.type(replyToHandle);
@@ -399,20 +421,47 @@ function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   var type = dmz.object.type(objHandle)
-     , userTime
-     ;
+   var type = dmz.object.type(objHandle);
    if (value && type && type.isOfType(dmz.stance.UserType)) {
 
       AdvisorWindows.forEach(function (data) {
 
          var advisorHandle = getHILAdvisor(data.advisorIndex)
            , userTime = dmz.stance.userAttribute(objHandle, AdvisorTimeHandles[data.advisorIndex]) || 0
-           , posts = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
+           , questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
+           , doHighlight = false
            ;
 
-         data.question.updateForUser(objHandle, advisorHandle);
-         data.question.checkHighlight();
+         questions.forEach(function (questionHandle) {
+
+            var time
+              , answerHandle
+              , authorHandle
+              ;
+            if (!doHighlight) {
+
+               authorHandle = dmz.stance.getAuthorHandle(questionHandle) || objHandle;
+               if (objHandle !== authorHandle) {
+
+                  time = dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
+                  if (time > userTime) { doHighlight = true; }
+               }
+               else {
+
+                  answerHandle = getQuestionAnswer(questionHandle);
+                  authorHandle = dmz.stance.getAuthorHandle(answerHandle);
+                  if (objHandle !== authorHandle) {
+
+                     time =
+                        dmz.object.timeStamp(
+                           getQuestionAnswer(questionHandle),
+                           dmz.stance.CreatedAtServerTimeHandle) || 0;
+                     if (time > userTime) { doHighlight = true; }
+                  }
+               }
+            }
+         });
+         if (doHighlight) { MainModule.highlight(data.windowStr); }
       });
    }
 });
