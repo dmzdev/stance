@@ -915,8 +915,6 @@ modifyInjectItem = function (widgetItem) {
    if (item) {
 
       dmz.object.flag(handle, dmz.stance.ActiveHandle, !item.active);
-      item.active = !item.active;
-      updateInjectTitle (handle);
    }
 };
 
