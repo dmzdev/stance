@@ -980,7 +980,6 @@ mediaInjectButtons = function () {
                   links = dmz.object.superLinks(CurrentGameHandle, dmz.stance.MediaHandle);
                   dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
                   dmz.object.flag(media, dmz.stance.ActiveHandle, true);
-                  dmz.object.activate(media);
                   dmz.object.link(dmz.stance.MediaHandle, media, CurrentGameHandle);
                   for (itor = 0; itor < count; itor += 1) {
 
@@ -989,6 +988,7 @@ mediaInjectButtons = function () {
                         dmz.object.link(dmz.stance.MediaHandle, media, groupList[itor]);
                      }
                   }
+                  dmz.object.activate(media);
 
                   MediaTitleText.text("");
                   MediaUrlText.text("");

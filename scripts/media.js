@@ -70,6 +70,7 @@ var dmz =
    , setActiveState //
    , setButtonBindings
    , checkNotifications
+   , checkNotificationsOnHIL
    , init
    ;
 
@@ -383,6 +384,43 @@ checkNotifications = function () {
    });
 };
 
+checkNotificationsOnHIL = function () {
+
+   checkNotifications();
+   // When object is created for a group, check its type and highlight if needed
+   dmz.object.link.observe(self, dmz.stance.MediaHandle,
+   function (linkHandle, attrHandle, mediaHandle, groupHandle) {
+
+      var hil = dmz.object.hil()
+        , type = dmz.object.type(groupHandle)
+        ;
+      // check that media is not disabled, not in user's list, and is in user's group
+      // list, and user is in the group
+      /*self.log.error(dmz.object.flag(mediaHandle, dmz.stance.ActiveHandle) ,
+         "<"+type+">" , type.isOfType(dmz.stance.GroupType) , hil,
+         dmz.object.linkHandle(dmz.stance.MediaHandle, mediaHandle, hil) ,
+         dmz.object.subLinks(mediaHandle, dmz.stance.MediaHandle),
+         (dmz.stance.getUserGroupHandle(hil) === groupHandle));
+      */
+      if (dmz.object.flag(mediaHandle, dmz.stance.ActiveHandle) &&
+         type && type.isOfType(dmz.stance.GroupType) &&
+         !dmz.object.linkHandle(dmz.stance.MediaHandle, mediaHandle, hil) &&
+         (dmz.stance.getUserGroupHandle(hil) === groupHandle)) {
+
+         Object.keys(TypesMap).forEach(function (key) {
+
+            // type checks for the correct area to highlight, and secures this
+            // against any future uses of a more generic MediaHandle
+
+            if (TypesMap[key].isOfType(dmz.object.type(mediaHandle))) {
+
+               MainModule.highlight(key);
+            }
+         });
+      }
+   });
+};
+
 init = function () {
 
    // Layout Declarations
@@ -391,32 +429,6 @@ init = function () {
    // Shared UI Items
    nextButton.standardIcon(dmz.ui.button.MediaSkipForward);
    prevButton.standardIcon(dmz.ui.button.MediaSkipBackward);
-
-   // When object is created for a group, check its type and highlight if needed
-   dmz.object.link.observe(self, dmz.stance.MediaHandle,
-   function (linkHandle, attrHandle, mediaHandle, groupHandle) {
-
-      var hil = dmz.object.hil()
-        , type = dmz.object.type(groupHandle)
-        ;
-      // check that media is not disabled, not in user's list, and is in user's group list, and user is in the group
-      if (dmz.object.flag(mediaHandle, dmz.stance.ActiveHandle) &&
-         type && type.isOfType(dmz.stance.GroupType) &&
-         !dmz.object.linkHandle(dmz.stance.MediaHandle, mediaHandle, hil) &&
-         (dmz.stance.getUserGroupHandle(hil) === groupHandle)) {
-
-         Object.keys(TypesMap).forEach(function (key) {
-
-            /* type checks for the correct area to highlight, and secures this
-               against any future uses of a more generic MediaHandle
-            */
-            if (TypesMap[key].isOfType(dmz.object.type(mediaHandle))) {
-
-               MainModule.highlight(key);
-            }
-         });
-      }
-   });
 };
 
 init();
@@ -444,6 +456,7 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
+      dmz.time.setTimer(self, checkNotificationsOnHIL);
       Object.keys(TypesMap).forEach(function (initType) {
 
          setActiveState(initType);
