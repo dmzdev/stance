@@ -226,7 +226,7 @@ setUserPlayList = function (userHandle) {
                });
          }
       });
-      totalLabel.text(combinedMediaList.length);
+      totalLabel.text(SourceList.length);
       CurrentIndex = 0;
       if (SourceList.length !== 0) { currLabel.text(CurrentIndex + 1); }
    }
