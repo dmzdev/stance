@@ -51,6 +51,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      // Variables
      , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
      , IsCurrentWindow = false
+     , viewedWindow = false
      , MaxMessageLength = 0
      , MaxReplyLength = 0
 
@@ -72,6 +73,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _Highlight
      , _ExtraInfo
      , _OnNewPost
+     , _unviewedHighlight
 
      , toDate = dmz.util.timeStampToDate
      , _setupView
@@ -381,15 +383,17 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , hil = dmz.object.hil()
            ;
 
+         if (data) { _unviewedHighlight(data, hil); }
+
          if (!item) {
 
             item = _commentList[handle];
             data = _master.comments[handle];
          }
 
-         if (data) {
+         if (data && data.postedBy) {
 
-            if (item && item.postedBy && data.postedBy) {
+            if (item && item.postedBy) {
 
                if (_UseForumDataForAdmin &&
                   dmz.object.flag(data.authorHandle, dmz.stance.AdminHandle)) {
@@ -410,6 +414,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                }
                else { item.unread.hide(); }
             }
+            else { _unviewedHighlight(data, hil); }
          }
 
       };
@@ -422,6 +427,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , count
            , time
            ;
+
+         if (data) { _unviewedHighlight(data, hil); }
 
          if (!item) {
 
@@ -444,6 +451,19 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   if (!IsCurrentWindow) { _Highlight(); }
                }
                else { item.unread.hide(); }
+            }
+            else { _unviewedHighlight(data, hil); }
+         }
+      };
+
+      _unviewedHighlight = function (data, hil) {
+
+         if (!viewedWindow) {
+
+            if (data.postedAt && (data.postedAt > _LatestTimeStamp) &&
+               (data.authorHandle && (data.authorHandle !== hil))) {
+
+               _Highlight(data.handle);
             }
          }
       };
@@ -553,6 +573,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   }
                });
             }
+            viewedWindow = true;
          }
       };
 
