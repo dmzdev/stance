@@ -211,7 +211,6 @@ createAdvisorWindow = function (windowStr, idx) {
                     dmz.stance.getUserGroupHandle(dmz.object.hil()))) {
 
                  str = "Advisor" + dmz.object.scalar(advisorHandle, dmz.stance.ID);
-                 self.log.warn ("Highlight", str);
                  MainModule.highlight(str);
               }
            }
@@ -436,7 +435,6 @@ function (objHandle, attrHandle, value) {
            , doHighlight = false
            ;
 
-         self.log.warn (data.advisorIndex + ":", userTime);
          data.question.setTimestamp(userTime);
          questions.forEach(function (questionHandle) {
 
@@ -450,7 +448,7 @@ function (objHandle, attrHandle, value) {
                if (objHandle !== authorHandle) {
 
                   time = dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
-                  if (time > userTime) { self.log.warn ("time:", time); doHighlight = true; }
+                  if (time > userTime) { doHighlight = true; }
                }
                else {
 
@@ -462,7 +460,7 @@ function (objHandle, attrHandle, value) {
                         dmz.object.timeStamp(
                            getQuestionAnswer(questionHandle),
                            dmz.stance.CreatedAtServerTimeHandle) || 0;
-                     if (time > userTime) { self.log.warn ("time:", time); doHighlight = true; }
+                     if (time > userTime) { doHighlight = true; }
                   }
                }
             }

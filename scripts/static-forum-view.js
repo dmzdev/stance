@@ -464,17 +464,12 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                (data.postedAt > _LatestTimeStamp) &&
                (data.authorHandle && (data.authorHandle !== hil))) {
 
-               _Self.log.warn ("unviewedHighlight:", data.postedAt, _LatestTimeStamp, data.handle);
                _Highlight(data.handle);
             }
          }
       };
 
-      retData.setTimestamp = function (timestamp) {
-
-         _Self.log.warn("setTimestamp:", timestamp, _LatestTimeStamp);
-         _LatestTimeStamp = timestamp;
-      };
+      retData.setTimestamp = function (timestamp) { _LatestTimeStamp = timestamp; };
 
       _updateMessage = function (handle) {
 
@@ -772,30 +767,24 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          IsCurrentWindow = false;
          if (posts) {
 
-            _Self.log.warn ("Starting:", latest);
             posts.forEach(function (postHandle) {
 
-               _Self.log.warn ("Latest:", latest);
                var comments = dmz.object.superLinks(postHandle, _ParentLinkHandle) || []
                  , timestamp = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle)
                  ;
 
-               _Self.log.warn ("   " + postHandle, timestamp, "["+comments+"]");
-               if (timestamp && (timestamp > latest)) { latest = timestamp; _Self.log.warn ("   latest:", latest); }
+               if (timestamp && (timestamp > latest)) { latest = timestamp; }
                _postList[postHandle].unread.hide();
                comments.forEach(function (commentHandle) {
 
                   var timestamp = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle);
-                  if (timestamp && (timestamp > latest)) { latest = timestamp; _Self.log.warn ("      latest:", latest); }
-                  _Self.log.warn ("      " + commentHandle, timestamp);
+                  if (timestamp && (timestamp > latest)) { latest = timestamp; }
                   if (_commentList[commentHandle]) {
 
                      _commentList[commentHandle].unread.hide();
                   }
                });
-               _Self.log.warn ("Latest:", latest);
             });
-            _Self.log.warn ("Setting last time:", latest);
             dmz.stance.userAttribute(dmz.object.hil(), _TimeHandle, latest);
          }
       };
