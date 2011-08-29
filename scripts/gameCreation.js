@@ -83,6 +83,8 @@ var dmz =
    , lobbyistPictureList = editLobbyistDialog.lookup("pictureList")
    , lobbyistTitle = editLobbyistDialog.lookup("lobbyistTitle")
    , lobbyistName = editLobbyistDialog.lookup("nameEdit")
+   , lobbyistErrorLabel = editLobbyistDialog.lookup("errorLabel")
+   , lobbyistOkButton = editLobbyistDialog.lookup("okButton")
 
    , CreateMediaInjectDialog = dmz.ui.loader.load("MediaInjectDialog.ui", editScenarioWidget)
    , MediaTitleText = CreateMediaInjectDialog.lookup("titleText")
@@ -947,8 +949,6 @@ mediaInjectButtons = function () {
                      somethingChecked = true;
                   }
                }
-
-
                if (text.lastIndexOf(urlEnd) === -1) {
 
                   MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
@@ -1010,7 +1010,27 @@ mediaInjectButtons = function () {
             lobbyistMessage.text("");
             lobbyistTitle.text("");
             lobbyistName.text("");
+            lobbyistOkButton.observe(self, "clicked", function () {
 
+               var title = lobbyistTitle.text()
+                 , message = lobbyistMessage.text()
+                 ;
+
+               if (!message && !title) {
+
+                  lobbyistErrorLabel.text
+                     ("<center><font color=\"red\">Please enter a title and message.</font></center>");
+               }
+               else if (!message) {
+
+                  lobbyistErrorLabel.text("<center><font color=\"red\">Please enter a message.</font></center>");
+               }
+               else if (!title) {
+
+                  lobbyistErrorLabel.text("<center><font color=\"red\">Please enter a title.</font></center>");
+               }
+               else { editLobbyistDialog.accept(); }
+            });
             editLobbyistDialog.open(self, function (result) {
 
                var groupIndex = lobbyistGroupList.currentIndex()
@@ -1024,7 +1044,7 @@ mediaInjectButtons = function () {
                   lobbyistHandle = dmz.object.create(dmz.stance.LobbyistType);
                   text = lobbyistPictureList.currentText();
                   dmz.object.text(lobbyistHandle, dmz.stance.PictureHandle, text);
-                  dmz.object.text(lobbyistHandle, dmz.stance.NameHandle, lobbyistName.text());
+                  dmz.object.text(lobbyistHandle, dmz.stance.NameHandle, (lobbyistName.text() || "N/A"));
                   dmz.object.text(lobbyistHandle, dmz.stance.TitleHandle, lobbyistTitle.text());
                   dmz.object.text(lobbyistHandle, dmz.stance.TextHandle, lobbyistMessage.text());
                   dmz.object.timeStamp(lobbyistHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
