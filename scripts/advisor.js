@@ -207,7 +207,6 @@ createAdvisorWindow = function (windowStr, idx) {
               if (advisorHandle) {
 
                  str = "Advisor" + dmz.object.scalar(advisorHandle, dmz.stance.ID);
-                 self.log.warn ("Highlight:", str);
                  MainModule.highlight(str);
               }
            }

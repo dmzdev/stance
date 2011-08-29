@@ -223,7 +223,7 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
 
                         handle = dmz.object.create(dmz.stance.PinType);
                         dmz.object.text(handle, dmz.stance.TitleHandle, titleEdit.text());
-                        dmz.object.text(handle, dmz.stance.TextHandle, descEdit.text());
+                        dmz.object.text(handle, dmz.stance.TextHandle, descEdit.text() || "No further details available.");
                         dmz.object.text(handle, dmz.stance.PictureHandle, PinIconList[typeList.currentIndex()].webfile);
                         dmz.object.timeStamp(handle, dmz.stance.CreatedAtServerTimeHandle, 0);
                         dmz.object.flag(handle, dmz.stance.UpdateStartTimeHandle, true);
