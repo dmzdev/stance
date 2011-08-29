@@ -212,10 +212,10 @@ setUserPlayList = function (userHandle) {
          }
          if (CurrentWindowName === "Lobbyist") {
 
-            pic = dmz.object.text(handle, dmz.stance.PictureHandle);
-            name = dmz.object.text(handle, dmz.stance.NameHandle);
-            title = dmz.object.text(handle, dmz.stance.TitleHandle);
-            text = dmz.object.text(handle, dmz.stance.TextHandle);
+            pic = dmz.object.text(handle, dmz.stance.PictureHandle) || "";
+            name = dmz.object.text(handle, dmz.stance.NameHandle) || "";
+            title = dmz.object.text(handle, dmz.stance.TitleHandle) || "";
+            text = dmz.object.text(handle, dmz.stance.TextHandle) || "";
 
             SourceList.push (
                { handle: handle
@@ -288,7 +288,8 @@ loadCurrentLobbyist = function () {
    if (CurrentIndex < SourceList.length) {
 
       item = SourceList[CurrentIndex];
-      if (item.pic && item.title && item.text && item.name && item.handle) {
+      if ((item.pic !== undefined) && (item.title !== undefined) && (item.text !== undefined) &&
+         (item.name !== undefined) && (item.handle !== undefined)) {
 
          if (NewSource) {
 
