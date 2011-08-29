@@ -48,7 +48,7 @@ var dmz =
    //Functions
    , toDate = dmz.util.timeStampToDate
    , indexOfPastVote
-   , insertIntoPastVotes
+   , insertIntoVotes
    , openWindow
    , initiateVoteUI
    , setYesNoLabels
@@ -632,58 +632,78 @@ indexOfPastVote = function (voteItem) {
    return result;
 };
 
-insertIntoPastVotes = function (voteItem) {
+
+insertIntoVotes = function (voteItem) {
 
    var itor
      , slot
      , inserted = false
      , insertedStartTime
      , newStartTime
+     , voteArray
+     , offset = 0;
      ;
 
    if (voteItem.state === dmz.stance.VOTE_DENIED) {
 
       newStartTime = voteItem.postedTime;
+      voteArray = PastVotes;
+      offset = ApprovalVotes.length + ActiveVotes.length;
    }
    else if ((voteItem.state === dmz.stance.VOTE_YES) ||
       (voteItem.state === dmz.stance.VOTE_NO)) {
 
       newStartTime = DecisionObjects[voteItem.decisionHandle].startTime;
+      voteArray = PastVotes;
+      offset = ApprovalVotes.length + ActiveVotes.length;
    }
-   if ((newStartTime === 0) || (PastVotes.length === 0)) {
+   else if (voteItem.state === dmz.stance.VOTE_APPROVAL_PENDING) {
+
+      newStartTime = voteItem.postedTime;
+      voteArray = ApprovalVotes;
+      offset = ActiveVotes.length;
+   }
+   else if (voteItem.state === dmz.stance.VOTE_ACTIVE) {
+
+      newStartTime = DecisionObjects[voteItem.decisionHandle].startTime;
+      voteArray = ActiveVotes;
+      offset = 0;
+   }
+   if ((newStartTime === 0) || (voteArray.length === 0)) {
 
       inserted = true;
-      PastVotes.splice(0, 0, voteItem);
-      contentLayout.insertWidget(0, voteItem.ui.postItem);
+      voteArray.splice(0, 0, voteItem);
+      contentLayout.insertWidget(0 + offset, voteItem.ui.postItem);
    }
-   for (itor = 0; itor < PastVotes.length; itor += 1) {
+   for (itor = 0; itor < voteArray.length; itor += 1) {
 
       if (!inserted) {
 
-         if (PastVotes[itor].state === dmz.stance.VOTE_DENIED) {
+         if (voteArray[itor].state === dmz.stance.VOTE_DENIED) {
 
-            insertedStartTime = PastVotes[itor].postedTime;
-         } else if ((PastVotes[itor].state === dmz.stance.VOTE_YES) ||
-            (PastVotes[itor].state === dmz.stance.VOTE_NO)) {
+            insertedStartTime = voteArray[itor].postedTime;
+         } else if ((voteArray[itor].state === dmz.stance.VOTE_YES) ||
+            (voteArray[itor].state === dmz.stance.VOTE_NO)) {
 
-            insertedStartTime = DecisionObjects[PastVotes[itor].decisionHandle].startTime;
+            insertedStartTime = DecisionObjects[voteArray[itor].decisionHandle].startTime;
          }
 
          if (newStartTime >= insertedStartTime) {
 
             inserted = true;
-            PastVotes.splice(itor, 0, voteItem);
-            contentLayout.insertWidget(itor, voteItem.ui.postItem);
+            voteArray.splice(itor, 0, voteItem);
+            contentLayout.insertWidget(itor + offset, voteItem.ui.postItem);
          }
       }
    }
    if (!inserted) {
 
       inserted = true;
-      PastVotes.push(voteItem);
-      contentLayout.insertWidget(PastVotes.length - 1, voteItem.ui.postItem);
+      voteArray.push(voteItem);
+      contentLayout.insertWidget(voteArray.length - 1 + offset, voteItem.ui.postItem);
    }
 };
+
 
 openWindow = function () {
 
@@ -697,7 +717,7 @@ openWindow = function () {
          index = indexOfPastVote(VoteObjects[key]);
          if (index === -1) {
 
-            insertIntoPastVotes(VoteObjects[key]);
+            insertIntoVotes(VoteObjects[key]);
          }
       }
    });
