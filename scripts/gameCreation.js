@@ -806,14 +806,16 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
       var user
         , name
         , isAdmin
+        , text
         ;
       if (value) {
 
          user = dmz.object.create(dmz.stance.UserType);
+         text = studentUserNameEdit.text() || "";
          dmz.object.text(
             user,
             dmz.stance.NameHandle,
-            dmz.ui.crypto.hash(studentUserNameEdit.text(), dmz.ui.crypto.Sha1));
+            dmz.ui.crypto.hash(text.toLowerCase(), dmz.ui.crypto.Sha1));
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          isAdmin = dialog.lookup("adminCheckBox").isChecked();
