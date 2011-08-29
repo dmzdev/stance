@@ -396,12 +396,6 @@ checkNotificationsOnHIL = function () {
         ;
       // check that media is not disabled, not in user's list, and is in user's group
       // list, and user is in the group
-      /*self.log.error(dmz.object.flag(mediaHandle, dmz.stance.ActiveHandle) ,
-         "<"+type+">" , type.isOfType(dmz.stance.GroupType) , hil,
-         dmz.object.linkHandle(dmz.stance.MediaHandle, mediaHandle, hil) ,
-         dmz.object.subLinks(mediaHandle, dmz.stance.MediaHandle),
-         (dmz.stance.getUserGroupHandle(hil) === groupHandle));
-      */
       if (dmz.object.flag(mediaHandle, dmz.stance.ActiveHandle) &&
          type && type.isOfType(dmz.stance.GroupType) &&
          !dmz.object.linkHandle(dmz.stance.MediaHandle, mediaHandle, hil) &&
