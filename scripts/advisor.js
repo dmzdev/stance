@@ -421,6 +421,54 @@ function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
    if (master.decisions[decisionHandle]) { extraInfoList.forEach(function (fnc) { fnc(decisionHandle); }); }
 });
 
+dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
+function (linkObjHandle, attrHandle, userHandle, groupHandle) {
+
+   if (userHandle === dmz.object.hil()) {
+
+      AdvisorWindows.forEach(function (data) {
+
+         var advisorHandle = getHILAdvisor(data.advisorIndex)
+           , userTime = dmz.stance.userAttribute(userHandle, AdvisorTimeHandles[data.advisorIndex]) || 0
+           , questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
+           , doHighlight = false
+           ;
+
+         data.question.setTimestamp(userTime);
+         questions.forEach(function (questionHandle) {
+
+            var time
+              , answerHandle
+              , authorHandle
+              ;
+            if (!doHighlight) {
+
+               authorHandle = dmz.stance.getAuthorHandle(questionHandle) || userHandle;
+               if (userHandle !== authorHandle) {
+
+                  time = dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
+                  if (time > userTime) { doHighlight = true; }
+               }
+               else {
+
+                  answerHandle = getQuestionAnswer(questionHandle);
+                  authorHandle = dmz.stance.getAuthorHandle(answerHandle);
+                  if (userHandle !== authorHandle) {
+
+                     time =
+                        dmz.object.timeStamp(
+                           getQuestionAnswer(questionHandle),
+                           dmz.stance.CreatedAtServerTimeHandle) || 0;
+                     if (time > userTime) { doHighlight = true; }
+                  }
+               }
+            }
+         });
+         if (doHighlight) { MainModule.highlight(data.windowStr); }
+      });
+   }
+});
+
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
