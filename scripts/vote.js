@@ -49,6 +49,7 @@ var dmz =
    , toDate = dmz.util.timeStampToDate
    , indexOfPastVote
    , insertIntoVotes
+   , removeFromVotes
    , openWindow
    , initiateVoteUI
    , setYesNoLabels
@@ -632,6 +633,11 @@ indexOfPastVote = function (voteItem) {
    return result;
 };
 
+removeFromVotes = function (voteItem) {
+
+   var offset = 0;
+
+};
 
 insertIntoVotes = function (voteItem) {
 
@@ -703,7 +709,6 @@ insertIntoVotes = function (voteItem) {
       contentLayout.insertWidget(voteArray.length - 1 + offset, voteItem.ui.postItem);
    }
 };
-
 
 openWindow = function () {
 
