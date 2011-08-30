@@ -78,8 +78,6 @@ var dmz =
         , EndedAtServerTimeHandle: dmz.defs.createNamedHandle("ended_at_server_time")
         , ExpiredTimeHandle: dmz.defs.createNamedHandle("expire_time_handle")
         , UpdateExpiredTimeHandle: dmz.defs.createNamedHandle("update_expire_time_handle")
-        , GameStartTimeHandle: dmz.defs.createNamedHandle("game_start_time")
-        , GameEndTimeHandle: dmz.defs.createNamedHandle("game_end_time")
 
         // Notification Time Handles
         , PinTimeHandle: dmz.defs.createNamedHandle("pin_time")

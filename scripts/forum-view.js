@@ -50,7 +50,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
                 , forumHandle
                 ;
 
-              self.log.warn("Highlight:", handle);
               if (!handle) { module.highlight("Forum"); }
               else {
 
