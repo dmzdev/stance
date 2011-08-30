@@ -198,21 +198,8 @@ createAdvisorWindow = function (windowStr, idx) {
            if (!handle) { MainModule.highlight(windowStr); }
            else {
 
-              type = dmz.object.type(handle);
-              if (type.isOfType(dmz.stance.AnswerType)) {
-
-                 handle = (dmz.object.subLinks(handle, dmz.stance.QuestionLinkHandle) || [])[0];
-              }
-              advisorHandle = (dmz.object.subLinks(handle, dmz.stance.QuestionLinkHandle) || [])[0];
-              if (advisorHandle &&
-                 dmz.object.linkHandle(
-                    dmz.stance.AdvisorGroupHandle,
-                    advisorHandle,
-                    dmz.stance.getUserGroupHandle(dmz.object.hil()))) {
-
-                 str = "Advisor" + dmz.object.scalar(advisorHandle, dmz.stance.ID);
-                 MainModule.highlight(str);
-              }
+              str = "Advisor" + dmz.object.scalar(advisorHandle, dmz.stance.ID);
+              MainModule.highlight(str);
            }
         }
       , canReplyTo: function (replyToHandle) {

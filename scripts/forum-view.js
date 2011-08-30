@@ -44,31 +44,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , forumType: dmz.stance.ForumType
          , parentHandle: dmz.stance.ParentHandle
          , groupLinkHandle: dmz.stance.ForumLink
-         , highlight: function (handle) {
-
-              var type
-                , forumHandle
-                ;
-
-              if (!handle) { module.highlight("Forum"); }
-              else {
-
-                 type = dmz.object.type(handle);
-                 if (type.isOfType(dmz.stance.CommentType)) {
-
-                    handle = (dmz.object.subLinks(handle, dmz.stance.ParentHandle) || [])[0];
-                 }
-                 forumHandle = (dmz.object.subLinks(handle, dmz.stance.ParentHandle) || [])[0];
-                 if (forumHandle &&
-                    dmz.object.linkHandle(
-                       dmz.stance.ForumLink,
-                       forumHandle,
-                       dmz.stance.getUserGroupHandle(dmz.object.hil()))) {
-
-                    module.highlight("Forum");
-                 }
-              }
-           }
+         , highlight: function (handle) { module.highlight("Forum"); }
          , canReplyTo: function () { return true; }
          , postBlocked: function () { return false; }
          , messageLength: MaxMessageLength
