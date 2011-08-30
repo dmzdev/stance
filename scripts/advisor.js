@@ -191,14 +191,11 @@ createAdvisorWindow = function (windowStr, idx) {
       , replyLength: MAX_QUESTION_REPLY_LEN
       , highlight: function (handle) {
 
-           var advisorHandle
-             , type
-             , str
-             ;
+           var str;
            if (!handle) { MainModule.highlight(windowStr); }
            else {
 
-              str = "Advisor" + dmz.object.scalar(advisorHandle, dmz.stance.ID);
+              str = "Advisor" + dmz.object.scalar(handle, dmz.stance.ID);
               MainModule.highlight(str);
            }
         }
