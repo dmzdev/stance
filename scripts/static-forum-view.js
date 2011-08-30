@@ -478,7 +478,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   dmz.object.linkHandle(
                      _ForumLinkHandle,
                      forumHandle,
-                     dmz.stance.getUserGroupHandl(dmz.object.hil()))) {
+                     dmz.stance.getUserGroupHandle(dmz.object.hil()))) {
 
                   _Highlight(forumHandle);
                }
