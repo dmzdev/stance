@@ -91,7 +91,7 @@ updateStateUI = function (voteHandle, pastState) {
       }
    }
    if (VoteObjects[voteHandle] && VoteObjects[voteHandle].ui &&
-      VoteObjects[voteHandle].groupHandle && VoteObjects[voteHandle].groupHandle === userGroupHandle) {
+      VoteObjects[voteHandle].groupHandle && (VoteObjects[voteHandle].groupHandle === userGroupHandle)) {
 
       voteItem = VoteObjects[voteHandle];
       if ((voteItem.state === dmz.stance.VOTE_NO) || (voteItem.state === dmz.stance.VOTE_YES)) {
@@ -228,8 +228,7 @@ updateVotes = function (voteHandle) {
      ;
 
    if (VoteObjects[voteHandle] && VoteObjects[voteHandle].decisionHandle &&
-      VoteObjects[voteHandle].ui &&
-      DecisionObjects[VoteObjects[voteHandle].decisionHandle]) {
+      VoteObjects[voteHandle].ui && DecisionObjects[VoteObjects[voteHandle].decisionHandle]) {
 
       voteItem = VoteObjects[voteHandle];
       decisionItem = DecisionObjects[voteItem.decisionHandle];
@@ -727,7 +726,6 @@ removeFromVotes = function (voteItem, pastState) {
       if (pastState !== dmz.stance.VOTE_EXPIRED) {
 
          voteItemIndex = indexOfVote(voteItem, pastState);
-         self.log.error(voteItem.state, voteItem.handle, voteItemIndex, pastState);
          if (voteItemIndex !== -1) {
 
             voteArray.splice(voteItemIndex, 1);
