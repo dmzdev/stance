@@ -30,12 +30,12 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-<!--   <db app="stance_1003_1004"/>-->
-       <db app="stance_ben"/>
+   <db app="stance_1003_1004"/>
+<!--       <db app="stance_ben"/> -->
 </web-services-object>
 <archive-module>
-<!--   <db app="stance_1003_1004"/>-->
-       <db app="stance_ben"/>
+   <db app="stance_1003_1004"/>
+<!--       <db app="stance_ben"/> -->
 </archive-module>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>
