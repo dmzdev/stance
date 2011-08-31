@@ -479,14 +479,14 @@ _exports.addPage = function (name, widget, func, onHome) {
       else if (widget.inherits("QDialog")) { PageLink[name].dialog = widget; }
       else {
 
-//         dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget());
+         dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget());
          if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
 
-            dialog = dmz.ui.loader.load("WindowDialog.ui");
+//            dialog = dmz.ui.loader.load("WindowDialog.ui");
 //            dialog.lookup("closeWindow").hide();
             dialog.setWindowsHint();
          }
-         else { dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget()); }
+//         else { dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget()); }
          dialog.lookup("verticalLayout").addWidget(widget);
          PageLink[name].dialog = dialog;
       }
