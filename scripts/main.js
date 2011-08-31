@@ -487,7 +487,7 @@ _exports.addPage = function (name, widget, func, onHome) {
 //            dialog = dmz.ui.loader.load("WindowDialog.ui");
 //            dialog.lookup("closeWindow").hide();
             dialog.setWindowsHint();
-            dialog.hide();
+//            dialog.hide();
          }
 //         else { dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget()); }
          dialog.lookup("verticalLayout").addWidget(widget);
