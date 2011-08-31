@@ -280,9 +280,11 @@ mouseEvent = function (object, event) {
                         data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
                         if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
 
+                           self.log.warn ("Pos:", pos[0], pos[1]);
                            data.dialog.move(pos[0], pos[1]);
                         }
                      }
+                     self.log.warn ("Pos2:", data.dialog.pos()[0], data.dialog.pos()[1]);
                      data.dialog.open(self, function (value) {
 
                         if (data.highlight) { data.highlight.hide(); }
