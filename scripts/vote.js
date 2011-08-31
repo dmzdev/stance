@@ -508,14 +508,14 @@ setActiveLabels = function (voteHandle) {
             voteItem.ui.yesButton.observe(self, "clicked", function () {
 
                userVoted(dmz.object.hil(), voteItem.decisionHandle, true);
-               voteItem.yesButton.hide();
-               voteItem.noButton.hide();
+               voteItem.ui.yesButton.hide();
+               voteItem.ui.noButton.hide();
             });
             voteItem.ui.noButton.observe(self, "clicked", function () {
 
                userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
-               voteItem.yesButton.hide();
-               voteItem.noButton.hide();
+               voteItem.ui.yesButton.hide();
+               voteItem.ui.noButton.hide();
             });
          }
          else {
@@ -655,9 +655,9 @@ initiateVoteUI = function (voteHandle) {
       voteItem.ui.buttonLayout = voteItem.ui.postItem.lookup("buttonLayout");
       voteItem.ui.textLayout = voteItem.ui.postItem.lookup("textLayout");
       voteItem.ui.timeBox = dmz.ui.spinBox.createSpinBox("timeBox");
-      voteItem.ui.timeBox.minimum(1);
+      voteItem.ui.timeBox.minimum(24);
       voteItem.ui.timeBox.maximum(72);
-      voteItem.ui.timeBox.setSingleStep(1);
+      voteItem.ui.timeBox.setSingleStep(24);
       voteItem.ui.timeBox.setSuffix("hrs");
       voteItem.ui.timeBoxLabel = dmz.ui.label.create("<b>Duration: </b>");
       voteItem.ui.timeBoxLabel.sizePolicy(8, 0);
@@ -727,6 +727,7 @@ removeFromVotes = function (voteItem, pastState) {
       if (pastState !== dmz.stance.VOTE_EXPIRED) {
 
          voteItemIndex = indexOfVote(voteItem, pastState);
+         self.log.error(voteItem.state, voteItem.handle, voteItemIndex, pastState);
          if (voteItemIndex !== -1) {
 
             voteArray.splice(voteItemIndex, 1);
@@ -900,8 +901,8 @@ createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
       dmz.object.flag(decision, dmz.stance.UpdateExpiredTimeHandle, true);
       dmz.object.timeStamp(decision, dmz.stance.EndedAtServerTimeHandle, 0);
       dmz.object.flag(decision, dmz.stance.UpdateEndTimeHandle, false);
-      //duration *= 3600; //convert to unix seconds
-      duration *= 60;
+      duration *= 3600; //convert to unix seconds
+      //duration *= 60;
       dmz.object.timeStamp(decision, dmz.stance.DurationHandle, duration);
       dmz.object.activate(decision);
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_ACTIVE);
