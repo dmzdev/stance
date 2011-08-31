@@ -69,7 +69,7 @@ _exports.sendTechEmail = function (targets, title, text) {
    return email;
 };
 
-_exports.sendVoteEmail = function (voteItem, state) {
+_exports.sendVoteEmail = function (voteItem, state, decisionItem) {
 
    var email
      , subject
@@ -88,6 +88,7 @@ _exports.sendVoteEmail = function (voteItem, state) {
       groupUserList = dmz.object.superLinks(voteItem.groupHandle, dmz.stance.GroupMembersHandle) || [];
       if (state === dmz.stance.VOTE_APPROVAL_PENDING) {
 
+         groupUserList = dmz.object.superLinks(voteItem.groupHandle, dmz.stance.DataLinkHandle) || [];
          priority = dmz.stance.PRIORITY_FIRST;
          subject = "STANCE " + groupName + " needs a vote approved.";
          sendList = groupUserList.filter(function (userHandle) {
@@ -132,28 +133,26 @@ _exports.sendVoteEmail = function (voteItem, state) {
       if (state === dmz.stance.VOTE_ACTIVE) {
 
          text +=
-            "\nAdvisor Response: " + (voteItem.decisionTextEdit.text() || "Okay") +
-            "\nDuration: " + voteItem.timeBox.value() + "hrs";
+            "\nAdvisor Response: " + (voteItem.ui.decisionTextEdit.text() || "Okay") +
+            "\nDuration: " + voteItem.ui.timeBox.value() + "hrs";
       }
       else if (state === dmz.stance.VOTE_DENIED) {
 
-         text += "\nAdvisor Response: " + (voteItem.decisionTextEdit.text() || "No");
+         text += "\nAdvisor Response: " + (voteItem.ui.decisionTextEdit.text() || "No");
       }
-      else if (state === dmz.stance.VOTE_NO) {
+      else if ((state === dmz.stance.VOTE_NO) && decisionItem) {
 
-         noVotes = voteItem.noVotes + 1;
          text +=
-            "\nAdvisor Response: " + voteItem.advisorReason +
-            "\nYes Votes: " + voteItem.yesVotes +
-            "\nNo Votes: " + noVotes;
+            "\nAdvisor Response: " + decisionItem.advisorResponse +
+            "\nYes Votes: " + (decisionItem.yesVotes || 0) +
+            "\nNo Votes: " + (decisionItem.noVotes || 0);
       }
-      else if (state === dmz.stance.VOTE_YES) {
+      else if ((state === dmz.stance.VOTE_YES) && decisionItem) {
 
-         yesVotes = voteItem.yesVotes + 1;
          text +=
-            "\nAdvisor Response: " + voteItem.advisorReason +
-            "\nYes Votes: " + yesVotes +
-            "\nNo Votes: " + voteItem.noVotes;
+            "\nAdvisor Response: " + decisionItem.advisorResponse +
+            "\nYes Votes: " + (decisionItem.yesVotes || 0) +
+            "\nNo Votes: " + (decisionItem.noVotes) || 0;
       }
    }
    if (sendList.length && subject && text) {
