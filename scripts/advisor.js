@@ -149,17 +149,21 @@ createAdvisorWindow = function (windowStr, idx) {
    data.onHome = function () { self.log.error ("Could not do onHome for", windowStr); }
    data.windowStr = windowStr;
    data.advisorIndex = idx;
-   data.window = dmz.ui.widget.create();
-   data.layout = dmz.ui.layout.createVBoxLayout();
-   data.window.layout(data.layout);
-   data.infoWindow = { widget: dmz.ui.loader.load("AdvisorWindow.ui") }
+//   data.window = dmz.ui.widget.create();
+//   data.layout = dmz.ui.layout.createVBoxLayout();
+//   data.window.layout(data.layout);
+   data.window = dmz.ui.loader.load("AdvisorWindow.ui");
+   data.layout = data.window.layout();
+//   data.infoWindow = { widget: dmz.ui.loader.load("AdvisorWindow.ui") }
+   data.infoWindow = { widget: data.window.lookup("infoFrame") };
    data.infoWindow.name = data.infoWindow.widget.lookup("nameLabel");
    data.infoWindow.bio = data.infoWindow.widget.lookup("bioText");
    data.infoWindow.title = data.infoWindow.widget.lookup("specialtyLabel");
    data.infoWindow.picture = data.infoWindow.widget.lookup("pictureLabel");
    data.infoWindow.picture.pixmap(AvatarDefault);
 
-   data.task = { widget: dmz.ui.loader.load("CommentAdd.ui") };
+//   data.task = { widget: dmz.ui.loader.load("CommentAdd.ui") };
+   data.task = { widget: data.window.lookup("taskFrame") };
    data.task.avatar = data.task.widget.lookup("avatarLabel");
    data.task.text = data.task.widget.lookup("textEdit");
    data.task.submit = data.task.widget.lookup("submitButton");
@@ -280,10 +284,10 @@ createAdvisorWindow = function (windowStr, idx) {
       setUserAvatar(dmz.object.hil(), data.task.avatar);
    };
 
-   data.topLayout = dmz.ui.layout.createHBoxLayout();
-   data.topLayout.insertWidget(0, data.infoWindow.widget);
-   data.topLayout.insertWidget(1, data.task.widget);
-   data.layout.addLayout(data.topLayout);
+//   data.topLayout = dmz.ui.layout.createHBoxLayout();
+//   data.topLayout.insertWidget(0, data.infoWindow.widget);
+//   data.topLayout.insertWidget(1, data.task.widget);
+//   data.layout.addLayout(data.topLayout);
    if (data.question && data.question.widget) {
 
       var postTextEditWidget = data.question.widget.lookup("postTextEdit")
