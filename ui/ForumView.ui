@@ -7,13 +7,16 @@
     <x>0</x>
     <y>0</y>
     <width>540</width>
-    <height>539</height>
+    <height>252</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Forum</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetMinAndMaxSize</enum>
+   </property>
    <property name="margin">
     <number>0</number>
    </property>
@@ -195,7 +198,7 @@
         <x>0</x>
         <y>0</y>
         <width>538</width>
-        <height>363</height>
+        <height>76</height>
        </rect>
       </property>
       <property name="sizePolicy">
