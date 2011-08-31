@@ -721,6 +721,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
 
             str = name + ": No Name - Adv" + idx;
             handle = dmz.object.create(dmz.stance.AdvisorType);
+            dmz.object.activate(handle);
             dmz.object.text(handle, dmz.stance.NameHandle, str);
             dmz.object.scalar(handle, dmz.stance.ID, idx);
             if (idx < advisorImages.length) {
@@ -735,7 +736,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
          }
          handle = dmz.object.create(dmz.stance.ForumType);
          dmz.object.text(handle, dmz.stance.NameHandle, name);
-         dmz.object.activate(handle);
+         //dmz.object.activate(handle);
          dmz.object.link(dmz.stance.ForumLink, handle, group);
       }
    });
