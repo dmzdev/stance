@@ -269,7 +269,7 @@ mouseEvent = function (object, event) {
 
                      var rect = main.rect()
                        , geo = dmz.ui.mainWindow.window().geometry()
-                       , pos = dmz.ui.mainWindow.window().pos()
+                       , pos = main.pos()
                        ;
                      if (data.onClicked && rect.width && rect.height) {
 
@@ -285,7 +285,7 @@ mouseEvent = function (object, event) {
 
                            data.dialog.move
                               ( geo.x + ((geo.width - (rect.width * 0.95)) / 2)
-                              , geo.y
+                              , geo.y + pos[1]
                               );
                         }
                      }
