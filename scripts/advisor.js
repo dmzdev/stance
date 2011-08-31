@@ -149,21 +149,17 @@ createAdvisorWindow = function (windowStr, idx) {
    data.onHome = function () { self.log.error ("Could not do onHome for", windowStr); }
    data.windowStr = windowStr;
    data.advisorIndex = idx;
-//   data.window = dmz.ui.widget.create();
-//   data.layout = dmz.ui.layout.createVBoxLayout();
-//   data.window.layout(data.layout);
-   data.window = dmz.ui.loader.load("AdvisorWindow.ui");
-   data.layout = data.window.layout();
-//   data.infoWindow = { widget: dmz.ui.loader.load("AdvisorWindow.ui") }
-   data.infoWindow = { widget: data.window.lookup("infoFrame") };
+   data.window = dmz.ui.widget.create();
+   data.layout = dmz.ui.layout.createVBoxLayout();
+   data.window.layout(data.layout);
+   data.infoWindow = { widget: dmz.ui.loader.load("AdvisorWindow.ui") }
    data.infoWindow.name = data.infoWindow.widget.lookup("nameLabel");
    data.infoWindow.bio = data.infoWindow.widget.lookup("bioText");
    data.infoWindow.title = data.infoWindow.widget.lookup("specialtyLabel");
    data.infoWindow.picture = data.infoWindow.widget.lookup("pictureLabel");
    data.infoWindow.picture.pixmap(AvatarDefault);
 
-//   data.task = { widget: dmz.ui.loader.load("CommentAdd.ui") };
-   data.task = { widget: data.window.lookup("taskFrame") };
+   data.task = { widget: dmz.ui.loader.load("CommentAdd.ui") };
    data.task.avatar = data.task.widget.lookup("avatarLabel");
    data.task.text = data.task.widget.lookup("textEdit");
    data.task.submit = data.task.widget.lookup("submitButton");
@@ -243,7 +239,7 @@ createAdvisorWindow = function (windowStr, idx) {
       if (data.question && data.question.onHome) { data.question.onHome(); }
    };
 
-   data.update = function (advisorHandle) {
+   data.update = function (advisorHandle, width, height) {
 
       var text;
       data.advisor = advisorHandle;
@@ -252,7 +248,13 @@ createAdvisorWindow = function (windowStr, idx) {
       data.infoWindow.title.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
       data.infoWindow.picture.pixmap(getAvatarPixmap(advisorHandle));
 
-      if (data.question && data.question.update) { data.question.update(advisorHandle); }
+      if (data.question && data.question.update) {
+
+         data.question.update(advisorHandle);
+         // set maximum from scroll area based on width, height
+         // Get sizes of other UI items
+         // max height = (height * .95) - sizes
+      }
       data.task.submit.observe(self, "clicked", function () {
 
          var handle
@@ -284,10 +286,10 @@ createAdvisorWindow = function (windowStr, idx) {
       setUserAvatar(dmz.object.hil(), data.task.avatar);
    };
 
-//   data.topLayout = dmz.ui.layout.createHBoxLayout();
-//   data.topLayout.insertWidget(0, data.infoWindow.widget);
-//   data.topLayout.insertWidget(1, data.task.widget);
-//   data.layout.addLayout(data.topLayout);
+   data.topLayout = dmz.ui.layout.createHBoxLayout();
+   data.topLayout.insertWidget(0, data.infoWindow.widget);
+   data.topLayout.insertWidget(1, data.task.widget);
+   data.layout.addLayout(data.topLayout);
    if (data.question && data.question.widget) {
 
       var postTextEditWidget = data.question.widget.lookup("postTextEdit")
@@ -523,7 +525,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             module.addPage
                ( str
                , data.window
-               , function () { data.update(getHILAdvisor(index)); }
+               , function (width, height) { data.update(getHILAdvisor(index), width, height); }
                , function () { data.onHome(); }
                );
          }(idx));

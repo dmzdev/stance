@@ -104,8 +104,6 @@ var dmz =
    , setGItemPos
    , getConfigFont
 
-   , openDialog
-
    // API
    , _exports = {}
    ;
@@ -244,15 +242,6 @@ updateGraphicsForGroup = function (groupHandle) {
    }
 };
 
-openDialog = function (data) {
-
-                        data.dialog.open(self, function (value) {
-
-                           if (data.highlight) { data.highlight.hide(); }
-                           if (data.onHome) { data.onHome(value); }
-                        });
-};
-
 mouseEvent = function (object, event) {
 
    var type = event.type()
@@ -279,36 +268,26 @@ mouseEvent = function (object, event) {
                   dmz.time.setTimer(self, function () {
 
                      var rect = main.rect();
-                     if (data.onClicked && rect.width && rect.height) {
-
-                        data.onClicked(rect.width, rect.height);
-                     }
                      if (rect.width && rect.height) {
 
-//                        data.dialog.maximumSize(rect.width * 0.95, rect.height * 0.95);
-//                        data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
-//                        data.dialog.updateGeometry();
-//                        data.dialog.update();
+                        data.dialog.maximumSize(rect.width * 0.95, rect.height * 0.95);
+                        data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
+                        data.dialog.updateGeometry();
+                        data.dialog.update();
 //                        if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
 
 //                           data.dialog.move(0, 0);
 //                        }
                      }
-//                     data.dialog.open(self, function (value) {
+                     if (data.onClicked && rect.width && rect.height) {
 
-//                        if (data.highlight) { data.highlight.hide(); }
-//                        if (data.onHome) { data.onHome(value); }
-//                     });
+                        data.onClicked(rect.width, rect.height);
+                     }
+                     data.dialog.open(self, function (value) {
 
-//                     dmz.time.setTimer(self, function () {
-
-//                        data.dialog.open(self, function (value) {
-
-//                           if (data.highlight) { data.highlight.hide(); }
-//                           if (data.onHome) { data.onHome(value); }
-//                        });
-//                     });
-                     dmz.time.setTimer(self, function () { openDialog(data); });
+                        if (data.highlight) { data.highlight.hide(); }
+                        if (data.onHome) { data.onHome(value); }
+                     });
                   });
                }
                else if (data.widget && stackedWidget) {
@@ -469,7 +448,6 @@ setupMainWindow = function () {
          var type = event.type()
            , size
            , oldSize
-           , rect
            ;
 
          if (type == dmz.ui.event.Resize) {
@@ -479,17 +457,6 @@ setupMainWindow = function () {
             else { oldSize = LastGViewSize; }
             LastGViewSize = size;
             mainGView.scale(size.width / oldSize.width, size.height / oldSize.height);
-
-            rect = main.rect();
-            Object.keys(PageLink).forEach(function (key) {
-
-               var data = PageLink[key];
-               if (data && data.dialog && rect.width && rect.height) {
-
-                  data.dialog.maximumSize(rect.width * 0.95, rect.height * 0.95);
-                  data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
-               }
-            });
          }
       });
    }
