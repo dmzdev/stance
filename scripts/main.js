@@ -268,7 +268,7 @@ mouseEvent = function (object, event) {
                   dmz.time.setTimer(self, function () {
 
                      var rect = main.rect()
-                       , geo = main.geometry()
+                       , geo = dmz.ui.mainWindow.window().geometry()
                        , pos = dmz.ui.mainWindow.window().pos()
                        ;
                      if (data.onClicked && rect.width && rect.height) {
