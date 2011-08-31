@@ -479,7 +479,8 @@ _exports.addPage = function (name, widget, func, onHome) {
          dialog.lookup("verticalLayout").addWidget(widget);
          if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
 
-            dialog.lookup("closeWindow").hide();
+//            dialog.lookup("closeWindow").hide();
+            dialog.setWindowsHint();
          }
          PageLink[name].dialog = dialog;
       }
