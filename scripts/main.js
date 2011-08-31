@@ -281,12 +281,12 @@ mouseEvent = function (object, event) {
                         data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
                         if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
 
-                           self.log.warn ("Pos:", geo.x + ((geo.width - (rect.width * 0.95)) / 2), geo.y);
+//                           self.log.warn ("Pos:", geo.x + ((geo.width - (rect.width * 0.95)) / 2), geo.y);
 
-                           data.dialog.move
-                              ( geo.x + ((geo.width - (rect.width * 0.95)) / 2)
-                              , geo.y + pos[1]
-                              );
+//                           data.dialog.move
+//                              ( geo.x + ((geo.width - (rect.width * 0.95)) / 2)
+//                              , geo.y + pos[1]
+//                              );
                         }
                      }
                      data.dialog.open(self, function (value) {
@@ -485,6 +485,7 @@ _exports.addPage = function (name, widget, func, onHome) {
 //            dialog = dmz.ui.loader.load("WindowDialog.ui");
 //            dialog.lookup("closeWindow").hide();
             dialog.setWindowsHint();
+            dialog.hide();
          }
 //         else { dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget()); }
          dialog.lookup("verticalLayout").addWidget(widget);
