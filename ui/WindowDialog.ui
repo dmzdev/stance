@@ -82,7 +82,7 @@
     <number>0</number>
    </property>
    <property name="sizeConstraint">
-    <enum>QLayout::SetMinAndMaxSize</enum>
+    <enum>QLayout::SetDefaultConstraint</enum>
    </property>
    <property name="margin">
     <number>0</number>
@@ -245,7 +245,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="">
      <property name="spacing">
       <number>0</number>
      </property>
