@@ -267,7 +267,9 @@ mouseEvent = function (object, event) {
 
                   dmz.time.setTimer(self, function () {
 
-                     var rect = main.rect();
+                     var rect = main.rect()
+                       , pos = main.pos()
+                       ;
                      if (data.onClicked && rect.width && rect.height) {
 
                         data.onClicked(rect.width, rect.height);
@@ -276,10 +278,10 @@ mouseEvent = function (object, event) {
 
 //                        data.dialog.maximumSize(rect.width * 0.95, rect.height * 0.95);
                         data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
-//                        if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
+                        if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
 
-//                           data.dialog.move(0, 0);
-//                        }
+                           data.dialog.move(pos.x, pos.y);
+                        }
                      }
                      data.dialog.open(self, function (value) {
 
