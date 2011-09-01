@@ -11,7 +11,7 @@
       <!-- <download-to-temp value="false"/> -->
       <!-- <release channel="stable"/> -->
       <update
-         host="http://update.dmzdev.org"
+         host="http://dmzupdate.chds.us"
          path="/latest/{system_name}-{release_channel}/{app_name}"/>
       <download path="/downloads/{app_name}-{major}-{minor}-{bug}-{build_number}"/>
       <!-- <proxy host="localhost" port="8888"/> -->
