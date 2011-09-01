@@ -571,6 +571,7 @@ setYesNoLabels = function (voteHandle) {
       if (voteItem.userPicture) {
 
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
+         self.log.error(pic);
          voteItem.ui.userPictureLabel.pixmap(pic);
       }
       if (voteItem.postedBy) {
