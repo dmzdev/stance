@@ -662,7 +662,7 @@ initiateVoteUI = function (voteHandle) {
       voteItem.ui.timeBoxLabel.sizePolicy(8, 0);
       voteItem.ui.decisionTextEdit = dmz.ui.textEdit.create("");
       voteItem.ui.decisionTextEdit.sizePolicy(7, 0);
-      voteItem.ui.decisionTextEdit.fixedHeigth(90);
+      voteItem.ui.decisionTextEdit.fixedHeight(90);
       voteItem.ui.decisionTextEditLabel = dmz.ui.label.create("<b>Decision Reason: </b>");
 
       if ((voteItem.state === dmz.stance.VOTE_NO) || (voteItem.state === dmz.stance.VOTE_YES)) {
