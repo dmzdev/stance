@@ -100,14 +100,7 @@ var dmz =
    , advisorList = []
    , advisorWidgets = {}
    , CurrentGameHandle = false
-   /*, Lobbyist =
-        { type: dmz.stance.LobbyistType
-        , attr: dmz.stance.ActiveLobbyistHandle
-        , button: "addLobbyistButton"
-        , listItems: {}
-        , list: lobbyistList
-        }
-   */
+
    , MediaTypes =
         { Video:
            { type: dmz.stance.VideoType
@@ -659,7 +652,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
          }
          handle = dmz.object.create(dmz.stance.ForumType);
          dmz.object.text(handle, dmz.stance.NameHandle, name);
-         //dmz.object.activate(handle);
+         dmz.object.activate(handle);
          dmz.object.link(dmz.stance.ForumLink, handle, group);
       }
    });
