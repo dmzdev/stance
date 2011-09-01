@@ -1201,9 +1201,12 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
    if (VoteObjects[supHandle]) {
 
       VoteObjects[supHandle].advisorHandle = subHandle;
-      VoteObjects[supHandle].advisorPicture = dmz.object.text(subHandle, dmz.stance.PictureHandle);
-      VoteObjects[supHandle].advisorName = dmz.object.text(subHandle, dmz.stance.NameHandle);
-      VoteObjects[supHandle].advisorTitle = dmz.object.text(subHandle, dmz.stance.TitleHandle);
+      dmz.time.setTimer(self, function () {
+
+         VoteObjects[supHandle].advisorPicture = dmz.object.text(subHandle, dmz.stance.PictureHandle);
+         VoteObjects[supHandle].advisorName = dmz.object.text(subHandle, dmz.stance.NameHandle);
+         VoteObjects[supHandle].advisorTitle = dmz.object.text(subHandle, dmz.stance.TitleHandle);
+      });
    }
    else if (DecisionObjects[supHandle]) {
 
@@ -1220,9 +1223,12 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
    if (VoteObjects[supHandle]) {
 
-      VoteObjects[supHandle].createdByHandle = subHandle;
-      VoteObjects[supHandle].userPicture = dmz.object.text(subHandle, dmz.stance.PictureHandle);
-      VoteObjects[supHandle].postedBy = dmz.stance.getDisplayName(subHandle);
+      dmz.time.setTimer(self, function () {
+
+         VoteObjects[supHandle].createdByHandle = subHandle;
+         VoteObjects[supHandle].userPicture = dmz.object.text(subHandle, dmz.stance.PictureHandle);
+         VoteObjects[supHandle].postedBy = dmz.stance.getDisplayName(subHandle);
+      });
    }
 });
 
