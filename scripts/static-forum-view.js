@@ -117,6 +117,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
       retData.widget = _view;
       _scrollArea = _view.lookup("scrollArea");
       retData.scrollArea = _scrollArea;
+      retData.postArea = _view.lookup("postFrame");
       _mainLayout = dmz.ui.layout.createVBoxLayout();
       _postTextEdit = _view.lookup("postTextEdit");
       _submitButton = _view.lookup("postSubmitButton");
