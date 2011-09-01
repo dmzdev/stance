@@ -35,4 +35,5 @@ ssh dmzupdate.chds.us sudo chown www-data.admin -R /home/dmzupdate.chds.us/publi
 echo "ssh dmzupdate.chds.us sudo chmod -R g+w /home/dmzupdate.chds.us/public"
 ssh dmzupdate.chds.us sudo chmod -R g+w /home/dmzupdate.chds.us/public
 
+echo "direct download link: http://dmzupdate.chds.us/downloads/$UPDATE.exe"
 echo "done!"
