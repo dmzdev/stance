@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>403</width>
-    <height>166</height>
+    <width>330</width>
+    <height>155</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,6 +35,12 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <property name="horizontalSpacing">
+       <number>5</number>
+      </property>
+      <property name="margin">
+       <number>5</number>
+      </property>
       <item row="1" column="0">
        <widget class="QLabel" name="avatarLabel">
         <property name="sizePolicy">

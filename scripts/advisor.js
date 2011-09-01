@@ -157,7 +157,7 @@ createAdvisorWindow = function (windowStr, idx) {
    data.infoWindow.bio = data.infoWindow.widget.lookup("bioText");
    data.infoWindow.title = data.infoWindow.widget.lookup("specialtyLabel");
    data.infoWindow.picture = data.infoWindow.widget.lookup("pictureLabel");
-   data.infoWindow.picture.pixmap(AvatarDefault);
+   data.infoWindow.picture.pixmap(AvatarDefault.scaled(94, 125));
 
    data.task = { widget: dmz.ui.loader.load("CommentAdd.ui") };
    data.task.avatar = data.task.widget.lookup("avatarLabel");
@@ -246,7 +246,7 @@ createAdvisorWindow = function (windowStr, idx) {
       data.infoWindow.name.text(dmz.object.text(advisorHandle, dmz.stance.NameHandle));
       data.infoWindow.bio.text(dmz.object.text(advisorHandle, dmz.stance.BioHandle));
       data.infoWindow.title.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
-      data.infoWindow.picture.pixmap(getAvatarPixmap(advisorHandle));
+      data.infoWindow.picture.pixmap(getAvatarPixmap(advisorHandle).scaled(94, 125));
 
       if (data.question && data.question.update) { data.question.update(advisorHandle); }
       data.task.submit.observe(self, "clicked", function () {
@@ -298,6 +298,8 @@ createAdvisorWindow = function (windowStr, idx) {
       data.layout.addWidget(data.queryLabel);
       data.layout.addWidget(data.question.widget);
    }
+   data.layout.margins(1);
+   data.layout.property("spacing", 1);
    return data;
 };
 

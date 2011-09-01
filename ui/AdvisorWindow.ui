@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>253</width>
-    <height>138</height>
+    <width>264</width>
+    <height>146</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -75,7 +75,7 @@
           <item>
            <widget class="QLabel" name="pictureLabel">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
