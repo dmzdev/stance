@@ -90,6 +90,7 @@ updateStateUI = function (voteHandle, pastState) {
          insertIntoVotes(voteItem);
       }
    }
+
    if (VoteObjects[voteHandle] && VoteObjects[voteHandle].ui &&
       VoteObjects[voteHandle].groupHandle && (VoteObjects[voteHandle].groupHandle === userGroupHandle)) {
 
@@ -398,6 +399,8 @@ setApprovalPendingLabels = function (voteHandle) {
             voteItem.ui.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
             voteItem.ui.yesButton.observe(self, "clicked", function () {
 
+               voteItem.ui.yesButton.hide();
+               voteItem.ui.noButton.hide();
                createDecisionObject(
                   true,
                   voteItem.handle,
@@ -411,6 +414,8 @@ setApprovalPendingLabels = function (voteHandle) {
             });
             voteItem.ui.noButton.observe(self, "clicked", function () {
 
+               voteItem.ui.noButton.hide();
+               voteItem.ui.yesButton.hide();
                createDecisionObject(
                   false, voteItem.handle,
                   voteItem.ui.timeBox.value(),
@@ -1133,7 +1138,7 @@ function (objHandle, attrHandle, newVal, prevVal) {
    if (VoteObjects[objHandle]) {
 
       VoteObjects[objHandle].state = newVal;
-      dmz.time.setTimer(self, function () {
+      dmz.time.setTimer(self, 1, function () {
 
          if (newVal === dmz.stance.VOTE_EXPIRED) {
 
