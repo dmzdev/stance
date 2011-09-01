@@ -277,18 +277,13 @@ mouseEvent = function (object, event) {
                      }
                      if (rect.width && rect.height) {
 
-//                        data.dialog.maximumSize(rect.width * 0.95, rect.height * 0.95);
                         data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
                         if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
 
-//                           self.log.warn ("Pos:", geo.x + ((geo.width - (rect.width * 0.95)) / 2), geo.y);
-
-                           data.dialog.move
-                              ( geo.x + ((geo.width - (rect.width * 0.95)) / 2)
-                              , geo.y + pos[1]
-                              );
-
-//                           data.dialog.move(rect.width * 0.025, 0);
+//                           data.dialog.move
+//                              ( geo.x + ((geo.width - (rect.width * 0.95)) / 2)
+//                              , geo.y + pos[1]
+//                              );
                         }
                      }
                      data.dialog.open(self, function (value) {
@@ -482,17 +477,8 @@ _exports.addPage = function (name, widget, func, onHome) {
       else {
 
          dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget());
-         if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
-
-//            dialog = dmz.ui.loader.load("WindowDialog.ui");
-//            dialog.lookup("closeWindow").hide();
-            dialog.setWindowsHint();
-         }
-//         else { dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget()); }
-//         layout = dmz.ui.layout.createVBoxLayout();
-//         layout.addWidget(widget);
+         if (dmz.defs.OperatingSystem === dmz.defs.Win32) { dialog.setWindowsHint(); }
          dialog.lookup("scrollArea").widget(widget);
-//         dialog.lookup("verticalLayout").addWidget(widget);
          PageLink[name].dialog = dialog;
       }
       PageLink[name].onClicked = func;
