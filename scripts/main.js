@@ -283,10 +283,10 @@ mouseEvent = function (object, event) {
 
 //                           self.log.warn ("Pos:", geo.x + ((geo.width - (rect.width * 0.95)) / 2), geo.y);
 
-                           data.dialog.move
-                              ( geo.x + ((geo.width - (rect.width * 0.95)) / 2)
-                              , geo.y + pos[1]
-                              );
+//                           data.dialog.move
+//                              ( geo.x + ((geo.width - (rect.width * 0.95)) / 2)
+//                              , geo.y + pos[1]
+//                              );
 
 //                           data.dialog.move(rect.width * 0.025, 0);
                         }
