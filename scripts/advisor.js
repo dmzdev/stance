@@ -244,6 +244,7 @@ createAdvisorWindow = function (windowStr, idx) {
       var text
          , infoRect = data.task.widget.rect()
          , questionRect
+         , size
          ;
 
       data.haveUpdated = true;
@@ -261,11 +262,12 @@ createAdvisorWindow = function (windowStr, idx) {
          // max height = (height * .95) - sizes
 
          if (data.task.widget) {
-         data.question.scrollArea.maximumSize(
-            width,
-            (height * 0.95) -
-               data.task.widget.rect().height - data.question.postArea.rect().height);
-               }
+
+            size = (height * 0.95) - data.task.widget.rect().height - data.question.postArea.rect().height;
+//            data.question.scrollArea.maximumSize(width, size);
+            data.question.scrollArea.fixedSize(width, size);
+
+         }
       }
       data.task.submit.observe(self, "clicked", function () {
 
