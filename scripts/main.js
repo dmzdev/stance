@@ -280,10 +280,10 @@ mouseEvent = function (object, event) {
                         data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
                         if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
 
-//                           data.dialog.move
-//                              ( geo.x + ((geo.width - (rect.width * 0.95)) / 2)
-//                              , geo.y + pos[1]
-//                              );
+                           data.dialog.move
+                              ( geo.x + ((geo.width - (rect.width * 0.95)) / 2)
+                              , geo.y + pos[1]
+                              );
                         }
                      }
                      data.dialog.open(self, function (value) {
