@@ -241,34 +241,14 @@ createAdvisorWindow = function (windowStr, idx) {
 
    data.update = function (advisorHandle, width, height) {
 
-      var text
-         , infoRect = data.task.widget.rect()
-         , questionRect
-         , size
-         ;
-
-      data.haveUpdated = true;
+      var text;
       data.advisor = advisorHandle;
       data.infoWindow.name.text(dmz.object.text(advisorHandle, dmz.stance.NameHandle));
       data.infoWindow.bio.text(dmz.object.text(advisorHandle, dmz.stance.BioHandle));
       data.infoWindow.title.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
       data.infoWindow.picture.pixmap(getAvatarPixmap(advisorHandle));
 
-      if (data.question && data.question.update) {
-
-         data.question.update(advisorHandle);
-         // set maximum from scroll area based on width, height
-         // Get sizes of other UI items
-         // max height = (height * .95) - sizes
-
-         if (data.task.widget) {
-
-            size = (height * 0.95) - data.task.widget.rect().height - data.question.postArea.rect().height;
-            data.question.scrollArea.maximumSize(width, size);
-            data.question.scrollArea.fixedHeight(width, size);
-
-         }
-      }
+      if (data.question && data.question.update) { data.question.update(advisorHandle); }
       data.task.submit.observe(self, "clicked", function () {
 
          var handle
@@ -318,8 +298,6 @@ createAdvisorWindow = function (windowStr, idx) {
       data.layout.addWidget(data.queryLabel);
       data.layout.addWidget(data.question.widget);
    }
-//   data.layout.margins(0);
-//   data.layout.property("spacing", 0);
    return data;
 };
 
