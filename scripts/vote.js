@@ -339,7 +339,6 @@ setApprovalPendingLabels = function (voteHandle) {
             voteItem.ui.postItem.styleSheet("* { background-color: rgb(240, 240, 240); }");
          }
       }
-      self.log.error(voteItem.userPicture);
       if (voteItem.userPicture) {
 
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
@@ -568,6 +567,7 @@ setYesNoLabels = function (voteHandle) {
             voteItem.ui.postItem.styleSheet("* { background-color: rgb(70, 240, 70); }");
          }
       }
+      self.log.error(voteItem.userPicture);
       if (voteItem.userPicture) {
 
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
