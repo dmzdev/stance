@@ -90,7 +90,7 @@ _exports.sendVoteEmail = function (voteItem, state, decisionItem) {
 
          groupUserList = dmz.object.superLinks(voteItem.groupHandle, dmz.stance.DataLinkHandle) || [];
          priority = dmz.stance.PRIORITY_FIRST;
-         subject = "STANCE " + groupName + " needs a vote approved.";
+         subject = "STANCE " + groupName + " needs a vote approved. (DO NOT REPLY)";
          sendList = groupUserList.filter(function (userHandle) {
 
             return dmz.object.flag(userHandle, dmz.stance.AdminHandle);
@@ -99,7 +99,7 @@ _exports.sendVoteEmail = function (voteItem, state, decisionItem) {
       else if (state === dmz.stance.VOTE_ACTIVE) {
 
          priority = dmz.stance.PRIORITY_SECOND;
-         subject = "STANCE " + groupName + " has an active vote.";
+         subject = "STANCE " + groupName + " has an active vote. (DO NOT REPLY)";
          sendList = groupUserList.filter(function (userHandle) {
 
             return !dmz.object.flag(userHandle, dmz.stance.AdminHandle);
@@ -108,7 +108,7 @@ _exports.sendVoteEmail = function (voteItem, state, decisionItem) {
       else if (state === dmz.stance.VOTE_DENIED) {
 
          priority = dmz.stance.PRIORITY_THIRD;
-         subject = "STANCE " + groupName + " has had a vote denied.";
+         subject = "STANCE " + groupName + " has had a vote denied. (DO NOT REPLY)";
          sendList = groupUserList.filter(function (userHandle) {
 
             return !dmz.object.flag(userHandle, dmz.stance.AdminHandle);
@@ -117,13 +117,13 @@ _exports.sendVoteEmail = function (voteItem, state, decisionItem) {
       else if (state === dmz.stance.VOTE_NO) {
 
          priority = dmz.stance.PRIORITY_THIRD;
-         subject = "STANCE " + groupName + " has voted NO on the pending vote.";
+         subject = "STANCE " + groupName + " has voted NO on the pending vote. (DO NOT REPLY)";
          sendList = groupUserList;
       }
       else if (state === dmz.stance.VOTE_YES) {
 
          priority = dmz.stance.PRIORITY_THIRD;
-         subject = "STANCE " + groupName + " has voted YES on the pending vote.";
+         subject = "STANCE " + groupName + " has voted YES on the pending vote. (DO NOT REPLY)";
          sendList = groupUserList;
       }
    }
