@@ -248,13 +248,7 @@ createAdvisorWindow = function (windowStr, idx) {
       data.infoWindow.title.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
       data.infoWindow.picture.pixmap(getAvatarPixmap(advisorHandle));
 
-      if (data.question && data.question.update) {
-
-         data.question.update(advisorHandle);
-         // set maximum from scroll area based on width, height
-         // Get sizes of other UI items
-         // max height = (height * .95) - sizes
-      }
+      if (data.question && data.question.update) { data.question.update(advisorHandle); }
       data.task.submit.observe(self, "clicked", function () {
 
          var handle
@@ -300,11 +294,10 @@ createAdvisorWindow = function (windowStr, idx) {
       postTextEditWidget.styleSheet(
          "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
          "QTextEdit { background-color: rgb(255, 255, 255); } ");
-      data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
+      data.queryLabel = dmz.ui.label.create("Query Advisor:")
+      data.layout.addWidget(data.queryLabel);
       data.layout.addWidget(data.question.widget);
    }
-//   data.layout.margins(0);
-//   data.layout.property("spacing", 0);
    return data;
 };
 
