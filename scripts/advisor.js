@@ -260,10 +260,12 @@ createAdvisorWindow = function (windowStr, idx) {
          // Get sizes of other UI items
          // max height = (height * .95) - sizes
 
+         if (data.task.widget) {
          data.question.scrollArea.maximumSize(
             width,
             (height * 0.95) -
                data.task.widget.rect().height - data.question.postArea.rect().height);
+               }
       }
       data.task.submit.observe(self, "clicked", function () {
 
