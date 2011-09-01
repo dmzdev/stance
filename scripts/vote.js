@@ -567,11 +567,9 @@ setYesNoLabels = function (voteHandle) {
             voteItem.ui.postItem.styleSheet("* { background-color: rgb(70, 240, 70); }");
          }
       }
-      self.log.error(voteItem.userPicture);
       if (voteItem.userPicture) {
 
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(voteItem.userPicture));
-         self.log.error(pic);
          voteItem.ui.userPictureLabel.pixmap(pic);
       }
       if (voteItem.postedBy) {
