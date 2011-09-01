@@ -14,25 +14,25 @@ INSTALLER=$DEPTH/installers/$UPDATE.exe
 
 echo "publishing $INSTALLER..."
 
-echo "scp $VERSION_XML update.dmzdev.org:/home/update.dmzdev.org/public/latest/win32-$CHANNEL/STANCE.xml"
-scp $VERSION_XML update.dmzdev.org:/home/update.dmzdev.org/public/latest/win32-$CHANNEL/STANCE.xml
+echo "scp $VERSION_XML dmzupdate.chds.us:/home/dmzupdate.chds.us/public/latest/win32-$CHANNEL/STANCE.xml"
+scp $VERSION_XML dmzupdate.chds.us:/home/dmzupdate.chds.us/public/latest/win32-$CHANNEL/STANCE.xml
 
-echo "scp ./changelog.html update.dmzdev.org:/home/update.dmzdev.org/public/downloads/$UPDATE.html"
-scp ./changelog.html update.dmzdev.org:/home/update.dmzdev.org/public/downloads/$UPDATE.html
+echo "scp ./changelog.html dmzupdate.chds.us:/home/dmzupdate.chds.us/public/downloads/$UPDATE.html"
+scp ./changelog.html dmzupdate.chds.us:/home/dmzupdate.chds.us/public/downloads/$UPDATE.html
 
-echo "scp ./changelog.html update.dmzdev.org:/home/update.dmzdev.org/public/downloads/$OLD_UPDATE.html"
-scp ./changelog.html update.dmzdev.org:/home/update.dmzdev.org/public/downloads/$OLD_UPDATE.html
+echo "scp ./changelog.html dmzupdate.chds.us:/home/dmzupdate.chds.us/public/downloads/$OLD_UPDATE.html"
+scp ./changelog.html dmzupdate.chds.us:/home/dmzupdate.chds.us/public/downloads/$OLD_UPDATE.html
 
-echo "scp $INSTALLER update.dmzdev.org:/home/update.dmzdev.org/public/downloads"
-scp $INSTALLER update.dmzdev.org:/home/update.dmzdev.org/public/downloads
+echo "scp $INSTALLER dmzupdate.chds.us:/home/dmzupdate.chds.us/public/downloads"
+scp $INSTALLER dmzupdate.chds.us:/home/dmzupdate.chds.us/public/downloads
 
-echo "ssh update.dmzdev.org sudo ln -s /home/update.dmzdev.org/public/downloads/$UPDATE.exe /home/update.dmzdev.org/public/downloads/$OLD_UPDATE.exe"
-ssh update.dmzdev.org sudo ln -s /home/update.dmzdev.org/public/downloads/$UPDATE.exe /home/update.dmzdev.org/public/downloads/$OLD_UPDATE.exe
+echo "ssh dmzupdate.chds.us sudo ln -s /home/dmzupdate.chds.us/public/downloads/$UPDATE.exe /home/dmzupdate.chds.us/public/downloads/$OLD_UPDATE.exe"
+ssh dmzupdate.chds.us sudo ln -s /home/dmzupdate.chds.us/public/downloads/$UPDATE.exe /home/dmzupdate.chds.us/public/downloads/$OLD_UPDATE.exe
 
-echo "ssh update.dmzdev.org sudo chown www-data.admin -R /home/update.dmzdev.org/public"
-ssh update.dmzdev.org sudo chown www-data.admin -R /home/update.dmzdev.org/public
+echo "ssh dmzupdate.chds.us sudo chown www-data.admin -R /home/dmzupdate.chds.us/public"
+ssh dmzupdate.chds.us sudo chown www-data.admin -R /home/dmzupdate.chds.us/public
 
-echo "ssh update.dmzdev.org sudo chmod -R g+w /home/update.dmzdev.org/public"
-ssh update.dmzdev.org sudo chmod -R g+w /home/update.dmzdev.org/public
+echo "ssh dmzupdate.chds.us sudo chmod -R g+w /home/dmzupdate.chds.us/public"
+ssh dmzupdate.chds.us sudo chmod -R g+w /home/dmzupdate.chds.us/public
 
 echo "done!"
