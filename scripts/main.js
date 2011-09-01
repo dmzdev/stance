@@ -289,7 +289,6 @@ mouseEvent = function (object, event) {
 //                              );
 
                            data.dialog.move(rect.width * 0.025, 0);
-                           data.dialog.show();
                         }
                      }
                      data.dialog.open(self, function (value) {
@@ -488,7 +487,6 @@ _exports.addPage = function (name, widget, func, onHome) {
 //            dialog = dmz.ui.loader.load("WindowDialog.ui");
 //            dialog.lookup("closeWindow").hide();
             dialog.setWindowsHint();
-            dialog.hide();
          }
 //         else { dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget()); }
          dialog.lookup("verticalLayout").addWidget(widget);
