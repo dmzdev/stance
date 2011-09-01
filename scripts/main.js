@@ -289,7 +289,7 @@ mouseEvent = function (object, event) {
 //                              );
 
                            data.dialog.move(rect.width * 0.025, 0);
-                           dialog.show();
+                           data.dialog.show();
                         }
                      }
                      data.dialog.open(self, function (value) {
