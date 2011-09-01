@@ -241,7 +241,12 @@ createAdvisorWindow = function (windowStr, idx) {
 
    data.update = function (advisorHandle, width, height) {
 
-      var text;
+      var text
+         , infoRect = data.task.widget.rect()
+         , questionRect
+         ;
+
+      data.haveUpdated = true;
       data.advisor = advisorHandle;
       data.infoWindow.name.text(dmz.object.text(advisorHandle, dmz.stance.NameHandle));
       data.infoWindow.bio.text(dmz.object.text(advisorHandle, dmz.stance.BioHandle));
@@ -254,6 +259,11 @@ createAdvisorWindow = function (windowStr, idx) {
          // set maximum from scroll area based on width, height
          // Get sizes of other UI items
          // max height = (height * .95) - sizes
+
+         data.question.scrollArea.maximumSize(
+            width,
+            (height * 0.95) -
+               data.task.widget.rect().height - data.question.postArea.rect().height);
       }
       data.task.submit.observe(self, "clicked", function () {
 
@@ -300,7 +310,8 @@ createAdvisorWindow = function (windowStr, idx) {
       postTextEditWidget.styleSheet(
          "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
          "QTextEdit { background-color: rgb(255, 255, 255); } ");
-      data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
+      data.queryLabel = dmz.ui.label.create("Query Advisor:")
+      data.layout.addWidget(data.queryLabel);
       data.layout.addWidget(data.question.widget);
    }
 //   data.layout.margins(0);
