@@ -265,7 +265,7 @@ createAdvisorWindow = function (windowStr, idx) {
 
             size = (height * 0.95) - data.task.widget.rect().height - data.question.postArea.rect().height;
 //            data.question.scrollArea.maximumSize(width, size);
-            data.question.scrollArea.fixedSize(width, size);
+            data.question.scrollArea.fixedHeight(width, size);
 
          }
       }
