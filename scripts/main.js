@@ -267,14 +267,24 @@ mouseEvent = function (object, event) {
 
                   dmz.time.setTimer(self, function () {
 
-                     var rect = main.rect();
-                     if (rect.width && rect.height) {
-
-                        data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
-                     }
+                     var rect = main.rect()
+                       , geo = dmz.ui.mainWindow.window().geometry()
+                       , pos = main.pos()
+                       ;
                      if (data.onClicked && rect.width && rect.height) {
 
                         data.onClicked(rect.width, rect.height);
+                     }
+                     if (rect.width && rect.height) {
+
+                        data.dialog.fixedSize(rect.width * 0.95, rect.height * 0.95);
+                        if (dmz.defs.OperatingSystem === dmz.defs.Win32) {
+
+                           data.dialog.move
+                              ( geo.x + ((geo.width - (rect.width * 0.95)) / 2)
+                              , geo.y + pos[1]
+                              );
+                        }
                      }
                      data.dialog.open(self, function (value) {
 
@@ -291,7 +301,6 @@ mouseEvent = function (object, event) {
                }
             }
          });
-
       }
    }
    return false;
@@ -468,12 +477,14 @@ _exports.addPage = function (name, widget, func, onHome) {
       else {
 
          dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget());
-         dialog.lookup("verticalLayout").addWidget(widget);
+         if (dmz.defs.OperatingSystem === dmz.defs.Win32) { dialog.setWindowsHint(); }
+         dialog.lookup("scrollArea").widget(widget);
          PageLink[name].dialog = dialog;
       }
       PageLink[name].onClicked = func;
       PageLink[name].onHome = onHome;
       PageLink[name].pixmap.cursor(dmz.ui.consts.PointingHandCursor);
+      PageLink[name].widget = widget;
    }
    else { self.log.error(name, widget, PageLink[name]); }
 };

@@ -191,28 +191,12 @@ createAdvisorWindow = function (windowStr, idx) {
       , replyLength: MAX_QUESTION_REPLY_LEN
       , highlight: function (handle) {
 
-           var advisorHandle
-             , type
-             , str
-             ;
+           var str;
            if (!handle) { MainModule.highlight(windowStr); }
            else {
 
-              type = dmz.object.type(handle);
-              if (type.isOfType(dmz.stance.AnswerType)) {
-
-                 handle = (dmz.object.subLinks(handle, dmz.stance.QuestionLinkHandle) || [])[0];
-              }
-              advisorHandle = (dmz.object.subLinks(handle, dmz.stance.QuestionLinkHandle) || [])[0];
-              if (advisorHandle &&
-                 dmz.object.linkHandle(
-                    dmz.stance.AdvisorGroupHandle,
-                    advisorHandle,
-                    dmz.stance.getUserGroupHandle(dmz.object.hil()))) {
-
-                 str = "Advisor" + dmz.object.scalar(advisorHandle, dmz.stance.ID);
-                 MainModule.highlight(str);
-              }
+              str = "Advisor" + dmz.object.scalar(handle, dmz.stance.ID);
+              MainModule.highlight(str);
            }
         }
       , canReplyTo: function (replyToHandle) {
@@ -255,7 +239,7 @@ createAdvisorWindow = function (windowStr, idx) {
       if (data.question && data.question.onHome) { data.question.onHome(); }
    };
 
-   data.update = function (advisorHandle) {
+   data.update = function (advisorHandle, width, height) {
 
       var text;
       data.advisor = advisorHandle;
@@ -310,11 +294,10 @@ createAdvisorWindow = function (windowStr, idx) {
       postTextEditWidget.styleSheet(
          "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
          "QTextEdit { background-color: rgb(255, 255, 255); } ");
-      data.layout.addWidget(dmz.ui.label.create("Query Advisor:"));
+      data.queryLabel = dmz.ui.label.create("Query Advisor:")
+      data.layout.addWidget(data.queryLabel);
       data.layout.addWidget(data.question.widget);
    }
-//   data.layout.margins(0);
-//   data.layout.property("spacing", 0);
    return data;
 };
 
@@ -421,6 +404,54 @@ function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
    if (master.decisions[decisionHandle]) { extraInfoList.forEach(function (fnc) { fnc(decisionHandle); }); }
 });
 
+dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
+function (linkObjHandle, attrHandle, userHandle, groupHandle) {
+
+   if (userHandle === dmz.object.hil()) {
+
+      AdvisorWindows.forEach(function (data) {
+
+         var advisorHandle = getHILAdvisor(data.advisorIndex)
+           , userTime = dmz.stance.userAttribute(userHandle, AdvisorTimeHandles[data.advisorIndex]) || 0
+           , questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
+           , doHighlight = false
+           ;
+
+         data.question.setTimestamp(userTime);
+         questions.forEach(function (questionHandle) {
+
+            var time
+              , answerHandle
+              , authorHandle
+              ;
+            if (!doHighlight) {
+
+               authorHandle = dmz.stance.getAuthorHandle(questionHandle) || userHandle;
+               if (userHandle !== authorHandle) {
+
+                  time = dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
+                  if (time > userTime) { doHighlight = true; }
+               }
+               else {
+
+                  answerHandle = getQuestionAnswer(questionHandle);
+                  authorHandle = dmz.stance.getAuthorHandle(answerHandle);
+                  if (userHandle !== authorHandle) {
+
+                     time =
+                        dmz.object.timeStamp(
+                           getQuestionAnswer(questionHandle),
+                           dmz.stance.CreatedAtServerTimeHandle) || 0;
+                     if (time > userTime) { doHighlight = true; }
+                  }
+               }
+            }
+         });
+         if (doHighlight) { MainModule.highlight(data.windowStr); }
+      });
+   }
+});
+
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
@@ -487,7 +518,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             module.addPage
                ( str
                , data.window
-               , function () { data.update(getHILAdvisor(index)); }
+               , function (width, height) { data.update(getHILAdvisor(index), width, height); }
                , function () { data.onHome(); }
                );
          }(idx));

@@ -44,7 +44,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , forumType: dmz.stance.ForumType
          , parentHandle: dmz.stance.ParentHandle
          , groupLinkHandle: dmz.stance.ForumLink
-         , highlight: function () { module.highlight("Forum"); }
+         , highlight: function (handle) { module.highlight("Forum"); }
          , canReplyTo: function () { return true; }
          , postBlocked: function () { return false; }
          , messageLength: MaxMessageLength

@@ -31,7 +31,6 @@ var dmz =
    , groupStudentList = editScenarioWidget.lookup("groupStudentList")
    , ungroupedStudentList = editScenarioWidget.lookup("ungroupedStudentList")
    , groupComboBox = editScenarioWidget.lookup("groupComboBox")
-   , gameStateButton = editScenarioWidget.lookup("gameStateButton")
    , advisorGroupComboBox = editScenarioWidget.lookup("advisorGroupComboBox")
    , groupAdvisorList = editScenarioWidget.lookup("groupAdvisorList")
    , newspaperList = editScenarioWidget.lookup("newspaperListWidget")
@@ -49,17 +48,6 @@ var dmz =
            }
         , editScenarioWidget
         )
-
-   /*, serverStartDateEdit = editScenarioWidget.lookup("serverStartDateEdit")
-   , serverEndDateEdit = editScenarioWidget.lookup("serverEndDateEdit")
-   , serverDeltaLabel = editScenarioWidget.lookup("serverDeltaLabel")
-   , gameStartDateEdit = editScenarioWidget.lookup("gameStartDateEdit")
-   , gameEndDateEdit = editScenarioWidget.lookup("gameEndDateEdit")
-   , gameDeltaLabel = editScenarioWidget.lookup("gameDeltaLabel")
-   , timeFactorSpinBox = editScenarioWidget.lookup("timeFactorSpinBox")
-   , timeInfoLabel = editScenarioWidget.lookup("timeInfoLabel")
-   , timeInfoText = timeInfoLabel.text()
-   */
 
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui", editScenarioWidget)
    , avatarList = createStudentDialog.lookup("avatarList")
@@ -491,8 +479,7 @@ dmz.object.flag.observe(self, dmz.stance.AdminHandle, function (handle, attr, va
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
 
-   if (handle === CurrentGameHandle) { gameStateButton.text(value ? "End Game" : "Start Game"); }
-   else if (injectItems[handle]) {
+   if (injectItems[handle]) {
 
       injectItems[handle].active = value;
       updateInjectTitle(handle);
@@ -534,70 +521,6 @@ setup = function () {
 
          avatarLabel.pixmap(AvatarPixmapList[text] ? AvatarPixmapList[text] : AvatarPixmapList["Default"]);
       }
-   });
-
-   gameStateButton.observe(self, "clicked", function () {
-
-      var active = dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle)
-        ;
-
-      dmz.ui.messageBox.create(
-         { type: dmz.ui.messageBox.Warning
-         , text: "Are you sure that you'd like to " + (active ? "end " : "start ") + "the game?"
-         , informativeText: "If you click <b>Ok</b>, all users will be sent an email notification."
-         , standardButtons: [dmz.ui.messageBox.Cancel, dmz.ui.messageBox.Ok]
-         , defaultButton: dmz.ui.messageBox.Cancel
-         }
-         , editScenarioWidget
-         ).open(self, function (value) {
-
-            var groups
-              , userList = []
-              , subject
-              , body
-              ;
-            if (value === dmz.ui.messageBox.Ok) {
-
-               active = !active;
-               dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle, active);
-               groups = dmz.object.superLinks(CurrentGameHandle, dmz.stance.GameGroupHandle);
-               if (groups) {
-
-                  groups.forEach(function (groupHandle) {
-
-                     var users = dmz.object.superLinks(groupHandle, dmz.stance.GroupMembersHandle);
-                     if (users) {
-
-                        users.forEach(function (userHandle) {
-
-                           if (!dmz.object.flag(userHandle, dmz.stance.AdminHandle)) {
-
-                              userList.push(userHandle);
-                           }
-                        });
-                     }
-                  });
-               }
-
-               subject = "STANCE Game " + (!active ? "Completed!" : "Initiated!")
-               body = "Students, \n Your STANCE game ";
-               if (!active) {
-
-                  body += "is now over! \nThank you for participating!";
-                  dmz.object.timeStamp(CurrentGameHandle, dmz.stance.GameEndTimeHandle, 0);
-                  dmz.object.flag(CurrentGameHandle, dmz.stance.UpdateEndTimeHandle, true);
-               }
-               else {
-
-                  body +=
-                     "has just begun! Please log on at your earliest convenience and " +
-                     "examine the initial scenario description."
-                  dmz.object.timeStamp(CurrentGameHandle, dmz.stance.GameStartTimeHandle, 0);
-                  dmz.object.flag(CurrentGameHandle, dmz.stance.UpdateStartTimeHandle, true);
-               }
-               EmailMod.sendEmail(userList, subject, body);
-            }
-         });
    });
 
    lobbyistPictureList.observe(self, "currentIndexChanged", function (index) {

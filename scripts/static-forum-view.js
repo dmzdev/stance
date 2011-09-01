@@ -116,6 +116,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
       _view = dmz.ui.loader.load("ForumView.ui");
       retData.widget = _view;
       _scrollArea = _view.lookup("scrollArea");
+      retData.scrollArea = _scrollArea;
+      retData.postArea = _view.lookup("postFrame");
       _mainLayout = dmz.ui.layout.createVBoxLayout();
       _postTextEdit = _view.lookup("postTextEdit");
       _submitButton = _view.lookup("postSubmitButton");
@@ -458,13 +460,30 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
       _unviewedHighlight = function (data, hil) {
 
+         var handle
+           , forumHandle
+           ;
          if (!viewedWindow) {
 
             if (hil && data.postedAt && (_LatestTimeStamp !== -1) &&
                (data.postedAt > _LatestTimeStamp) &&
                (data.authorHandle && (data.authorHandle !== hil))) {
 
-               _Highlight(data.handle);
+               if (_master.comments[data.handle]) {
+
+                  handle = (dmz.object.subLinks(data.handle, _ParentLinkHandle) || [])[0];
+               }
+               else if (_master.posts[data.handle]) { handle = data.handle; }
+               forumHandle = (dmz.object.subLinks(handle, _ParentLinkHandle) || [])[0];
+
+               if (forumHandle &&
+                  dmz.object.linkHandle(
+                     _ForumLinkHandle,
+                     forumHandle,
+                     dmz.stance.getUserGroupHandle(dmz.object.hil()))) {
+
+                  _Highlight(forumHandle);
+               }
             }
          }
       };
