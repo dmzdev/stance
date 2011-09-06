@@ -371,6 +371,7 @@ checkNotifications = function () {
      , groupMediaHandles = dmz.object.superLinks(groupHandle, dmz.stance.MediaHandle) || []
      , userMediaHandles = dmz.object.superLinks(hil, dmz.stance.MediaHandle) || []
      , objType
+     , active
      ;
 
    groupMediaHandles.forEach(function (mediaHandle) {
@@ -378,9 +379,10 @@ checkNotifications = function () {
       if (userMediaHandles.indexOf(mediaHandle) === -1) {
 
          objType = dmz.object.type(mediaHandle);
+         active = dmz.object.flag(mediaHandle, dmz.stance.ActiveHandle);
          Object.keys(TypesMap).forEach(function (key) {
 
-            if (TypesMap[key].isOfType(objType)) {
+            if (TypesMap[key].isOfType(objType) && active) {
 
                MainModule.highlight(key);
             }
