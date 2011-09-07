@@ -91,6 +91,7 @@ var dmz =
 
    // Variables
    , aarMessage = dmz.message.create(self.config.string("aarmessage.name"))
+   , showStudentsMessage = dmz.message.create("showStudentsWindow")
    , GroupButtonList = {}
    , EmailMod = false
    , groupList = []
@@ -161,6 +162,12 @@ editScenarioWidget.observe(self, "aarButton", "clicked", function () {
 
    self.log.warn ("aarMessage:", aarMessage);
    aarMessage.send();
+});
+
+editScenarioWidget.observe(self, "showStudentsButton", "clicked", function () {
+
+   self.log.warn("showStudentsMessage:", showStudentsMessage);
+   showStudentsMessage.send();
 });
 
 createNewUser = function (userName, displayName) {

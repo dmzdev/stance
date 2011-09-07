@@ -27,6 +27,7 @@
    <instance name="login"/>
    <instance name="advisor"/>
    <instance name="vote"/>
+   <instance name="userInfo"/>
 <!--   <instance name="graph"/> -->
 </javascript>
 <login>
