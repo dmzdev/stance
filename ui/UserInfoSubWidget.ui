@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>UserWidget</class>
+ <widget class="QWidget" name="UserWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -12,6 +12,9 @@
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#UserWidget { border-style: solid; border-width: 1px; border-color: black; }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -87,6 +90,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QLabel" name="votesSeenLabel">
+       <property name="text">
+        <string>VotesSeenLabel</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -115,7 +125,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2"/>
+    <layout class="QVBoxLayout" name="contentLayout"/>
    </item>
   </layout>
  </widget>
