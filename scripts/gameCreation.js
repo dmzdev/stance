@@ -55,9 +55,6 @@ var dmz =
    , studentUserNameEdit = createStudentDialog.lookup("userName")
    , studentDisplayNameEdit = createStudentDialog.lookup("displayName", editScenarioWidget)
 
-   , instructorDialog = dmz.ui.loader.load("InstructorWindowDialog", editScenarioWidget)
-   , scenarioList = instructorDialog.lookup("scenarioList")
-
    , editAdvisorDialog = dmz.ui.loader.load("EditAdvisorDialog.ui", editScenarioWidget)
    , advisorBio = editAdvisorDialog.lookup("advisorBio")
    , pictureLabel = editAdvisorDialog.lookup("pictureLabel")

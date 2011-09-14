@@ -46,7 +46,6 @@ var dmz =
    // Variables
    , dialogWidth = 0
    , dialogHeight = 0
-   , VideoHomeMessage = dmz.message.create("VideoHome")
    , CurrentWindowName
    , CurrentIndex = 0
    , NewSource = false
