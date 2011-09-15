@@ -9,10 +9,23 @@ var dmz =
        , objectType: require("dmz/runtime/objectType")
        , util: require("dmz/types/util")
        , stance: require("stanceConst")
+       , sys: require("sys")
        , ui:
           { mainWindow: require("dmz/ui/mainWindow")
+          , messageBox: require("dmz/ui/messageBox")
           }
        }
+    // UI
+    , disabledDialog =
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Warning
+            , text: "Your account has been disabled. Please contact your professor to get it reenabled. STANCE will now exit."
+            , standardButtons: [dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Ok
+            }
+            , dmz.ui.mainWindow.centralWidget()
+            )
+
     // Constants
     , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
     , LogoutMessage = dmz.message.create("Logout_Message")
@@ -53,7 +66,11 @@ _activateUser = function (name) {
 
          if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
          if (_admin) { dmz.object.flag(handle, dmz.stance.AdminHandle, true); }
-         dmz.object.flag(handle, dmz.object.HILAttribute, true);
+         if (dmz.object.flag(handle, dmz.stance.ActiveHandle)) {
+
+            dmz.object.flag(handle, dmz.object.HILAttribute, true);
+         }
+         else { disabledDialog.open(self, function () { dmz.sys.requestExit(); }); }
       }
    }
 }

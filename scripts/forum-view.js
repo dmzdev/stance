@@ -26,7 +26,7 @@ var dmz =
    , RetData = false
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
-   , MaxMessageLength = 500
+   , MaxMessageLength = 2000
    ;
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });

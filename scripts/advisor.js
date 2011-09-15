@@ -30,9 +30,9 @@ var dmz =
 
    // Consts
    , ADVISOR_COUNT = 5
-   , MAX_QUESTION_STR_LEN = 144
+   , MAX_QUESTION_STR_LEN = 500
    , MAX_QUESTION_REPLY_LEN = 500
-   , MAX_TASK_STR_LEN = 144
+   , MAX_TASK_STR_LEN = 500
    , MAX_TASK_REPLY_LEN = 500
 
    // Variables
