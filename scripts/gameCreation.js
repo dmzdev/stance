@@ -184,16 +184,7 @@ var dmz =
    , modifyInjectItem
    , mediaInjectButtons
    , setType
-   , createStudent
-   , createAdmin
-   , createTech
-   , createObserver
-   , createAdvisor
-   , editStudent
-   , editAdmin
-   , editTech
-   , editObserver
-   , editAdvisor
+   , setAdvisorList
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
@@ -497,7 +488,6 @@ dmz.object.flag.observe(self, dmz.stance.AdminHandle, function (handle, attr, va
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
 
    var data = injectItems[handle] || userItems[handle];
-   self.log.warn ("Item: ["+Object.keys(data)+"]", data ? data.item : "--nodata", handle);
    if (data) {
 
       data.active = value;
@@ -775,7 +765,7 @@ groupAdvisorList.observe(self, "itemActivated", function (item) {
    }
 });
 
-createStudent = function () {
+editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
@@ -803,9 +793,9 @@ createStudent = function () {
       studentUserNameEdit.clear();
       avatarList.currentText("Default");
    });
-};
+});
 
-createAdmin = function () {
+editScenarioWidget.observe(self, "createAdminButton", "clicked", function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
@@ -832,9 +822,9 @@ createAdmin = function () {
       studentUserNameEdit.clear();
       avatarList.currentText("Default");
    });
-};
+});
 
-createObserver = function () {
+editScenarioWidget.observe(self, "createObserverButton", "clicked", function () {
 
    avatarList.enabled(false);
    createStudentDialog.open(self, function (value, dialog) {
@@ -863,9 +853,9 @@ createObserver = function () {
       avatarList.enabled(true);
       avatarList.currentText("Default");
    });
-};
+});
 
-createTech = function () {
+editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
@@ -892,10 +882,11 @@ createTech = function () {
       studentUserNameEdit.clear();
       avatarList.currentText("Default");
    });
-};
+});
 
-createAdvisor = function () {
+editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
 
+   setAdvisorList(0);
    createAdvisorDialog.open(self, function (value, dialog) {
 
       var user
@@ -926,15 +917,9 @@ createAdvisor = function () {
       advisorDisplayNameEdit.clear();
       advisorEmailEdit.clear();
    });
-};
+});
 
-editScenarioWidget.observe(self, "createPlayerButton", "clicked", editStudent);
-editScenarioWidget.observe(self, "createAdminButton", "clicked", editAdmin);
-editScenarioWidget.observe(self, "createObserverButton", "clicked", editObserver);
-editScenarioWidget.observe(self, "createTechButton", "clicked", editTech);
-editScenarioWidget.observe(self, "createAdvisorButton", "clicked", editAdvisor);
-
-editStudent = function (item) {
+StudentListWidget.observe(self, "itemActivated", function (item) {
 
    var objHandle
      , avatar
@@ -999,9 +984,9 @@ editStudent = function (item) {
          avatarList.currentText("Default");
       });
    }
-};
+});
 
-editAdmin = function (item) {
+AdminListWidget.observe(self, "itemActivated", function (item) {
 
    var objHandle
      , avatar
@@ -1047,9 +1032,9 @@ editAdmin = function (item) {
          avatarList.currentText("Default");
       });
    }
-};
+});
 
-editObserver = function (item) {
+ObserverListWidget.observe(self, "itemActivated", function (item) {
 
    var objHandle
      , enabled
@@ -1093,9 +1078,9 @@ editObserver = function (item) {
          avatarList.currentText("Default");
       });
    }
-};
+});
 
-editTech = function (item) {
+TechListWidget.observe(self, "itemActivated", function (item) {
 
    var objHandle
      , avatar
@@ -1141,9 +1126,9 @@ editTech = function (item) {
          avatarList.currentText("Default");
       });
    }
-};
+});
 
-editAdvisor = function (item) {
+AdvisorListWidget.observe(self, "itemActivated", function (item) {
 
    var objHandle
      , group
@@ -1187,15 +1172,9 @@ editAdvisor = function (item) {
          advisorGroupList.enabled(true);
       });
    }
-};
+});
 
-TechListWidget.observe(self, "itemActivated", editTech);
-AdminListWidget.observe(self, "itemActivated", editAdvisor);
-ObserverListWidget.observe(self, "itemActivated", editObserver);
-AdvisorListWidget.observe(self, "itemActivated", editAdvisor);
-StudentListWidget.observe(self, "itemActivated", editStudent);
-
-advisorGroupList.observe(self, "currentIndexChanged", function (index) {
+setAdvisorList = function (index) {
 
    var groupHandle = groupList[index]
      , advisors = dmz.object.superLinks(groupHandle, dmz.stance.AdvisorGroupHandle) || []
@@ -1204,10 +1183,11 @@ advisorGroupList.observe(self, "currentIndexChanged", function (index) {
    advisorCB.forEach(function (cb) { cb.setChecked(false); });
    advisors.forEach(function (advisorHandle) {
 
-      advisorCB[dmz.object.scalar(advisorHandle, dmz.stance.ID)].text(dmz.stance.DisplayName(advisorHandle));
+      advisorCB[dmz.object.scalar(advisorHandle, dmz.stance.ID)].text(dmz.stance.getDisplayName(advisorHandle));
    });
-});
+};
 
+advisorGroupList.observe(self, "currentIndexChanged", setAdvisorList);
 
 editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 
