@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>572</width>
-    <height>248</height>
+    <height>310</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -172,55 +172,47 @@
       <attribute name="title">
        <string>Groups</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_40">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <widget class="QPushButton" name="allGroupButton">
+        <layout class="QGridLayout" name="gridLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>26</height>
+            </size>
+           </property>
            <property name="text">
-            <string>Show All Groups</string>
+            <string>Ungrouped Students:</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="addGroupButton">
-           <property name="text">
-            <string>Add Group</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_30">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_18">
-           <property name="spacing">
-            <number>0</number>
-           </property>
+         <item row="1" column="2">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
-            <widget class="QLabel" name="label_5">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>26</height>
-              </size>
-             </property>
+            <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>Ungrouped Students:</string>
+              <string>Current Group:</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QListWidget" name="ungroupedStudentList">
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-            </widget>
+            <widget class="QComboBox" name="groupComboBox"/>
            </item>
           </layout>
          </item>
-         <item>
+         <item row="2" column="2">
+          <widget class="QListWidget" name="groupStudentList">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
           <layout class="QVBoxLayout" name="verticalLayout_42">
            <property name="spacing">
             <number>5</number>
@@ -247,33 +239,26 @@
            </item>
           </layout>
          </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_19">
-           <property name="spacing">
-            <number>0</number>
+         <item row="2" column="0">
+          <widget class="QListWidget" name="ungroupedStudentList">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
            </property>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Current Group:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="groupComboBox"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QListWidget" name="groupStudentList">
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QPushButton" name="allGroupButton">
+           <property name="text">
+            <string>Show All Groups</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="addGroupButton">
+           <property name="text">
+            <string>Add Group</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
