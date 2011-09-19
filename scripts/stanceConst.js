@@ -141,10 +141,10 @@ var dmz =
         , ForumPostFlag: dmz.defs.lookupState("New_Forum_Post")
         , AlterGroupsFlag: dmz.defs.lookupState("Alter_Groups")
         , AlterUsersFlag: dmz.defs.lookupState("Alter_Users")
-        , AlterMediaFlag: dmz.defs.lookup("Alter_Media")
-        , AlterAdvisorsFlag: dmz.defs.lookup("Alter_Advisors")
-        , AnswerHelpFlag: dmz.defs.lookup("Answer_Help")
-        , StudentDataFlag: dmz.defs.lookup("Student_Data")
+        , AlterMediaFlag: dmz.defs.lookupState("Alter_Media")
+        , AlterAdvisorsFlag: dmz.defs.lookupState("Alter_Advisors")
+        , AnswerHelpFlag: dmz.defs.lookupState("Answer_Help")
+        , StudentDataFlag: dmz.defs.lookupState("Student_Data")
         }
 
    , Permissions =
@@ -177,6 +177,7 @@ var dmz =
              , States.ApproveAdvisor2Flag
              , States.ApproveAdvisor3Flag
              , States.ApproveAdvisor4Flag
+             , States.AlterAdvisorsFlag
              , States.ForumPostFlag
              , States.AlterMediaFlag
              , States.AnswerHelpFlag
@@ -209,6 +210,7 @@ var dmz =
              , States.ApproveAdvisor2Flag
              , States.ApproveAdvisor3Flag
              , States.ApproveAdvisor4Flag
+             , States.AlterAdvisorsFlag
              , States.ForumPostFlag
              , States.AlterMediaFlag
              , States.AlterGroupsFlag
@@ -267,10 +269,10 @@ var dmz =
 
 isAllowed = function (handle, state) {
 
-   var permissions = dmz.object.state(handle, dmz.stance.Permissions)
+   var permissions = dmz.object.state(handle, Handles.Permissions)
      , result = false
      ;
-   if (permissions && state && dmz.mask.isOfType(state)) {
+   if (permissions && state && dmz.mask.isTypeOf(state)) {
 
       result = permissions.and(state).bool();
    }
@@ -391,6 +393,7 @@ Functions.addUITextLimit = addUITextLimit;
 Functions.getVoteStatus = getVoteStatus;
 Functions.userAttribute = userAttribute;
 Functions.getLastTimeStamp = getLastTimeStamp;
+Functions.isAllowed = isAllowed;
 
 (function () {
 
@@ -422,7 +425,7 @@ Functions.getLastTimeStamp = getLastTimeStamp;
 
    Object.keys(Permissions).forEach(function (fncName) {
 
-      dmz.util.defineConst(exports, fncName, createPermissionSet(States[fncName]));
+      dmz.util.defineConst(exports, fncName, createPermissionSet(Permissions[fncName]));
    })
 
 }());

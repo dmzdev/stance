@@ -51,6 +51,10 @@ var dmz =
    , ObserverListWidget = editScenarioWidget.lookup("observerList")
    , AdvisorListWidget = editScenarioWidget.lookup("advisorList")
    , StudentListWidget = editScenarioWidget.lookup("studentList")
+   , userListWidgets = [TechListWidget, AdminListWidget, ObserverListWidget, AdvisorListWidget, StudentListWidget]
+
+   , ActiveBrush = dmz.ui.graph.createBrush({ r: 0, b: 0, g: 0 })
+   , DisabledBrush = dmz.ui.graph.createBrush({ r: 1, b: 0, g: 0 })
 
    , DockName = "Edit Scenario"
    , dock = dmz.ui.mainWindow.createDock
@@ -71,7 +75,7 @@ var dmz =
    , studentEnabledCheckBox = createStudentDialog.lookup("enabledCheckBox")
 
    , createAdvisorDialog = dmz.ui.loader.load("CreateAdvisorDialog.ui", editScenarioWidget)
-   , advisorEmailEdit = createAdvisorDialog.lookup("emailNameText")
+   , advisorEmailEdit = createAdvisorDialog.lookup("emailText")
    , advisorDisplayNameEdit = createAdvisorDialog.lookup("displayNameText")
    , advisorGroupList = createAdvisorDialog.lookup("groupComboBox")
    , advisorEnabledCheckBox = createAdvisorDialog.lookup("enabledCheckBox")
@@ -178,9 +182,18 @@ var dmz =
    , readGroupTemplates
    , setGroupTemplate
    , modifyInjectItem
-   , updateInjectTitle
    , mediaInjectButtons
    , setType
+   , createStudent
+   , createAdmin
+   , createTech
+   , createObserver
+   , createAdvisor
+   , editStudent
+   , editAdmin
+   , editTech
+   , editObserver
+   , editAdvisor
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
@@ -303,7 +316,7 @@ setGroupTemplate = function (groupHandle, templateIndex) {
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
-   var item = { handle: objHandle, title: "N/A", active: true };
+   var item = { handle: objHandle, active: true };
    if (objType) {
 
       if (objType.isOfType(dmz.stance.GameType)) {
@@ -315,13 +328,15 @@ dmz.object.create.observe(self, function (objHandle, objType) {
       else if (objType.isOfType(dmz.stance.MemoType)) { item.type = MediaTypes.Memo; }
       else if (objType.isOfType(dmz.stance.NewspaperType)) { item.type = MediaTypes.Newspaper; }
       else if (objType.isOfType(dmz.stance.LobbyistType)) { item.type = MediaTypes.Lobbyist; }
+      else if (objType.isOfType(dmz.stance.UserType)) { userItems[objHandle] = item; }
 
       if (item.type) {
 
          item.type.listItems[objHandle] = item;
-         item.item = item.type.list.addItem(item.title, item.handle);
+         item.item = item.type.list.addItem("N/A", item.handle);
          injectItems[item.handle] = item;
       }
+
    }
 });
 
@@ -467,27 +482,26 @@ userFromGroup = function (item) {
 
 dmz.object.flag.observe(self, dmz.stance.AdminHandle, function (handle, attr, value) {
 
-   var adminList = dmz.object.subLinks(CurrentGameHandle, dmz.stance.AdminHandle);
+   var state;
    if (value) {
 
-      if (!adminList || (adminList.indexOf(handle) === -1)) {
+      self.log.error ("Admin Handle:", dmz.stance.getDisplayName(handle), handle);
+      state = dmz.object.state(handle, dmz.stance.Permissions);
+      if (!state || !state.and(dmz.stance.AlterAdvisorsFlag).bool()) {
 
-         dmz.object.link(dmz.stance.AdminHandle, CurrentGameHandle, handle);
+         dmz.object.state(handle, dmz.stance.Permissions, dmz.stance.TechPermissions);
       }
-   }
-   else if (adminList && (adminList.indexOf(handle) !== -1)) {
-
-      dmz.object.unlink(
-         dmz.object.linkHandle(dmz.stance.AdminHandle, CurrentGameHandle, handle));
    }
 });
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
 
-   if (injectItems[handle]) {
+   var data = injectItems[handle] || userItems[handle];
+   self.log.warn ("Item: ["+Object.keys(data)+"]", data ? data.item : "--nodata", handle);
+   if (data) {
 
-      injectItems[handle].active = value;
-      updateInjectTitle(handle);
+      data.active = value;
+      if (data.item) { data.item.foreground(value ? ActiveBrush : DisabledBrush); }
    }
 });
 
@@ -761,7 +775,7 @@ groupAdvisorList.observe(self, "itemActivated", function (item) {
    }
 });
 
-editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
+createStudent = function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
@@ -789,9 +803,9 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
       studentUserNameEdit.clear();
       avatarList.currentText("Default");
    });
-});
+};
 
-editScenarioWidget.observe(self, "createAdminButton", "clicked", function () {
+createAdmin = function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
@@ -818,9 +832,9 @@ editScenarioWidget.observe(self, "createAdminButton", "clicked", function () {
       studentUserNameEdit.clear();
       avatarList.currentText("Default");
    });
-});
+};
 
-editScenarioWidget.observe(self, "createObserverButton", "clicked", function () {
+createObserver = function () {
 
    avatarList.enabled(false);
    createStudentDialog.open(self, function (value, dialog) {
@@ -849,9 +863,9 @@ editScenarioWidget.observe(self, "createObserverButton", "clicked", function () 
       avatarList.enabled(true);
       avatarList.currentText("Default");
    });
-});
+};
 
-editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
+createTech = function () {
 
    createStudentDialog.open(self, function (value, dialog) {
 
@@ -878,22 +892,9 @@ editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
       studentUserNameEdit.clear();
       avatarList.currentText("Default");
    });
-});
+};
 
-advisorGroupList.observe(self, "currentIndexChanged", function (index) {
-
-   var groupHandle = groupList[index]
-     , advisors = dmz.object.superLinks(groupHandle, dmz.stance.AdvisorGroupHandle) || []
-     ;
-
-   advisorCB.forEach(function (cb) { cb.setChecked(false); });
-   advisors.forEach(function (advisorHandle) {
-
-      advisorCB[dmz.object.scalar(advisorHandle, dmz.stance.ID)].text(dmz.stance.DisplayName(advisorHandle));
-   });
-});
-
-editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
+createAdvisor = function () {
 
    createAdvisorDialog.open(self, function (value, dialog) {
 
@@ -920,42 +921,293 @@ editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
 
          dmz.object.state(user, dmz.stance.Permissions, state);
          dmz.object.activate(user);
+         dmz.object.link(dmz.stance.GroupMembersHandle, user, groupList[advisorGroupList.currentIndex()]);
       }
-      studentDisplayNameEdit.clear();
+      advisorDisplayNameEdit.clear();
+      advisorEmailEdit.clear();
+   });
+};
+
+editScenarioWidget.observe(self, "createPlayerButton", "clicked", editStudent);
+editScenarioWidget.observe(self, "createAdminButton", "clicked", editAdmin);
+editScenarioWidget.observe(self, "createObserverButton", "clicked", editObserver);
+editScenarioWidget.observe(self, "createTechButton", "clicked", editTech);
+editScenarioWidget.observe(self, "createAdvisorButton", "clicked", editAdvisor);
+
+editStudent = function (item) {
+
+   var objHandle
+     , avatar
+     , enabled
+     , isEnabled
+     ;
+
+   if (item) {
+
+      objHandle = item.data();
+      studentDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
       studentUserNameEdit.clear();
-      avatarList.currentText("Default");
+      avatar = dmz.object.text(objHandle, dmz.stance.PictureHandle);
+      avatarList.currentText(AvatarPixmapList[avatar] ? avatar : "Default");
+      enabled = dmz.object.flag(objHandle, dmz.stance.ActiveHandle);
+      studentEnabledCheckBox.setChecked(enabled);
+      createStudentDialog.open(self, function (value, dialog) {
+
+         var text
+           , post
+           , forumHandle
+           ;
+         if (value) {
+
+            dmz.object.text(objHandle, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
+            dmz.object.text(objHandle, dmz.stance.PictureHandle, avatarList.currentText());
+            text = studentUserNameEdit.text();
+            if (text) {
+
+               dmz.object.text(
+                  objHandle,
+                  dmz.stance.NameHandle,
+                  dmz.ui.crypto.hash(studentUserNameEdit.text(), dmz.ui.crypto.Sha1));
+            }
+            isEnabled = studentEnabledCheckBox.isChecked();
+            if (isEnabled != enabled) {
+
+               dmz.object.flag(objHandle, dmz.stance.ActiveHandle, isEnabled);
+               forumHandle =
+                  (dmz.object.superLinks(dmz.stance.getUserGroupHandle(objHandle), dmz.stance.ForumLink) || [])[0];
+
+               if (forumHandle) {
+
+                  post = dmz.object.create(dmz.stance.PostType);
+                  dmz.object.text(
+                     post,
+                     dmz.stance.TextHandle,
+                     "AUTOMATIC NOTIFICATION: The account of user \"" +
+                        studentDisplayNameEdit.text() + "\" has been " +
+                        (isEnabled ? "activated." : "temporarily disabled."));
+                  dmz.object.timeStamp(post, dmz.stance.CreatedAtServerTimeHandle, 0);
+                  dmz.object.flag(post, dmz.stance.UpdateStartTimeHandle, true);
+                  dmz.object.link(dmz.stance.ParentHandle, post, forumHandle);
+                  dmz.object.link(dmz.stance.CreatedByHandle, post, dmz.object.hil());
+                  dmz.object.activate(post);
+               }
+               else { self.log.error ("Couldn't find forum handle:", objHandle); }
+            }
+         }
+         studentDisplayNameEdit.clear();
+         studentUserNameEdit.clear();
+         avatarList.currentText("Default");
+      });
+   }
+};
+
+editAdmin = function (item) {
+
+   var objHandle
+     , avatar
+     , enabled
+     , isEnabled
+     ;
+
+   if (item) {
+
+      objHandle = item.data();
+      studentDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
+      studentUserNameEdit.clear();
+      avatar = dmz.object.text(objHandle, dmz.stance.PictureHandle);
+      avatarList.currentText(AvatarPixmapList[avatar] ? avatar : "Default");
+      enabled = dmz.object.flag(objHandle, dmz.stance.ActiveHandle);
+      studentEnabledCheckBox.setChecked(enabled);
+      createStudentDialog.open(self, function (value, dialog) {
+
+         var text
+           , post
+           , forumHandle
+           ;
+         if (value) {
+
+            dmz.object.text(objHandle, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
+            dmz.object.text(objHandle, dmz.stance.PictureHandle, avatarList.currentText());
+            text = studentUserNameEdit.text();
+            if (text) {
+
+               dmz.object.text(
+                  objHandle,
+                  dmz.stance.NameHandle,
+                  dmz.ui.crypto.hash(studentUserNameEdit.text(), dmz.ui.crypto.Sha1));
+            }
+            isEnabled = studentEnabledCheckBox.isChecked();
+            if (isEnabled != enabled) {
+
+               dmz.object.flag(objHandle, dmz.stance.ActiveHandle, isEnabled);
+            }
+         }
+         studentDisplayNameEdit.clear();
+         studentUserNameEdit.clear();
+         avatarList.currentText("Default");
+      });
+   }
+};
+
+editObserver = function (item) {
+
+   var objHandle
+     , enabled
+     , isEnabled
+     ;
+
+   if (item) {
+
+      avatarList.enabled(false);
+      objHandle = item.data();
+      studentDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
+      studentUserNameEdit.clear();
+      enabled = dmz.object.flag(objHandle, dmz.stance.ActiveHandle);
+      studentEnabledCheckBox.setChecked(enabled);
+      createStudentDialog.open(self, function (value, dialog) {
+
+         var text
+           , post
+           , forumHandle
+           ;
+         if (value) {
+
+            dmz.object.text(objHandle, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
+            text = studentUserNameEdit.text();
+            if (text) {
+
+               dmz.object.text(
+                  objHandle,
+                  dmz.stance.NameHandle,
+                  dmz.ui.crypto.hash(studentUserNameEdit.text(), dmz.ui.crypto.Sha1));
+            }
+            isEnabled = studentEnabledCheckBox.isChecked();
+            if (isEnabled != enabled) {
+
+               dmz.object.flag(objHandle, dmz.stance.ActiveHandle, isEnabled);
+            }
+         }
+         studentDisplayNameEdit.clear();
+         studentUserNameEdit.clear();
+         avatarList.enabled(true);
+         avatarList.currentText("Default");
+      });
+   }
+};
+
+editTech = function (item) {
+
+   var objHandle
+     , avatar
+     , enabled
+     , isEnabled
+     ;
+
+   if (item) {
+
+      objHandle = item.data();
+      studentDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
+      studentUserNameEdit.clear();
+      avatar = dmz.object.text(objHandle, dmz.stance.PictureHandle);
+      avatarList.currentText(AvatarPixmapList[avatar] ? avatar : "Default");
+      enabled = dmz.object.flag(objHandle, dmz.stance.ActiveHandle);
+      studentEnabledCheckBox.setChecked(enabled);
+      createStudentDialog.open(self, function (value, dialog) {
+
+         var text
+           , post
+           , forumHandle
+           ;
+         if (value) {
+
+            dmz.object.text(objHandle, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
+            dmz.object.text(objHandle, dmz.stance.PictureHandle, avatarList.currentText());
+            text = studentUserNameEdit.text();
+            if (text) {
+
+               dmz.object.text(
+                  objHandle,
+                  dmz.stance.NameHandle,
+                  dmz.ui.crypto.hash(studentUserNameEdit.text(), dmz.ui.crypto.Sha1));
+            }
+            isEnabled = studentEnabledCheckBox.isChecked();
+            if (isEnabled != enabled) {
+
+               dmz.object.flag(objHandle, dmz.stance.ActiveHandle, isEnabled);
+            }
+         }
+         studentDisplayNameEdit.clear();
+         studentUserNameEdit.clear();
+         avatarList.currentText("Default");
+      });
+   }
+};
+
+editAdvisor = function (item) {
+
+   var objHandle
+     , group
+     , enabled
+     , isEnabled
+     ;
+
+   if (item) {
+
+      objHandle = item.data();
+      advisorDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
+      advisorEmailEdit.clear();
+      advisorGroupList.currentIndex(groupList.indexOf(dmz.stance.getUserGroupHandle(objHandle)));
+      advisorGroupList.enabled(false);
+      enabled = dmz.object.flag(objHandle, dmz.stance.ActiveHandle);
+      advisorEnabledCheckBox.setChecked(enabled);
+      createStudentDialog.open(self, function (value, dialog) {
+
+         var name
+           , text
+           , state
+           ;
+         if (value) {
+
+            text = advisorEmailEdit.text() || "";
+            dmz.object.text(
+               objHandle,
+               dmz.stance.NameHandle,
+               dmz.ui.crypto.hash(text.toLowerCase(), dmz.ui.crypto.Sha1));
+            dmz.object.text(objHandle, dmz.stance.DisplayNameHandle, advisorDisplayNameEdit.text());
+            dmz.object.flag(objHandle, dmz.stance.ActiveHandle, advisorEnabledCheckBox.isChecked());
+            state = dmz.stance.AdvisorPermissions;
+            advisorCB.forEach(function (widget, index) {
+
+               if (widget.isChecked()) { state = state.or(dmz.stance.AdvisorSets[index]); }
+            });
+            dmz.object.state(objHandle, dmz.stance.Permissions, state);
+         }
+         advisorDisplayNameEdit.clear();
+         advisorEmailEdit.clear();
+         advisorGroupList.enabled(true);
+      });
+   }
+};
+
+TechListWidget.observe(self, "itemActivated", editTech);
+AdminListWidget.observe(self, "itemActivated", editAdvisor);
+ObserverListWidget.observe(self, "itemActivated", editObserver);
+AdvisorListWidget.observe(self, "itemActivated", editAdvisor);
+StudentListWidget.observe(self, "itemActivated", editStudent);
+
+advisorGroupList.observe(self, "currentIndexChanged", function (index) {
+
+   var groupHandle = groupList[index]
+     , advisors = dmz.object.superLinks(groupHandle, dmz.stance.AdvisorGroupHandle) || []
+     ;
+
+   advisorCB.forEach(function (cb) { cb.setChecked(false); });
+   advisors.forEach(function (advisorHandle) {
+
+      advisorCB[dmz.object.scalar(advisorHandle, dmz.stance.ID)].text(dmz.stance.DisplayName(advisorHandle));
    });
 });
 
-
-editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
-
-   createStudentDialog.open(self, function (value, dialog) {
-
-      var user
-        , name
-        , isEnabled
-        , text
-        ;
-      if (value) {
-
-         user = dmz.object.create(dmz.stance.UserType);
-         text = studentUserNameEdit.text() || "";
-         dmz.object.text(
-            user,
-            dmz.stance.NameHandle,
-            dmz.ui.crypto.hash(text.toLowerCase(), dmz.ui.crypto.Sha1));
-         dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
-         dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
-         dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
-         dmz.object.state(user, dmz.stance.Permissions, dmz.stance.TechPermissions);
-         dmz.object.activate(user);
-      }
-      studentDisplayNameEdit.clear();
-      studentUserNameEdit.clear();
-      avatarList.currentText("Default");
-   });
-});
 
 editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 
@@ -987,7 +1239,7 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
    studentList = dmz.object.superLinks(CurrentGameHandle, dmz.stance.GameUngroupedUsersHandle);
    if (studentList) {
 
-      groupBox = dmz.ui.groupBox.create("Ungrouped Students")
+      groupBox = dmz.ui.groupBox.create("Ungrouped Students");
       vLayout = dmz.ui.layout.createVBoxLayout();
       studentList.forEach(function (student) {
 
@@ -1000,7 +1252,6 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
    groupListDialog.open(self, function (result) {
 
       var widget;
-
       while (listLayout.count()) {
 
          widget = listLayout.at(0);
@@ -1010,26 +1261,9 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
    });
 });
 
-updateInjectTitle = function (handle) {
-
-   var item = handle ? injectItems[handle] : false
-     , str
-     ;
-
-   if (item) {
-
-      str = item.title + (item.active ? "" : "*");
-      item.item.text(str);
-   }
-};
-
 dmz.object.text.observe(self, dmz.stance.TitleHandle, function (objHandle, attr, value) {
 
-   if (injectItems[objHandle]) {
-
-      injectItems[objHandle].title = value;
-      updateInjectTitle (objHandle);
-   }
+   if (injectItems[objHandle] && injectItems[objHandle].item) { injectItems[objHandle].item.text(value); }
 });
 
 modifyInjectItem = function (widgetItem) {
@@ -1211,29 +1445,24 @@ function (objHandle, attrHandle, value) {
          if (dmz.stance.isAllowed(objHandle, dmz.stance.AlterMediaFlag)) {
 
             max = 2;
-            if (dmz.stance.isAllowed(objHandle, AlterAdvisorsFlag)) {
+            if (dmz.stance.isAllowed(objHandle, dmz.stance.AlterAdvisorsFlag)) {
 
                max = 3;
-               if (dmz.stance.isAllowed(objHandle, AlterGameFlag)) {
+               if (dmz.stance.isAllowed(objHandle, dmz.stance.AlterGroupsFlag)) {
 
                   max = 4;
-                  if (dmz.stance.isAllowed(objHandle, AlterUsersFlag)) { max = 5; }
+                  if (dmz.stance.isAllowed(objHandle, dmz.stance.AlterUsersFlag)) { max = 5; }
                }
             }
          }
 
          count = TabWidget.count();
+         self.log.warn (dmz.stance.getDisplayName(objHandle) + "-> max:", max, "count:", count);
          while (count > max) {
 
             count -= 1;
             TabWidget.remove(Tabs[count].widget);
             Tabs[count].widget.hide();
-         }
-
-         while (count < max) {
-
-            TabWidget.add(Tabs[count].widget, Tabs[count].name, Tabs[count].index);
-            count += 1;
          }
 
          TabWidget.show();
@@ -1264,7 +1493,14 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
    if (userItems[handle]) {
 
       if (value.and(dmz.stance.AlterUsersFlag).bool()) { list = TechListWidget; }
-      else if (value.and(dmz.stance.AlterMediaFlag).bool()) { list = AdminListWidget; }
+      else if (value.and(dmz.stance.AlterMediaFlag).bool()) {
+
+         list = AdminListWidget;
+         if (!dmz.object.linkHandle(dmz.stance.AdminHandle, CurrentGameHandle, handle)) {
+
+            dmz.object.link(dmz.stance.AdminHandle, CurrentGameHandle, handle);
+         }
+      }
       else if (value.and(dmz.stance.CastVoteFlag).bool()) { list = StudentListWidget; }
       else if (value.and(dmz.stance.SwitchGroupFlag).bool()) { list = ObserverListWidget; }
       else if (value.and(dmz.stance.StudentDataFlag).bool()) { list = AdvisorListWidget; }
@@ -1274,6 +1510,8 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
          if (!userItems[handle].item) {
 
             userItems[handle].item = list.addItem(dmz.stance.getDisplayName(handle), handle);
+            userItems[handle].item.foreground(userItems[handle].active ? ActiveBrush : DisabledBrush);
+            self.log.warn ("Inserting", handle, userItems[handle].active);
          }
          else { list.addItem(userItems[handle].item); }
       }
@@ -1281,6 +1519,7 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
 });
 
 (function () {
+
 
    mediaInjectButtons();
    readGroupTemplates();

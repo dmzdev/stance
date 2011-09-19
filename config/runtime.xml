@@ -52,7 +52,8 @@
    <state name="Approve_Advisor3"/>
    <state name="Approve_Advisor4"/>
    <state name="New_Forum_Post"/>
-   <state name="Alter_Game"/>
+   <state name="Alter_Groups"/>
+   <state name="Alter_Users"/>
    <state name="Alter_Media"/>
    <state name="Alter_Advisors"/>
    <state name="Answer_Help"/>
