@@ -176,7 +176,6 @@ var dmz =
    , createNewUser
    , userToGroup
    , userFromGroup
-   , editUser
    , setup
    , updateTimePage
    , readGroupTemplates
@@ -425,8 +424,8 @@ groupComboBox.observe(self, "currentIndexChanged", function (index) {
       members = dmz.object.superLinks(groupHandle, dmz.stance.GroupMembersHandle) || [];
       members = members.filter(function (handle) {
 
-         return dmz.stance.isAllowed(studentHandle, dmz.stance.SwitchGroupFlag) &&
-            dmz.stance.isAllowed(studentHandle, dmz.stance.ForumPostFlag);
+         return dmz.stance.isAllowed(handle, dmz.stance.SwitchGroupFlag) &&
+            dmz.stance.isAllowed(handle, dmz.stance.ForumPostFlag);
       });
       count = groupStudentList.count();
       for (idx = 0; idx < count; idx += 1) {
@@ -572,75 +571,8 @@ editScenarioWidget.observe(self, "removeStudentButton", "clicked", function () {
    userFromGroup(groupStudentList.currentItem());
 });
 
-editUser = function (item) {
-
-   var objHandle
-     , avatar
-     , enabled
-     , isEnabled
-     ;
-
-   if (item) {
-
-      objHandle = item.data();
-      studentDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
-      studentUserNameEdit.clear();
-      avatar = dmz.object.text(objHandle, dmz.stance.PictureHandle);
-      avatarList.currentText(AvatarPixmapList[avatar] ? avatar : "Default");
-      enabled = dmz.object.flag(objHandle, dmz.stance.ActiveHandle);
-      studentEnabledCheckBox.setChecked(enabled);
-      createStudentDialog.open(self, function (value, dialog) {
-
-         var text
-           , post
-           , forumHandle
-           ;
-         if (value) {
-
-            dmz.object.text(objHandle, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
-            dmz.object.text(objHandle, dmz.stance.PictureHandle, avatarList.currentText());
-            text = studentUserNameEdit.text();
-            if (text) {
-
-               dmz.object.text(
-                  objHandle,
-                  dmz.stance.NameHandle,
-                  dmz.ui.crypto.hash(studentUserNameEdit.text(), dmz.ui.crypto.Sha1));
-            }
-            isEnabled = studentEnabledCheckBox.isChecked();
-            if (isEnabled != enabled) {
-
-               dmz.object.flag(objHandle, dmz.stance.ActiveHandle, isEnabled);
-               forumHandle =
-                  (dmz.object.superLinks(dmz.stance.getUserGroupHandle(objHandle), dmz.stance.ForumLink) || [])[0];
-
-               if (forumHandle) {
-
-                  post = dmz.object.create(dmz.stance.PostType);
-                  dmz.object.text(
-                     post,
-                     dmz.stance.TextHandle,
-                     "AUTOMATIC NOTIFICATION: The account of user \"" +
-                        studentDisplayNameEdit.text() + "\" has been " +
-                        (isEnabled ? "activated." : "temporarily disabled."));
-                  dmz.object.timeStamp(post, dmz.stance.CreatedAtServerTimeHandle, 0);
-                  dmz.object.flag(post, dmz.stance.UpdateStartTimeHandle, true);
-                  dmz.object.link(dmz.stance.ParentHandle, post, forumHandle);
-                  dmz.object.link(dmz.stance.CreatedByHandle, post, dmz.object.hil());
-                  dmz.object.activate(post);
-               }
-               else { self.log.error ("Couldn't find forum handle:", objHandle); }
-            }
-         }
-         studentDisplayNameEdit.clear();
-         studentUserNameEdit.clear();
-         avatarList.currentText("Default");
-      });
-   }
-};
-
-groupStudentList.observe(self, "itemActivated", editUser);
-ungroupedStudentList.observe(self, "itemActivated", editUser);
+groupStudentList.observe(self, "itemActivated", userFromGroup);
+ungroupedStudentList.observe(self, "itemActivated", userToGroup);
 
 editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
 
@@ -796,6 +728,7 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
          dmz.object.link(dmz.stance.GameUngroupedUsersHandle, user, CurrentGameHandle);
       }
       studentDisplayNameEdit.clear();
+      studentEnabledCheckBox.setChecked(true);
       studentUserNameEdit.clear();
       avatarList.currentText("Default");
    });
@@ -825,6 +758,7 @@ editScenarioWidget.observe(self, "createAdminButton", "clicked", function () {
          dmz.object.activate(user);
       }
       studentDisplayNameEdit.clear();
+      studentEnabledCheckBox.setChecked(true);
       studentUserNameEdit.clear();
       avatarList.currentText("Default");
    });
@@ -856,6 +790,7 @@ editScenarioWidget.observe(self, "createObserverButton", "clicked", function () 
       }
       studentDisplayNameEdit.clear();
       studentUserNameEdit.clear();
+      studentEnabledCheckBox.setChecked(true);
       avatarList.enabled(true);
       avatarList.currentText("Default");
    });
@@ -885,6 +820,7 @@ editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
          dmz.object.activate(user);
       }
       studentDisplayNameEdit.clear();
+      studentEnabledCheckBox.setChecked(true);
       studentUserNameEdit.clear();
       avatarList.currentText("Default");
    });
@@ -921,6 +857,7 @@ editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
          dmz.object.link(dmz.stance.GroupMembersHandle, user, groupList[advisorGroupList.currentIndex()]);
       }
       advisorDisplayNameEdit.clear();
+      advisorEnabledCheckBox.setChecked(true);
       advisorEmailEdit.clear();
    });
 });
@@ -986,6 +923,7 @@ StudentListWidget.observe(self, "itemActivated", function (item) {
             }
          }
          studentDisplayNameEdit.clear();
+         studentEnabledCheckBox.setChecked(true);
          studentUserNameEdit.clear();
          avatarList.currentText("Default");
       });
@@ -1034,6 +972,7 @@ AdminListWidget.observe(self, "itemActivated", function (item) {
             }
          }
          studentDisplayNameEdit.clear();
+         studentEnabledCheckBox.setChecked(true);
          studentUserNameEdit.clear();
          avatarList.currentText("Default");
       });
@@ -1080,6 +1019,7 @@ ObserverListWidget.observe(self, "itemActivated", function (item) {
          }
          studentDisplayNameEdit.clear();
          studentUserNameEdit.clear();
+         studentEnabledCheckBox.setChecked(true);
          avatarList.enabled(true);
          avatarList.currentText("Default");
       });
@@ -1129,6 +1069,7 @@ TechListWidget.observe(self, "itemActivated", function (item) {
          }
          studentDisplayNameEdit.clear();
          studentUserNameEdit.clear();
+         studentEnabledCheckBox.setChecked(true);
          avatarList.currentText("Default");
       });
    }
@@ -1175,6 +1116,7 @@ AdvisorListWidget.observe(self, "itemActivated", function (item) {
          }
          advisorDisplayNameEdit.clear();
          advisorEmailEdit.clear();
+         advisorEnabledCheckBox.setChecked(true);
          advisorGroupList.enabled(true);
       });
    }

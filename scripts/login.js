@@ -178,7 +178,7 @@ _setTitle = function (userHandle) {
 
       if (dmz.object.text(_userHandle, dmz.stance.NameHandle) === _userName) { unverified = ""; }
       groupName = dmz.stance.getDisplayName(dmz.stance.getUserGroupHandle(_userHandle));
-      if (dmz.stance.isAllowed(userHandle, dmz.stance.SwitchGroupFlag) && !_haveToggled) || !groupName) {
+      if (dmz.stance.isAllowed(userHandle, dmz.stance.SwitchGroupFlag) && !_haveToggled || !groupName) {
 
          groupName = "N/A";
       }
