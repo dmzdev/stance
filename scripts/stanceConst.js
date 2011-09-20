@@ -185,11 +185,10 @@ var dmz =
              , States.StudentDataFlag
              ]
         , AdvisorPermissions: // Needs to be customized for each advisor user created
-             [ States.StudentDataFlag
+             [
              ]
         , ObserverPermissions:
              [ States.SwitchGroupFlag
-             , States.StudentDataFlag
              ]
         , TechPermissions: // Seriously, do we really need "permission" to do anything?
              [ States.SwitchGroupFlag

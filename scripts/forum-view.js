@@ -49,7 +49,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , postBlocked: function () {
 
               var allowed = dmz.stance.isAllowed(dmz.object.hil(), dmz.stance.ForumPostFlag);
-              return allowed ? "You do not have permission to post here." : false;
+              return allowed ? false : "You do not have permission to post here.";
            }
          , messageLength: MaxMessageLength
          };

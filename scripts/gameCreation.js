@@ -38,6 +38,10 @@ var dmz =
    , videoList = editScenarioWidget.lookup("videoListWidget")
    , lobbyistList = editScenarioWidget.lookup("lobbyistListWidget")
 
+   , startGameButton = editScenarioWidget.lookup("startGameButton")
+   , endGameButton = editScenarioWidget.lookup("endGameButton")
+   , showStudentsButton = editScenarioWidget.lookup("showStudentsButton")
+
    , TabWidget = editScenarioWidget.lookup("tabWidget")
    , SwitchGroupTab = { index: 0, name: "Switch Group", widget: editScenarioWidget.lookup("SwitchGroupTab") }
    , MediaTab = { index: 1, name: "Media Injects", widget: editScenarioWidget.lookup("MediaTab") }
@@ -60,7 +64,7 @@ var dmz =
    , dock = dmz.ui.mainWindow.createDock
          ( DockName
          , { area: dmz.ui.consts.RightToolBarArea
-           , allowedAreas: [dmz.ui.consts.LeftToolBarArea, dmz.ui.consts.RightToolBarArea]
+           , allowedAreas: [AllDockWidgetAreas]
            , floating: true
            , visible: false
            }
@@ -121,7 +125,6 @@ var dmz =
    , groupLayout = editScenarioWidget.lookup("groupLayout")
 
    // Variables
-   , aarMessage = dmz.message.create(self.config.string("aarmessage.name"))
    , GroupButtonList = {}
    , EmailMod = false
    , groupList = []
@@ -173,11 +176,9 @@ var dmz =
    // Function decls
    , toTimeStamp = dmz.util.dateToTimeStamp
    , toDate = dmz.util.timeStampToDate
-   , createNewUser
    , userToGroup
    , userFromGroup
    , setup
-   , updateTimePage
    , readGroupTemplates
    , setGroupTemplate
    , modifyInjectItem
@@ -187,27 +188,6 @@ var dmz =
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
-
-editScenarioWidget.observe(self, "aarButton", "clicked", function () {
-
-   self.log.warn ("aarMessage:", aarMessage);
-   aarMessage.send();
-});
-
-createNewUser = function (userName, displayName) {
-
-   var user
-     ;
-
-   if (userName && displayName) {
-
-      user = dmz.object.create(dmz.stance.UserType);
-      dmz.object.text(user, dmz.stance.NameHandle, userName);
-      dmz.object.text(user, dmz.stance.DisplayNameHandle, displayName);
-      dmz.object.activate(user);
-   }
-   return user;
-};
 
 readGroupTemplates = function () {
 
@@ -497,6 +477,11 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
 
       data.active = value;
       if (data.item) { data.item.foreground(value ? ActiveBrush : DisabledBrush); }
+   }
+   else if (handle === CurrentGameHandle) {
+
+      startGameButton.enabled(!value);
+      endGameButton.enabled(value);
    }
 });
 
@@ -1360,9 +1345,13 @@ function (objHandle, attrHandle, value) {
    var count
      , idx
      , max
+     , active
      ;
    if (value) {
 
+      startGameButton.enabled(false);
+      endGameButton.enabled(false);
+      showStudentsButton.enabled(false);
       if (dmz.stance.isAllowed(objHandle, dmz.stance.SwitchGroupFlag)) {
 
          max = 1;
@@ -1375,13 +1364,16 @@ function (objHandle, attrHandle, value) {
                if (dmz.stance.isAllowed(objHandle, dmz.stance.AlterGroupsFlag)) {
 
                   max = 4;
+                  active = dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle);
+                  startGameButton.enabled(!active);
+                  endGameButton.enabled(active);
+                  showStudentsButton.enabled(true);
                   if (dmz.stance.isAllowed(objHandle, dmz.stance.AlterUsersFlag)) { max = 5; }
                }
             }
          }
 
          count = TabWidget.count();
-         self.log.warn (dmz.stance.getDisplayName(objHandle) + "-> max:", max, "count:", count);
          while (count > max) {
 
             count -= 1;
@@ -1392,7 +1384,6 @@ function (objHandle, attrHandle, value) {
          TabWidget.show();
          dock.enabled(true);
          dock.show();
-
       }
       else {
 
@@ -1411,15 +1402,63 @@ groupTemplateComboBox.observe(self, "currentIndexChanged", function (index) {
    }
 });
 
+startGameButton.observe(self, "clicked", function () {
+
+   var list = [];
+   dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle, true);
+   Object.keys(userItems).forEach(function (key) { list.push(userItems[key].handle); });
+   EmailMod.sendEmail(
+      list,
+      "Your STANCE game has begun!",
+      "Your STANCE game has just begun. Please log on at your earliest convenience and "+
+         "examine the initial scenario description.");
+   self.log.warn("Start Game");
+});
+
+endGameButton.observe(self, "clicked", function () {
+
+   var list = [];
+   dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle, false);
+   Object.keys(userItems).forEach(function (key) {
+
+      list.push(userItems[key].handle);
+      dmz.object.state(userItems[key].handle, dmz.stance.Permissions, dmz.stance.SwitchGroupFlag);
+   });
+   EmailMod.sendEmail(
+      list,
+      "Your STANCE game has ended!",
+      "Your STANCE game is now over! Please stay tuned for additional instructions " +
+         "on how to prepare for the AAR.\nThank you for participating!");
+});
+
 dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHandle, value) {
 
-   var list;
+   var list
+     , active
+     ;
    if (userItems[handle]) {
 
-      if (value.and(dmz.stance.GameObservers).bool() &&
+      if (value.and(dmz.stance.SwitchGroupFlag).bool() &&
          !dmz.object.linkHandle(dmz.stance.GameObservers, handle, CurrentGameHandle)) {
 
          dmz.object.link(dmz.stance.GameObservers, handle, CurrentGameHandle);
+      }
+
+      if (handle === dmz.object.hil()) {
+
+         if (value.and(dmz.stance.AlterGroupsFlag).bool()) {
+
+            active = dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle);
+            startGameButton.enabled(!active);
+            endGameButton.enabled(active);
+            showStudentsButton.enabled(true);
+         }
+         else {
+
+            startGameButton.enabled(false);
+            endGameButton.enabled(false);
+            showStudentsButton.enabled(false);
+         }
       }
 
       if (value.and(dmz.stance.AlterUsersFlag).bool()) { list = TechListWidget; }
