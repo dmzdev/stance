@@ -110,12 +110,6 @@ var dmz =
 
 self.shutdown = function () {
 
-   var hil = dmz.object.hil();
-   if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
-
-      dmz.object.unlinkSubObjects(hil, dmz.stance.GroupMembersHandle);
-   }
-
    if (mainGView) { mainGView.removeEventFilter(); }
    if (gscene) { gscene.removeEventFilter(); }
 };
@@ -317,7 +311,7 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
-      if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) || HaveToggled) {
+      if (!dmz.stance.isAllowed(objHandle, dmz.stance.SwitchGroupFlag) || HaveToggled) {
 
          updateGraphicsForGroup(dmz.stance.getUserGroupHandle(objHandle));
       }
@@ -518,10 +512,9 @@ function (linkObjHandle, attrHandle, advisorHandle, groupHandle) {
    }
 });
 
-dmz.object.flag.observe(self, dmz.stance.AdminHandle,
-function (objHandle, attrHandle, value) {
+dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHandle, value) {
 
-   if ((objHandle === dmz.object.hil()) && stackedWidget) {
+   if ((handle === dmz.object.hil()) && stackedWidget && value.and(dmz.stance.SwitchGroupFlag).bool()) {
 
       stackedWidget.currentIndex(SPLASH_INDEX);
    }
@@ -531,7 +524,7 @@ dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
 function (objHandle, attrHandle, userHandle, groupHandle) {
 
    if ((userHandle === dmz.object.hil()) &&
-      (!dmz.object.flag(userHandle, dmz.stance.AdminHandle) || HaveToggled)) {
+      (!dmz.stance.isAllowed(userHandle, dmz.stance.SwitchGroupFlag) || HaveToggled)) {
 
       updateGraphicsForGroup(groupHandle);
    }

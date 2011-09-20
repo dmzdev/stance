@@ -45,8 +45,12 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , parentHandle: dmz.stance.ParentHandle
          , groupLinkHandle: dmz.stance.ForumLink
          , highlight: function (handle) { module.highlight("Forum"); }
-         , canReplyTo: function () { return true; }
-         , postBlocked: function () { return false; }
+         , canReplyTo: function () { return dmz.stance.isAllowed(dmz.object.hil(), dmz.stance.ForumPostFlag); }
+         , postBlocked: function () {
+
+              var allowed = dmz.stance.isAllowed(dmz.object.hil(), dmz.stance.ForumPostFlag);
+              return allowed ? "You do not have permission to post here." : false;
+           }
          , messageLength: MaxMessageLength
          };
       RetData = dmz.forumView.setupForumView(forumData);

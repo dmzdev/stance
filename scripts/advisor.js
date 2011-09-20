@@ -79,7 +79,19 @@ var dmz =
    , getHILAdvisor
    , taskBlocked
    , setUserAvatar
+   , advisorAnswerPermission
+   , advisorAskPermission
    ;
+
+advisorAnswerPermission = function (hil, advisorHandle) {
+
+   return dmz.stance.isAllowed(hil, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(advisorHandle, dmz.stance.ID)]);
+}
+
+advisorAskPermission = function (hil, advisorHandle) {
+
+   return dmz.stance.isAllowed(hil, dmz.stance.AdvisorAskSet[dmz.object.scalar(advisorHandle, dmz.stance.ID)]);
+}
 
 setUserAvatar = function (userHandle, labelWidget) {
 
@@ -131,9 +143,9 @@ taskBlocked = function () {
       });
    }
 
-   if (dmz.object.flag(hil, dmz.stance.AdminHandle)) {
+   if (!dmz.stance.isAllowed(hil, dmz.stance.CreateVoteFlag)) {
 
-      result = "New votes cannot be created by admin users.";
+      result = "New votes may only be created by students.";
    }
    if (LoginSkipped || !hil) { result = "New tasks cannot be created without logging in."; }
    return result;
@@ -186,7 +198,10 @@ createAdvisorWindow = function (windowStr, idx) {
       , forumType: dmz.stance.AdvisorType
       , parentHandle: dmz.stance.QuestionLinkHandle
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
-      , useForumData: true
+      , useForumData: function (advisorHandle) {
+
+           return advisorAnswerPermission(dmz.object.hil(), advisorHandle);
+        }
       , messageLength: MAX_QUESTION_STR_LEN
       , replyLength: MAX_QUESTION_REPLY_LEN
       , highlight: function (handle) {
@@ -199,10 +214,10 @@ createAdvisorWindow = function (windowStr, idx) {
               MainModule.highlight(str);
            }
         }
-      , canReplyTo: function (replyToHandle) {
+      , canReplyTo: function (replyToHandle, advisorHandle) {
 
            var type = dmz.object.type(replyToHandle);
-           return dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) && type &&
+           return advisorAnswerPermission(dmz.object.hil(), advisorHandle) && type &&
               type.isOfType(dmz.stance.QuestionType) && !getQuestionAnswer(replyToHandle);
         }
       , postBlocked: function (advisorHandle) {
@@ -212,16 +227,23 @@ createAdvisorWindow = function (windowStr, idx) {
              , result
              ;
 
-           if (!dmz.object.flag(hil, dmz.stance.AdminHandle)) {
+           if (!advisorAnswerPermission(hil, advisorHandle)) {
 
               questions.forEach(function (questionHandle) {
 
                  if (!getQuestionAnswer(questionHandle) &&
-                    !dmz.object.flag(dmz.stance.getAuthorHandle(questionHandle), dmz.stance.AdminHandle)) {
+                    !advisorAnswerPermission(
+                       hil,
+                       dmz.stance.getAuthorHandle(questionHandle))) {
 
                     result = "New questions cannot be submitted while another question is active with the current advisor.";
                  }
               });
+           }
+
+           if (!advisorAskPermission(hil, advisorHandle)) {
+
+              result = "You do not have permission to post here.";
            }
 
            if (LoginSkipped || !hil) { result = "New questions cannot be created without logging in."; }

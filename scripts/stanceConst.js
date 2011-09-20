@@ -50,6 +50,7 @@ var dmz =
         , ExpireHandle: dmz.defs.createNamedHandle("expire")
         , ObjectHandle: dmz.defs.createNamedHandle("objectHandle")
         , Permissions: dmz.defs.createNamedHandle("permissions")
+        , GameObservers: dmz.defs.createNamedHandle("game_observers")
 
         // Object-specific handles
         , VoteState: dmz.defs.createNamedHandle("vote_state")
@@ -263,6 +264,30 @@ var dmz =
       , States.AskAdvisor2Flag.or(States.AnswerAdvisor2Flag).or(States.ApproveAdvisor2Flag)
       , States.AskAdvisor3Flag.or(States.AnswerAdvisor3Flag).or(States.ApproveAdvisor3Flag)
       , States.AskAdvisor4Flag.or(States.AnswerAdvisor4Flag).or(States.ApproveAdvisor4Flag)
+      ];
+
+   States.AdvisorAskSet =
+      [ States.AskAdvisor0Flag
+      , States.AskAdvisor1Flag
+      , States.AskAdvisor2Flag
+      , States.AskAdvisor3Flag
+      , States.AskAdvisor4Flag
+      ];
+
+   States.AdvisorAnswerSet =
+      [ States.AnswerAdvisor0Flag
+      , States.AnswerAdvisor1Flag
+      , States.AnswerAdvisor2Flag
+      , States.AnswerAdvisor3Flag
+      , States.AnswerAdvisor4Flag
+      ];
+
+   States.AdvisorApproveSet =
+      [ States.ApproveAdvisor0Flag
+      , States.ApproveAdvisor1Flag
+      , States.ApproveAdvisor2Flag
+      , States.ApproveAdvisor3Flag
+      , States.ApproveAdvisor4Flag
       ];
 }());
 

@@ -370,7 +370,9 @@ function (linkObjHandle, attrHandle, studentHandle, groupHandle) {
       dmz.object.unlinkSubObjects(studentHandle, dmz.stance.GameUngroupedUsersHandle);
    }
 
-   if (!userList[studentHandle] && !dmz.object.flag(studentHandle, dmz.stance.AdminHandle)) {
+   if (!userList[studentHandle] &&
+      !dmz.stance.isAllowed(studentHandle, dmz.stance.SwitchGroupFlag) &&
+      !dmz.stance.isAllowed(studentHandle, dmz.stance.ForumPostFlag)) {
 
       userList[studentHandle] =
          groupStudentList.addItem(dmz.stance.getDisplayName(studentHandle), studentHandle);
@@ -421,7 +423,11 @@ groupComboBox.observe(self, "currentIndexChanged", function (index) {
    if (groupHandle) {
 
       members = dmz.object.superLinks(groupHandle, dmz.stance.GroupMembersHandle) || [];
-      members = members.filter(function (handle) { return !dmz.object.flag(handle, dmz.stance.AdminHandle); });
+      members = members.filter(function (handle) {
+
+         return dmz.stance.isAllowed(studentHandle, dmz.stance.SwitchGroupFlag) &&
+            dmz.stance.isAllowed(studentHandle, dmz.stance.ForumPostFlag);
+      });
       count = groupStudentList.count();
       for (idx = 0; idx < count; idx += 1) {
 
@@ -669,10 +675,10 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
          dmz.object.activate(group);
          dmz.object.link(dmz.stance.GameGroupHandle, group, CurrentGameHandle);
 
-         admins = dmz.object.subLinks(CurrentGameHandle, dmz.stance.AdminHandle) || [];
-         admins.forEach(function (adminHandle) {
+         admins = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameObservers) || [];
+         admins.forEach(function (observerHandle) {
 
-            var linkHandle = dmz.object.link(dmz.stance.DataLinkHandle, adminHandle, group)
+            var linkHandle = dmz.object.link(dmz.stance.DataLinkHandle, observerHandle, group)
               , data = dmz.object.create(dmz.stance.DataType)
               ;
 
@@ -1301,11 +1307,7 @@ mediaInjectButtons = function () {
                var itor
                  , count = MediaGroupFLayout.rowCount()
                  , media = false
-                 , groupMembers
                  , links
-                 , game
-                 , userList = dmz.object.subLinks(CurrentGameHandle, dmz.stance.AdminHandle);
-
                  ;
 
                if (value && type) {
@@ -1471,6 +1473,12 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
 
    var list;
    if (userItems[handle]) {
+
+      if (value.and(dmz.stance.GameObservers).bool() &&
+         !dmz.object.linkHandle(dmz.stance.GameObservers, handle, CurrentGameHandle)) {
+
+         dmz.object.link(dmz.stance.GameObservers, handle, CurrentGameHandle);
+      }
 
       if (value.and(dmz.stance.AlterUsersFlag).bool()) { list = TechListWidget; }
       else if (value.and(dmz.stance.AlterMediaFlag).bool()) {

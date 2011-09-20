@@ -101,11 +101,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    _ParentLinkHandle = forumData.parentHandle;
    _CanReplyTo = forumData.canReplyTo;
    _PostBlocked = forumData.postBlocked;
-   _UseForumDataForAdmin = forumData.useForumData;
+   _UseForumDataForAdmin = forumData.useForumData || function () { return false; };
    _TimeHandle = forumData.timeHandle;
    _Highlight = forumData.highlight;
-   _ExtraInfo = forumData.extraInfo ? forumData.extraInfo : function () { return ""; };
-   _OnNewPost = forumData.onNewPost ? forumData.onNewPost : function () {};
+   _ExtraInfo = forumData.extraInfo || function () { return ""; };
+   _OnNewPost = forumData.onNewPost || function () {};
 
    MaxMessageLength = forumData.messageLength;
    MaxReplyLength = forumData.replyLength || MaxMessageLength;
@@ -224,7 +224,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
          _postList[postHandle] = post;
 
-         if (_CanReplyTo(postHandle)) {
+         if (_CanReplyTo(postHandle, _forumHandle)) {
 
             post.commentAddLabel.show();
             post.commentAddLabel.observe(_Self, "linkActivated", function (link) {
@@ -275,7 +275,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
             _commentList[commentHandle] = comment;
 
-            if (_CanReplyTo(commentHandle)) {
+            if (_CanReplyTo(commentHandle, _forumHandle)) {
 
                comment.commentAddLabel.show();
                comment.commentAddLabel.observe(_Self, "linkActivated", function (link) {
@@ -289,7 +289,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             _updatePostedAt(commentHandle);
             _updateMessage(commentHandle);
             _updateExtraInfo(commentHandle);
-            if (!_CanReplyTo(postHandle)) { post.commentAddLabel.hide(); }
+            if (!_CanReplyTo(postHandle, _forumHandle)) { post.commentAddLabel.hide(); }
          }
       };
 
@@ -397,8 +397,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
             if (item && item.postedBy) {
 
-               if (_UseForumDataForAdmin &&
-                  dmz.object.flag(data.authorHandle, dmz.stance.AdminHandle)) {
+               if (_UseForumDataForAdmin(_forumHandle)) {
 
                   item.postedBy.text ("<b>" + dmz.stance.getDisplayName(_forumHandle) + "</b>");
                   _setUserAvatar(_forumHandle, item.avatar);
