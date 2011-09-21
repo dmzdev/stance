@@ -49,8 +49,7 @@ var dmz =
    , userInfoWidget = dmz.ui.loader.load("UserInfoWidget.ui")
    , groupTabs = userInfoWidget.lookup("groupTabs")
    , userStatisticsWidget = dmz.ui.webview.create("userStatistics")
-   , dock
-   , DockName = "userInfo"
+   , previouslyOpened = false
 
    // Functions
    , toDate = dmz.util.timeStampToDate
@@ -102,20 +101,16 @@ var dmz =
 
 ShowStudentsMessage.subscribe(self, function () {
 
+   if (!userInfoWidget.visible() && !previouslyOpened) {
 
-   /*if (!dock) {
-
+      previouslyOpened = true;
       createGroupTabs();
-      dock =
-         dmz.ui.mainWindow.createDock
-            ( DockName
-            , { area: dmz.ui.consts.RightToolBarArea, visible: false, floating: true }
-            , groupTabs
-            );
+      userInfoWidget.show();
    }
-   dock.show();*/
-   createGroupTabs();
-   userInfoWidget.show();
+   else if (previouslyOpened) {
+
+      userInfoWidget.show();
+   }
 });
 
 createPieChart = function (data, labelFnc, scene, zero) {
@@ -1295,20 +1290,21 @@ createUserWidget = function (userHandle) {
       userItem.ui.graphicsView.alignment(dmz.ui.consts.AlignLeft | dmz.ui.consts.AlignTop);
       userItem.ui.userStatisticsWidgetOpen = false;
 
+      userItem.ui.showUserStatisticsButton.text("Show User Statistics");
       userItem.ui.showUserStatisticsButton.observe(self, "clicked", function () {
 
          if (userItem.ui.userStatisticsWidgetOpen) {
 
             userItem.ui.graphicsView.hide();
             userItem.ui.contentLayout.removeWidget(userItem.ui.graphicsView);
-            userItem.ui.showUserStatisticsButton.text("Show Statistics");
+            userItem.ui.showUserStatisticsButton.text("Show User Statistics");
          }
          else {
 
             userItem.ui.contentLayout.insertWidget(0, userItem.ui.graphicsView);
             userItem.ui.graphicsView.show();
             userItem.ui.graphicsView.fixedHeight(600);
-            userItem.ui.showUserStatisticsButton.text("Hide Statistics");
+            userItem.ui.showUserStatisticsButton.text("Hide User Statistics");
          }
          userItem.ui.userStatisticsWidgetOpen = !userItem.ui.userStatisticsWidgetOpen;
       });
