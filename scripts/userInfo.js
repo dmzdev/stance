@@ -1050,8 +1050,11 @@ setUserPictureLabel = function (userHandle) {
    if (Users[userHandle] && Users[userHandle].ui) {
 
       pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(Users[userHandle].picture));
-      pic = pic.scaled(50, 50);
-      Users[userHandle].ui.userPictureLabel.pixmap(pic);
+      if (pic) {
+
+         pic = pic.scaled(50, 50);
+         Users[userHandle].ui.userPictureLabel.pixmap(pic);
+      }
    }
 };
 
