@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
+    <width>724</width>
     <height>175</height>
    </rect>
   </property>
@@ -97,28 +97,21 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QLabel" name="votedOnLabel">
+       <property name="text">
+        <string>VotedOnLabel</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QPushButton" name="showForumPostsButton">
-       <property name="text">
-        <string>Show Forum Posts</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="showVoteStatisticsButton">
-       <property name="text">
-        <string>Show Vote Statistics</string>
-       </property>
-      </widget>
-     </item>
+    <layout class="QHBoxLayout" name="buttonLayout">
      <item>
       <widget class="QPushButton" name="userStatisticsButton">
        <property name="text">
-        <string>User Statistics</string>
+        <string>Show Group Statistics</string>
        </property>
       </widget>
      </item>
