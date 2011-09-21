@@ -45,7 +45,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _commentCache = []
      , _postCache = []
      , _postList = []
-     , _commentList = []
+     , _commentList = {}
      , _forumHandle
 
      // Variables
@@ -212,6 +212,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          post.unread = post.item.lookup("unreadLabel");
          post.unread.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
          post.unread.hide();
+         post.close = post.item.lookup("closeButton");
+         post.cancel = post.item.lookup("cancelButton");
+         post.close.styleSheet("* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px;");
+         post.cancel.styleSheet("* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px;");
+         post.confirmDelete = false;
 
          post.postedBy = post.item.lookup("postedByLabel");
          post.postedAt = post.item.lookup("postedAtLabel");
@@ -223,6 +228,28 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          post.item.show();
 
          _postList[postHandle] = post;
+
+         post.cancel.observe(self, "clicked", function () {
+
+            post.confirmDelete = false;
+            post.cancel.hide();
+            post.close.styleSheet("* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px;");
+         });
+
+         post.close.observe(self, "clicked", function () {;
+
+            if (!post.confirmDelete) {
+
+               post.confirmDelete = true;
+               post.cancel.show();
+               post.close.styleSheet("* { background-color: green; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px;");
+            }
+            else {
+
+               post.cancel.click();
+               dmz.object.flag(post.handle, dmz.stance.ActiveHandle, false);
+            }
+         });
 
          if (_CanReplyTo(postHandle, _forumHandle)) {
 
@@ -268,12 +295,39 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             comment.commentAddLabel = comment.item.lookup("commentAddLabel");
             comment.unread.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
             comment.unread.hide();
+            comment.close = comment.item.lookup("closeButton");
+            comment.cancel = comment.item.lookup("cancelButton");
+            comment.close.styleSheet("* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px;");
+            comment.cancel.styleSheet("* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px;");
+            comment.confirmDelete = false;
 
             post.commentList.push(comment);
             post.layout.addWidget(comment.item, post.layout.rowCount(), 1);
             comment.item.show();
 
             _commentList[commentHandle] = comment;
+
+            comment.cancel.observe(self, "clicked", function () {
+
+               comment.confirmDelete = false;
+               comment.cancel.hide();
+               comment.close.styleSheet("* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px;");
+            });
+
+            comment.close.observe(self, "clicked", function () {;
+
+               if (!comment.confirmDelete) {
+
+                  comment.confirmDelete = true;
+                  comment.cancel.show();
+                  comment.close.styleSheet("* { background-color: green; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px;");
+               }
+               else {
+
+                  comment.cancel.click();
+                  dmz.object.flag(comment.handle, dmz.stance.ActiveHandle, false);
+               }
+            });
 
             if (_CanReplyTo(commentHandle, _forumHandle)) {
 
@@ -551,9 +605,13 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
       _reset = function () {
 
-         _postList.forEach(function(post) {
+         Object.keys(_postList).forEach(function (key) {
 
-            post.commentList.forEach(function(comment) {
+
+         });
+         _postList.forEach(function (post) {
+
+            post.commentList.forEach(function (comment) {
 
                post.layout.removeWidget(comment.item);
                comment.item.hide();
@@ -577,23 +635,19 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
          if (_forumHandle) {
 
-            posts = dmz.object.superLinks(_forumHandle, _ParentLinkHandle);
-            if (posts) {
+            posts = dmz.object.superLinks(_forumHandle, _ParentLinkHandle) || [];
+            posts.forEach(function(postHandle) {
 
-               posts.forEach(function(postHandle) {
+               if (dmz.object.flag(postHandle, dmz.stance.ActiveHandle)) {
 
                   _addPost(postHandle);
+                  var comments = dmz.object.superLinks(postHandle, _ParentLinkHandle) || [];
+                  comments.forEach(function(commentHandle) {
 
-                  var comments = dmz.object.superLinks(postHandle, _ParentLinkHandle);
-                  if (comments) {
-
-                     comments.forEach(function(commentHandle) {
-
-                        _addComment(postHandle, commentHandle);
-                     });
-                  }
-               });
-            }
+                     _addComment(postHandle, commentHandle);
+                  });
+               }
+            });
             viewedWindow = true;
          }
       };
@@ -754,7 +808,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
                if (item && parent) { item.forum = subHandle; }
 
-               if (subHandle === _forumHandle) { _addPost(superHandle); }
+               if ((subHandle === _forumHandle) &&
+                  dmz.object.flag(superHandle, dmz.stance.ActiveHandle)) {
+
+                  _addPost(superHandle);
+               }
             }
             else if (type.isOfType(_CommentType)) {
 
@@ -763,7 +821,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
                if (item && parent) { item.post = subHandle; }
 
-               if (parent && (parent.forum === _forumHandle)) { _addComment(subHandle, superHandle); }
+               if (parent && (parent.forum === _forumHandle) &&
+                  dmz.object.flag(superHandle, dmz.stance.ActiveHandle)) {
+
+                  _addComment(subHandle, superHandle);
+               }
             }
          }
       };
@@ -805,6 +867,12 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             });
             dmz.stance.userAttribute(dmz.object.hil(), _TimeHandle, latest);
          }
+      };
+
+      retData.onActive = function (handle, attr, value, prev) {
+
+         var data = master.posts
+         if ()
       };
    }
    else {
