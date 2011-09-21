@@ -624,9 +624,12 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
          dmz.object.text(handle, dmz.stance.NameHandle, name);
          dmz.object.activate(handle);
          dmz.object.link(dmz.stance.ForumLink, handle, group);
+         handle = dmz.object.create(dmz.stance.HelpForumType);
+         dmz.object.text(handle, dmz.stance.NameHandle, name);
+         dmz.object.activate(handle);
+         dmz.object.link(dmz.stance.HelpLink, handle, group);
       }
    });
-
 });
 
 advisorGroupComboBox.observe(self, "currentIndexChanged", function (index) {

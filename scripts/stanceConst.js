@@ -27,6 +27,7 @@ var dmz =
         , VideoType: dmz.objectType.lookup("media-video")
         , VoteType: dmz.objectType.lookup("vote")
         , DataType: dmz.objectType.lookup("data")
+        , HelpForumType: dmz.objectType.lookup("help-forum")
         }
 
    , Handles =
@@ -73,6 +74,7 @@ var dmz =
         , QuestionLinkHandle: dmz.defs.createNamedHandle("question_link")
         , MediaHandle: dmz.defs.createNamedHandle("game_media")
         , DataLinkHandle: dmz.defs.createNamedHandle("data_link")
+        , HelpLink: dmz.defs.createNamedHandle("help_link")
 
         /* Time handles, and handles to be removed later */
         , UpdateStartTimeHandle: dmz.defs.createNamedHandle("update_start_time_handle")
@@ -91,6 +93,7 @@ var dmz =
         , Advisor2TimeHandle: dmz.defs.createNamedHandle("advisor2_time")
         , Advisor3TimeHandle: dmz.defs.createNamedHandle("advisor3_time")
         , Advisor4TimeHandle: dmz.defs.createNamedHandle("advisor4_time")
+        , HelpTimeHandle: dmz.defs.createNamedHandle("help_time")
 
         // Group Office Image handles
         , BackgroundImageHandle: dmz.defs.createNamedHandle("background_image")
@@ -106,6 +109,7 @@ var dmz =
         , ResourceImageHandle: dmz.defs.createNamedHandle("resource_image")
         , VoteImageHandle: dmz.defs.createNamedHandle("vote_image")
         , CalendarImageHandle: dmz.defs.createNamedHandle("calendar_image")
+        , HelpImageHandle: dmz.defs.createNamedHandle("help_image")
         }
 
    , Functions =

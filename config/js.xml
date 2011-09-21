@@ -24,6 +24,7 @@
    <instance name="media"/>
    <instance name="webMap"/>
    <instance name="forum-view"/>
+   <instance name="help"/>
    <instance name="login"/>
    <instance name="advisor"/>
    <instance name="vote"/>
