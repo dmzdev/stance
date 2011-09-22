@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<plugin-list>
+<!--   <plugin name="dmzObjectPluginCleanup" scope="cleanup"/>-->
+   <plugin name="dmzQtPluginObjectInspector"/>
+<!--   <plugin name="dmzQtPluginMessageInspector"/> -->
+</plugin-list>
+<cleanup>
+   <cleanup>
+      <type name="current_user"/>
+   </cleanup>
+</cleanup>
+</dmz>

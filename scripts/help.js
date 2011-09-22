@@ -61,6 +61,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       dmz.object.link.observe(self, dmz.stance.CreatedByHandle, RetData.observers.createdBy);
       dmz.object.link.observe(self, dmz.stance.ForumLink, RetData.observers.forumLink);
       dmz.object.link.observe(self, dmz.stance.ParentHandle, RetData.observers.parentLink);
+      dmz.object.flag.observe(self, dmz.stance.ActiveHandle, RetData.observers.onActive);
 
       dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
       function (linkObjHandle, attrHandle, userHandle, groupHandle) {
@@ -99,20 +100,17 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 dmz.time.setTimer(self, 20, function () {
 
    var objs = dmz.object.getObjects() || [];
-   obj = objs.filter(function (handle) {
+   objs = objs.filter(function (handle) {
 
-      return dmz.object.type(handle).isTypeOf(dmz.stance.GroupType);
+      return dmz.object.type(handle).isOfType(dmz.stance.GroupType) && !dmz.object.superLinks(handle, dmz.stance.HelpLink);
    });
-   obj.forEach(function (group) {
+   objs.forEach(function (group) {
 
       var handle;
-      if (!dmz.object.superLinks(group, dmz.stance.HelpForumType)) {
-
-         self.log.warn ("Adding Help Forum to:", dmz.object.getDisplayName(group));
-         handle = dmz.object.create(dmz.stance.HelpForumType);
-         dmz.object.text(handle, dmz.stance.NameHandle, dmz.object.getDisplayName(group));
-         dmz.object.activate(handle);
-         dmz.object.link(dmz.stance.HelpLink, handle, group);
-      }
+      self.log.warn ("Adding Help Forum to:", dmz.stance.getDisplayName(group), dmz.object.superLinks(group, dmz.stance.HelpLink), !dmz.object.superLinks(group, dmz.stance.HelpLink));
+      handle = dmz.object.create(dmz.stance.HelpForumType);
+      dmz.object.text(handle, dmz.stance.NameHandle, dmz.stance.getDisplayName(group));
+      dmz.object.activate(handle);
+      dmz.object.link(dmz.stance.HelpLink, handle, group);
    });
 });

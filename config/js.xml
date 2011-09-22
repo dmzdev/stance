@@ -28,7 +28,7 @@
    <instance name="login"/>
    <instance name="advisor"/>
    <instance name="vote"/>
-<!--   <instance name="graph"/> -->
+   <instance name="fix"/>
 </javascript>
 <login>
 <!--   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>-->

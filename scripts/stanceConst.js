@@ -150,6 +150,7 @@ var dmz =
         , AlterAdvisorsFlag: dmz.defs.lookupState("Alter_Advisors")
         , AnswerHelpFlag: dmz.defs.lookupState("Answer_Help")
         , StudentDataFlag: dmz.defs.lookupState("Student_Data")
+        , DeletePostsFlag: dmz.defs.lookupState("Delete_Posts")
         }
 
    , Permissions =
@@ -187,6 +188,7 @@ var dmz =
              , States.AlterMediaFlag
              , States.AnswerHelpFlag
              , States.StudentDataFlag
+             , States.DeletePostsFlag
              ]
         , AdvisorPermissions: // Needs to be customized for each advisor user created
              [
@@ -221,6 +223,7 @@ var dmz =
              , States.AlterUsersFlag
              , States.AnswerHelpFlag
              , States.StudentDataFlag
+             , States.DeletePostsFlag
              ]
         }
 

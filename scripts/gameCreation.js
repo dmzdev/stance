@@ -64,7 +64,7 @@ var dmz =
    , dock = dmz.ui.mainWindow.createDock
          ( DockName
          , { area: dmz.ui.consts.RightToolBarArea
-           , allowedAreas: [AllDockWidgetAreas]
+           , allowedAreas: [dmz.ui.consts.AllDockWidgetAreas]
            , floating: true
            , visible: false
            }

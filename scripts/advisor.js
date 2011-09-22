@@ -62,6 +62,7 @@ var dmz =
         , createdAt: []
         , forumLink: []
         , parentLink: []
+        , onActive: []
         }
    , AdvisorTimeHandles =
         [ dmz.stance.Advisor0TimeHandle
@@ -370,6 +371,11 @@ dmz.object.create.observe(self, function (handle, type) {
 dmz.object.text.observe(self, dmz.stance.TextHandle, function (handle, attr, value) {
 
    observerLists.text.forEach(function (fnc) { fnc(handle, attr, value); });
+});
+
+dmz.object.link.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value, prev) {
+
+   observerLists.text.forEach(function (fnc) { fnc(handle, attr, value, prev); });
 });
 
 dmz.object.link.observe(self, dmz.stance.CreatedByHandle,

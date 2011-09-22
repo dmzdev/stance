@@ -59,5 +59,6 @@
    <state name="Alter_Advisors"/>
    <state name="Answer_Help"/>
    <state name="Student_Data"/>
+   <state name="Delete_Posts"/>
 </runtime>
 </dmz>
