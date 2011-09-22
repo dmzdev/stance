@@ -9,10 +9,23 @@ var dmz =
        , objectType: require("dmz/runtime/objectType")
        , util: require("dmz/types/util")
        , stance: require("stanceConst")
+       , sys: require("sys")
        , ui:
           { mainWindow: require("dmz/ui/mainWindow")
+          , messageBox: require("dmz/ui/messageBox")
           }
        }
+    // UI
+    , disabledDialog =
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Warning
+            , text: "Your account has been disabled. Please contact your professor to get it reenabled. STANCE will now exit."
+            , standardButtons: [dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Ok
+            }
+            , dmz.ui.mainWindow.centralWidget()
+            )
+
     // Constants
     , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
     , LogoutMessage = dmz.message.create("Logout_Message")
@@ -52,8 +65,11 @@ _activateUser = function (name) {
       if (handle) {
 
          if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
-         if (_admin) { dmz.object.flag(handle, dmz.stance.AdminHandle, true); }
-         dmz.object.flag(handle, dmz.object.HILAttribute, true);
+         if (dmz.object.flag(handle, dmz.stance.ActiveHandle)) {
+
+            dmz.object.flag(handle, dmz.object.HILAttribute, true);
+         }
+         else { disabledDialog.open(self, function () { dmz.sys.requestExit(); }); }
       }
    }
 }
@@ -162,7 +178,7 @@ _setTitle = function (userHandle) {
 
       if (dmz.object.text(_userHandle, dmz.stance.NameHandle) === _userName) { unverified = ""; }
       groupName = dmz.stance.getDisplayName(dmz.stance.getUserGroupHandle(_userHandle));
-      if ((dmz.object.flag(_userHandle, dmz.stance.AdminHandle) && !_haveToggled) || !groupName) {
+      if (dmz.stance.isAllowed(userHandle, dmz.stance.SwitchGroupFlag) && !_haveToggled || !groupName) {
 
          groupName = "N/A";
       }
@@ -177,24 +193,3 @@ _setTitle = function (userHandle) {
 };
 
 ToggledMessage.subscribe(self, function (data) { _haveToggled = true; });
-
-(function () {
-
-   if (self.config.boolean("fake-login.value", false)) {
-
-      dmz.time.setTimer(self, 0.5, function () {
-
-         var data = dmz.data.create()
-//           , date = new Date()
-           , date = Date.parse("5:59:40 pm 3/9/11")
-           ;
-
-         data.string(dmz.stance.NameHandle, 0, self.config.string("fake-login.name", "dmz"));
-         data.boolean(dmz.stance.AdminHandle, 0, self.config.boolean("fake-login.admin", false));
-         data.number(TimeStampAttr, 0, toTimeStamp(date));
-
-         self.log.warn(">>> Faking user login! <<<");
-         LoginSuccessMessage.send(data);
-      });
-   }
-}());

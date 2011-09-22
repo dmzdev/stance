@@ -24,6 +24,8 @@ var dmz =
    // Consts
    , AVATAR_HEIGHT = 50
    , AVATAR_WIDTH = 50
+   , RED_BUTTON = "* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
+   , GREEN_BUTTON = "* { background-color: green; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
    ;
 
 dmz.util.defineConst(exports, "setupForumView", function (forumData) {
@@ -44,8 +46,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _exports = {}
      , _commentCache = []
      , _postCache = []
-     , _postList = []
-     , _commentList = []
+     , _postList = {}
+     , _commentList = {}
      , _forumHandle
 
      // Variables
@@ -66,6 +68,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
      , _LatestTimeStamp = -1
      , _WasBlocked = false
+     , _ShowDeleteButtons = false
 
      // Functions
      , _CanReplyTo
@@ -101,11 +104,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    _ParentLinkHandle = forumData.parentHandle;
    _CanReplyTo = forumData.canReplyTo;
    _PostBlocked = forumData.postBlocked;
-   _UseForumDataForAdmin = forumData.useForumData;
+   _UseForumDataForAdmin = forumData.useForumData || function () { return false; };
    _TimeHandle = forumData.timeHandle;
    _Highlight = forumData.highlight;
-   _ExtraInfo = forumData.extraInfo ? forumData.extraInfo : function () { return ""; };
-   _OnNewPost = forumData.onNewPost ? forumData.onNewPost : function () {};
+   _ExtraInfo = forumData.extraInfo || function () { return ""; };
+   _OnNewPost = forumData.onNewPost || function () {};
 
    MaxMessageLength = forumData.messageLength;
    MaxReplyLength = forumData.replyLength || MaxMessageLength;
@@ -212,6 +215,13 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          post.unread = post.item.lookup("unreadLabel");
          post.unread.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
          post.unread.hide();
+         post.close = post.item.lookup("closeButton");
+         if (!_ShowDeleteButtons) { post.close.hide(); }
+         post.cancel = post.item.lookup("cancelButton");
+         post.close.styleSheet(RED_BUTTON);
+         post.cancel.styleSheet(RED_BUTTON);
+         post.cancel.hide();
+         post.confirmDelete = false;
 
          post.postedBy = post.item.lookup("postedByLabel");
          post.postedAt = post.item.lookup("postedAtLabel");
@@ -224,7 +234,29 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
          _postList[postHandle] = post;
 
-         if (_CanReplyTo(postHandle)) {
+         post.cancel.observe(_Self, "clicked", function () {
+
+            post.confirmDelete = false;
+            post.cancel.hide();
+            post.close.styleSheet(RED_BUTTON);
+         });
+
+         post.close.observe(_Self, "clicked", function () {;
+
+            if (!post.confirmDelete) {
+
+               post.confirmDelete = true;
+               post.cancel.show();
+               post.close.styleSheet(GREEN_BUTTON);
+            }
+            else {
+
+               post.cancel.click();
+               dmz.object.flag(post.handle, dmz.stance.ActiveHandle, false);
+            }
+         });
+
+         if (_CanReplyTo(postHandle, _forumHandle)) {
 
             post.commentAddLabel.show();
             post.commentAddLabel.observe(_Self, "linkActivated", function (link) {
@@ -268,6 +300,13 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             comment.commentAddLabel = comment.item.lookup("commentAddLabel");
             comment.unread.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
             comment.unread.hide();
+            comment.close = comment.item.lookup("closeButton");
+            if (!_ShowDeleteButtons) { comment.close.hide(); }
+            comment.cancel = comment.item.lookup("cancelButton");
+            comment.close.styleSheet(RED_BUTTON);
+            comment.cancel.styleSheet(RED_BUTTON);
+            comment.cancel.hide();
+            comment.confirmDelete = false;
 
             post.commentList.push(comment);
             post.layout.addWidget(comment.item, post.layout.rowCount(), 1);
@@ -275,7 +314,29 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
             _commentList[commentHandle] = comment;
 
-            if (_CanReplyTo(commentHandle)) {
+            comment.cancel.observe(_Self, "clicked", function () {
+
+               comment.confirmDelete = false;
+               comment.cancel.hide();
+               comment.close.styleSheet(RED_BUTTON);
+            });
+
+            comment.close.observe(_Self, "clicked", function () {;
+
+               if (!comment.confirmDelete) {
+
+                  comment.confirmDelete = true;
+                  comment.cancel.show();
+                  comment.close.styleSheet(GREEN_BUTTON);
+               }
+               else {
+
+                  comment.cancel.click();
+                  dmz.object.flag(comment.handle, dmz.stance.ActiveHandle, false);
+               }
+            });
+
+            if (_CanReplyTo(commentHandle, _forumHandle)) {
 
                comment.commentAddLabel.show();
                comment.commentAddLabel.observe(_Self, "linkActivated", function (link) {
@@ -289,7 +350,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             _updatePostedAt(commentHandle);
             _updateMessage(commentHandle);
             _updateExtraInfo(commentHandle);
-            if (!_CanReplyTo(postHandle)) { post.commentAddLabel.hide(); }
+            if (!_CanReplyTo(postHandle, _forumHandle)) { post.commentAddLabel.hide(); }
          }
       };
 
@@ -304,6 +365,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             _commentAdd.form = dmz.ui.loader.load("CommentAdd");
             _commentAdd.textEdit = _commentAdd.form.lookup("textEdit");
             _commentAdd.avatar = _commentAdd.form.lookup("avatarLabel");
+            _commentAdd.cancel = _commentAdd.form.lookup("cancelButton");
             _setUserAvatar(dmz.object.hil(), _commentAdd.avatar);
 
             dmz.stance.addUITextLimit
@@ -333,6 +395,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   }
 
                   post.layout.removeWidget(form);
+                  delete post.addComment;
                   _commentAdd.post = false;
                }
 
@@ -346,6 +409,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                if (_commentAdd.post) { _commentAdd.post.layout.removeWidget(_commentAdd.form); }
                _commentAdd.post = false;
                _commentAdd.form.hide();
+               delete post.addComment;
                _postTextEdit.setFocus();
             });
          }
@@ -357,6 +421,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                _commentAdd.form.hide();
                _commentAdd.post.layout.removeWidget(_commentAdd.form);
                _commentAdd.post = false;
+               delete post.addComment;
                show = true;
             }
             else { _commentAdd.textEdit.setFocus(); }
@@ -367,6 +432,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          if (show) {
 
             post.layout.addWidget(_commentAdd.form, post.layout.rowCount(), 1);
+            post.addComment = _commentAdd.form;
             _commentAdd.form.show();
             _commentAdd.post = post;
 
@@ -397,8 +463,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
             if (item && item.postedBy) {
 
-               if (_UseForumDataForAdmin &&
-                  dmz.object.flag(data.authorHandle, dmz.stance.AdminHandle)) {
+               if (_UseForumDataForAdmin(_forumHandle)) {
 
                   item.postedBy.text ("<b>" + dmz.stance.getDisplayName(_forumHandle) + "</b>");
                   _setUserAvatar(_forumHandle, item.avatar);
@@ -517,6 +582,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             post = dmz.object.create(_PostType);
             _OnNewPost(post);
             dmz.object.text(post, dmz.stance.TextHandle, message);
+            dmz.object.flag(post, dmz.stance.ActiveHandle, true);
             dmz.object.timeStamp(post, dmz.stance.CreatedAtServerTimeHandle, 0);
             dmz.object.flag(post, dmz.stance.UpdateStartTimeHandle, true);
             dmz.object.link(_ParentLinkHandle, post, parent);
@@ -539,6 +605,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
             comment = dmz.object.create(_CommentType);
             dmz.object.text(comment, dmz.stance.TextHandle, message);
+            dmz.object.flag(comment, dmz.stance.ActiveHandle, true);
             dmz.object.timeStamp(comment, dmz.stance.CreatedAtServerTimeHandle, 0);
             dmz.object.flag(comment, dmz.stance.UpdateStartTimeHandle, true);
             dmz.object.link(_ParentLinkHandle, comment, parent);
@@ -552,9 +619,10 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
       _reset = function () {
 
-         _postList.forEach(function(post) {
+         Object.keys(_postList).forEach(function (key) {
 
-            post.commentList.forEach(function(comment) {
+            var post = _postList[key];
+            post.commentList.forEach(function (comment) {
 
                post.layout.removeWidget(comment.item);
                comment.item.hide();
@@ -562,6 +630,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                delete post.commentList[comment.handle];
             });
 
+            if (post.addComment) { post.addComment.cancel.click(); }
             post.layout.removeWidget(post.item);
             post.item.hide();
             _postCache.push (post.item);
@@ -578,23 +647,22 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
          if (_forumHandle) {
 
-            posts = dmz.object.superLinks(_forumHandle, _ParentLinkHandle);
-            if (posts) {
+            posts = dmz.object.superLinks(_forumHandle, _ParentLinkHandle) || [];
+            posts.forEach(function(postHandle) {
 
-               posts.forEach(function(postHandle) {
+               if (_master.posts[postHandle].active) {
 
                   _addPost(postHandle);
+                  var comments = dmz.object.superLinks(postHandle, _ParentLinkHandle) || [];
+                  comments.forEach(function(commentHandle) {
 
-                  var comments = dmz.object.superLinks(postHandle, _ParentLinkHandle);
-                  if (comments) {
-
-                     comments.forEach(function(commentHandle) {
+                     if (_master.comments[commentHandle].active) {
 
                         _addComment(postHandle, commentHandle);
-                     });
-                  }
-               });
-            }
+                     }
+                  });
+               }
+            });
             viewedWindow = true;
          }
       };
@@ -639,6 +707,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , avatar = _view.lookup("avatarLabel")
            ;
 
+         _ShowDeleteButtons = dmz.stance.isAllowed(userHandle, dmz.stance.DeletePostsFlag);
          _LatestTimeStamp = dmz.stance.userAttribute(userHandle, _TimeHandle) || 0;
          group = dmz.stance.getUserGroupHandle(userHandle);
 
@@ -690,9 +759,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
       retData.observers.create = function (handle, type) {
 
-         var obj = { handle: handle }
-           ;
-
+         var obj = { handle: handle, active: true };
          if (type) {
 
             if (type.isOfType(_PostType)) { _master.posts[handle] = obj; }
@@ -755,7 +822,10 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
                if (item && parent) { item.forum = subHandle; }
 
-               if (subHandle === _forumHandle) { _addPost(superHandle); }
+               if ((subHandle === _forumHandle) && item.active) {
+
+                  _addPost(superHandle);
+               }
             }
             else if (type.isOfType(_CommentType)) {
 
@@ -764,7 +834,15 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
                if (item && parent) { item.post = subHandle; }
 
-               if (parent && (parent.forum === _forumHandle)) { _addComment(subHandle, superHandle); }
+               if (parent && (parent.forum === _forumHandle) && item.active) {
+
+                  if (!parent.active) {
+
+                     dmz.object.flag(superHandle, dmz.stance.ActiveHandle, false);
+                  }
+                  else { _addComment(subHandle, superHandle); }
+
+               }
             }
          }
       };
@@ -792,19 +870,50 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                  , timestamp = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle)
                  ;
 
-               if (timestamp && (timestamp > latest)) { latest = timestamp; }
-               _postList[postHandle].unread.hide();
-               comments.forEach(function (commentHandle) {
+               if (_master.posts[postHandle].active) {
 
-                  var timestamp = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle);
                   if (timestamp && (timestamp > latest)) { latest = timestamp; }
-                  if (_commentList[commentHandle]) {
+                  _postList[postHandle].unread.hide();
+                  comments.forEach(function (commentHandle) {
 
-                     _commentList[commentHandle].unread.hide();
-                  }
-               });
+                     var timestamp = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle);
+                     if (timestamp && (timestamp > latest)) { latest = timestamp; }
+                     if (_commentList[commentHandle]) {
+
+                        _commentList[commentHandle].unread.hide();
+                     }
+                  });
+               }
             });
             dmz.stance.userAttribute(dmz.object.hil(), _TimeHandle, latest);
+         }
+      };
+
+      retData.observers.onActive = function (handle, attr, value, prev) {
+
+         var data = _master.posts[handle] || _master.comments[handle]
+           , post = _postList[handle]
+           , comment = _commentList[handle]
+           ;
+
+         if (data && data.active && !value) {
+
+            data.active = false;
+            if (post) {
+
+               post.commentList.forEach(function (comment) {
+
+                  _master.comments[comment.handle].active = false;
+                  dmz.object.flag(comment.handle, dmz.stance.ActiveHandle, false);
+               });
+               _reset();
+               _load();
+            }
+            else if (comment) {
+
+               _reset();
+               _load();
+            }
          }
       };
    }

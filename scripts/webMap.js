@@ -206,7 +206,7 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
 
             if (event.button() === dmz.ui.consts.RightButton) {
 
-               if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle)) {
+               if (dmz.stance.isAllowed(dmz.object.hil(), dmz.stance.ChangeMapFlag)) {
 
                   x = event.x();
                   y = event.y();
@@ -275,7 +275,7 @@ receivePositionUpdate = function (data) {
       handle = data.number(dmz.stance.ObjectHandle, 0);
       pos = dmz.object.position(handle, dmz.stance.PositionHandle);
       vec = data.vector(dmz.stance.PositionHandle, 0);
-      if (dmz.object.flag(dmz.object.hil(), dmz.stance.AdminHandle) &&
+      if (dmz.stance.isAllowed(dmz.object.hil(), dmz.stance.ChangeMapFlag) &&
          (!pos || !((vec.x == pos.x) && (vec.y == pos.y)))) {
 
          dmz.object.position(handle, dmz.stance.PositionHandle, vec);
@@ -292,7 +292,7 @@ function (linkObjHandle, attrHandle, pinHandle, groupHandle) {
    var hil = dmz.object.hil();
    if (dmz.stance.getUserGroupHandle(hil) === groupHandle) {
 
-      if (!dmz.object.flag(hil, dmz.stance.AdminHandle) &&
+      if (!dmz.stance.isAllowed(hil, dmz.stance.ChangeMapFlag) &&
          (dmz.stance.userAttribute(hil, dmz.stance.PinTimeHandle) <
             dmz.object.timeStamp(pinHandle, dmz.stance.CreatedAtServerTimeHandle))) {
 
@@ -310,7 +310,7 @@ function (objHandle, attrHandle, newVal, prevVal) {
 
       hil = dmz.object.hil();
       master.pins[objHandle].createdAt = newVal;
-      if (newVal && (newVal > dmz.stance.userAttribute(hil, dmz.stance.AdminHandle)) &&
+      if (newVal && (newVal > dmz.stance.userAttribute(hil, dmz.stance.PinTimeHandle)) &&
          dmz.object.linkHandle(dmz.stance.GroupPinHandle, objHandle, dmz.stance.getUserGroupHandle(hil))) {
 
          if (IsCurrentWindow) { DoHighlight = true; }
@@ -337,7 +337,7 @@ function (objHandle, attrHandle, value) {
    if (value) {
 
       list = dmz.object.superLinks(dmz.stance.getUserGroupHandle(objHandle), dmz.stance.GroupPinHandle) || [];
-      if (!dmz.object.flag(objHandle, dmz.stance.AdminHandle) &&
+      if (!dmz.stance.isAllowed(objHandle, dmz.stance.ChangeMapFlag) &&
          (dmz.stance.userAttribute(objHandle, dmz.stance.PinTimeHandle) <
             dmz.stance.getLastTimeStamp(list))) {
 

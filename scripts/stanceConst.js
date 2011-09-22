@@ -4,6 +4,7 @@ var dmz =
    , objectType: require("dmz/runtime/objectType")
    , module: require("dmz/runtime/module")
    , util: require("dmz/types/util")
+   , mask: require("dmz/types/mask")
    }
    , _exports = {}
 
@@ -26,6 +27,7 @@ var dmz =
         , VideoType: dmz.objectType.lookup("media-video")
         , VoteType: dmz.objectType.lookup("vote")
         , DataType: dmz.objectType.lookup("data")
+        , HelpForumType: dmz.objectType.lookup("help-forum")
         }
 
    , Handles =
@@ -48,6 +50,8 @@ var dmz =
         , TotalHandle: dmz.defs.createNamedHandle("total")
         , ExpireHandle: dmz.defs.createNamedHandle("expire")
         , ObjectHandle: dmz.defs.createNamedHandle("objectHandle")
+        , Permissions: dmz.defs.createNamedHandle("permissions")
+        , GameObservers: dmz.defs.createNamedHandle("game_observers")
 
         // Object-specific handles
         , VoteState: dmz.defs.createNamedHandle("vote_state")
@@ -70,6 +74,7 @@ var dmz =
         , QuestionLinkHandle: dmz.defs.createNamedHandle("question_link")
         , MediaHandle: dmz.defs.createNamedHandle("game_media")
         , DataLinkHandle: dmz.defs.createNamedHandle("data_link")
+        , HelpLink: dmz.defs.createNamedHandle("help_link")
 
         /* Time handles, and handles to be removed later */
         , UpdateStartTimeHandle: dmz.defs.createNamedHandle("update_start_time_handle")
@@ -88,6 +93,7 @@ var dmz =
         , Advisor2TimeHandle: dmz.defs.createNamedHandle("advisor2_time")
         , Advisor3TimeHandle: dmz.defs.createNamedHandle("advisor3_time")
         , Advisor4TimeHandle: dmz.defs.createNamedHandle("advisor4_time")
+        , HelpTimeHandle: dmz.defs.createNamedHandle("help_time")
 
         // Group Office Image handles
         , BackgroundImageHandle: dmz.defs.createNamedHandle("background_image")
@@ -103,6 +109,7 @@ var dmz =
         , ResourceImageHandle: dmz.defs.createNamedHandle("resource_image")
         , VoteImageHandle: dmz.defs.createNamedHandle("vote_image")
         , CalendarImageHandle: dmz.defs.createNamedHandle("calendar_image")
+        , HelpImageHandle: dmz.defs.createNamedHandle("help_image")
         }
 
    , Functions =
@@ -114,6 +121,110 @@ var dmz =
         , getVoteStatus: false
         , userAttribute: false
         , getLastTimeStamp: false
+        }
+
+   , States =
+        { SwitchGroupFlag: dmz.defs.lookupState("Switch_Group")
+        , ChangeMapFlag: dmz.defs.lookupState("Change_Map")
+        , CreateVoteFlag: dmz.defs.lookupState("Create_Vote")
+        , CastVoteFlag: dmz.defs.lookupState("Cast_Vote")
+        , AskAdvisor0Flag: dmz.defs.lookupState("Ask_Advisor0")
+        , AskAdvisor1Flag: dmz.defs.lookupState("Ask_Advisor1")
+        , AskAdvisor2Flag: dmz.defs.lookupState("Ask_Advisor2")
+        , AskAdvisor3Flag: dmz.defs.lookupState("Ask_Advisor3")
+        , AskAdvisor4Flag: dmz.defs.lookupState("Ask_Advisor4")
+        , AnswerAdvisor0Flag: dmz.defs.lookupState("Answer_Advisor0")
+        , AnswerAdvisor1Flag: dmz.defs.lookupState("Answer_Advisor1")
+        , AnswerAdvisor2Flag: dmz.defs.lookupState("Answer_Advisor2")
+        , AnswerAdvisor3Flag: dmz.defs.lookupState("Answer_Advisor3")
+        , AnswerAdvisor4Flag: dmz.defs.lookupState("Answer_Advisor4")
+        , ApproveAdvisor0Flag: dmz.defs.lookupState("Approve_Advisor0")
+        , ApproveAdvisor1Flag: dmz.defs.lookupState("Approve_Advisor1")
+        , ApproveAdvisor2Flag: dmz.defs.lookupState("Approve_Advisor2")
+        , ApproveAdvisor3Flag: dmz.defs.lookupState("Approve_Advisor3")
+        , ApproveAdvisor4Flag: dmz.defs.lookupState("Approve_Advisor4")
+        , ForumPostFlag: dmz.defs.lookupState("New_Forum_Post")
+        , AlterGroupsFlag: dmz.defs.lookupState("Alter_Groups")
+        , AlterUsersFlag: dmz.defs.lookupState("Alter_Users")
+        , AlterMediaFlag: dmz.defs.lookupState("Alter_Media")
+        , AlterAdvisorsFlag: dmz.defs.lookupState("Alter_Advisors")
+        , AnswerHelpFlag: dmz.defs.lookupState("Answer_Help")
+        , StudentDataFlag: dmz.defs.lookupState("Student_Data")
+        , DeletePostsFlag: dmz.defs.lookupState("Delete_Posts")
+        }
+
+   , Permissions =
+        { StudentPermissions:
+             [ States.CreateVoteFlag
+             , States.CastVoteFlag
+             , States.AskAdvisor0Flag
+             , States.AskAdvisor1Flag
+             , States.AskAdvisor2Flag
+             , States.AskAdvisor3Flag
+             , States.AskAdvisor4Flag
+             , States.ForumPostFlag
+             , States.AnswerHelpFlag
+             ]
+        , AdminPermissions:
+             [ States.SwitchGroupFlag
+             , States.ChangeMapFlag
+             , States.AskAdvisor0Flag
+             , States.AskAdvisor1Flag
+             , States.AskAdvisor2Flag
+             , States.AskAdvisor3Flag
+             , States.AskAdvisor4Flag
+             , States.AnswerAdvisor0Flag
+             , States.AnswerAdvisor1Flag
+             , States.AnswerAdvisor2Flag
+             , States.AnswerAdvisor3Flag
+             , States.AnswerAdvisor4Flag
+             , States.ApproveAdvisor0Flag
+             , States.ApproveAdvisor1Flag
+             , States.ApproveAdvisor2Flag
+             , States.ApproveAdvisor3Flag
+             , States.ApproveAdvisor4Flag
+             , States.AlterAdvisorsFlag
+             , States.ForumPostFlag
+             , States.AlterMediaFlag
+             , States.AnswerHelpFlag
+             , States.StudentDataFlag
+             , States.DeletePostsFlag
+             ]
+        , AdvisorPermissions: // Needs to be customized for each advisor user created
+             [
+             ]
+        , ObserverPermissions:
+             [ States.SwitchGroupFlag
+             ]
+        , TechPermissions: // Seriously, do we really need "permission" to do anything?
+             [ States.SwitchGroupFlag
+             , States.ChangeMapFlag
+             , States.CreateVoteFlag
+             , States.CastVoteFlag
+             , States.AskAdvisor0Flag
+             , States.AskAdvisor1Flag
+             , States.AskAdvisor2Flag
+             , States.AskAdvisor3Flag
+             , States.AskAdvisor4Flag
+             , States.AnswerAdvisor0Flag
+             , States.AnswerAdvisor1Flag
+             , States.AnswerAdvisor2Flag
+             , States.AnswerAdvisor3Flag
+             , States.AnswerAdvisor4Flag
+             , States.ApproveAdvisor0Flag
+             , States.ApproveAdvisor1Flag
+             , States.ApproveAdvisor2Flag
+             , States.ApproveAdvisor3Flag
+             , States.ApproveAdvisor4Flag
+             , States.AlterAdvisorsFlag
+             , States.ForumPostFlag
+             , States.AlterMediaFlag
+             , States.AlterGroupsFlag
+             , States.AlterUsersFlag
+             , States.AnswerHelpFlag
+             , States.StudentDataFlag
+             , States.DeletePostsFlag
+             ]
         }
 
    , Constants =
@@ -133,11 +244,12 @@ var dmz =
              , "Expired"
              , "ERROR"
              ]
-          , PRIORITY_FIRST: 1
-          , PRIORITY_SECOND: 2
-          , PRIORITY_THIRD: 3
-          , TIME_FORMAT: "MMM-dd hh:mm tt"
-         }
+        , PRIORITY_FIRST: 1
+        , PRIORITY_SECOND: 2
+        , PRIORITY_THIRD: 3
+        , TIME_FORMAT: "MMM-dd hh:mm tt"
+        ,
+        }
    , getDisplayName
    , getAuthorHandle
    , getAuthorName
@@ -146,7 +258,64 @@ var dmz =
    , addUITextLimit
    , userAttribute
    , getLastTimeStamp
+   , createPermissionSet
+   , isAllowed
    ;
+
+(function () {
+
+   States.AdvisorSets =
+      [ States.AskAdvisor0Flag.or(States.AnswerAdvisor0Flag).or(States.ApproveAdvisor0Flag)
+      , States.AskAdvisor1Flag.or(States.AnswerAdvisor1Flag).or(States.ApproveAdvisor1Flag)
+      , States.AskAdvisor2Flag.or(States.AnswerAdvisor2Flag).or(States.ApproveAdvisor2Flag)
+      , States.AskAdvisor3Flag.or(States.AnswerAdvisor3Flag).or(States.ApproveAdvisor3Flag)
+      , States.AskAdvisor4Flag.or(States.AnswerAdvisor4Flag).or(States.ApproveAdvisor4Flag)
+      ];
+
+   States.AdvisorAskSet =
+      [ States.AskAdvisor0Flag
+      , States.AskAdvisor1Flag
+      , States.AskAdvisor2Flag
+      , States.AskAdvisor3Flag
+      , States.AskAdvisor4Flag
+      ];
+
+   States.AdvisorAnswerSet =
+      [ States.AnswerAdvisor0Flag
+      , States.AnswerAdvisor1Flag
+      , States.AnswerAdvisor2Flag
+      , States.AnswerAdvisor3Flag
+      , States.AnswerAdvisor4Flag
+      ];
+
+   States.AdvisorApproveSet =
+      [ States.ApproveAdvisor0Flag
+      , States.ApproveAdvisor1Flag
+      , States.ApproveAdvisor2Flag
+      , States.ApproveAdvisor3Flag
+      , States.ApproveAdvisor4Flag
+      ];
+}());
+
+
+isAllowed = function (handle, state) {
+
+   var permissions = dmz.object.state(handle, Handles.Permissions)
+     , result = false
+     ;
+   if (permissions && state && dmz.mask.isTypeOf(state)) {
+
+      result = permissions.and(state).bool();
+   }
+   return result;
+};
+
+createPermissionSet = function (flagList) {
+
+   var result = dmz.mask.create();
+   flagList.forEach(function (state) { result = result.or(state); });
+   return result;
+};
 
 getLastTimeStamp = function (handleList) {
 
@@ -255,6 +424,7 @@ Functions.addUITextLimit = addUITextLimit;
 Functions.getVoteStatus = getVoteStatus;
 Functions.userAttribute = userAttribute;
 Functions.getLastTimeStamp = getLastTimeStamp;
+Functions.isAllowed = isAllowed;
 
 (function () {
 
@@ -278,5 +448,15 @@ Functions.getLastTimeStamp = getLastTimeStamp;
 
       dmz.util.defineConst(exports, fncName, Constants[fncName]);
    });
+
+   Object.keys(States).forEach(function (fncName) {
+
+      dmz.util.defineConst(exports, fncName, States[fncName]);
+   });
+
+   Object.keys(Permissions).forEach(function (fncName) {
+
+      dmz.util.defineConst(exports, fncName, createPermissionSet(Permissions[fncName]));
+   })
 
 }());

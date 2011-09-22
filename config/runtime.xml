@@ -22,6 +22,7 @@
    <object-type name="answer"/>
    <object-type name="decision"/>
    <object-type name="data"/>
+   <object-type name="help-forum"/>
    <message name="AddPinMessage"/>
    <message name="PinAddedMessage"/>
    <message name="RemovePinMessage"/>
@@ -32,5 +33,32 @@
    <message name="AppUpdaterChannelMessage"/>
    <message name="ToggledGroupMessage"/>
    <message name="VideoHome"/>
+   <state name="Switch_Group"/>
+   <state name="Change_Map"/>
+   <state name="Create_Vote"/>
+   <state name="Cast_Vote"/>
+   <state name="Ask_Advisor0"/>
+   <state name="Ask_Advisor1"/>
+   <state name="Ask_Advisor2"/>
+   <state name="Ask_Advisor3"/>
+   <state name="Ask_Advisor4"/>
+   <state name="Answer_Advisor0"/>
+   <state name="Answer_Advisor1"/>
+   <state name="Answer_Advisor2"/>
+   <state name="Answer_Advisor3"/>
+   <state name="Answer_Advisor4"/>
+   <state name="Approve_Advisor0"/>
+   <state name="Approve_Advisor1"/>
+   <state name="Approve_Advisor2"/>
+   <state name="Approve_Advisor3"/>
+   <state name="Approve_Advisor4"/>
+   <state name="New_Forum_Post"/>
+   <state name="Alter_Groups"/>
+   <state name="Alter_Users"/>
+   <state name="Alter_Media"/>
+   <state name="Alter_Advisors"/>
+   <state name="Answer_Help"/>
+   <state name="Student_Data"/>
+   <state name="Delete_Posts"/>
 </runtime>
 </dmz>
