@@ -660,10 +660,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
                         _addComment(postHandle, commentHandle);
                      }
-                     else { _Self.log.warn ("Comment", commentHandle, "disabled"); }
                   });
                }
-               else { _Self.log.warn ("Post", postHandle, "is disabled"); }
             });
             viewedWindow = true;
          }
@@ -709,7 +707,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , avatar = _view.lookup("avatarLabel")
            ;
 
-         _ShowDeleteButtons = dmz.stance.isAllowed(userHAndle, dmz.stance.DeletePostsFlag);
+         _ShowDeleteButtons = dmz.stance.isAllowed(userHandle, dmz.stance.DeletePostsFlag);
          _LatestTimeStamp = dmz.stance.userAttribute(userHandle, _TimeHandle) || 0;
          group = dmz.stance.getUserGroupHandle(userHandle);
 

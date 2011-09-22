@@ -92,7 +92,6 @@ var dmz =
         , createAdvisorDialog.lookup("advisor4")
         ]
 
-
    , editAdvisorDialog = dmz.ui.loader.load("EditAdvisorDialog.ui", editScenarioWidget)
    , advisorBio = editAdvisorDialog.lookup("advisorBio")
    , pictureLabel = editAdvisorDialog.lookup("pictureLabel")
@@ -455,20 +454,6 @@ userFromGroup = function (item) {
       }
    }
 };
-
-dmz.object.flag.observe(self, dmz.stance.AdminHandle, function (handle, attr, value) {
-
-   var state;
-   if (value) {
-
-      self.log.error ("Admin Handle:", dmz.stance.getDisplayName(handle), handle);
-      state = dmz.object.state(handle, dmz.stance.Permissions);
-      if (!state || !state.and(dmz.stance.AlterAdvisorsFlag).bool()) {
-
-         dmz.object.state(handle, dmz.stance.Permissions, dmz.stance.TechPermissions);
-      }
-   }
-});
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
 

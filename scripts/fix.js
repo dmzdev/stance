@@ -46,7 +46,7 @@ list.push(function (objs) {
 // Change Admins to new permission system
 list.push(function (objs) {
 
-   objs = obj.filter(function (handle) {
+   objs = objs.filter(function (handle) {
 
       return dmz.object.type(handle).isOfType(dmz.stance.UserType);
    });
@@ -63,6 +63,7 @@ list.push(function (objs) {
          }
          else { permissions = dmz.stance.StudentPermissions; }
 
+         self.log.warn ("Resetting permissions for", dmz.stance.getDisplayName(user));
          dmz.object.state(user, dmz.stance.Permissions, permissions);
       }
    });
@@ -71,7 +72,7 @@ list.push(function (objs) {
 // Add DeletePostsFlag to admins
 list.push(function (objs) {
 
-   objs = obj.filter(function (handle) {
+   objs = objs.filter(function (handle) {
 
       return dmz.object.type(handle).isOfType(dmz.stance.UserType);
    });
@@ -82,13 +83,14 @@ list.push(function (objs) {
       if (dmz.stance.isAllowed(user, dmz.stance.AlterMediaFlag) &&
          !dmz.stance.isAllowed(user, dmz.stance.DeletePostsFlag)) {
 
+         self.log.warn ("Giving DeletePostsFlag permission to", dmz.stance.getDisplayName(user));
          dmz.object.state(user, dmz.stance.Permissions, permissions.or(dmz.stance.DeletePostsFlag));
       }
    });
 });
 
-dmz.time.setTimer(self, 20, function () {
+dmz.time.setTimer(self, 15, function () {
 
    var objs = dmz.object.getObjects() || [];
-   list.forEach(objs.filter(function () { return true; }));
+   list.forEach(function (fnc) { fnc (objs.filter(function () { return true; })); });
 });
