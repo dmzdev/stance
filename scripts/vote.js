@@ -380,7 +380,7 @@ setApprovalPendingLabels = function (voteHandle) {
       voteItem.ui.noVotesLabel.text("");
       voteItem.ui.undecidedVotesLabel.text("");
       voteItem.ui.endTimeLabel.text("");
-      if (isAdmin) {
+      if (dmz.stance.isAllowed(hil, dmz.stance.AdvisorApproveSet[dmz.object.scalar(voteItem.advisorHandle, dmz.stance.ID)])) {
 
          voteItem.ui.buttonLayout.insertWidget(0, voteItem.ui.yesButton);
          voteItem.ui.buttonLayout.insertWidget(1, voteItem.ui.noButton);
@@ -501,7 +501,7 @@ setActiveLabels = function (voteHandle) {
                "Calculating..."));
       }
       updateVotes(voteHandle);
-      if (!isAdmin && !hasUserVoted(hil, voteItem.decisionHandle)) {
+      if (dmz.stance.isAllowed(hil, dmz.stance.CastVoteFlag) && !hasUserVoted(hil, voteItem.decisionHandle)) {
 
          voteItem.ui.buttonLayout.insertWidget(0, voteItem.ui.yesButton);
          voteItem.ui.buttonLayout.insertWidget(1, voteItem.ui.noButton);
@@ -618,7 +618,7 @@ setYesNoLabels = function (voteHandle) {
                "Less than 5 min ago"));
       }
       updateVotes(voteHandle);
-      if (!isAdmin && !hasUserVoted(hil, voteItem.decisionHandle)) {
+      if (dmz.stance.isAllowed(hil, dmz.stance.CastVoteFlag) && !hasUserVoted(hil, voteItem.decisionHandle)) {
 
          voteItem.ui.buttonLayout.insertWidget(0, voteItem.ui.yesButton);
          voteItem.ui.buttonLayout.insertWidget(1, voteItem.ui.noButton);
@@ -912,7 +912,7 @@ numberOfNonAdminUsers = function (groupHandle) {
 
    userHandles = userHandles.filter(function (userHandle) {
 
-      return !dmz.object.flag(userHandle, dmz.stance.AdminHandle);
+      return (dmz.stance.isAllowed(userHandle, dmz.stance.CastVoteFlag) && dmz.object.flag(userHandle, dmz.stance.ActiveHandle));
    });
 
    return userHandles.length;

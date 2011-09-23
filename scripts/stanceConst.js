@@ -200,7 +200,7 @@ var dmz =
              [ States.SwitchGroupFlag
              , States.ChangeMapFlag
              , States.CreateVoteFlag
-             , States.CastVoteFlag
+             //, States.CastVoteFlag
              , States.AskAdvisor0Flag
              , States.AskAdvisor1Flag
              , States.AskAdvisor2Flag

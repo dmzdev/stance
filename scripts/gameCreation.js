@@ -124,7 +124,6 @@ var dmz =
    , groupLayout = editScenarioWidget.lookup("groupLayout")
 
    // Variables
-   , aarMessage = dmz.message.create(self.config.string("aarmessage.name"))
    , showStudentsMessage = dmz.message.create("showStudentsWindow")
    , GroupButtonList = {}
    , EmailMod = false
@@ -190,32 +189,11 @@ var dmz =
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
 
-editScenarioWidget.observe(self, "aarButton", "clicked", function () {
-
-   self.log.warn ("aarMessage:", aarMessage);
-   aarMessage.send();
-});
-
 editScenarioWidget.observe(self, "showStudentsButton", "clicked", function () {
 
    self.log.warn("showStudentsMessage:", showStudentsMessage);
    showStudentsMessage.send();
 });
-
-createNewUser = function (userName, displayName) {
-
-   var user
-     ;
-
-   if (userName && displayName) {
-
-      user = dmz.object.create(dmz.stance.UserType);
-      dmz.object.text(user, dmz.stance.NameHandle, userName);
-      dmz.object.text(user, dmz.stance.DisplayNameHandle, displayName);
-      dmz.object.activate(user);
-   }
-   return user;
-};
 
 readGroupTemplates = function () {
 
