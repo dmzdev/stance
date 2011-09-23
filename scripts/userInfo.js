@@ -465,17 +465,29 @@ votesByAdvisor = function (groupHandle) {
          if (currentColor <= 255) {
 
             brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Advisors[advisorHandle].votes.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votes.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          else if ((currentColor > 255) && (currentColor <= 510)) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push( { amt: Advisors[advisorHandle].votes.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votes.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          else if (currentColor > 510) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Advisors[advisorHandle].votes.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votes.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          currentColor += colorStep;
       });
@@ -507,17 +519,29 @@ questionsByAdvisor = function (groupHandle) {
          if (currentColor <= 255) {
 
             brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Advisors[advisorHandle].questions.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].questions.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          else if ((currentColor > 255) && (currentColor <= 510)) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push( { amt: Advisors[advisorHandle].questions.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].questions.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          else if (currentColor > 510) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Advisors[advisorHandle].questions.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].questions.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          currentColor += colorStep;
       });
@@ -549,17 +573,29 @@ deniedVotesByAdvisor = function (groupHandle) {
          if (currentColor <= 255) {
 
             brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Advisors[advisorHandle].votesDenied.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votesDenied.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          else if ((currentColor > 255) && (currentColor <= 510)) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push( { amt: Advisors[advisorHandle].votesDenied.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votesDenied.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          else if (currentColor > 510) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Advisors[advisorHandle].votesDenied.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votesDenied.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          currentColor += colorStep;
       });
@@ -594,7 +630,7 @@ approvedVotesByAdvisor = function (groupHandle) {
             legend.push(
                { amt: (Advisors[advisorHandle].votesPassed.length + Advisors[advisorHandle].votesFailed.length)
                , brush: brush
-               , label: Advisors[advisorHandle].name
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
                });
          }
          else if ((currentColor > 255) && (currentColor <= 510)) {
@@ -603,7 +639,7 @@ approvedVotesByAdvisor = function (groupHandle) {
             legend.push(
                { amt: (Advisors[advisorHandle].votesPassed.length + Advisors[advisorHandle].votesFailed.length)
                , brush: brush
-               , label: Advisors[advisorHandle].name
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
                });
          }
          else if (currentColor > 510) {
@@ -612,7 +648,7 @@ approvedVotesByAdvisor = function (groupHandle) {
             legend.push(
                { amt: (Advisors[advisorHandle].votesPassed.length + Advisors[advisorHandle].votesFailed.length)
                , brush: brush
-               , label: Advisors[advisorHandle].name
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
                });
          }
          currentColor += colorStep;
@@ -645,17 +681,29 @@ passedVotesByAdvisor = function (groupHandle) {
          if (currentColor <= 255) {
 
             brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Advisors[advisorHandle].votesPassed.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votesPassed.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          else if ((currentColor > 255) && (currentColor <= 510)) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push( { amt: Advisors[advisorHandle].votesPassed.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votesPassed.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          else if (currentColor > 510) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Advisors[advisorHandle].votesPassed.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votesPassed.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          currentColor += colorStep;
       });
@@ -687,17 +735,29 @@ failedVotesByAdvisor = function (groupHandle) {
          if (currentColor <= 255) {
 
             brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Advisors[advisorHandle].votesFailed.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votesFailed.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          else if ((currentColor > 255) && (currentColor <= 510)) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push( { amt: Advisors[advisorHandle].votesFailed.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votesFailed.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          else if (currentColor > 510) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Advisors[advisorHandle].votesFailed.length, brush: brush, label: Advisors[advisorHandle].name});
+            legend.push(
+               { amt: Advisors[advisorHandle].votesFailed.length
+               , brush: brush
+               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
+               });
          }
          currentColor += colorStep;
       });
@@ -1735,6 +1795,10 @@ function (objHandle, attrHandle, newVal, oldVal) {
    else if (Lobbyists[objHandle]) {
 
       Lobbyists[objHandle].title = newVal;
+   }
+   else if (Advisors[objHandle]) {
+
+      Advisors[objHandle].title = newVal;
    }
 });
 
