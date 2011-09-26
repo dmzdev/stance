@@ -58,6 +58,11 @@ var dmz =
         , EmailRecipientHandle: dmz.defs.createNamedHandle("email_recipient")
         , PinTotalHandle: dmz.defs.createNamedHandle("pin_total")
         , EmailPriorityHandle: dmz.defs.createNamedHandle("email_priority")
+        , StudentPermissionsHandle: dmz.defs.createNamedHandle("student_permissions")
+        , AdminPermissionsHandle: dmz.defs.createNamedHandle("admin_permissions")
+        , AdvisorPermissionsHandle: dmz.defs.createNamedHandle("advisor_permissions")
+        , ObserverPermissionsHandle: dmz.defs.createNamedHandle("observer_permissions")
+        , TechPermissionsHandle: dmz.defs.createNamedHandle("tech_permissions")
 
         // Link Attr Handles
         , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
@@ -151,6 +156,10 @@ var dmz =
         , AnswerHelpFlag: dmz.defs.lookupState("Answer_Help")
         , StudentDataFlag: dmz.defs.lookupState("Student_Data")
         , DeletePostsFlag: dmz.defs.lookupState("Delete_Posts")
+        , TagDataFlag: dmz.defs.lookupState("Tag_Data")
+        , InjectPDFFlag: dmz.defs.lookupState("Inject_PDF")
+        , ModifyCollabAreaFlag: dmz.defs.lookupState("Modify_Collab_Area")
+        , ChangePermissionSetsFlag: dmz.defs.lookupState("Change_Permission_Sets")
         }
 
    , Permissions =
@@ -164,6 +173,7 @@ var dmz =
              , States.AskAdvisor4Flag
              , States.ForumPostFlag
              , States.AnswerHelpFlag
+             , States.ModifyCollabAreaFlag
              ]
         , AdminPermissions:
              [ States.SwitchGroupFlag
@@ -189,6 +199,8 @@ var dmz =
              , States.AnswerHelpFlag
              , States.StudentDataFlag
              , States.DeletePostsFlag
+             , States.TagDataFlag
+             , States.InjectPDFFlag
              ]
         , AdvisorPermissions: // Needs to be customized for each advisor user created
              [
@@ -224,6 +236,10 @@ var dmz =
              , States.AnswerHelpFlag
              , States.StudentDataFlag
              , States.DeletePostsFlag
+             , States.ModifyCollabAreaFlag
+             , States.TagDataFlag
+             , States.InjectPDFFlag
+             , States.ChangePermissionSetsFlag
              ]
         }
 
@@ -248,7 +264,20 @@ var dmz =
         , PRIORITY_SECOND: 2
         , PRIORITY_THIRD: 3
         , TIME_FORMAT: "MMM-dd hh:mm tt"
-        ,
+        , STUDENT_PERMISSION: 0
+        , ADMIN_PERMISSION: 1
+        , ADVISOR_PERMISSION: 2
+        , OBSERVER_PERMISSION: 3
+        , TECH_PERMISSION: 4
+        , PERMISSION_LEVELS: 5
+        , PERMISSION_LABELS:
+             [ "Student"
+             , "Admin"
+             , "Advisor"
+             , "Observer"
+             , "Tech"
+             ]
+        , STATES: States
         }
    , getDisplayName
    , getAuthorHandle

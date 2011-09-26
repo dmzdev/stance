@@ -60,5 +60,9 @@
    <state name="Answer_Help"/>
    <state name="Student_Data"/>
    <state name="Delete_Posts"/>
+   <state name="Tag_Data"/>
+   <state name="Inject_PDF"/>
+   <state name="Modify_Collab_Area"/>
+   <state name="Change_Permission_Sets"/>
 </runtime>
 </dmz>

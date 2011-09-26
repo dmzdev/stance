@@ -2,23 +2,11 @@
 // old databases to new databases.
 var dmz =
        { defs: require("dmz/runtime/definitions")
-       , module: require("dmz/runtime/module")
        , object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
-       , message: require("dmz/runtime/messaging")
-       , resources: require("dmz/runtime/resources")
        , stance: require("stanceConst")
        , time: require("dmz/runtime/time")
        , util: require("dmz/types/util")
-       , ui:
-          { consts: require('dmz/ui/consts')
-          , graph: require("dmz/ui/graph")
-          , layout: require("dmz/ui/layout")
-          , label: require("dmz/ui/label")
-          , loader: require('dmz/ui/uiLoader')
-          , messageBox: require("dmz/ui/messageBox")
-          , mainWindow: require("dmz/ui/mainWindow")
-          }
        }
 
        // Fnclist
@@ -30,12 +18,16 @@ list.push(function (objs) {
 
    objs = objs.filter(function (handle) {
 
-      return dmz.object.type(handle).isOfType(dmz.stance.GroupType) && !dmz.object.superLinks(handle, dmz.stance.HelpLink);
+      return dmz.object.type(handle).isOfType(dmz.stance.GroupType) &&
+         !dmz.object.superLinks(handle, dmz.stance.HelpLink);
    });
    objs.forEach(function (group) {
 
       var handle;
-      self.log.warn ("Adding Help Forum to:", dmz.stance.getDisplayName(group), dmz.object.superLinks(group, dmz.stance.HelpLink), !dmz.object.superLinks(group, dmz.stance.HelpLink));
+      self.log.warn
+         ( "Adding Help Forum to:", dmz.stance.getDisplayName(group)
+         , dmz.object.superLinks(group, dmz.stance.HelpLink)
+         , !dmz.object.superLinks(group, dmz.stance.HelpLink));
       handle = dmz.object.create(dmz.stance.HelpForumType);
       dmz.object.text(handle, dmz.stance.NameHandle, dmz.stance.getDisplayName(group));
       dmz.object.activate(handle);
@@ -66,6 +58,42 @@ list.push(function (objs) {
          self.log.warn ("Resetting permissions for", dmz.stance.getDisplayName(user));
          dmz.object.state(user, dmz.stance.Permissions, permissions);
       }
+   });
+});
+
+// Add permission scalar to users
+list.push(function (objs) {
+
+   objs = objs.filter(function (handle) {
+
+      return dmz.object.type(handle).isOfType(dmz.stance.UserType) &&
+         (dmz.object.scalar(handle, dmz.stance.Permissions) === undefined);
+   });
+
+   objs.forEach(function (user) {
+
+      var permission = -1;
+      if (dmz.stance.isAllowed(user, dmz.stance.SwitchGroupFlag)) {
+
+         if (dmz.stance.isAllowed(user, dmz.stance.AlterMediaFlag)) {
+
+            if (dmz.stance.isAllowed(user, dmz.stance.AlterUsersFlag)) {
+
+               permission = dmz.stance.TECH_PERMISSION;
+            }
+            else { permission = dmz.stance.ADMIN_PERMISSION; }
+         }
+         else { permission = dmz.stance.OBSERVER_PERMISSION; }
+      }
+      else if (dmz.stance.isAllowed(user, dmz.stance.CastVoteFlag)) {
+
+         permission = dmz.stance.STUDENT_PERMISSION;
+      }
+      else if (dmz.object.state(user, dmz.stance.Permissions)) {
+
+         permission = dmz.stance.ADVISOR_PERMISSION;
+      }
+      if (permission !== -1) { dmz.object.scalar(user, dmz.stance.Permissions, permission); }
    });
 });
 

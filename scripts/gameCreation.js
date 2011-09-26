@@ -37,18 +37,20 @@ var dmz =
    , memoList = editScenarioWidget.lookup("memoListWidget")
    , videoList = editScenarioWidget.lookup("videoListWidget")
    , lobbyistList = editScenarioWidget.lookup("lobbyistListWidget")
+   , permissionTable = editScenarioWidget.lookup("permissionTableWidget")
 
    , startGameButton = editScenarioWidget.lookup("startGameButton")
    , endGameButton = editScenarioWidget.lookup("endGameButton")
    , showStudentsButton = editScenarioWidget.lookup("showStudentsButton")
 
    , TabWidget = editScenarioWidget.lookup("tabWidget")
-   , SwitchGroupTab = { index: 0, name: "Switch Group", widget: editScenarioWidget.lookup("SwitchGroupTab") }
-   , MediaTab = { index: 1, name: "Media Injects", widget: editScenarioWidget.lookup("MediaTab") }
-   , AdvisorTab = { index: 2, name: "Advisors", widget: editScenarioWidget.lookup("ModifyAdvisorTab") }
-   , AlterGroupsTab = { index: 3, name: "Groups", widget: editScenarioWidget.lookup("GroupTab") }
-   , AlterUsersTab = { index: 4, name: "Users", widget: editScenarioWidget.lookup("UserTab") }
-   , Tabs = [SwitchGroupTab, MediaTab, AdvisorTab, AlterGroupsTab, AlterUsersTab]
+   , SwitchGroupTab = editScenarioWidget.lookup("SwitchGroupTab")
+   , MediaTab = editScenarioWidget.lookup("MediaTab")
+   , AdvisorTab = editScenarioWidget.lookup("ModifyAdvisorTab")
+   , AlterGroupsTab = editScenarioWidget.lookup("GroupTab")
+   , AlterUsersTab = editScenarioWidget.lookup("UserTab")
+   , ChangePermissionsTab = editScenarioWidget.lookup("PermissionTab")
+   , Tabs = [SwitchGroupTab, MediaTab, AdvisorTab, AlterGroupsTab, AlterUsersTab, ChangePermissionsTab]
 
    , TechListWidget = editScenarioWidget.lookup("techList")
    , AdminListWidget = editScenarioWidget.lookup("adminList")
@@ -184,6 +186,7 @@ var dmz =
    , mediaInjectButtons
    , setType
    , setAdvisorList
+   , setupPermissionTable
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
@@ -1356,7 +1359,14 @@ function (objHandle, attrHandle, value) {
                   startGameButton.enabled(!active);
                   endGameButton.enabled(active);
                   showStudentsButton.enabled(true);
-                  if (dmz.stance.isAllowed(objHandle, dmz.stance.AlterUsersFlag)) { max = 5; }
+                  if (dmz.stance.isAllowed(objHandle, dmz.stance.AlterUsersFlag)) {
+
+                     max = 5;
+                     if (dmz.stance.isAllowed(objHandle, dmz.stance.ChangePermissionSetsFlag)) {
+
+                        max = 6;
+                     }
+                  }
                }
             }
          }
@@ -1365,8 +1375,8 @@ function (objHandle, attrHandle, value) {
          while (count > max) {
 
             count -= 1;
-            TabWidget.remove(Tabs[count].widget);
-            Tabs[count].widget.hide();
+            TabWidget.remove(Tabs[count])
+            Tabs[count].hide();
          }
 
          TabWidget.show();
@@ -1475,9 +1485,24 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
    }
 });
 
+dmz.object.scalar.observe(self, dmz.stance.Permissions, function (handle, attrHandle, value) {
+
+   self.log.error ("Permissions Scalar Observer not yet implemented.");
+});
+
+setupPermissionTable = function () {
+
+   var flagNames = Object.keys(dmz.stance.STATES);
+   permissionTable.columnCount(dmz.stance.PERMISSION_LEVELS);
+   permissionTable.setHorizontalLabels(dmz.stance.PERMISSION_LABELS);
+   permissionTable.rowCount(dmz.stance.STATES.length);
+   permissionTable.setVerticalLabels(flagNames);
+
+};
+
 (function () {
 
-
+   setupPermissionTable();
    mediaInjectButtons();
    readGroupTemplates();
    editScenarioWidget.lookup("tabWidget").hide();
