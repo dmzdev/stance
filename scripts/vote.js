@@ -380,7 +380,7 @@ setApprovalPendingLabels = function (voteHandle) {
       voteItem.ui.noVotesLabel.text("");
       voteItem.ui.undecidedVotesLabel.text("");
       voteItem.ui.endTimeLabel.text("");
-      if (isAdmin) {
+      if (dmz.stance.isAllowed(hil, dmz.stance.AdvisorApproveSet[dmz.object.scalar(voteItem.advisorHandle, dmz.stance.ID)])) {
 
          voteItem.ui.buttonLayout.insertWidget(0, voteItem.ui.yesButton);
          voteItem.ui.buttonLayout.insertWidget(1, voteItem.ui.noButton);
@@ -501,7 +501,7 @@ setActiveLabels = function (voteHandle) {
                "Calculating..."));
       }
       updateVotes(voteHandle);
-      if (!isAdmin && !hasUserVoted(hil, voteItem.decisionHandle)) {
+      if (dmz.stance.isAllowed(hil, dmz.stance.CastVoteFlag) && !hasUserVoted(hil, voteItem.decisionHandle)) {
 
          voteItem.ui.buttonLayout.insertWidget(0, voteItem.ui.yesButton);
          voteItem.ui.buttonLayout.insertWidget(1, voteItem.ui.noButton);
@@ -618,16 +618,46 @@ setYesNoLabels = function (voteHandle) {
                "Less than 5 min ago"));
       }
       updateVotes(voteHandle);
-      voteItem.ui.yesButton.hide();
-      voteItem.ui.noButton.hide();
+      if (dmz.stance.isAllowed(hil, dmz.stance.CastVoteFlag) && !hasUserVoted(hil, voteItem.decisionHandle)) {
+
+         voteItem.ui.buttonLayout.insertWidget(0, voteItem.ui.yesButton);
+         voteItem.ui.buttonLayout.insertWidget(1, voteItem.ui.noButton);
+         if (!LoginSkipped) {
+
+            voteItem.ui.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
+            voteItem.ui.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
+            voteItem.ui.yesButton.observe(self, "clicked", function () {
+
+               userVoted(dmz.object.hil(), voteItem.decisionHandle, true);
+               voteItem.ui.yesButton.hide();
+               voteItem.ui.noButton.hide();
+            });
+            voteItem.ui.noButton.observe(self, "clicked", function () {
+
+               userVoted(dmz.object.hil(), voteItem.decisionHandle, false);
+               voteItem.ui.yesButton.hide();
+               voteItem.ui.noButton.hide();
+            });
+         }
+         else {
+
+            voteItem.ui.yesButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
+            voteItem.ui.noButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
+         }
+      }
+      else {
+
+         voteItem.ui.yesButton.hide();
+         voteItem.ui.noButton.hide();
+         voteItem.ui.buttonLayout.removeWidget(voteItem.ui.yesButton);
+         voteItem.ui.buttonLayout.removeWidget(voteItem.ui.noButton);
+      }
       voteItem.ui.timeBox.hide();
       voteItem.ui.timeBoxLabel.hide();
       voteItem.ui.decisionTextEdit.hide();
       voteItem.ui.decisionTextEditLabel.hide();
       voteItem.ui.textLayout.removeWidget(voteItem.ui.decisionTextEditLabel);
       voteItem.ui.textLayout.removeWidget(voteItem.ui.decisionTextEdit);
-      voteItem.ui.buttonLayout.removeWidget(voteItem.ui.yesButton);
-      voteItem.ui.buttonLayout.removeWidget(voteItem.ui.noButton);
       voteItem.ui.buttonLayout.removeWidget(voteItem.ui.timeBox);
       voteItem.ui.buttonLayout.removeWidget(voteItem.ui.timeBoxLabel);
    }
@@ -882,7 +912,7 @@ numberOfNonAdminUsers = function (groupHandle) {
 
    userHandles = userHandles.filter(function (userHandle) {
 
-      return !dmz.object.flag(userHandle, dmz.stance.AdminHandle);
+      return (dmz.stance.isAllowed(userHandle, dmz.stance.CastVoteFlag) && dmz.object.flag(userHandle, dmz.stance.ActiveHandle));
    });
 
    return userHandles.length;
@@ -1115,7 +1145,8 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    }
    else if (objType.isOfType(dmz.stance.DecisionType)) {
 
-      DecisionObjects[objHandle] = { handle: objHandle };
+      DecisionObjects[objHandle] =
+         { handle: objHandle };
    }
 });
 

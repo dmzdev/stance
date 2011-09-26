@@ -144,15 +144,15 @@ _exports.sendVoteEmail = function (voteItem, state, decisionItem) {
 
          text +=
             "\nAdvisor Response: " + decisionItem.advisorResponse +
-            "\nYes Votes: " + (decisionItem.yesVotes || 0) +
-            "\nNo Votes: " + (decisionItem.noVotes || 0);
+            "\nYes Votes: " + (decisionItem.yesVotes || "0") +
+            "\nNo Votes: " + (decisionItem.noVotes || "0");
       }
       else if ((state === dmz.stance.VOTE_YES) && decisionItem) {
 
          text +=
             "\nAdvisor Response: " + decisionItem.advisorResponse +
-            "\nYes Votes: " + (decisionItem.yesVotes || 0) +
-            "\nNo Votes: " + (decisionItem.noVotes) || 0;
+            "\nYes Votes: " + (decisionItem.yesVotes || "0") +
+            "\nNo Votes: " + (decisionItem.noVotes) || "0";
       }
    }
    if (sendList.length && subject && text) {

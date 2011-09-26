@@ -42,6 +42,7 @@ var dmz =
    , prevButton = webForm.lookup("prevButton") //
    , currLabel = webForm.lookup("currentLabel") //
    , totalLabel = webForm.lookup("totalLabel") //
+   , unseenItemsLabel = webForm.lookup("unseenItemsLabel") //
 
    // Variables
    , dialogWidth = 0
@@ -84,6 +85,7 @@ setActiveState = function (state) {
          prevButton = lobbyistForm.lookup("prevButton");
          currLabel = lobbyistForm.lookup("currentLabel");
          totalLabel = lobbyistForm.lookup("totalLabel");
+         unseenItemsLabel = lobbyistForm.lookup("unseenItemsLabel");
          break;
       case ("Video"):
 
@@ -91,6 +93,7 @@ setActiveState = function (state) {
          prevButton = webForm.lookup("prevButton");
          currLabel = webForm.lookup("currentLabel");
          totalLabel = webForm.lookup("totalLabel");
+         unseenItemsLabel = webForm.lookup("unseenItemsLabel");
          break;
       case ("Newspaper"):
 
@@ -98,6 +101,7 @@ setActiveState = function (state) {
          prevButton = webForm.lookup("prevButton");
          currLabel = webForm.lookup("currentLabel");
          totalLabel = webForm.lookup("totalLabel");
+         unseenItemsLabel = webForm.lookup("unseenItemsLabel");
          break;
       case ("Memo"):
 
@@ -105,6 +109,7 @@ setActiveState = function (state) {
          prevButton = webForm.lookup("prevButton");
          currLabel = webForm.lookup("currentLabel");
          totalLabel = webForm.lookup("totalLabel");
+         unseenItemsLabel = webForm.lookup("unseenItemsLabel");
          break;
    }
 
@@ -243,6 +248,7 @@ loadCurrentPrint = function () {
    var linkHandle
      , hil = dmz.object.hil()
      , item
+     , unseen = 0
      ;
 
    if (!SourceList.length) { webpage.setHtml("<center><b>No Current Items</b></center>"); }
@@ -270,6 +276,15 @@ loadCurrentPrint = function () {
 
                dmz.object.link(dmz.stance.MediaHandle, item.handle, hil);
             }
+            SourceList.forEach(function (mediaItem) {
+
+               linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, mediaItem.handle, hil);
+               if (!linkHandle) {
+
+                  unseen += 1;
+               }
+            });
+            unseenItemsLabel.text("Unseen Items: " + unseen + "/" + SourceList.length);
          }
       }
    }
@@ -281,6 +296,7 @@ loadCurrentLobbyist = function () {
      , hil = dmz.object.hil()
      , item
      , pic
+     , unseen = 0
      ;
 
    if (SourceList.length === 0) {
@@ -310,6 +326,15 @@ loadCurrentLobbyist = function () {
 
                dmz.object.link(dmz.stance.MediaHandle, item.handle, hil);
             }
+            SourceList.forEach(function (mediaItem) {
+
+               linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, mediaItem.handle, hil);
+               if (!linkHandle) {
+
+                  unseen += 1;
+               }
+            });
+            unseenItemsLabel.text("Unseen Items: " + unseen + "/" + SourceList.length);
          }
       }
    }
@@ -370,6 +395,7 @@ checkNotifications = function () {
      , groupMediaHandles = dmz.object.superLinks(groupHandle, dmz.stance.MediaHandle) || []
      , userMediaHandles = dmz.object.superLinks(hil, dmz.stance.MediaHandle) || []
      , objType
+     , active
      ;
 
    groupMediaHandles.forEach(function (mediaHandle) {
@@ -377,9 +403,10 @@ checkNotifications = function () {
       if (userMediaHandles.indexOf(mediaHandle) === -1) {
 
          objType = dmz.object.type(mediaHandle);
+         active = dmz.object.flag(mediaHandle, dmz.stance.ActiveHandle);
          Object.keys(TypesMap).forEach(function (key) {
 
-            if (TypesMap[key].isOfType(objType)) {
+            if (TypesMap[key].isOfType(objType) && active) {
 
                MainModule.highlight(key);
             }

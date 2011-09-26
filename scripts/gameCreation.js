@@ -126,6 +126,7 @@ var dmz =
    , groupLayout = editScenarioWidget.lookup("groupLayout")
 
    // Variables
+   , showStudentsMessage = dmz.message.create("showStudentsWindow")
    , GroupButtonList = {}
    , EmailMod = false
    , groupList = []
@@ -190,6 +191,12 @@ var dmz =
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
+
+editScenarioWidget.observe(self, "showStudentsButton", "clicked", function () {
+
+   self.log.warn("showStudentsMessage:", showStudentsMessage);
+   showStudentsMessage.send();
+});
 
 readGroupTemplates = function () {
 
