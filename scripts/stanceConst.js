@@ -28,6 +28,7 @@ var dmz =
         , VoteType: dmz.objectType.lookup("vote")
         , DataType: dmz.objectType.lookup("data")
         , HelpForumType: dmz.objectType.lookup("help-forum")
+        , PdfItemType: dmz.objectType.lookup("pdf-item")
         }
 
    , Handles =

@@ -30,6 +30,7 @@
    <instance name="vote"/>
    <instance name="fix"/>
    <instance name="userInfo"/>
+   <instance name="pdfViewer"/>
 <!--   <instance name="graph"/> -->
 </javascript>
 <login>

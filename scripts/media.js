@@ -262,13 +262,38 @@ loadCurrentPrint = function () {
 
             if (CurrentWindowName === "Video") {
 
-               webpage.page().mainFrame().load(
-                  "http://www.chds.us/?stance:youtube&video=" + item.source +
-                  "&width=" + Math.floor(dialogWidth * 0.85) +"&height=" + Math.floor(dialogHeight * 0.67));
+               /* timer is needed because otherwise the width and height settings are
+                  not set in time for the load and default to 480x600
+               */
+               dmz.time.setTimer(self, function () {
+
+                  webpage.page().mainFrame().load(
+                     "http://www.chds.us/?stance:youtube&video=" + item.source +
+                     "&width=" + (webpage.page().width() - 20) +"&height=" + (webpage.page().height() - 20));
+               });
+               //self.log.error(encodeURIComponent("http://www.google.com/"));
+               //self.log.error(webpage.page().width(), dialogWidth, webpage.page().height());
+               //webpage.setHtml("<center><iframe src='http://docs.google.com/viewer?url=http%3A%2F%2Fwww.scala-lang.org%2Fdocu%2Ffiles%2FScalaByExample.pdf&embedded=true' width='" + Math.floor(dialogWidth * 0.85) + "' height='" + Math.floor(dialogHeight * 0.67) + "' style='border: none;'></iframe></center>");
+
             }
             else {
 
+               //webpage.setHtml("<center><iframe src='http://docs.google.com/viewer?url=http%3A%2F%2Fwww.scala-lang.org%2Fdocu%2Ffiles%2FScalaByExample.pdf&embedded=true' width='" + 600 + "' height='" + 780 + "' style='border: none;'></iframe></center>");
+               //webpage.page().setAppVersion("Firefox", "4.0.1");
                webpage.page().mainFrame().load(item.source);
+               /*
+               dmz.time.setTimer(self, function () {
+
+                  webpage.setHtml(
+                     "<center><iframe src='http://docs.google.com/viewer?" +
+                     "url=http%3A%2F%2Fwww.scala-lang.org%2Fdocu%2Ffiles%2FScalaByExample.pdf" +
+                     "&embedded=true'" +
+                     "width='" + (webpage.page().width() - 20) +
+                     "' height='" + (webpage.page().height() - 20) +
+                     "' style='border: none;'></iframe></center>");
+
+               });
+               */
             }
             NewSource = false;
             linkHandle = dmz.object.linkHandle(dmz.stance.MediaHandle, item.handle, hil);
@@ -512,7 +537,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               checkNotifications();
            }
          );
-      module.addPage
+      /*module.addPage
          ( "Newspaper"
          , "Memo" // Use the "Memo" dialog with the newspaper functions
          , function () {
@@ -526,7 +551,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               webpage.setHtml("<center><b>Loading...</b></center>");
               checkNotifications();
            }
-         );
+         );*/
       module.addPage
          ( "Video"
          , "Memo" // Use the "Memo" dialog with the video functions
