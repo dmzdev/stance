@@ -13,6 +13,44 @@ var dmz =
        , list = []
        ;
 
+// Set Game default permissions
+list.push(function (objs) {
+
+   objs = objs.filter(function (handle) {
+
+      return dmz.object.type(handle).isOfType(dmz.stance.GameType);
+   });
+
+   objs.forEach(function (gameHandle) {
+
+      if (!dmz.object.state(gameHandle, dmz.stance.StudentPermissionsHandle)) {
+
+         self.log.warn ("Setting Game Student Permissions");
+         dmz.object.state(gameHandle, dmz.stance.StudentPermissionsHandle, dmz.stance.StudentPermissions);
+      }
+      if (!dmz.object.state(gameHandle, dmz.stance.AdminPermissionsHandle)) {
+
+         self.log.warn ("Setting Game Student Permissions");
+         dmz.object.state(gameHandle, dmz.stance.AdminPermissionsHandle, dmz.stance.AdminPermissions);
+      }
+      if (!dmz.object.state(gameHandle, dmz.stance.AdvisorPermissionsHandle)) {
+
+         self.log.warn ("Setting Game Advisor Permissions");
+         dmz.object.state(gameHandle, dmz.stance.AdvisorPermissionsHandle, dmz.stance.AdvisorPermissions);
+      }
+      if (!dmz.object.state(gameHandle, dmz.stance.ObserverPermissionsHandle)) {
+
+         self.log.warn ("Setting Game Observer Permissions");
+         dmz.object.state(gameHandle, dmz.stance.ObserverPermissionsHandle, dmz.stance.ObserverPermissions);
+      }
+      if (!dmz.object.state(gameHandle, dmz.stance.TechPermissionsHandle)) {
+
+         self.log.warn ("Setting Game Tech Permissions");
+         dmz.object.state(gameHandle, dmz.stance.TechPermissionsHandle, dmz.stance.TechPermissions);
+      }
+   });
+});
+
 // Add Help forum to groups
 list.push(function (objs) {
 
@@ -113,6 +151,25 @@ list.push(function (objs) {
 
          self.log.warn ("Giving DeletePostsFlag permission to", dmz.stance.getDisplayName(user));
          dmz.object.state(user, dmz.stance.Permissions, permissions.or(dmz.stance.DeletePostsFlag));
+      }
+   });
+});
+
+// Remove CastVote from tech users
+list.push(function (objs) {
+
+   objs = objs.filter(function (handle) {
+
+      return dmz.object.type(handle).isOfType(dmz.stance.UserType);
+   });
+
+   objs.forEach(function (user) {
+
+      var permissions = dmz.object.state(user, dmz.stance.Permissions);
+      if (dmz.stance.isAllowed(user, dmz.stance.ChangePermissionsFlag) &&
+         dmz.stance.isAllowed(user, dmz.stance.CastVoteFlag)) {
+
+         dmz.object.state(user, dmz.stance.Permissions, permissions.unset(dmz.stance.CastVoteFlag));
       }
    });
 });

@@ -159,7 +159,7 @@ var dmz =
         , TagDataFlag: dmz.defs.lookupState("Tag_Data")
         , InjectPDFFlag: dmz.defs.lookupState("Inject_PDF")
         , ModifyCollabAreaFlag: dmz.defs.lookupState("Modify_Collab_Area")
-        , ChangePermissionSetsFlag: dmz.defs.lookupState("Change_Permission_Sets")
+        , ChangePermissionsFlag: dmz.defs.lookupState("Change_Permission_Sets")
         }
 
    , Permissions =
@@ -239,7 +239,7 @@ var dmz =
              , States.ModifyCollabAreaFlag
              , States.TagDataFlag
              , States.InjectPDFFlag
-             , States.ChangePermissionSetsFlag
+             , States.ChangePermissionsFlag
              ]
         }
 
@@ -277,6 +277,13 @@ var dmz =
              , "Observer"
              , "Tech"
              ]
+        , PERMISSION_HANDLES:
+             [ Handles.StudentPermissionsHandle
+             , Handles.AdminPermissionsHandle
+             , Handles.AdvisorPermissionsHandle
+             , Handles.ObserverPermissionsHandle
+             , Handles.TechPermissionsHandle
+             ]
         , STATES: States
         }
    , getDisplayName
@@ -289,6 +296,7 @@ var dmz =
    , getLastTimeStamp
    , createPermissionSet
    , isAllowed
+   , getSingleStates
    ;
 
 (function () {
@@ -326,6 +334,15 @@ var dmz =
       ];
 }());
 
+getSingleStates = function () {
+
+   var results = {};
+   Object.keys(States).forEach(function (name) {
+
+      if (dmz.mask.isTypeOf(States[name])) { results[name] = States[name]; }
+   });
+   return results;
+};
 
 isAllowed = function (handle, state) {
 
@@ -445,6 +462,7 @@ userAttribute = function (handle, attribute, value) {
    return retval || 0;
 };
 
+Functions.getSingleStates = getSingleStates;
 Functions.getDisplayName = getDisplayName;
 Functions.getAuthorHandle = getAuthorHandle;
 Functions.getAuthorName = getAuthorName;
