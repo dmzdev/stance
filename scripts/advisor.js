@@ -373,9 +373,9 @@ dmz.object.text.observe(self, dmz.stance.TextHandle, function (handle, attr, val
    observerLists.text.forEach(function (fnc) { fnc(handle, attr, value); });
 });
 
-dmz.object.link.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value, prev) {
+dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value, prev) {
 
-   observerLists.text.forEach(function (fnc) { fnc(handle, attr, value, prev); });
+   observerLists.onActive.forEach(function (fnc) { fnc(handle, attr, value, prev); });
 });
 
 dmz.object.link.observe(self, dmz.stance.CreatedByHandle,

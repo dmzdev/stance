@@ -308,6 +308,8 @@ var dmz =
       , States.AskAdvisor3Flag.or(States.AnswerAdvisor3Flag).or(States.ApproveAdvisor3Flag)
       , States.AskAdvisor4Flag.or(States.AnswerAdvisor4Flag).or(States.ApproveAdvisor4Flag)
       ];
+   Constants.AdvisorFlags =
+      States.AdvisorSets[0].or(States.AdvisorSets[1]).or(States.AdvisorSets[2]).or(States.AdvisorSets[3]).or(States.AdvisorSets[4]);
 
    States.AdvisorAskSet =
       [ States.AskAdvisor0Flag
