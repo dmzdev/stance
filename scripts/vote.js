@@ -1113,23 +1113,19 @@ function (objHandle, attrHandle, value) {
 
          hil = objHandle;
          userGroupHandle = dmz.stance.getUserGroupHandle(hil);
-         isAdmin = dmz.object.flag(hil, dmz.stance.AdminHandle);
          Object.keys(VoteObjects).forEach(function (key) {
 
             isVoteOver(VoteObjects[key].handle);
          });
-         if (isAdmin) {
+         if (dmz.stance.isAllowed(hil, dmz.stance.SwitchGroupFlag)) {
 
+            clearLayout();
+            PastVotes = [];
+            ApprovalVotes = [];
+            ActiveVotes = [];
             Object.keys(VoteObjects).forEach(function (key) {
 
-               clearLayout();
-               PastVotes = [];
-               ApprovalVotes = [];
-               ActiveVotes = [];
-               if (VoteObjects[key].ui) {
-
-                  delete VoteObjects[key].ui;
-               }
+               if (VoteObjects[key].ui) { delete VoteObjects[key].ui; }
             });
          }
          checkForNotifications();
