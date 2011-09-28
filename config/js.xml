@@ -31,7 +31,6 @@
    <instance name="fix"/>
    <instance name="userInfo"/>
    <instance name="pdfViewer"/>
-<!--   <instance name="graph"/> -->
    <instance name="tag"/>
 </javascript>
 <login>
