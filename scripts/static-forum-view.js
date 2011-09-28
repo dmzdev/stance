@@ -477,7 +477,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   (data.authorHandle && (data.authorHandle !== hil))) {
 
                   item.unread.show();
-                  if (!IsCurrentWindow) { _Highlight(); }
+                  if (!IsCurrentWindow && data.active) { _Highlight(); }
                }
                else { item.unread.hide(); }
             }
@@ -534,7 +534,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   (data.authorHandle && (data.authorHandle !== hil))) {
 
                   item.unread.show();
-                  if (!IsCurrentWindow) { _Highlight(); }
+                  if (!IsCurrentWindow && data.active) { _Highlight(); }
                }
                else { item.unread.hide(); }
             }
@@ -549,7 +549,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            ;
          if (!viewedWindow) {
 
-            if (hil && data.postedAt && (_LatestTimeStamp !== -1) &&
+            if (hil && data.active && data.postedAt && (_LatestTimeStamp !== -1) &&
                (data.postedAt > _LatestTimeStamp) &&
                (data.authorHandle && (data.authorHandle !== hil))) {
 
@@ -700,7 +700,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
               , timestamp = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle) || 0
               ;
 
-            if ((timestamp > latest) &&
+            if (dmz.object.flag(postHandle, dmz.stance.ActiveHandle) && (timestamp > latest) &&
                !dmz.object.linkHandle(dmz.stance.CreatedByHandle, postHandle, hil)) {
 
                latest = timestamp;
@@ -708,7 +708,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             comments.forEach(function (commentHandle) {
 
                var timestamp = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
-               if ((timestamp > latest) &&
+               if (dmz.object.flag(commentHandle, dmz.stance.ActiveHandle) && (timestamp > latest) &&
                   !dmz.object.linkHandle(dmz.stance.CreatedByHandle, commentHandle, hil)) {
 
                   latest = timestamp;
