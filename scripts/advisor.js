@@ -54,7 +54,6 @@ var dmz =
    , AvatarDefault = dmz.ui.graph.createPixmap(dmz.resources.findFile("AvatarDefault"))
    , WasBlocked = false
    , EmailMod = false
-   , extraInfoList = []
    , observerLists =
         { create: []
         , text: []
@@ -63,6 +62,7 @@ var dmz =
         , forumLink: []
         , parentLink: []
         , onActive: []
+        , tag: []
         }
    , AdvisorTimeHandles =
         [ dmz.stance.Advisor0TimeHandle
@@ -373,9 +373,9 @@ dmz.object.text.observe(self, dmz.stance.TextHandle, function (handle, attr, val
    observerLists.text.forEach(function (fnc) { fnc(handle, attr, value); });
 });
 
-dmz.object.link.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value, prev) {
+dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value, prev) {
 
-   observerLists.text.forEach(function (fnc) { fnc(handle, attr, value, prev); });
+   observerLists.onActive.forEach(function (fnc) { fnc(handle, attr, value, prev); });
 });
 
 dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
@@ -412,26 +412,9 @@ dmz.object.scalar.observe(self, dmz.stance.ID, function (handle, attr, value) {
    if (master.advisors[handle]) { master.advisors[handle].ID = value; }
 });
 
-dmz.object.scalar.observe(self, dmz.stance.VoteState, function (handle, attr, value) {
+dmz.object.data.observe(self, dmz.stance.TagHandle, function (handle, attr, value) {
 
-   if (master.decisions[handle]) { extraInfoList.forEach(function (fnc) { fnc(handle); }); }
-});
-
-dmz.object.timeStamp.observe(self, dmz.stance.ExpireHandle, function (handle, attr, value) {
-
-   if (master.decisions[handle]) { extraInfoList.forEach(function (fnc) { fnc(handle); }); }
-});
-
-dmz.object.link.observe(self, dmz.stance.YesHandle,
-function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
-
-   if (master.decisions[decisionHandle]) { extraInfoList.forEach(function (fnc) { fnc(decisionHandle); }); }
-});
-
-dmz.object.link.observe(self, dmz.stance.NoHandle,
-function (linkObjHandle, attrHandle, decisionHandle, userHandle) {
-
-   if (master.decisions[decisionHandle]) { extraInfoList.forEach(function (fnc) { fnc(decisionHandle); }); }
+   observerLists.tag.forEach(function (fnc) { fnc(handle, attr, value); });
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,

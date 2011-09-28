@@ -62,6 +62,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       dmz.object.link.observe(self, dmz.stance.ForumLink, RetData.observers.forumLink);
       dmz.object.link.observe(self, dmz.stance.ParentHandle, RetData.observers.parentLink);
       dmz.object.flag.observe(self, dmz.stance.ActiveHandle, RetData.observers.onActive);
+      dmz.object.data.observe(self, dmz.stance.TagHandle, RetData.observers.tag);
 
       dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
       function (linkObjHandle, attrHandle, userHandle, groupHandle) {

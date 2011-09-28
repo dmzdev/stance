@@ -32,6 +32,7 @@
    <instance name="userInfo"/>
    <instance name="pdfViewer"/>
 <!--   <instance name="graph"/> -->
+   <instance name="tag"/>
 </javascript>
 <login>
 <!--   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>-->
