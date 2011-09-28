@@ -1,5 +1,6 @@
 var dmz =
    { defs: require("dmz/runtime/definitions")
+   , data: require("dmz/runtime/data")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
    , module: require("dmz/runtime/module")
@@ -52,6 +53,7 @@ var dmz =
         , ObjectHandle: dmz.defs.createNamedHandle("objectHandle")
         , Permissions: dmz.defs.createNamedHandle("permissions")
         , GameObservers: dmz.defs.createNamedHandle("game_observers")
+        , TagHandle: dmz.defs.createNamedHandle("tag")
 
         // Object-specific handles
         , VoteState: dmz.defs.createNamedHandle("vote_state")
@@ -157,6 +159,7 @@ var dmz =
         , StudentDataFlag: dmz.defs.lookupState("Student_Data")
         , DeletePostsFlag: dmz.defs.lookupState("Delete_Posts")
         , TagDataFlag: dmz.defs.lookupState("Tag_Data")
+        , SeeTagFlag: dmz.defs.lookupState("See_Tags")
         , InjectPDFFlag: dmz.defs.lookupState("Inject_PDF")
         , ModifyCollabAreaFlag: dmz.defs.lookupState("Modify_Collab_Area")
         , ChangePermissionsFlag: dmz.defs.lookupState("Change_Permission_Sets")
@@ -200,6 +203,7 @@ var dmz =
              , States.StudentDataFlag
              , States.DeletePostsFlag
              , States.TagDataFlag
+             , States.SeeTagFlag
              , States.InjectPDFFlag
              ]
         , AdvisorPermissions: // Needs to be customized for each advisor user created
@@ -207,6 +211,7 @@ var dmz =
              ]
         , ObserverPermissions:
              [ States.SwitchGroupFlag
+             , States.SeeTagFlag
              ]
         , TechPermissions: // Seriously, do we really need "permission" to do anything?
              [ States.SwitchGroupFlag
@@ -238,6 +243,7 @@ var dmz =
              , States.DeletePostsFlag
              , States.ModifyCollabAreaFlag
              , States.TagDataFlag
+             , States.SeeTagFlag
              , States.InjectPDFFlag
              , States.ChangePermissionsFlag
              ]
@@ -291,6 +297,7 @@ var dmz =
    , getAuthorName
    , getUserGroupHandle
    , getVoteStatus
+   , getTags
    , addUITextLimit
    , userAttribute
    , getLastTimeStamp
@@ -335,6 +342,22 @@ var dmz =
       , States.ApproveAdvisor4Flag
       ];
 }());
+
+getTags = function (data) {
+
+   var total
+     , list = []
+     , idx
+     ;
+
+   if (dmz.data.isTypeOf(data)) {
+
+      total = data.number(Handles.TotalHandle, 0) || 0;
+      for (idx = 0; idx < total; idx += 1) { list.push(data.string(Handles.TagHandle, idx)); }
+   }
+
+   return list;
+};
 
 getSingleStates = function () {
 
@@ -464,6 +487,7 @@ userAttribute = function (handle, attribute, value) {
    return retval || 0;
 };
 
+Functions.getTags = getTags;
 Functions.getSingleStates = getSingleStates;
 Functions.getDisplayName = getDisplayName;
 Functions.getAuthorHandle = getAuthorHandle;
@@ -506,6 +530,6 @@ Functions.isAllowed = isAllowed;
    Object.keys(Permissions).forEach(function (fncName) {
 
       dmz.util.defineConst(exports, fncName, createPermissionSet(Permissions[fncName]));
-   })
+   });
 
 }());

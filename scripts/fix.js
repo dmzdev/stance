@@ -135,45 +135,6 @@ list.push(function (objs) {
    });
 });
 
-// Add DeletePostsFlag to admins
-list.push(function (objs) {
-
-   objs = objs.filter(function (handle) {
-
-      return dmz.object.type(handle).isOfType(dmz.stance.UserType);
-   });
-
-   objs.forEach(function (user) {
-
-      var permissions = dmz.object.state(user, dmz.stance.Permissions);
-      if (dmz.stance.isAllowed(user, dmz.stance.AlterMediaFlag) &&
-         !dmz.stance.isAllowed(user, dmz.stance.DeletePostsFlag)) {
-
-         self.log.warn ("Giving DeletePostsFlag permission to", dmz.stance.getDisplayName(user));
-         dmz.object.state(user, dmz.stance.Permissions, permissions.or(dmz.stance.DeletePostsFlag));
-      }
-   });
-});
-
-// Remove CastVote from tech users
-list.push(function (objs) {
-
-   objs = objs.filter(function (handle) {
-
-      return dmz.object.type(handle).isOfType(dmz.stance.UserType);
-   });
-
-   objs.forEach(function (user) {
-
-      var permissions = dmz.object.state(user, dmz.stance.Permissions);
-      if (dmz.stance.isAllowed(user, dmz.stance.ChangePermissionsFlag) &&
-         dmz.stance.isAllowed(user, dmz.stance.CastVoteFlag)) {
-
-         dmz.object.state(user, dmz.stance.Permissions, permissions.unset(dmz.stance.CastVoteFlag));
-      }
-   });
-});
-
 dmz.time.setTimer(self, 15, function () {
 
    var objs = dmz.object.getObjects() || [];
