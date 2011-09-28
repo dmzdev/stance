@@ -45,6 +45,7 @@ var dmz =
    , Groups = {}
    , PdfItems = {}
    , PdfArray = []
+   , TagMessage = dmz.message.create("TagMessage")
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
 
    // Functions
@@ -90,9 +91,12 @@ addPdfButton.observe(self, "clicked", function () {
          atLeastOneChecked = true;
          dmz.object.link(dmz.stance.MediaHandle, pdfItemHandle, userGroupHandle);
       }
-      if (atLeastOneChecked) { dmz.object.activate(pdfItemHandle); }
-      titleTextEdit.text("");
-      linkTextEdit.text("");
+      if (atLeastOneChecked) {
+
+         dmz.object.activate(pdfItemHandle);
+         titleTextEdit.text("");
+         linkTextEdit.text("");
+      }
    }
 });
 
