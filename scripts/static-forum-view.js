@@ -921,6 +921,15 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          }
       };
 
+      retData.observers.permissions = function (handle, attr, value, prev) {
+
+         if ((handle === dmz.object.hil()) && prev &&
+            value.xor(prev).and(dmz.stance.TagDataFlag.or(dmz.stance.SeeTagFlag)).bool()) {
+
+            _updateForumForUser(handle);
+         }
+      };
+
       retData.observers.onActive = function (handle, attr, value, prev) {
 
          var data = _master.posts[handle] || _master.comments[handle]

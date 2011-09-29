@@ -63,6 +63,7 @@ var dmz =
         , parentLink: []
         , onActive: []
         , tag: []
+        , permissions: []
         }
    , AdvisorTimeHandles =
         [ dmz.stance.Advisor0TimeHandle
@@ -415,6 +416,11 @@ dmz.object.scalar.observe(self, dmz.stance.ID, function (handle, attr, value) {
 dmz.object.data.observe(self, dmz.stance.TagHandle, function (handle, attr, value) {
 
    observerLists.tag.forEach(function (fnc) { fnc(handle, attr, value); });
+});
+
+dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attr, value, prev) {
+
+   observerLists.permissions.forEach(function (fnc) { fnc(handle, attr, value, prev); });
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,

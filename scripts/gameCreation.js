@@ -1619,8 +1619,10 @@ setupPermissionTable = function () {
             });
          }(col));
 
-         if ((flagName === "ChangePermissionsFlag") &&
-            (dmz.stance.PERMISSION_LABELS[col] === "Tech")) {
+         if (((flagName === "ChangePermissionsFlag") &&
+               (col === dmz.stance.TECH_PERMISSION)) ||
+            ((col === dmz.stance.ADVISOR_PERMISSION) &&
+               flags[flagName].and(dmz.stance.AdvisorFlags).bool())) {
 
             button.enabled(false);
          }
