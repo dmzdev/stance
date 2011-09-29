@@ -55,20 +55,30 @@ var dmz =
    , Videos = {}
    , PdfArray = []
    , MemosArray = []
-   , NewspapesArray = []
+   , NewspapersArray = []
    , VideosArray = []
    , CurrentMap = {}
    , CurrentArray = []
+   , TypesMap =
+      { "PdfItem": dmz.stance.PdfItemType
+      , "Memo": dmz.stance.MemoType
+      , "Newspaper": dmz.stance.NewspaperType
+      , "Video": dmz.stance.VideoType
+      }
    , CurrentItem
+   , CurrentType
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
 
    // Functions
+   , changeState
    , initialButtonObserve
    , clickDelete
    , confirmDelete
    , clickCancel
+   , mouseEventHandler
    , mouseEvent
    , clearLayout
+   , clearGroupSelectionLayout
    , initiatePdfPostItemUi
    , removeFromScrollArea
    , indexOfPdfItem
@@ -77,6 +87,40 @@ var dmz =
    , checkNotifications
    , init
    ;
+
+changeState = function (state) {
+
+   CurrentItem = 0;
+   clearLayout();
+   pdfWebView.setHtml("");
+   PdfArray = [];
+   MemosArray = [];
+   NewspapersArray = [];
+   VideosArray = [];
+   CurrentType = state;
+   self.log.error(state);
+   if (state === "PdfItem") {
+
+      self.log.error("pdfItem!");
+      CurrentMap = PdfItems;
+      CurrentArray = PdfArray;
+   }
+   else if (state === "Memo") {
+
+      CurrentMap = Memos;
+      CurrentArray = MemosArray;
+   }
+   else if (state === "Newspaper") {
+
+      CurrentMap = Newspapers;
+      CurrentArray = NewspapersArray;
+   }
+   else if (state === "Video") {
+
+      CurrentMap = Videos;
+      CurrentArray = VideosArray;
+   }
+};
 
 initialButtonObserve = function () {
 
@@ -141,10 +185,13 @@ addPdfButton.observe(self, "clicked", function () {
    if ((titleTextEdit.text() !== "") && (linkTextEdit.text() !== "") &&
       dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) {
 
-      pdfItemHandle = dmz.object.create(dmz.stance.PdfItemType);
+      pdfItemHandle = dmz.object.create(TypesMap[CurrentType]);
       dmz.object.text(pdfItemHandle, dmz.stance.TitleHandle, titleTextEdit.text());
       dmz.object.text(pdfItemHandle, dmz.stance.TextHandle, linkTextEdit.text());
-      dmz.object.link(dmz.stance.CreatedByHandle, pdfItemHandle, hil);
+      if (CurrentType === "PdfItem") {
+
+         dmz.object.link(dmz.stance.CreatedByHandle, pdfItemHandle, hil);
+      }
       dmz.object.link(dmz.stance.MediaHandle, pdfItemHandle, hil);
       dmz.object.flag(pdfItemHandle, dmz.stance.UpdateStartTimeHandle, true);
       dmz.object.timeStamp(pdfItemHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
@@ -174,11 +221,14 @@ addPdfButton.observe(self, "clicked", function () {
    }
 });
 
-mouseEvent = function (object, event) {
+mouseEventHandler = function (object, event) {
 
-   var type = event.type();
+   mouseEvent(object, event.type());
+};
 
-   PdfArray.forEach(function (pdfItem) {
+mouseEvent = function (object, type) {
+
+   CurrentArray.forEach(function (pdfItem) {
 
       if ((object == pdfItem.ui.postItem) && (type == dmz.ui.event.MouseButtonPress) &&
          (CurrentItem != pdfItem)) {
@@ -192,16 +242,27 @@ mouseEvent = function (object, event) {
          dmz.time.setTimer(self, function () {
 
             // link and set widget to dark grey (current)
+            initialButtonObserve();
             dmz.object.link(dmz.stance.MediaHandle, pdfItem.handle, hil);
             pdfItem.ui.notificationLabel.hide();
             pdfItem.ui.postItem.styleSheet("* { background-color: rgb(180, 180, 180); border-style: solid; }");
-            pdfWebView.setHtml(
-               "<center><iframe src='http://docs.google.com/viewer?" +
-               "url=" + encodeURIComponent(pdfItem.link) +
-               "&embedded=true'" +
-               "width='" + (pdfWebView.page().width() - 20) +
-               "' height='" + (pdfWebView.page().height() - 20) +
-               "' style='border: none;'></iframe></center>");
+            if (CurrentType === "PdfItem") {
+
+               pdfWebView.setHtml(
+                  "<center><iframe src='http://docs.google.com/viewer?" +
+                  "url=" + encodeURIComponent(pdfItem.link) +
+                  "&embedded=true'" +
+                  "width='" + (pdfWebView.page().width() - 20) +
+                  "' height='" + (pdfWebView.page().height() - 20) +
+                  "' style='border: none;'></iframe></center>");
+            }
+            else if (CurrentType === "Video"){
+
+               pdfWebView.page().mainFrame().load(
+                     "http://www.chds.us/?stance:youtube&video=" + pdfItem.link +
+                     "&width=" + (pdfWebView.page().width() - 20) +"&height=" + (pdfWebView.page().height() - 20));
+            }
+            else { pdfWebView.page().mainFrame().load(pdfItem.link); }
          });
       }
       else if ((object == pdfItem.ui.postItem) && (type == dmz.ui.event.Enter)) {
@@ -251,6 +312,11 @@ clearLayout = function () {
       }
       pdfContentLayout.addStretch(1);
    }
+};
+
+clearGroupSelectionLayout = function () {
+
+   var widget;
 
    if (groupSelectionLayout) {
 
@@ -262,7 +328,7 @@ clearLayout = function () {
       }
       groupSelectionLayout.addStretch(0);
    }
-};
+;}
 
 initiatePdfPostItemUi = function (pdfItem) {
 
@@ -276,7 +342,7 @@ initiatePdfPostItemUi = function (pdfItem) {
       pdfItem.ui.notificationLabel.fixedWidth(34);
       pdfItem.ui.titleLabel.text(pdfItem.title);
       pdfItem.ui.createdByLabel.text(pdfItem.createdBy);
-      pdfItem.ui.postItem.eventFilter(self, mouseEvent);
+      pdfItem.ui.postItem.eventFilter(self, mouseEventHandler);
       if (pdfItem.viewed.indexOf(hil) === -1) { // not seen
 
          pdfItem.ui.notificationLabel.pixmap((dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify"))));
@@ -303,7 +369,7 @@ removeFromScrollArea = function (pdfItem) {
       self.log.error(pdfItemIndex);
       if (pdfItemIndex !== -1) {
 
-         PdfArray.splice(pdfItemIndex, 1);
+         CurrentArray.splice(pdfItemIndex, 1);
          pdfItem.ui.postItem.hide();
          pdfContentLayout.removeWidget(pdfItem.ui.postItem);
       }
@@ -316,9 +382,9 @@ indexOfPdfItem = function (pdfItem) {
      , result = -1
      ;
 
-   for (itor = 0; itor < PdfArray.length; itor += 1) {
+   for (itor = 0; itor < CurrentArray.length; itor += 1) {
 
-      if (PdfArray[itor].handle === pdfItem.handle) {
+      if (CurrentArray[itor].handle === pdfItem.handle) {
 
          result = itor;
       }
@@ -337,24 +403,24 @@ insertIntoScrollArea = function (pdfItem) {
    if (pdfItem.ui) {
 
       newStartTime = pdfItem.createdAt;
-      if ((newStartTime === 0) || (PdfArray.length === 0)) {
+      if ((newStartTime === 0) || (CurrentArray.length === 0)) {
 
          inserted = true;
-         if (PdfArray.length === 0) { PdfArray.push(pdfItem); }
-         else { PdfArray.splice(0, 0, pdfItem); }
+         if (CurrentArray.length === 0) { CurrentArray.push(pdfItem); }
+         else { CurrentArray.splice(0, 0, pdfItem); }
          pdfContentLayout.insertWidget(0, pdfItem.ui.postItem);
          pdfItem.ui.postItem.show();
       }
-      for (itor = 0; itor < PdfArray.length; itor += 1) {
+      for (itor = 0; itor < CurrentArray.length; itor += 1) {
 
          if (!inserted) {
 
-            insertedStartTime = PdfArray[itor].createdAt;
+            insertedStartTime = CurrentArray[itor].createdAt;
             if (newStartTime >= insertedStartTime) {
 
                inserted = true;
-               if (PdfArray.length === 0) { PdfArray.push(pdfItem); }
-               else { PdfArray.splice(itor, 0, pdfItem); }
+               if (CurrentArray.length === 0) { CurrentArray.push(pdfItem); }
+               else { CurrentArray.splice(itor, 0, pdfItem); }
                pdfContentLayout.insertWidget(itor, pdfItem.ui.postItem);
                pdfItem.ui.postItem.show();
             }
@@ -363,8 +429,8 @@ insertIntoScrollArea = function (pdfItem) {
       if (!inserted) {
 
          inserted = true;
-         PdfArray.push(pdfItem);
-         pdfContentLayout.insertWidget(PdfArray.length - 1, pdfItem.ui.postItem);
+         CurrentArray.push(pdfItem);
+         pdfContentLayout.insertWidget(CurrentArray.length - 1, pdfItem.ui.postItem);
          pdfItem.ui.postItem.show();
       }
    }
@@ -375,15 +441,24 @@ openWindow = function () {
    var index = 0;
 
    beenOpened = true;
-   Object.keys(PdfItems).forEach(function (key) {
+   Object.keys(CurrentMap).forEach(function (key) {
 
-      if ((PdfItems[key].groups.indexOf(userGroupHandle) !== -1) && (indexOfPdfItem(PdfItems[key]) === -1) &&
-         PdfItems[key].active) {
+      self.log.error(CurrentMap[key].link);
+   });
+   Object.keys(CurrentMap).forEach(function (key) {
 
-         initiatePdfPostItemUi(PdfItems[key]);
-         insertIntoScrollArea(PdfItems[key]);
+      if ((CurrentMap[key].groups.indexOf(userGroupHandle) !== -1) && (indexOfPdfItem(CurrentMap[key]) === -1) &&
+         CurrentMap[key].active) {
+
+         initiatePdfPostItemUi(CurrentMap[key]);
+         insertIntoScrollArea(CurrentMap[key]);
       }
    });
+   if (CurrentArray && CurrentArray[0]) {
+
+      mouseEvent(CurrentArray[0].ui.postItem, dmz.ui.event.MouseButtonPress);
+   }
+   else { pdfWebView.setHtml("<center><b>No Current Items</b></Center>"); }
 };
 
 checkNotifications = function () {
@@ -396,6 +471,39 @@ checkNotifications = function () {
             PdfItems[key].active) {
 
             MainModule.highlight("Lobbyist");
+         }
+      });
+   });
+   Object.keys(Memos).forEach(function (key) {
+
+      Memos[key].groups.forEach(function (groupHandle) {
+
+         if ((groupHandle === userGroupHandle) && (Memos[key].viewed.indexOf(hil) === -1) &&
+            Memos[key].active) {
+
+            MainModule.highlight("Memo");
+         }
+      });
+   });
+   Object.keys(Newspapers).forEach(function (key) {
+
+      Newspapers[key].groups.forEach(function (groupHandle) {
+
+         if ((groupHandle === userGroupHandle) && (Newspapers[key].viewed.indexOf(hil) === -1) &&
+            Newspapers[key].active) {
+
+            MainModule.highlight("Newspaper");
+         }
+      });
+   });
+   Object.keys(Videos).forEach(function (key) {
+
+      Videos[key].groups.forEach(function (groupHandle) {
+
+         if ((groupHandle === userGroupHandle) && (Videos[key].viewed.indexOf(hil) === -1) &&
+            Videos[key].active) {
+
+            MainModule.highlight("Video");
          }
       });
    });
@@ -413,7 +521,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    }
    else if (objType.isOfType(dmz.stance.MemoType)) {
 
-      Memos[objType] =
+      Memos[objHandle] =
          { handle: objHandle
          , viewed: []
          , groups: []
@@ -422,7 +530,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    }
    else if (objType.isOfType(dmz.stance.NewspaperType)) {
 
-      Newspapers[objType] =
+      Newspapers[objHandle] =
          { handle: objHandle
          , viewed: []
          , groups: []
@@ -431,7 +539,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    }
    else if (objType.isOfType(dmz.stance.VideoType)) {
 
-      Videos[objType] =
+      Videos[objHandle] =
          { handle: objHandle
          , viewed: []
          , groups: []
@@ -455,11 +563,15 @@ function (objHandle, attrHandle, value) {
          userGroupHandle = dmz.stance.getUserGroupHandle(hil);
          checkNotifications();
          clearLayout();
+         clearGroupSelectionLayout();
          tagButton.hide();
          deleteButton.hide();
          cancelButton.hide();
 
          PdfArray = [];
+         MemosArray = [];
+         NewspapersArray = [];
+         VideosArray = [];
          CurrentItem = 0;
          pdfWebView.setHtml("");
          Object.keys(PdfItems).forEach(function (key) {
@@ -483,6 +595,7 @@ function (objHandle, attrHandle, value) {
          if (dmz.stance.isAllowed(hil, dmz.stance.SwitchGroupFlag)) {
             initialButtonObserve();
 
+            self.log.error("CHECKS");
             Object.keys(Groups).forEach(function (key) {
 
                if (!Groups[key].ui) {
@@ -494,6 +607,7 @@ function (objHandle, attrHandle, value) {
                   groupSelectionLayout.insertWidget(0, Groups[key].ui.checkBox);
                   if (key == userGroupHandle) { Groups[key].ui.checkBox.setChecked(true); }
                   else { Groups[key].ui.checkBox.setChecked(false); }
+                  self.log.error(groupSelectionLayout);
                }
                else {
 
@@ -536,6 +650,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
    }
    if (Memos[objHandle]) {
 
+      self.log.error(newVal);
       Memos[objHandle].link = newVal;
    }
    if (Newspapers[objHandle]) {
@@ -742,7 +857,46 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
       list = MainModule.list;
       MainModule = module;
-      module.addPage("Lobbyist", pdfViewer, openWindow, checkNotifications);
+      module.addPage
+         ( "Lobbyist"
+         , pdfViewer
+         , function () {
+
+            changeState("PdfItem");
+            openWindow();
+         }
+         , checkNotifications
+         );
+      module.addPage
+         ( "Memo"
+         , "Lobbyist"
+         , function () {
+
+            changeState("Memo");
+            openWindow();
+         }
+         , checkNotifications
+         );
+      module.addPage
+         ( "Newspaper"
+         , "Lobbyist"
+         , function () {
+
+            changeState("Newspaper");
+            openWindow();
+         }
+         , checkNotifications
+         );
+      module.addPage
+         ( "Video"
+         , "Lobbyist"
+         , function () {
+
+            changeState("Video");
+            openWindow();
+         }
+         , checkNotifications
+         );
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
@@ -753,8 +907,11 @@ init = function () {
    pdfContentLayout.addStretch(1);
    groupSelectionLayout.addStretch(1);
    tagButton.hide();
+   tagButton.styleSheet(dmz.stance.YELLOW_BUTTON);
    deleteButton.hide();
+   deleteButton.styleSheet(dmz.stance.RED_BUTTON);
    cancelButton.hide();
+   cancelButton.styleSheet(dmz.stance.GREEN_BUTTON);
 };
 
 init();

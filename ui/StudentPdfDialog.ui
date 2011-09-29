@@ -112,13 +112,25 @@
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
             <widget class="QPushButton" name="tagButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
-              <string>T</string>
+              <string>Tag</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QPushButton" name="deleteButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Delete</string>
              </property>
@@ -128,6 +140,12 @@
             <widget class="QPushButton" name="cancelButton">
              <property name="enabled">
               <bool>true</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
              <property name="text">
               <string>Cancel</string>
