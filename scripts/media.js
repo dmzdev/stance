@@ -38,11 +38,14 @@ var dmz =
    , pictureLabel = lobbyistForm.lookup("pictureLabel")
 
    // Shared UI
-   , nextButton = webForm.lookup("nextButton") //
-   , prevButton = webForm.lookup("prevButton") //
-   , currLabel = webForm.lookup("currentLabel") //
-   , totalLabel = webForm.lookup("totalLabel") //
-   , unseenItemsLabel = webForm.lookup("unseenItemsLabel") //
+   , nextButton = webForm.lookup("nextButton")
+   , prevButton = webForm.lookup("prevButton")
+   , currLabel = webForm.lookup("currentLabel")
+   , totalLabel = webForm.lookup("totalLabel")
+   , unseenItemsLabel = webForm.lookup("unseenItemsLabel")
+   , cancelButton = webForm.lookup("cancelButton")
+   , deleteButton = webForm.lookup("deleteButton")
+   , tagButton = webForm.lookup("tagButton")
 
    // Variables
    , dialogWidth = 0
@@ -61,6 +64,10 @@ var dmz =
         }
    // Function decls, "//" indicated shared functions with flow control base on
    // object type.
+   , initialButtonObserve
+   , clickDelete
+   , confirmDelete
+   , clickCancel
    , loadCurrentPrint
    , loadCurrentLobbyist
    , skipForward //
@@ -73,7 +80,61 @@ var dmz =
    , checkNotificationsOnHIL
    , init
    ;
+/*
+initialButtonObserve = function () {
 
+   deleteButton.observe(self, "clicked", function () {
+
+      clickDelete();
+   });
+   tagButton.show();
+   cancelButton.hide();
+   deleteButton.show();
+};
+
+clickDelete = function () {
+
+   if (CurrentPdf) {
+
+      tagButton.hide();
+      cancelButton.show();
+      deleteButton.observe(self, "clicked", function () {
+
+         confirmDelete()
+      });
+      cancelButton.observe(self, "clicked", function () {
+
+         clickCancel()
+      });
+   }
+};
+
+confirmDelete = function () {
+
+   if (CurrentPdf) {
+
+      dmz.object.flag(CurrentPdf.handle, dmz.stance.ActiveHandle, false);
+      removeFromScrollArea(CurrentPdf);
+      CurrentPdf = 0;
+      pdfWebView.setHtml("");
+      self.log.error("DELETED!");
+      initialButtonObserve();
+   }
+};
+
+clickCancel = function () {
+
+   initialButtonObserve();
+};
+
+tagButton.observe(self, "clicked", function () {
+
+   if (CurrentPdf) {
+
+      dmz.stance.TAG_MESSAGE.send(dmz.data.wrapHandle(CurrentPdf.handle));
+   }
+});
+*/
 setActiveState = function (state) {
 
    CurrentType = TypesMap[state];
@@ -500,7 +561,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
       list = MainModule.list;
       MainModule = module;
-      module.addPage
+      /*module.addPage
          ( "Memo"
          , webForm
          , function () {
@@ -515,7 +576,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               checkNotifications();
            }
          );
-      /*module.addPage
+      module.addPage
          ( "Newspaper"
          , "Memo" // Use the "Memo" dialog with the newspaper functions
          , function () {
@@ -529,7 +590,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               webpage.setHtml("<center><b>Loading...</b></center>");
               checkNotifications();
            }
-         );*/
+         );
       module.addPage
          ( "Video"
          , "Memo" // Use the "Memo" dialog with the video functions
@@ -546,8 +607,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               webpage.setHtml("<center><b>Loading...</b></center>");
               checkNotifications();
            }
-         );
-      module.addPage
+         );*/
+      /*module.addPage
          ( "Lobbyist"
          , lobbyistForm
          , function () {
@@ -557,7 +618,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
               loadCurrentLobbyist();
            }
          , checkNotifications
-         );
+         );*/
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });

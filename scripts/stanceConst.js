@@ -6,6 +6,7 @@ var dmz =
    , module: require("dmz/runtime/module")
    , util: require("dmz/types/util")
    , mask: require("dmz/types/mask")
+   , message: require("dmz/runtime/messaging")
    }
    , _exports = {}
 
@@ -249,6 +250,9 @@ var dmz =
              , States.ChangePermissionsFlag
              ]
         }
+   , Messages =
+        { TAG_MESSAGE: dmz.message.create("TagMessage")
+        }
 
    , Constants =
         { VOTE_APPROVAL_PENDING: 0
@@ -271,6 +275,9 @@ var dmz =
         , PRIORITY_SECOND: 2
         , PRIORITY_THIRD: 3
         , TIME_FORMAT: "MMM-dd hh:mm tt"
+        , RED_BUTTON: "* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
+        , GREEN_BUTTON: "* { background-color: green; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
+        , YELLOW_BUTTON: "* { background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
         , STUDENT_PERMISSION: 0
         , ADMIN_PERMISSION: 1
         , ADVISOR_PERMISSION: 2
@@ -528,9 +535,13 @@ Functions.isAllowed = isAllowed;
       dmz.util.defineConst(exports, fncName, States[fncName]);
    });
 
+   Object.keys(Messages).forEach(function (fncName) {
+
+      dmz.util.defineConst(exports, fncName, Messages[fncName]);
+   });
+
    Object.keys(Permissions).forEach(function (fncName) {
 
       dmz.util.defineConst(exports, fncName, createPermissionSet(Permissions[fncName]));
    });
-
 }());
