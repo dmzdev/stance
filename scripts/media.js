@@ -493,6 +493,7 @@ checkNotifications = function () {
          if ((groupHandle === userGroupHandle) && (PdfItems[key].viewed.indexOf(hil) === -1) &&
             PdfItems[key].active) {
 
+            self.log.error("lob 1");
             MainModule.highlight("Lobbyist");
          }
       });
@@ -504,6 +505,7 @@ checkNotifications = function () {
          if ((groupHandle === userGroupHandle) && (Memos[key].viewed.indexOf(hil) === -1) &&
             Memos[key].active) {
 
+            self.log.error("memo 1");
             MainModule.highlight("Memo");
          }
       });
@@ -515,6 +517,7 @@ checkNotifications = function () {
          if ((groupHandle === userGroupHandle) && (Newspapers[key].viewed.indexOf(hil) === -1) &&
             Newspapers[key].active) {
 
+            self.log.error("news 1");
             MainModule.highlight("Newspaper");
          }
       });
@@ -526,6 +529,7 @@ checkNotifications = function () {
          if ((groupHandle === userGroupHandle) && (Videos[key].viewed.indexOf(hil) === -1) &&
             Videos[key].active) {
 
+            self.log.error("vid 1");
             MainModule.highlight("Video");
          }
       });
@@ -817,6 +821,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
                insertIntoScrollArea(PdfItems[supHandle]);
                if ((PdfItems[supHandle].viewed.indexOf(hil) === -1) && PdfItems[supHandle].active) {
 
+                  self.log.error("lob 2");
                   MainModule.highlight("Lobbyist");
                }
             }
@@ -840,6 +845,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
                insertIntoScrollArea(Memos[supHandle]);
                if ((Memos[supHandle].viewed.indexOf(hil) === -1) && Memos[supHandle].active) {
 
+                  self.log.error("memo 2");
                   MainModule.highlight("Memos");
                }
             }
@@ -863,6 +869,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
                insertIntoScrollArea(Newspapers[supHandle]);
                if ((Newspapers[supHandle].viewed.indexOf(hil) === -1) && Newspapers[supHandle].active) {
 
+                  self.log.error("news 2");
                   MainModule.highlight("Newspaper");
                }
             }
@@ -886,6 +893,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
                insertIntoScrollArea(Videos[supHandle]);
                if ((Videos[supHandle].viewed.indexOf(hil) === -1) && Videos[supHandle].active) {
 
+                  self.log.error("vid 2");
                   MainModule.highlight("Video");
                }
             }

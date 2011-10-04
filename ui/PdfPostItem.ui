@@ -7,25 +7,28 @@
     <x>0</x>
     <y>0</y>
     <width>154</width>
-    <height>120</height>
+    <height>133</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
+    <width>154</width>
     <height>120</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>154</width>
-    <height>120</height>
+    <height>133</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="margin">
+    <number>12</number>
+   </property>
    <item>
     <widget class="QLabel" name="label">
      <property name="styleSheet">

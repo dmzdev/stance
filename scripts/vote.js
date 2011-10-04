@@ -805,7 +805,8 @@ removeFromVotes = function (voteItem, pastState) {
          if (voteItemIndex !== -1) {
 
             voteArray.splice(voteItemIndex, 1);
-            contentLayout.removeWidget(voteItem.postItem);
+            voteItem.ui.postItem.hide();
+            contentLayout.removeWidget(voteItem.ui.postItem);
          }
       }
    }
@@ -927,6 +928,7 @@ openWindow = function () {
 
          initiateVoteUI(VoteObjects[key].handle);
          index = indexOfVote(VoteObjects[key], VoteObjects[key].state);
+         self.log.error(index);
          if (index === -1) {
 
             insertIntoVotes(VoteObjects[key]);
@@ -975,8 +977,8 @@ createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
       dmz.object.flag(decision, dmz.stance.UpdateExpiredTimeHandle, true);
       dmz.object.timeStamp(decision, dmz.stance.EndedAtServerTimeHandle, 0);
       dmz.object.flag(decision, dmz.stance.UpdateEndTimeHandle, false);
-      duration *= 3600; //convert to unix seconds
-      //duration *= 60;
+      //duration *= 3600; //convert to unix seconds
+      duration *= 60;
       dmz.object.timeStamp(decision, dmz.stance.DurationHandle, duration);
       dmz.object.activate(decision);
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_ACTIVE);
