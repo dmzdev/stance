@@ -4,6 +4,9 @@
    <plugin name="dmzQtModuleMainWindowBasic" scope="main-window"/>
    <plugin name="dmzQtPluginVersion"/>
    <plugin name="dmzObjectModuleBasic"/>
+<!--   <plugin name="dmzObjectPluginCleanup" scope="cleanup"/>-->
+   <plugin name="dmzQtPluginObjectInspector"/>
+<!--   <plugin name="dmzQtPluginMessageInspector"/> -->
    <plugin name="dmzBorderWebInterface" scope="webMap"/>
 </plugin-list>
 <main-window>

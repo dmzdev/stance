@@ -80,6 +80,7 @@ var dmz =
         , Vote: false
         , Exit: false
         , Help: false
+        , Bookcase: false
         }
    , LoggedIn = false
    , groupAdvisors = {}
@@ -224,10 +225,10 @@ updateGraphicsForGroup = function (groupHandle) {
          case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
          case "Resource": attr = dmz.stance.ResourceImageHandle; break;
          case "Vote": attr = dmz.stance.VoteImageHandle; break;
-         case "Help": attr = dmz.stance.CalendarImageHandle; break;
+         case "Help": attr = dmz.stance.HelpImageHandle; break;
+         case "Bookcase": attr = dmz.stance.BookcaseImageHandle; break;
          default: self.log.warn ("Key ("+key+") has no associated handle."); break;
          }
-
          if (attr) {
 
             setPixmapFromResource(PageLink[key].pixmap, dmz.object.text(groupHandle, attr));
