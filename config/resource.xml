@@ -9,7 +9,7 @@
       <path value="./assets/Business/"/>
       <path value="./assets/bw/"/>
       <path value="./assets/Cartel1/"/>
-      <path value="./assets/default/"/>
+      <path value="./assets/demo/"/>
    </search>
    <resource name="Splash" file="STANCE_splash.png"/>
 <!--   <resource name="PushNotify" file="PushNotify.png"/> -->
@@ -96,65 +96,64 @@
    <resource name="Riot" file="Riot-sm.png">
       <webMap file="Riot.png"/>
    </resource>
-<!-- GROUP OFFICE IMAGES -->
+<!-- DEMO OFFICE IMAGES -->
 <!-- DEFAULT IMAGES -->
-   <resource name="default_exit" file="exit.png">
-      <loc x="227" y="38"/>
+   <resource name="demo_resource" file="Demo_resource.png">
+      <loc x="0" y="0"/>
    </resource>
-   <resource name="default_resources" file="resources.png">
-      <loc x="4" y="44"/>
+   <resource name="demo_adv0" file="Demo_ad01.png">
+      <loc x="344" y="60"/>
    </resource>
-   <resource name="default_adv0" file="ad01.png">
-      <loc x="351" y="57"/>
+   <resource name="demo_adv1" file="Demo_ad02.png">
+      <loc x="466" y="60"/>
    </resource>
-   <resource name="default_adv1" file="ad02.png">
-      <loc x="470" y="57"/>
+   <resource name="demo_adv2" file="Demo_ad03.png">
+      <loc x="588" y="60"/>
    </resource>
-   <resource name="default_adv2" file="ad03.png">
-      <loc x="590" y="57"/>
+   <resource name="demo_adv3" file="Demo_ad04.png">
+      <loc x="707" y="60"/>
    </resource>
-   <resource name="default_adv3" file="ad04.png">
-      <loc x="706" y="57"/>
+   <resource name="demo_adv4" file="Demo_ad05.png">
+      <loc x="825" y="60"/>
    </resource>
-   <resource name="default_adv4" file="ad05.png">
-      <loc x="820" y="57"/>
+   <resource name="demo_bookcase" file="Demo_bookcase.png">
+      <loc x="0" y="210"/>
    </resource>
-   <resource name="default_map" file="map.png">
-      <loc x="1049" y="44"/>
-      <offset x="10" y="10"/>
+   <resource name="demo_exit" file="Demo_exit.png">
+      <loc x="222" y="10"/>
    </resource>
-   <resource name="default_computer" file="computer.png">
-      <loc x="476" y="266"/>
+   <resource name="demo_background" file="Demo_full.png">
+      <loc x="0" y="0"/>
+   </resource>
+   <resource name="demo_help" file="Demo_help.png">
+      <loc x="855" y="368"/>
+   </resource>
+   <resource name="demo_computer" file="Demo_laptop.png">
+      <loc x="497" y="248"/>
       <offset x="23" y="0"/>
    </resource>
-   <resource name="default_newspaper" file="newspaper.png">
-      <loc x="109" y="489"/>
-      <offset x="-5" y="20"/>
+   <resource name="demo_map" file="Demo_map.png">
+      <loc x="1098" y="0"/>
+      <offset x="10" y="10"/>
    </resource>
-   <resource name="default_videophone" file="vidphone.png">
-      <loc x="125" y="401"/>
-   </resource>
-   <resource name="default_tv" file="tv.png">
-      <loc x="245" y="309"/>
-      <offset x="0" y="10"/>
-   </resource>
-   <resource name="default_vote" file="vote.png">
-      <loc x="907" y="345"/>
-      <offset x="30" y="0"/>
-   </resource>
-   <resource name="default_memos" file="memos.png">
-      <loc x="974" y="467"/>
+   <resource name="demo_memos" file="Demo_memo.png">
+      <loc x="945" y="487"/>
       <offset x="0" y="35"/>
    </resource>
-   <resource name="default_calendar" file="calendar.png">
-      <loc x="794" y="346"/>
-      <month x="19.5" y="5"/>
-      <day x="12" y="30"/>
-      <year x="-10" y="30"/>
-      <font name="Times" size="19" weight="75"/>
+   <resource name="demo_newspaper" file="Demo_newspaper.png">
+      <loc x="314" y="505"/>
+      <offset x="-5" y="20"/>
    </resource>
-   <resource name="default_background" file="office08.png">
-      <loc x="0" y="0"/>
+   <resource name="demo_tv" file="Demo_tv.png">
+      <loc x="242" y="313"/>
+      <offset x="0" y="10"/>
+   </resource>
+   <resource name="demo_videophone" file="Demo_vidphone.png">
+      <loc x="0" y="454"/>
+   </resource>
+   <resource name="demo_vote" file="Demo_vote.png">
+      <loc x="1002" y="267"/>
+      <offset x="30" y="0"/>
    </resource>
 <!-- BLACK&WHITE IMAGES -->
    <resource name="bw_exit" file="bw-exit.png">
@@ -215,62 +214,66 @@
       <loc x="0" y="0"/>
    </resource>
 <!-- BIG BUSINESS IMAGES -->
-   <resource name="Business_adv0" file="business_ad01.png">
+   <resource name="Business_adv0" file="Business_ad01.png">
       <loc x="375" y="54"/>
       <alt name="Business_adv0_alt"/>
    </resource>
-   <resource name="Business_adv1" file="business_ad02.png">
+   <resource name="Business_adv1" file="Business_ad02.png">
       <loc x="483" y="54"/>
       <alt name="Business_adv1_alt"/>
    </resource>
-   <resource name="Business_adv2" file="business_ad03.png">
+   <resource name="Business_adv2" file="Business_ad03.png">
       <loc x="590" y="54"/>
       <alt name="Business_adv2_alt"/>
    </resource>
-   <resource name="Business_adv3" file="business_ad04.png">
+   <resource name="Business_adv3" file="Business_ad04.png">
       <loc x="695" y="54"/>
       <alt name="Business_adv3_alt"/>
    </resource>
-   <resource name="Business_adv4" file="business_ad05.png">
+   <resource name="Business_adv4" file="Business_ad05.png">
       <loc x="798" y="54"/>
       <alt name="Business_adv4_alt"/>
    </resource>
-   <resource name="Business_computer" file="business_computer.png">
-      <loc x="526" y="270"/>
+   <resource name="Business_bookcase" file="Business_bookcase.png">
+      <loc x="0" y="187"/>
    </resource>
-   <resource name="Business_exit" file="business_exit.png">
+   <resource name="Business_exit" file="Business_exit.png">
       <loc x="222" y="7"/>
    </resource>
-   <resource name="Business_map" file="business_map.png">
-      <loc x="1086" y="28"/>
+   <resource name="Business_background" file="Business_full.png">
+      <loc x="0" y="0"/>
+   </resource>
+   <resource name="Business_help" file="Business_help.png">
+      <loc x="845" y="270"/>
+   </resource>
+   <resource name="Business_computer" file="Business_laptop.png">
+      <loc x="526" y="270"/>
+   </resource>
+   <resource name="Business_map" file="Business_map.png">
+      <loc x="1094" y="28"/>
       <offset x="0" y="10"/>
    </resource>
-   <resource name="Business_memos" file="business_memos.png">
+   <resource name="Business_memos" file="Business_memos.png">
       <loc x="983" y="458"/>
       <offset x="0" y="10"/>
    </resource>
-   <resource name="Business_newspaper" file="business_newspaper.png">
+   <resource name="Business_newspaper" file="Business_newspaper.png">
       <loc x="256" y="508"/>
       <offset x="0" y="15"/>
    </resource>
-<!--
-   <resource name="Business_resources" file="business_resourceboard.png">
-      <loc x="4" y="44"/>
+   <resource name="Business_resources" file="Business_resourceboard.png">
+      <loc x="0" y="22"/>
    </resource>
--->
-   <resource name="Business_tv" file="business_tv.png">
+   <resource name="Business_tv" file="Business_tv.png">
       <loc x="250" y="315"/>
    </resource>
-   <resource name="Business_videophone" file="business_vidphone.png">
+   <resource name="Business_videophone" file="Business_vidphone.png">
       <loc x="12" y="418"/>
       <offset x="0" y="15"/>
    </resource>
-   <resource name="Business_vote" file="business_vote.png">
+   <resource name="Business_vote" file="Business_vote.png">
       <loc x="1027" y="252"/>
       <offset x="5" y="10"/>
-   </resource>
-   <resource name="Business_background" file="business_full.png">
-      <loc x="0" y="0"/>
    </resource>
    <resource name="Business_adv0_alt" file="business_ad01_pr.png"/>
    <resource name="Business_adv1_alt" file="business_ad02_security.png"/>
@@ -279,65 +282,62 @@
    <resource name="Business_adv4_alt" file="business_ad05_lobby.png"/>
 <!-- CARTEL 1 IMAGES -->
    <resource name="Cartel1_adv0" file="Cartel1_ad01.png">
-      <loc x="360" y="70"/>
+      <loc x="359" y="69"/>
       <alt name="Cartel1_adv0_alt"/>
    </resource>
    <resource name="Cartel1_adv1" file="Cartel1_ad02.png">
-      <loc x="497" y="70"/>
+      <loc x="496" y="69"/>
       <alt name="Cartel1_adv1_alt"/>
    </resource>
    <resource name="Cartel1_adv2" file="Cartel1_ad03.png">
-      <loc x="595" y="70"/>
+      <loc x="594" y="69"/>
       <alt name="Cartel1_adv2_alt"/>
    </resource>
    <resource name="Cartel1_adv3" file="Cartel1_ad04.png">
-      <loc x="692" y="70"/>
+      <loc x="691" y="69"/>
       <alt name="Cartel1_adv3_alt"/>
    </resource>
    <resource name="Cartel1_adv4" file="Cartel1_ad05.png">
-      <loc x="825" y="70"/>
+      <loc x="824" y="69"/>
       <alt name="Cartel1_adv4_alt"/>
    </resource>
-   <resource name="Cartel1_calendar" file="Cartel1_calendar.png">
-      <loc x="792" y="303"/>
-      <month x="50" y="10"/>
-      <day x="10" y="30"/>
-      <year x="-15" y="30"/>
-      <font name="Times" size="25" weight="75"/>
-   </resource>
-   <resource name="Cartel1_computer" file="Cartel1_computer.png">
-      <loc x="501" y="283"/>
+   <resource name="Cartel1_bookcase" file="Cartel1_bookcase.png">
+      <loc x="0" y="224"/>
    </resource>
    <resource name="Cartel1_exit" file="Cartel1_exit.png">
-      <loc x="213" y="19"/>
-   </resource>
-   <resource name="Cartel1_map" file="Cartel1_map.png">
-      <loc x="1085" y="85"/>
-   </resource>
-   <resource name="Cartel1_memos" file="Cartel1_memos.png">
-      <loc x="1034" y="487"/>
-   </resource>
-   <resource name="Cartel1_newspaper" file="Cartel1_newspaper.png">
-      <loc x="239" y="525"/>
-      <offset x="0" y="10"/>
-   </resource>
-<!--
-   <resource name="Cartel1_resources" file="Cartel1_resources.png">
-      <loc x="4" y="44"/>
-   </resource>
--->
-   <resource name="Cartel1_tv" file="Cartel1_tv.png">
-      <loc x="234" y="333"/>
-   </resource>
-   <resource name="Cartel1_videophone" file="Cartel1_vidphone.png">
-      <loc x="0" y="420"/>
-      <offset x="0" y="70"/>
-   </resource>
-   <resource name="Cartel1_vote" file="Cartel1_vote.png">
-      <loc x="1005" y="305"/>
+      <loc x="212" y="18"/>
    </resource>
    <resource name="Cartel1_background" file="Cartel1_full.png">
       <loc x="0" y="0"/>
+   </resource>
+   <resource name="Cartel1_help" file="Cartel1_help.png">
+      <loc x="849" y="381"/>
+   </resource>
+   <resource name="Cartel1_computer" file="Cartel1_laptop.png">
+      <loc x="500" y="282"/>
+   </resource>
+   <resource name="Cartel1_map" file="Cartel1_map.png">
+      <loc x="1084" y="84"/>
+   </resource>
+   <resource name="Cartel1_memos" file="Cartel1_memo.png">
+      <loc x="1033" y="486"/>
+   </resource>
+   <resource name="Cartel1_newspaper" file="Cartel1_newspaper.png">
+      <loc x="238" y="524"/>
+      <offset x="0" y="10"/>
+   </resource>
+   <resource name="Cartel1_resources" file="Cartel1_resource.png">
+      <loc x="0" y="67"/>
+   </resource>
+   <resource name="Cartel1_tv" file="Cartel1_tv.png">
+      <loc x="233" y="332"/>
+   </resource>
+   <resource name="Cartel1_videophone" file="Cartel1_vidphone.png">
+      <loc x="0" y="419"/>
+      <offset x="0" y="70"/>
+   </resource>
+   <resource name="Cartel1_vote" file="Cartel1_vote.png">
+      <loc x="1004" y="304"/>
    </resource>
    <resource name="Cartel1_adv0_alt" file="Cartel1_ad01_political.png"/>
    <resource name="Cartel1_adv1_alt" file="Cartel1_ad02_distribution.png"/>
@@ -413,7 +413,7 @@
    <resource name="WHC_trade_alt" file="WHC_Advisor_trade.png"/>
 <!-- MEXGOV IMAGES -->
    <resource name="MexicanGov_adv0" file="MexicanGov_ad01.png">
-      <loc x="337" y="62"/>
+      <loc x="336" y="62"/>
       <alt name="MexicanGov_adv0_alt"/>
    </resource>
    <resource name="MexicanGov_adv1" file="MexicanGov_ad02.png">
@@ -432,12 +432,21 @@
       <loc x="748" y="62"/>
       <alt name="MexicanGov_adv4_alt"/>
    </resource>
-   <resource name="MexicanGov_computer" file="MexicanGov_computer.png">
-      <loc x="475" y="244"/>
-      <offset x="10" y="0"/>
+   <resource name="MexicanGov_bookcase" file="MexicanGov_bookcase.png">
+      <loc x="0" y="232"/>
    </resource>
    <resource name="MexicanGov_exit" file="MexicanGov_exit.png">
       <loc x="191" y="8"/>
+   </resource>
+   <resource name="MexicanGov_background" file="MexicanGov_full.png">
+      <loc x="0" y="0"/>
+   </resource>
+   <resource name="MexicanGov_help" file="MexicanGov_help.png">
+      <loc x="843" y="345"/>
+   </resource>
+   <resource name="MexicanGov_computer" file="MexicanGov_laptop.png">
+      <loc x="475" y="244"/>
+      <offset x="10" y="0"/>
    </resource>
    <resource name="MexicanGov_map" file="MexicanGov_map.png">
       <loc x="1098" y="0"/>
@@ -449,13 +458,11 @@
       <loc x="312" y="522"/>
       <offset x="0" y="25"/>
    </resource>
-<!--
-   <resource name="MexicanGov_resources" file="MexicanGov_resources.png">
-      <loc x="4" y="44"/>
+   <resource name="MexicanGov_resources" file="MexicanGov_resourceboard.png">
+      <loc x="0" y="0"/>
    </resource>
--->
    <resource name="MexicanGov_tv" file="MexicanGov_tv.png">
-      <loc x="196" y="307"/>
+      <loc x="196" y="306"/>
    </resource>
    <resource name="MexicanGov_videophone" file="MexicanGov_vidphone.png">
       <loc x="0" y="476"/>
@@ -465,9 +472,6 @@
       <loc x="974" y="289"/>
       <offset x="5" y="0"/>
    </resource>
-   <resource name="MexicanGov_background" file="MexicanGov_full.png">
-      <loc x="0" y="0"/>
-   </resource>
    <resource name="MexicanGov_adv0_alt" file="MexicanGov_ad01_outreach.png"/>
    <resource name="MexicanGov_adv1_alt" file="MexicanGov_ad02_diplomatic.png"/>
    <resource name="MexicanGov_adv2_alt" file="MexicanGov_ad03_domesticGovernance.png"/>
@@ -475,57 +479,57 @@
    <resource name="MexicanGov_adv4_alt" file="MexicanGov_ad05_militaryAndSecurity.png"/>
 <!-- CARTEL 2 IMAGES -->
    <resource name="Cartel2_adv0" file="Cartel2_ad01.png">
-      <loc x="397" y="47"/>
+      <loc x="396" y="46"/>
       <alt name="Cartel2_adv0_alt"/>
    </resource>
    <resource name="Cartel2_adv1" file="Cartel2_ad02.png">
-      <loc x="496" y="47"/>
+      <loc x="495" y="46"/>
       <alt name="Cartel2_adv1_alt"/>
    </resource>
    <resource name="Cartel2_adv2" file="Cartel2_ad03.png">
-      <loc x="594" y="47"/>
+      <loc x="594" y="46"/>
       <alt name="Cartel2_adv2_alt"/>
    </resource>
    <resource name="Cartel2_adv3" file="Cartel2_ad04.png">
-      <loc x="691" y="47"/>
+      <loc x="691" y="46"/>
       <alt name="Cartel2_adv3_alt"/>
    </resource>
    <resource name="Cartel2_adv4" file="Cartel2_ad05.png">
-      <loc x="788" y="47"/>
+      <loc x="786" y="46"/>
       <alt name="Cartel2_adv4_alt"/>
    </resource>
-   <resource name="Cartel2_calendar" file="Cartel2_calendar.png">
-      <loc x="824" y="312"/>
-      <month x="70" y="20"/>
-      <day x="10" y="30"/>
-      <year x="-15" y="30"/>
-      <font name="Times" size="25" weight="75"/>
-   </resource>
-   <resource name="Cartel2_computer" file="Cartel2_computer.png">
-      <loc x="495" y="233"/>
-      <offset x="15" y="15"/>
+   <resource name="Cartel2_bookcase" file="Cartel2_bookcase.png">
+      <loc x="0" y="254"/>
    </resource>
    <resource name="Cartel2_exit" file="Cartel2_exit.png">
-      <loc x="228" y="24"/>
+      <loc x="288" y="23"/>
+   </resource>
+   <resource name="Cartel2_background" file="Cartel2_full.png">
+      <loc x="0" y="0"/>
+   </resource>
+   <resource name="Cartel2_help" file="Cartel2_help.png">
+      <loc x="844" y="291"/>
+   </resource>
+   <resource name="Cartel2_computer" file="Cartel2_laptop.png">
+      <loc x="494" y="201"/>
+      <offset x="15" y="15"/>
    </resource>
    <resource name="Cartel2_map" file="Cartel2_map.png">
-      <loc x="1093" y="53"/>
+      <loc x="1092" y="52"/>
    </resource>
    <resource name="Cartel2_memos" file="Cartel2_memos.png">
-      <loc x="923" y="504"/>
+      <loc x="924" y="504"/>
       <offset x="0" y="20"/>
    </resource>
    <resource name="Cartel2_newspaper" file="Cartel2_newspaper.png">
       <loc x="271" y="508"/>
       <offset x="35" y="0"/>
    </resource>
-<!--
-   <resource name="Cartel2_resources" file="Cartel2_resources.png">
-      <loc x="4" y="44"/>
+   <resource name="Cartel2_resources" file="Cartel2_resources.pn">
+      <loc x="0" y="52"/>
    </resource>
--->
    <resource name="Cartel2_tv" file="Cartel2_tv.png">
-      <loc x="185" y="332"/>
+      <loc x="211" y="319"/>
    </resource>
    <resource name="Cartel2_videophone" file="Cartel2_vidphone.png">
       <loc x="0" y="488"/>
@@ -533,9 +537,6 @@
    </resource>
    <resource name="Cartel2_vote" file="Cartel2_vote.png">
       <loc x="1078" y="377"/>
-   </resource>
-   <resource name="Cartel2_background" file="Cartel2_full.png">
-      <loc x="0" y="0"/>
    </resource>
    <resource name="Cartel2_adv0_alt" file="Cartel2_ad01_information.png"/>
    <resource name="Cartel2_adv1_alt" file="Cartel2_ad02_enforcement.png"/>
@@ -556,43 +557,39 @@
       <alt name="ACLU_adv2_alt"/>
    </resource>
    <resource name="ACLU_adv3" file="ACLU_ad04.png">
-      <loc x="707" y="34"/>
+      <loc x="708" y="34"/>
       <alt name="ACLU_adv3_alt"/>
    </resource>
    <resource name="ACLU_adv4" file="ACLU_ad05.png">
       <loc x="826" y="34"/>
       <alt name="ACLU_adv4_alt"/>
    </resource>
-   <resource name="ACLU_calendar" file="ACLU_calendar.png">
-      <loc x="805" y="287"/>
-      <month x="50" y="10"/>
-      <day x="10" y="30"/>
-      <year x="-15" y="30"/>
-      <font name="Times" size="25" weight="75"/>
+   <resource name="ACLU_bookcase" file="ACLU_bookcase.png">
+      <loc x="0" y="235"/>
    </resource>
    <resource name="ACLU_computer" file="ACLU_computer.png">
-      <loc x="487" y="269"/>
+      <loc x="487" y="268"/>
       <offset x="5" y="0"/>
    </resource>
    <resource name="ACLU_exit" file="ACLU_exit.png">
-      <loc x="232" y="13"/>
+      <loc x="233" y="13"/>
+   </resource>
+   <resource name="ACLU_help" file="ACLU_help.png">
+      <loc x="835" y="359"/>
    </resource>
    <resource name="ACLU_map" file="ACLU_map.png">
       <loc x="1072" y="33"/>
    </resource>
    <resource name="ACLU_memos" file="ACLU_memos.png">
-      <loc x="944" y="487"/>
+      <loc x="945" y="487"/>
    </resource>
    <resource name="ACLU_newspaper" file="ACLU_newspaper.png">
-      <loc x="308" y="513"/>
+      <loc x="307" y="513"/>
       <offset x="15" y="5"/>
    </resource>
-<!--
-   <resource name="ACLU_resources" file="ACLU_resources.png">
-      <loc x="0" y="18"/>
+   <resource name="ACLU_resourceboard" file="ACLU_resourceboard.png">
+      <loc x="0" y="17"/>
    </resource>
-   bookcase - 0, 235
--->
    <resource name="ACLU_tv" file="ACLU_tv.png">
       <loc x="180" y="268"/>
    </resource>
@@ -612,7 +609,9 @@
    <resource name="ACLU_adv2_alt" file="ACLU_ad03_pr.png"/>
    <resource name="ACLU_adv3_alt" file="ACLU_ad04_outreach.png"/>
    <resource name="ACLU_adv4_alt" file="ACLU_ad05_security.png"/>
+
 <!-- CBP IMAGES -->
+<!--Still need the resources-->
    <resource name="CBP_adv0" file="CBP_ad01.png">
       <loc x="347" y="92"/>
       <alt name="CBP_adv0_alt"/>

@@ -37,6 +37,7 @@ var dmz =
    , memoList = editScenarioWidget.lookup("memoListWidget")
    , videoList = editScenarioWidget.lookup("videoListWidget")
    , lobbyistList = editScenarioWidget.lookup("lobbyistListWidget")
+   , groupEditButton = editScenarioWidget.lookup("groupEditButton")
 
    , DockName = "Edit Scenario"
    , dock = dmz.ui.mainWindow.createDock
@@ -258,6 +259,8 @@ setGroupTemplate = function (groupHandle, templateIndex) {
             case "Resource": attr = dmz.stance.ResourceImageHandle; break;
             case "Vote": attr = dmz.stance.VoteImageHandle; break;
             case "Calendar": attr = dmz.stance.CalendarImageHandle; break;
+            case "Help": attr = dmz.stance.HelpImageHandle; break;
+            case "Bookcase": attr = dmz.stance.BookcaseImageHandle; break;
             default: self.log.warn ("Key ("+key+") has no associated handle."); break;
             }
 
@@ -617,6 +620,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
         , advisorImages
         , file
         , admins
+        , resource
         ;
 
       if (value) {
@@ -649,9 +653,9 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
             dmz.object.scalar(handle, dmz.stance.ID, idx);
             if (idx < advisorImages.length) {
 
-               file = dmz.resources.lookupConfig(advisorImages[idx]);
-               if (file) { file = dmz.resources.findFile(file.string("alt.name")); }
-               if (!file) { file = dmz.resources.findFile(resource); }
+               resource = dmz.resources.lookupConfig(advisorImages[idx]);
+               if (resource) { file = dmz.resources.findFile(resource.string("alt.name")); }
+               if (!file) { file = dmz.resources.findFile(resource.string("name")); }
                if (file) { dmz.object.text(handle, dmz.stance.PictureHandle, advisorImages[idx]); }
             }
             dmz.object.activate(handle);

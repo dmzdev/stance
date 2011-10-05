@@ -103,6 +103,8 @@ var dmz =
         , ResourceImageHandle: dmz.defs.createNamedHandle("resource_image")
         , VoteImageHandle: dmz.defs.createNamedHandle("vote_image")
         , CalendarImageHandle: dmz.defs.createNamedHandle("calendar_image")
+        , HelpImageHandle: dmz.defs.createNamedHandle("help_image")
+        , BookcaseImageHandle: dmz.defs.createNamedHandle("bookcase_image")
         }
 
    , Functions =
