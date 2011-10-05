@@ -103,21 +103,25 @@ changeState = function (state) {
 
       CurrentMap = PdfItems;
       CurrentArray = PdfArray;
+      addPdfButton.text("Add PDF Link");
    }
    else if (state === "Memo") {
 
       CurrentMap = Memos;
       CurrentArray = MemosArray;
+      addPdfButton.text("Add Memo Link");
    }
    else if (state === "Newspaper") {
 
       CurrentMap = Newspapers;
       CurrentArray = NewspapersArray;
+      addPdfButton.text("Add Newspaper Link");
    }
    else if (state === "Video") {
 
       CurrentMap = Videos;
       CurrentArray = VideosArray;
+      addPdfButton.text("Add Video Link");
    }
 };
 
@@ -914,8 +918,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
       list = MainModule.list;
       MainModule = module;
-     /* module.addPage
-         ( "Memo"
+      module.addPage
+         ( "Bookcase"
          , pdfViewer
          , function () {
 
@@ -923,10 +927,10 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             openWindow();
          }
          , checkNotifications
-         );*/
+         );
       module.addPage
          ( "Memo"
-         , pdfViewer
+         , "Bookcase"
          , function () {
 
             changeState("PdfItem");
@@ -936,7 +940,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          );
       module.addPage
          ( "Newspaper"
-         , "Memo"
+         , "Bookcase"
          , function () {
 
             changeState("Newspaper");
@@ -946,7 +950,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          );
       module.addPage
          ( "Video"
-         , "Memo"
+         , "Bookcase"
          , function () {
 
             changeState("Video");
