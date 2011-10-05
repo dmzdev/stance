@@ -23,6 +23,7 @@
    <object-type name="decision"/>
    <object-type name="data"/>
    <object-type name="help-forum"/>
+   <object-type name="pdf-item"/>
    <message name="AddPinMessage"/>
    <message name="PinAddedMessage"/>
    <message name="RemovePinMessage"/>
@@ -32,7 +33,7 @@
    <message name="AppUpdaterUpdateMessage"/>
    <message name="AppUpdaterChannelMessage"/>
    <message name="ToggledGroupMessage"/>
-   <message name="VideoHome"/>
+   <message name="TagMessage"/>
    <state name="Switch_Group"/>
    <state name="Change_Map"/>
    <state name="Create_Vote"/>
@@ -60,5 +61,10 @@
    <state name="Answer_Help"/>
    <state name="Student_Data"/>
    <state name="Delete_Posts"/>
+   <state name="Tag_Data"/>
+   <state name="See_Tags"/>
+   <state name="Inject_PDF"/>
+   <state name="Modify_Collab_Area"/>
+   <state name="Change_Permission_Sets"/>
 </runtime>
 </dmz>

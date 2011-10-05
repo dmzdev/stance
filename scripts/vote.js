@@ -11,6 +11,7 @@ var dmz =
       , textEdit: require("dmz/ui/textEdit")
       , widget: require("dmz/ui/widget")
       }
+   , data: require("dmz/runtime/data")
    , stance: require("stanceConst")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
@@ -63,6 +64,7 @@ var dmz =
    , updateExpiredTime
    , updatePostedTime
    , updateState
+   , updateTags
    , isVoteOver
    , userVoted
    , hasUserVoted
@@ -242,6 +244,38 @@ updateVotes = function (voteHandle) {
    }
 };
 
+updateTags = function (voteHandle) {
+
+   var voteItem;
+
+   if (VoteObjects[voteHandle] && VoteObjects[voteHandle].ui) {
+
+      if (VoteObjects[voteHandle].tags && dmz.stance.isAllowed(hil, dmz.stance.SeeTagFlag) &&
+         VoteObjects[voteHandle].tags.length) {
+
+         VoteObjects[voteHandle].ui.tagLabel.show();
+         VoteObjects[voteHandle].ui.tagLabel.text("<b>Tags: </b>" + VoteObjects[voteHandle].tags.toString());
+      }
+      else {
+
+         VoteObjects[voteHandle].ui.tagLabel.text("");
+         VoteObjects[voteHandle].ui.tagLabel.hide();
+      }
+      if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag)) {
+
+         VoteObjects[voteHandle].ui.tagButton.show();
+         VoteObjects[voteHandle].ui.tagButton.observe(self, "clicked", function () {
+
+            dmz.stance.TAG_MESSAGE.send(dmz.data.wrapHandle(voteHandle));
+         });
+      }
+      else {
+
+         VoteObjects[voteHandle].ui.tagButton.hide();
+      }
+   }
+};
+
 setDeniedLabels = function (voteHandle) {
 
    var voteItem
@@ -303,6 +337,7 @@ setDeniedLabels = function (voteHandle) {
                toDate(voteItem.postedTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
       }
+      updateTags(voteItem.handle);
       voteItem.ui.yesVotesLabel.text("");
       voteItem.ui.noVotesLabel.text("");
       voteItem.ui.undecidedVotesLabel.text("");
@@ -376,6 +411,7 @@ setApprovalPendingLabels = function (voteHandle) {
                toDate(voteItem.postedTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
       }
+      updateTags(voteItem.handle);
       voteItem.ui.yesVotesLabel.text("");
       voteItem.ui.noVotesLabel.text("");
       voteItem.ui.undecidedVotesLabel.text("");
@@ -533,6 +569,7 @@ setActiveLabels = function (voteHandle) {
          voteItem.ui.yesButton.hide();
          voteItem.ui.noButton.hide();
       }
+      updateTags(voteItem.handle);
       voteItem.ui.timeBox.hide();
       voteItem.ui.timeBoxLabel.hide();
       voteItem.ui.decisionTextEdit.hide();
@@ -652,6 +689,7 @@ setYesNoLabels = function (voteHandle) {
          voteItem.ui.buttonLayout.removeWidget(voteItem.ui.yesButton);
          voteItem.ui.buttonLayout.removeWidget(voteItem.ui.noButton);
       }
+      updateTags(voteItem.handle);
       voteItem.ui.timeBox.hide();
       voteItem.ui.timeBoxLabel.hide();
       voteItem.ui.decisionTextEdit.hide();
@@ -688,6 +726,9 @@ initiateVoteUI = function (voteHandle) {
       voteItem.ui.noButton = dmz.ui.button.createPushButton("Deny");
       voteItem.ui.buttonLayout = voteItem.ui.postItem.lookup("buttonLayout");
       voteItem.ui.textLayout = voteItem.ui.postItem.lookup("textLayout");
+      voteItem.ui.tagLabel = voteItem.ui.postItem.lookup("tagLabel");
+      voteItem.ui.tagButton = voteItem.ui.postItem.lookup("tagButton");
+      voteItem.ui.tagButton.styleSheet(dmz.stance.YELLOW_BUTTON);
       voteItem.ui.timeBox = dmz.ui.spinBox.createSpinBox("timeBox");
       voteItem.ui.timeBox.minimum(24);
       voteItem.ui.timeBox.maximum(72);
@@ -764,7 +805,8 @@ removeFromVotes = function (voteItem, pastState) {
          if (voteItemIndex !== -1) {
 
             voteArray.splice(voteItemIndex, 1);
-            contentLayout.removeWidget(voteItem.postItem);
+            voteItem.ui.postItem.hide();
+            contentLayout.removeWidget(voteItem.ui.postItem);
          }
       }
    }
@@ -886,6 +928,7 @@ openWindow = function () {
 
          initiateVoteUI(VoteObjects[key].handle);
          index = indexOfVote(VoteObjects[key], VoteObjects[key].state);
+         self.log.error(index);
          if (index === -1) {
 
             insertIntoVotes(VoteObjects[key]);
@@ -934,8 +977,8 @@ createDecisionObject = function (decisionValue, voteHandle, duration, reason) {
       dmz.object.flag(decision, dmz.stance.UpdateExpiredTimeHandle, true);
       dmz.object.timeStamp(decision, dmz.stance.EndedAtServerTimeHandle, 0);
       dmz.object.flag(decision, dmz.stance.UpdateEndTimeHandle, false);
-      duration *= 3600; //convert to unix seconds
-      //duration *= 60;
+      //duration *= 3600; //convert to unix seconds
+      duration *= 60;
       dmz.object.timeStamp(decision, dmz.stance.DurationHandle, duration);
       dmz.object.activate(decision);
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_ACTIVE);
@@ -1113,23 +1156,19 @@ function (objHandle, attrHandle, value) {
 
          hil = objHandle;
          userGroupHandle = dmz.stance.getUserGroupHandle(hil);
-         isAdmin = dmz.object.flag(hil, dmz.stance.AdminHandle);
          Object.keys(VoteObjects).forEach(function (key) {
 
             isVoteOver(VoteObjects[key].handle);
          });
-         if (isAdmin) {
+         if (dmz.stance.isAllowed(hil, dmz.stance.SwitchGroupFlag)) {
 
+            clearLayout();
+            PastVotes = [];
+            ApprovalVotes = [];
+            ActiveVotes = [];
             Object.keys(VoteObjects).forEach(function (key) {
 
-               clearLayout();
-               PastVotes = [];
-               ApprovalVotes = [];
-               ActiveVotes = [];
-               if (VoteObjects[key].ui) {
-
-                  delete VoteObjects[key].ui;
-               }
+               if (VoteObjects[key].ui) { delete VoteObjects[key].ui; }
             });
          }
          checkForNotifications();
@@ -1227,6 +1266,19 @@ function (objHandle, attrHandle, newVal, oldVal) {
 
          updateExpiredTime(objHandle);
          checkForNotifications();
+      });
+   }
+});
+
+dmz.object.data.observe(self, dmz.stance.TagHandle,
+function (objHandle, attrHandle, data) {
+
+   if (VoteObjects[objHandle]) {
+
+      VoteObjects[objHandle].tags = dmz.stance.getTags(data);
+      dmz.time.setTimer(self, function () {
+
+         updateTags(objHandle);
       });
    }
 });

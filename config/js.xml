@@ -21,7 +21,7 @@
    <instance name="clear-archive" scope="archive-module"/>
    <instance name="email"/>
    <instance name="gameCreation"/>
-   <instance name="media"/>
+   <instance name="lobbyist"/>
    <instance name="webMap"/>
    <instance name="forum-view"/>
    <instance name="help"/>
@@ -30,7 +30,8 @@
    <instance name="vote"/>
    <instance name="fix"/>
    <instance name="userInfo"/>
-<!--   <instance name="graph"/> -->
+   <instance name="media"/>
+   <instance name="tag"/>
 </javascript>
 <login>
 <!--   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>-->

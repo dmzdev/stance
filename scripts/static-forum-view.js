@@ -2,6 +2,7 @@ require("datejs/date"); // www.datejs.com - an open-source JavaScript Date Libra
 
 var dmz =
        { defs: require("dmz/runtime/definitions")
+       , data: require("dmz/runtime/data")
        , module: require("dmz/runtime/module")
        , object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
@@ -26,6 +27,8 @@ var dmz =
    , AVATAR_WIDTH = 50
    , RED_BUTTON = "* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
    , GREEN_BUTTON = "* { background-color: green; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
+   , YELLOW_BUTTON = "* { background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
+   , TAG_MESSAGE = dmz.message.create("TagMessage")
    ;
 
 dmz.util.defineConst(exports, "setupForumView", function (forumData) {
@@ -33,7 +36,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    var retData = { update: false, onHome: false, widget: false, observers: {} }
      , content
      , avatar
-        // UI elements
+     // UI elements
      , _view = false
      , _scrollArea = false
      , _mainLayout = false
@@ -65,6 +68,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _ForumLinkHandle
      , _UseForumDataForAdmin
      , _TimeHandle
+     , _ShowTagButton = false
+     , _ShowTagLabel = false
 
      , _LatestTimeStamp = -1
      , _WasBlocked = false
@@ -74,7 +79,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _CanReplyTo
      , _PostBlocked
      , _Highlight
-     , _ExtraInfo
      , _OnNewPost
      , _unviewedHighlight
 
@@ -83,7 +87,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _updatePostedBy
      , _updatePostedAt
      , _updateMessage
-     , _updateExtraInfo
+     , _updateTags
      , _addPost
      , _addComment
      , _addCommentClicked
@@ -107,7 +111,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    _UseForumDataForAdmin = forumData.useForumData || function () { return false; };
    _TimeHandle = forumData.timeHandle;
    _Highlight = forumData.highlight;
-   _ExtraInfo = forumData.extraInfo || function () { return ""; };
    _OnNewPost = forumData.onNewPost || function () {};
 
    MaxMessageLength = forumData.messageLength;
@@ -165,26 +168,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          }
       };
 
-      _updateExtraInfo = function (handle) {
-
-         var item = _postList[handle]
-           , info
-           ;
-
-         if (!item) { item = _commentList[handle]; }
-         if (item) {
-
-            info = _ExtraInfo(handle);
-            if (info && info.length && item.extra) {
-
-               item.extra.text (info);
-               item.extra.show();
-            }
-            else if (item.extra) { item.extra.hide(); }
-         }
-      };
-
-      retData.updateExtraInfo = _updateExtraInfo;
       _addPost = function (postHandle) {
 
          var post = { handle: postHandle }
@@ -222,12 +205,15 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          post.cancel.styleSheet(RED_BUTTON);
          post.cancel.hide();
          post.confirmDelete = false;
+         post.tagButton = post.item.lookup("tagButton");
+         post.tagButton.styleSheet(YELLOW_BUTTON);
+         if (!_ShowTagButton) { post.tagButton.hide(); }
+         post.tagLabel = post.item.lookup("tagLabel");
+         if (!_ShowTagLabel) { post.tagLabel.hide(); }
 
          post.postedBy = post.item.lookup("postedByLabel");
          post.postedAt = post.item.lookup("postedAtLabel");
          post.message = post.item.lookup("messageLabel");
-         post.extra = post.item.lookup("extraInfoLabel");
-         post.extra.hide();
          post.commentAddLabel = post.item.lookup("commentAddLabel");
          post.layout.addWidget(post.item, 0, 0, 1, 2);
          post.item.show();
@@ -256,6 +242,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             }
          });
 
+         post.tagButton.observe(_Self, "clicked", function () {
+
+            TAG_MESSAGE.send(dmz.data.wrapHandle(postHandle));
+         });
+
          if (_CanReplyTo(postHandle, _forumHandle)) {
 
             post.commentAddLabel.show();
@@ -269,7 +260,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          _updatePostedBy(postHandle);
          _updatePostedAt(postHandle);
          _updateMessage(postHandle);
-         _updateExtraInfo(postHandle);
+         _updateTags(postHandle);
       };
 
       _addComment = function (postHandle, commentHandle) {
@@ -295,8 +286,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             comment.postedAt = comment.item.lookup("postedAtLabel");
             comment.message = comment.item.lookup("messageLabel");
             comment.unread = comment.item.lookup("unreadLabel");
-            comment.extra = comment.item.lookup("extraInfoLabel");
-            comment.extra.hide();
             comment.commentAddLabel = comment.item.lookup("commentAddLabel");
             comment.unread.pixmap(dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify")));
             comment.unread.hide();
@@ -307,6 +296,12 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             comment.cancel.styleSheet(RED_BUTTON);
             comment.cancel.hide();
             comment.confirmDelete = false;
+
+            comment.tagButton = comment.item.lookup("tagButton");
+            comment.tagButton.styleSheet(YELLOW_BUTTON);
+            if (!_ShowTagButton) { comment.tagButton.hide(); }
+            comment.tagLabel = comment.item.lookup("tagLabel");
+            if (!_ShowTagLabel) { comment.tagLabel.hide(); }
 
             post.commentList.push(comment);
             post.layout.addWidget(comment.item, post.layout.rowCount(), 1);
@@ -336,6 +331,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                }
             });
 
+            comment.tagButton.observe(_Self, "clicked", function () {
+
+               TAG_MESSAGE.send(dmz.data.wrapHandle(commentHandle));
+            });
+
             if (_CanReplyTo(commentHandle, _forumHandle)) {
 
                comment.commentAddLabel.show();
@@ -349,7 +349,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             _updatePostedBy(commentHandle);
             _updatePostedAt(commentHandle);
             _updateMessage(commentHandle);
-            _updateExtraInfo(commentHandle);
+            _updateTags(commentHandle);
             if (!_CanReplyTo(postHandle, _forumHandle)) { post.commentAddLabel.hide(); }
          }
       };
@@ -477,13 +477,32 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   (data.authorHandle && (data.authorHandle !== hil))) {
 
                   item.unread.show();
-                  if (!IsCurrentWindow) { _Highlight(); }
+                  if (!IsCurrentWindow && data.active) { _Highlight(); }
                }
                else { item.unread.hide(); }
             }
             else { _unviewedHighlight(data, hil); }
          }
+      };
 
+      _updateTags = function (handle) {
+
+         var item = _postList[handle]
+           , data = _master.posts[handle]
+           , str
+           ;
+
+         if (!item) {
+
+            item = _commentList[handle];
+            data = _master.comments[handle];
+         }
+
+         if (item && item.tagLabel) {
+
+            if (data && data.tags) { item.tagLabel.text(data.tags.toString()); }
+            else { item.tagLabel.text(""); }
+         }
       };
 
       _updatePostedAt = function (handle) {
@@ -515,7 +534,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                   (data.authorHandle && (data.authorHandle !== hil))) {
 
                   item.unread.show();
-                  if (!IsCurrentWindow) { _Highlight(); }
+                  if (!IsCurrentWindow && data.active) { _Highlight(); }
                }
                else { item.unread.hide(); }
             }
@@ -530,7 +549,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            ;
          if (!viewedWindow) {
 
-            if (hil && data.postedAt && (_LatestTimeStamp !== -1) &&
+            if (hil && data.active && data.postedAt && (_LatestTimeStamp !== -1) &&
                (data.postedAt > _LatestTimeStamp) &&
                (data.authorHandle && (data.authorHandle !== hil))) {
 
@@ -681,7 +700,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
               , timestamp = dmz.object.timeStamp(postHandle, dmz.stance.CreatedAtServerTimeHandle) || 0
               ;
 
-            if ((timestamp > latest) &&
+            if (dmz.object.flag(postHandle, dmz.stance.ActiveHandle) && (timestamp > latest) &&
                !dmz.object.linkHandle(dmz.stance.CreatedByHandle, postHandle, hil)) {
 
                latest = timestamp;
@@ -689,7 +708,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             comments.forEach(function (commentHandle) {
 
                var timestamp = dmz.object.timeStamp(commentHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
-               if ((timestamp > latest) &&
+               if (dmz.object.flag(commentHandle, dmz.stance.ActiveHandle) && (timestamp > latest) &&
                   !dmz.object.linkHandle(dmz.stance.CreatedByHandle, commentHandle, hil)) {
 
                   latest = timestamp;
@@ -708,6 +727,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            ;
 
          _ShowDeleteButtons = dmz.stance.isAllowed(userHandle, dmz.stance.DeletePostsFlag);
+         _ShowTagButton = dmz.stance.isAllowed(userHandle, dmz.stance.TagDataFlag);
+         _ShowTagLabel = dmz.stance.isAllowed(userHandle, dmz.stance.SeeTagFlag);
          _LatestTimeStamp = dmz.stance.userAttribute(userHandle, _TimeHandle) || 0;
          group = dmz.stance.getUserGroupHandle(userHandle);
 
@@ -798,6 +819,17 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          if (!item) { item = _master.comments[handle]; }
          if (item) { item.postedAt = value; }
          _updatePostedAt(handle);
+      };
+
+      retData.observers.tag = function (handle, attr, value) {
+
+         var item = _master.posts[handle];
+         if (!item) { item = _master.comments[handle]; }
+         if (item) {
+
+            item.tags = dmz.stance.getTags(value);
+            _updateTags(handle);
+         }
       };
 
       retData.observers.forumLink = function (linkObjHandle, attrHandle, forumHandle, groupHandle) {
