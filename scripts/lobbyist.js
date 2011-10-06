@@ -114,10 +114,7 @@ confirmDelete = function () {
    }
 };
 
-clickCancel = function () {
-
-   initialButtonObserve();
-};
+clickCancel = function () { initialButtonObserve(); };
 
 tagButton.observe(self, "clicked", function () {
 
@@ -271,72 +268,50 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    }
    else if (objType.isOfType(dmz.stance.GroupType)) {
 
-      Groups[objHandle] =
-         { handle: objHandle };
+      Groups[objHandle] = { handle: objHandle };
    }
 });
 
 dmz.object.text.observe(self, dmz.stance.PictureHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Lobbyists[objHandle]) {
-
-      Lobbyists[objHandle].picture = newVal;
-   }
+   if (Lobbyists[objHandle]) { Lobbyists[objHandle].picture = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.NameHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Lobbyists[objHandle]) {
-
-      Lobbyists[objHandle].name = newVal;
-   }
+   if (Lobbyists[objHandle]) { Lobbyists[objHandle].name = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.TitleHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Lobbyists[objHandle]) {
-
-      Lobbyists[objHandle].title = newVal;
-   }
+   if (Lobbyists[objHandle]) { Lobbyists[objHandle].title = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.TextHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Lobbyists[objHandle]) {
-
-      Lobbyists[objHandle].message = newVal;
-   }
+   if (Lobbyists[objHandle]) { Lobbyists[objHandle].message = newVal; }
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Lobbyists[objHandle]) {
-
-      Lobbyists[objHandle].createdAt = newVal;
-   }
+   if (Lobbyists[objHandle]) { Lobbyists[objHandle].createdAt = newVal; }
 });
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Lobbyists[objHandle]) {
-
-      Lobbyists[objHandle].active = newVal;
-   }
+   if (Lobbyists[objHandle]) { Lobbyists[objHandle].active = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.NameHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Groups[objHandle]) {
-
-      Groups[objHandle].name = newVal;
-   }
+   if (Groups[objHandle]) { Groups[objHandle].name = newVal; }
 });
 
 dmz.object.data.observe(self, dmz.stance.TagHandle,
