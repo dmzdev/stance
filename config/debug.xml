@@ -3,7 +3,7 @@
 <plugin-list>
 <!--   <plugin name="dmzObjectPluginCleanup" scope="cleanup"/>-->
    <plugin name="dmzQtPluginObjectInspector"/>
-<!--   <plugin name="dmzQtPluginMessageInspector"/> -->
+   <plugin name="dmzQtPluginMessageInspector"/>
 </plugin-list>
 <cleanup>
    <cleanup>

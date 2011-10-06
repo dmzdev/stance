@@ -128,6 +128,7 @@ var dmz =
         , getVoteStatus: false
         , userAttribute: false
         , getLastTimeStamp: false
+        , getTags: false
         }
 
    , States =

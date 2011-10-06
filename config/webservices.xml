@@ -31,18 +31,21 @@
       <!-- <state name="Highlight"/> -->
    </filter>
 <!--   <db app="stance_1003_1004"/> -->
-   <db app="stance_ben"/>
+<!--   <db app="stance_ben"/> -->
+<!--   <message login-success="Archive_Loaded_Message"/> -->
 </web-services-object>
-<archive-module>
-<!--   <db app="stance_1003_1004"/> --> 
-   <db app="stance_ben"/>
-</archive-module>
+<archive-auto-cache>
+   <auto-restore value="false"/>
+   <message skipped="Login_Skipped" load="Login_Success_Message" database="Login_Message"/>
+</archive-auto-cache>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>
 <!--   <auto-login value="true"/>-->
 </login-dialog>
 <chds-login>
    <login-target name="dmzWebServicesModuleQt"/>
+   <defaultdb name="stance_ben"/>
+   <!-- <attribute database="databaseName"/> -->
    <picture-grid>
       <row>
          <col value="Bell"/>
