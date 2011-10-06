@@ -269,10 +269,7 @@ updateTags = function (voteHandle) {
             dmz.stance.TAG_MESSAGE.send(dmz.data.wrapHandle(voteHandle));
          });
       }
-      else {
-
-         VoteObjects[voteHandle].ui.tagButton.hide();
-      }
+      else { VoteObjects[voteHandle].ui.tagButton.hide(); }
    }
 };
 
@@ -786,14 +783,8 @@ removeFromVotes = function (voteItem, pastState) {
 
    if (voteItem.ui) {
 
-      if (pastState === dmz.stance.VOTE_APPROVAL_PENDING) {
-
-         voteArray = ApprovalVotes;
-      }
-      else if (pastState === dmz.stance.VOTE_ACTIVE) {
-
-         voteArray = ActiveVotes;
-      }
+      if (pastState === dmz.stance.VOTE_APPROVAL_PENDING) { voteArray = ApprovalVotes; }
+      else if (pastState === dmz.stance.VOTE_ACTIVE) { voteArray = ActiveVotes; }
       else if ((pastState === dmz.stance.VOTE_YES) || (pastState === dmz.stance.VOTE_NO) ||
          (pastState === dmz.stance.VOTE_DENIED)) {
 
@@ -1140,10 +1131,7 @@ checkForNotifications = function () {
             lastVoteTime = DecisionObjects[voteItem.decisionHandle].startTime;
          }
       }
-      if (lastVoteTime > lastUserTime) {
-
-         MainModule.highlight("Vote");
-      }
+      if (lastVoteTime > lastUserTime) { MainModule.highlight("Vote"); }
    });
 };
 
@@ -1184,8 +1172,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    }
    else if (objType.isOfType(dmz.stance.DecisionType)) {
 
-      DecisionObjects[objHandle] =
-         { handle: objHandle };
+      DecisionObjects[objHandle] = { handle: objHandle };
    }
 });
 

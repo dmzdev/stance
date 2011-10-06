@@ -582,10 +582,7 @@ editScenarioWidget.observe(self, "editGroupButton", "clicked", function () {
       groupTemplateComboBox.hide();
       homeScreenLabel.hide()
       pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(dmz.object.text(groupHandle, dmz.stance.BackgroundImageHandle)));
-      if (pic) {
-
-         groupTemplatePic.pixmap(pic);
-      }
+      if (pic) { groupTemplatePic.pixmap(pic); }
    }
    else { self.log.error ("No group templates found."); }
 

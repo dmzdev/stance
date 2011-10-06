@@ -50,19 +50,13 @@ function (objHandle, attrHandle, value) {
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
-   if (objType.isOfType(dmz.stance.GroupType)) {
-
-      Groups[objHandle] = { handle: objHandle };
-   }
+   if (objType.isOfType(dmz.stance.GroupType)) { Groups[objHandle] = { handle: objHandle }; }
 });
 
 dmz.object.text.observe(self, dmz.stance.GroupWikiLinkHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Groups[objHandle]) {
-
-      Groups[objHandle].wikiLink = newVal;
-   }
+   if (Groups[objHandle]) { Groups[objHandle].wikiLink = newVal; }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
@@ -81,10 +75,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
             wikiViewer.page().mainFrame().load(Groups[userGroupHandle].wikiLink);
          }
-         , function () {
-
-            wikiViewer.setHtml("<center><b>Loading...</b><center>");
-         }
+         , function () { wikiViewer.setHtml("<center><b>Loading...</b><center>"); }
          );
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }

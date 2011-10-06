@@ -133,10 +133,7 @@ initialButtonObserve = function () {
    else { tagButton.hide(); }
    if (dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag)) {
 
-      deleteButton.observe(self, "clicked", function () {
-
-         clickDelete();
-      });
+      deleteButton.observe(self, "clicked", function () { clickDelete(); });
       cancelButton.hide();
       deleteButton.show();
    }
@@ -153,14 +150,8 @@ clickDelete = function () {
 
       if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag)) { tagButton.hide(); }
       cancelButton.show();
-      deleteButton.observe(self, "clicked", function () {
-
-         confirmDelete()
-      });
-      cancelButton.observe(self, "clicked", function () {
-
-         clickCancel()
-      });
+      deleteButton.observe(self, "clicked", function () { confirmDelete() });
+      cancelButton.observe(self, "clicked", function () { clickCancel() });
    }
 };
 
@@ -176,17 +167,11 @@ confirmDelete = function () {
    }
 };
 
-clickCancel = function () {
-
-   initialButtonObserve();
-};
+clickCancel = function () { initialButtonObserve(); };
 
 tagButton.observe(self, "clicked", function () {
 
-   if (CurrentItem) {
-
-      dmz.stance.TAG_MESSAGE.send(dmz.data.wrapHandle(CurrentItem.handle));
-   }
+   if (CurrentItem) { dmz.stance.TAG_MESSAGE.send(dmz.data.wrapHandle(CurrentItem.handle)); }
 });
 
 addPdfButton.observe(self, "clicked", function () {
@@ -235,10 +220,7 @@ addPdfButton.observe(self, "clicked", function () {
    }
 });
 
-mouseEventHandler = function (object, event) {
-
-   mouseEvent(object, event.type());
-};
+mouseEventHandler = function (object, event) { mouseEvent(object, event.type()); };
 
 mouseEvent = function (object, type) {
 
@@ -418,10 +400,7 @@ indexOfMediaItem = function (mediaItem) {
 
    for (itor = 0; itor < CurrentArray.length; itor += 1) {
 
-      if (CurrentArray[itor].handle === mediaItem.handle) {
-
-         result = itor;
-      }
+      if (CurrentArray[itor].handle === mediaItem.handle) { result = itor; }
    }
    return result;
 };
@@ -690,64 +669,28 @@ function (objHandle, attrHandle, data) {
 dmz.object.text.observe(self, dmz.stance.TitleHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (PdfItems[objHandle]) {
-
-      PdfItems[objHandle].title = newVal;
-   }
-   if (Memos[objHandle]) {
-
-      Memos[objHandle].title = newVal;
-   }
-   if (Newspapers[objHandle]) {
-
-      Newspapers[objHandle].title = newVal;
-   }
-   if (Videos[objHandle]) {
-
-      Videos[objHandle].title = newVal;
-   }
+   if (PdfItems[objHandle]) { PdfItems[objHandle].title = newVal; }
+   if (Memos[objHandle]) { Memos[objHandle].title = newVal; }
+   if (Newspapers[objHandle]) { Newspapers[objHandle].title = newVal; }
+   if (Videos[objHandle]) { Videos[objHandle].title = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.TextHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (PdfItems[objHandle]) {
-
-      PdfItems[objHandle].link = newVal;
-   }
-   if (Memos[objHandle]) {
-
-      Memos[objHandle].link = newVal;
-   }
-   if (Newspapers[objHandle]) {
-
-      Newspapers[objHandle].link = newVal;
-   }
-   if (Videos[objHandle]) {
-
-      Videos[objHandle].link = newVal;
-   }
+   if (PdfItems[objHandle]) { PdfItems[objHandle].link = newVal; }
+   if (Memos[objHandle]) { Memos[objHandle].link = newVal; }
+   if (Newspapers[objHandle]) { Newspapers[objHandle].link = newVal; }
+   if (Videos[objHandle]) { Videos[objHandle].link = newVal; }
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (PdfItems[objHandle]) {
-
-      PdfItems[objHandle].createdAt = newVal;
-   }
-   else if (Memos[objHandle]) {
-
-      Memos[objHandle].createdAt = newVal;
-   }
-   else if (Newspapers[objHandle]) {
-
-      Newspapers[objHandle].createdAt = newVal;
-   }
-   else if (Videos[objHandle]) {
-
-      Videos[objHandle].createdAt = newVal;
-   }
+   if (PdfItems[objHandle]) { PdfItems[objHandle].createdAt = newVal; }
+   else if (Memos[objHandle]) { Memos[objHandle].createdAt = newVal; }
+   else if (Newspapers[objHandle]) { Newspapers[objHandle].createdAt = newVal; }
+   else if (Videos[objHandle]) { Videos[objHandle].createdAt = newVal; }
 });
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
@@ -778,10 +721,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
 dmz.object.text.observe(self, dmz.stance.NameHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Groups[objHandle]) {
-
-      Groups[objHandle].name = newVal;
-   }
+   if (Groups[objHandle]) { Groups[objHandle].name = newVal; }
 });
 
 dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
