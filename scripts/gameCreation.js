@@ -37,6 +37,7 @@ var dmz =
    , memoList = editScenarioWidget.lookup("memoListWidget")
    , videoList = editScenarioWidget.lookup("videoListWidget")
    , lobbyistList = editScenarioWidget.lookup("lobbyistListWidget")
+   , pdfItemList = editScenarioWidget.lookup("pdfItemListWidget")
    , permissionTable = editScenarioWidget.lookup("permissionTableWidget")
 
    , startGameButton = editScenarioWidget.lookup("startGameButton")
@@ -115,12 +116,16 @@ var dmz =
    , MediaGroupFLayout = CreateMediaInjectDialog.lookup("groupLayout")
    , MediaOkButton = CreateMediaInjectDialog.lookup("okButton")
    , MediaURLWarning = CreateMediaInjectDialog.lookup("urlWarning")
+   , ActiveCheckBox = CreateMediaInjectDialog.lookup("activeCheckBox")
+   , ActiveLabel = CreateMediaInjectDialog.lookup("activeLabel")
 
    , AddGroupDialog = dmz.ui.loader.load("AddGroupDialog.ui", editScenarioWidget)
    , groupButtonBox = AddGroupDialog.lookup("buttonBox")
    , groupTemplatePic = AddGroupDialog.lookup("pictureLabel")
    , groupTemplateComboBox = AddGroupDialog.lookup("templateComboBox")
    , groupNameEdit = AddGroupDialog.lookup("nameEdit")
+   , groupWikiLinkEdit = AddGroupDialog.lookup("wikiLinkEdit")
+   , homeScreenLabel = AddGroupDialog.lookup("homeScreenLabel")
 
    , groupLayout = editScenarioWidget.lookup("groupLayout")
 
@@ -158,6 +163,13 @@ var dmz =
            , urlEnd: "?stance:view&id="
            , listItems: {}
            , list: newspaperList
+           }
+        , PdfItem:
+           { type: dmz.stance.PdfItemType
+           , button: "addPdfItemButton"
+           , urlEnd: ""
+           , listItems: {}
+           , list: pdfItemList
            }
         , Lobbyist:
            { type: dmz.stance.LobbyistType
@@ -311,6 +323,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
       else if (objType.isOfType(dmz.stance.MemoType)) { item.type = MediaTypes.Memo; }
       else if (objType.isOfType(dmz.stance.NewspaperType)) { item.type = MediaTypes.Newspaper; }
       else if (objType.isOfType(dmz.stance.LobbyistType)) { item.type = MediaTypes.Lobbyist; }
+      else if (objType.isOfType(dmz.stance.PdfItemType)) { item.type = MediaTypes.PdfItem; }
       else if (objType.isOfType(dmz.stance.UserType)) { userItems[objHandle] = item; }
 
       if (item.type) {
@@ -558,16 +571,46 @@ editScenarioWidget.observe(self, "removeStudentButton", "clicked", function () {
 groupStudentList.observe(self, "itemActivated", userFromGroup);
 ungroupedStudentList.observe(self, "itemActivated", userToGroup);
 
+editScenarioWidget.observe(self, "editGroupButton", "clicked", function () {
+
+   var pic
+     , groupHandle = groupList[groupComboBox.currentIndex()]
+     ;
+
+   if (groupTemplateComboBox.count()) {
+
+      groupTemplateComboBox.hide();
+      homeScreenLabel.hide()
+      pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(dmz.object.text(groupHandle, dmz.stance.BackgroundImageHandle)));
+      if (pic) {
+
+         groupTemplatePic.pixmap(pic);
+      }
+   }
+   else { self.log.error ("No group templates found."); }
+
+   groupNameEdit.text(dmz.stance.getDisplayName(groupHandle));
+   groupWikiLinkEdit.text(dmz.object.text(groupHandle, dmz.stance.GroupWikiLinkHandle));
+   AddGroupDialog.open(self, function (value) {
+
+      dmz.object.text(groupHandle, dmz.stance.NameHandle, groupNameEdit.text());
+      dmz.object.text(groupHandle, dmz.stance.GroupWikiLinkHandle, groupWikiLinkEdit.text());
+   });
+});
+
 editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
 
    if (groupTemplateComboBox.count()) {
 
+      groupTemplateComboBox.show();
+      homeScreenLabel.show();
       groupTemplatePic.pixmap(TemplateBackgroundPixmaps[0]);
       groupTemplateComboBox.currentIndex(0);
    }
    else { self.log.error ("No group templates found."); }
 
    groupNameEdit.text("");
+   groupWikiLinkEdit.text("");
 
    AddGroupDialog.open(self, function (value) {
 
@@ -575,6 +618,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
         , idx
         , handle
         , name
+        , wikiLink
         , str
         , advisorImages
         , file
@@ -586,7 +630,9 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
 
          group = dmz.object.create(dmz.stance.GroupType);
          name = groupNameEdit.text();
+         wikiLink = groupWikiLinkEdit.text();
          dmz.object.text(group, dmz.stance.NameHandle, name);
+         dmz.object.text(group, dmz.stance.GroupWikiLinkHandle, wikiLink);
          advisorImages = setGroupTemplate(group, groupTemplateComboBox.currentIndex());
          advisorImages = advisorImages ? advisorImages : [];
          dmz.object.activate(group);
@@ -1203,14 +1249,62 @@ modifyInjectItem = function (widgetItem) {
 
    var handle = widgetItem ? widgetItem.data() : false
      , item = handle ? injectItems[handle] : false
+     , count = MediaGroupFLayout.rowCount()
+     , itor
      ;
 
    if (item) {
 
-      dmz.object.flag(handle, dmz.stance.ActiveHandle, !item.active);
+      //dmz.object.flag(handle, dmz.stance.ActiveHandle, !item.active);
+      for (itor = 0; itor < count; itor += 1) {
+
+         if (dmz.object.linkHandle(dmz.stance.MediaHandle, handle, groupList[itor])) {
+
+            MediaGroupFLayout.at(itor, 1).setChecked(true);
+         }
+         MediaGroupFLayout.at(itor, 1).enabled(false);
+      }
+      MediaTitleText.text(dmz.object.text(handle, dmz.stance.TitleHandle));
+      MediaUrlText.text(dmz.object.text(handle, dmz.stance.TextHandle));
+      MediaURLWarning.text("");
+
+      ActiveCheckBox.show();
+      ActiveLabel.show();
+      if (dmz.object.flag(handle, dmz.stance.ActiveHandle)) {
+
+         ActiveCheckBox.setChecked(true);
+      }
+      else { ActiveCheckBox.setChecked(false); }
+      ActiveCheckBox.show();
+
+      MediaOkButton.observe(self, "clicked", function () {
+
+         CreateMediaInjectDialog.accept();
+      });
+
+      CreateMediaInjectDialog.open(self, function (value) {
+
+         if (value) {
+
+            if (ActiveCheckBox.isChecked()) {
+
+               dmz.object.flag(handle, dmz.stance.ActiveHandle, true);
+            }
+            else { dmz.object.flag(handle, dmz.stance.ActiveHandle, false); }
+         }
+         for (itor = 0; itor < count; itor += 1) {
+
+            MediaGroupFLayout.at(itor, 1).setChecked(false);
+            MediaGroupFLayout.at(itor, 1).enabled(true);
+         }
+         ActiveCheckBox.hide();
+         ActiveLabel.hide();
+         MediaURLWarning.text("");
+         MediaUrlText.text("");
+         MediaTitleText.text("");
+      });
    }
 };
-
 
 // Media inject buttons
 mediaInjectButtons = function () {
@@ -1221,8 +1315,10 @@ mediaInjectButtons = function () {
 
          if (type.isOfType(dmz.stance.NewspaperType) ||
             type.isOfType(dmz.stance.MemoType) ||
-            type.isOfType(dmz.stance.VideoType)) {
+            type.isOfType(dmz.stance.VideoType) ||
+            type.isOfType(dmz.stance.PdfItemType)) {
 
+            ActiveCheckBox.setChecked(true);
             MediaOkButton.observe(self, "clicked", function () {
 
                var text = MediaUrlText.text()
@@ -1266,7 +1362,8 @@ mediaInjectButtons = function () {
                   dmz.object.flag(media, dmz.stance.UpdateStartTimeHandle, true);
                   links = dmz.object.superLinks(CurrentGameHandle, dmz.stance.MediaHandle);
                   dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
-                  dmz.object.flag(media, dmz.stance.ActiveHandle, true);
+                  if (ActiveCheckBox.isChecked()) { dmz.object.flag(media, dmz.stance.ActiveHandle, true); }
+                  else { dmz.object.flag(media, dmz.stance.ActiveHandle, false); }
                   dmz.object.link(dmz.stance.MediaHandle, media, CurrentGameHandle);
                   for (itor = 0; itor < count; itor += 1) {
 
@@ -1285,6 +1382,7 @@ mediaInjectButtons = function () {
                      MediaGroupFLayout.at(itor, 1).setChecked(false);
                   }
                }
+               else { MediaURLWarning.text(""); }
             });
          }
 

@@ -48,6 +48,7 @@ var dmz =
    , hil
    , beenOpened = false
    , userGroupHandle
+   , currentGameHandle
    , Groups = {}
    , PdfItems = {}
    , Memos = {}
@@ -86,6 +87,7 @@ var dmz =
    , insertIntoScrollArea
    , openWindow
    , checkNotifications
+   , exitFunction
    , init
    ;
 
@@ -204,6 +206,7 @@ addPdfButton.observe(self, "clicked", function () {
          dmz.object.link(dmz.stance.CreatedByHandle, mediaItemHandle, hil);
       }
       dmz.object.link(dmz.stance.MediaHandle, mediaItemHandle, hil);
+      dmz.object.link(dmz.stance.MediaHandle, mediaItemHandle, currentGameHandle);
       dmz.object.flag(mediaItemHandle, dmz.stance.UpdateStartTimeHandle, true);
       dmz.object.timeStamp(mediaItemHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
       dmz.object.flag(mediaItemHandle, dmz.stance.ActiveHandle, true);
@@ -497,8 +500,7 @@ checkNotifications = function () {
          if ((groupHandle === userGroupHandle) && (PdfItems[key].viewed.indexOf(hil) === -1) &&
             PdfItems[key].active) {
 
-            self.log.error("lob 1");
-            MainModule.highlight("Lobbyist");
+            MainModule.highlight("Bookcase");
          }
       });
    });
@@ -509,7 +511,6 @@ checkNotifications = function () {
          if ((groupHandle === userGroupHandle) && (Memos[key].viewed.indexOf(hil) === -1) &&
             Memos[key].active) {
 
-            self.log.error("memo 1");
             MainModule.highlight("Memo");
          }
       });
@@ -521,7 +522,6 @@ checkNotifications = function () {
          if ((groupHandle === userGroupHandle) && (Newspapers[key].viewed.indexOf(hil) === -1) &&
             Newspapers[key].active) {
 
-            self.log.error("news 1");
             MainModule.highlight("Newspaper");
          }
       });
@@ -533,11 +533,16 @@ checkNotifications = function () {
          if ((groupHandle === userGroupHandle) && (Videos[key].viewed.indexOf(hil) === -1) &&
             Videos[key].active) {
 
-            self.log.error("vid 1");
             MainModule.highlight("Video");
          }
       });
    });
+};
+
+exitFunction = function () {
+
+   checkNotifications();
+   pdfWebView.setHtml("<Center><b>Loading...</b></center>");
 };
 
 dmz.object.create.observe(self, function (objHandle, objType) {
@@ -584,6 +589,10 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    else if (objType.isOfType(dmz.stance.GroupType)) {
 
       Groups[objHandle] = { handle: objHandle };
+   }
+   else if (objType.isOfType(dmz.stance.GameType)) {
+
+      currentGameHandle = objHandle;
    }
 });
 
@@ -819,15 +828,14 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          PdfItems[supHandle].groups.push(subHandle);
          dmz.time.setTimer(self, function () {
 
+            if ((PdfItems[supHandle].viewed.indexOf(hil) === -1) && PdfItems[supHandle].active) {
+
+               MainModule.highlight("Bookcase");
+            }
             if ((indexOfMediaItem(PdfItems[supHandle]) === -1) && beenOpened){
 
                initiateMediaPostItemUi(PdfItems[supHandle]);
                insertIntoScrollArea(PdfItems[supHandle]);
-               if ((PdfItems[supHandle].viewed.indexOf(hil) === -1) && PdfItems[supHandle].active) {
-
-                  self.log.error("lob 2");
-                  MainModule.highlight("Lobbyist");
-               }
             }
          });
       }
@@ -843,15 +851,14 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          Memos[supHandle].groups.push(subHandle);
          dmz.time.setTimer(self, function () {
 
+            if ((Memos[supHandle].viewed.indexOf(hil) === -1) && Memos[supHandle].active) {
+
+               MainModule.highlight("Memos");
+            }
             if ((indexOfMediaItem(Memos[supHandle]) === -1) && beenOpened){
 
                initiateMediaPostItemUi(Memos[supHandle]);
                insertIntoScrollArea(Memos[supHandle]);
-               if ((Memos[supHandle].viewed.indexOf(hil) === -1) && Memos[supHandle].active) {
-
-                  self.log.error("memo 2");
-                  MainModule.highlight("Memos");
-               }
             }
          });
       }
@@ -867,15 +874,14 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          Newspapers[supHandle].groups.push(subHandle);
          dmz.time.setTimer(self, function () {
 
+            if ((Newspapers[supHandle].viewed.indexOf(hil) === -1) && Newspapers[supHandle].active) {
+
+               MainModule.highlight("Newspaper");
+            }
             if ((indexOfMediaItem(Newspapers[supHandle]) === -1) && beenOpened){
 
                initiateMediaPostItemUi(Newspapers[supHandle]);
                insertIntoScrollArea(Newspapers[supHandle]);
-               if ((Newspapers[supHandle].viewed.indexOf(hil) === -1) && Newspapers[supHandle].active) {
-
-                  self.log.error("news 2");
-                  MainModule.highlight("Newspaper");
-               }
             }
          });
       }
@@ -891,15 +897,14 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          Videos[supHandle].groups.push(subHandle);
          dmz.time.setTimer(self, function () {
 
+            if ((Videos[supHandle].viewed.indexOf(hil) === -1) && Videos[supHandle].active) {
+
+               MainModule.highlight("Video");
+            }
             if ((indexOfMediaItem(Videos[supHandle]) === -1) && beenOpened){
 
                initiateMediaPostItemUi(Videos[supHandle]);
                insertIntoScrollArea(Videos[supHandle]);
-               if ((Videos[supHandle].viewed.indexOf(hil) === -1) && Videos[supHandle].active) {
-
-                  self.log.error("vid 2");
-                  MainModule.highlight("Video");
-               }
             }
          });
       }
@@ -923,20 +928,20 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , pdfViewer
          , function () {
 
-            changeState("mediaItem");
+            changeState("PdfItem");
             openWindow();
          }
-         , checkNotifications
+         , exitFunction
          );
       module.addPage
          ( "Memo"
          , "Bookcase"
          , function () {
 
-            changeState("PdfItem");
+            changeState("Memo");
             openWindow();
          }
-         , checkNotifications
+         , exitFunction
          );
       module.addPage
          ( "Newspaper"
@@ -946,7 +951,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             changeState("Newspaper");
             openWindow();
          }
-         , checkNotifications
+         , exitFunction
          );
       module.addPage
          ( "Video"
@@ -956,7 +961,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             changeState("Video");
             openWindow();
          }
-         , checkNotifications
+         , exitFunction
          );
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }

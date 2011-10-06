@@ -62,6 +62,12 @@ list.push(function (objs) {
    objs.forEach(function (group) {
 
       var handle;
+
+      dmz.object.text(group, dmz.stance.BookcaseImageHandle, "Cartel1_bookcase");
+      dmz.object.text(group, dmz.stance.HelpImageHandle, "Cartel1_help");
+      dmz.object.text(group, dmz.stance.ResourceImageHandle, "Cartel1_resources");
+      dmz.object.text(group, dmz.stance.GroupWikiLinkHandle, "http://www.google.com");
+
       self.log.warn
          ( "Adding Help Forum to:", dmz.stance.getDisplayName(group)
          , dmz.object.superLinks(group, dmz.stance.HelpLink)

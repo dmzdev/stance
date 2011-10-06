@@ -98,7 +98,7 @@
    </resource>
 <!-- DEMO OFFICE IMAGES -->
 <!-- DEFAULT IMAGES -->
-   <resource name="demo_resource" file="Demo_resource.png">
+   <resource name="demo_resources" file="Demo_resource.png">
       <loc x="0" y="0"/>
    </resource>
    <resource name="demo_adv0" file="Demo_ad01.png">
@@ -525,7 +525,7 @@
       <loc x="271" y="508"/>
       <offset x="35" y="0"/>
    </resource>
-   <resource name="Cartel2_resources" file="Cartel2_resources.pn">
+   <resource name="Cartel2_resources" file="Cartel2_resource.png">
       <loc x="0" y="52"/>
    </resource>
    <resource name="Cartel2_tv" file="Cartel2_tv.png">
@@ -587,7 +587,7 @@
       <loc x="307" y="513"/>
       <offset x="15" y="5"/>
    </resource>
-   <resource name="ACLU_resourceboard" file="ACLU_resourceboard.png">
+   <resource name="ACLU_resources" file="ACLU_resourceboard.png">
       <loc x="0" y="17"/>
    </resource>
    <resource name="ACLU_tv" file="ACLU_tv.png">

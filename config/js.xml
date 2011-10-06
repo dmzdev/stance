@@ -28,10 +28,11 @@
    <instance name="login"/>
    <instance name="advisor"/>
    <instance name="vote"/>
-   <instance name="fix"/>
+<!--   <instance name="fix"/>-->
    <instance name="userInfo"/>
    <instance name="media"/>
    <instance name="tag"/>
+   <instance name="wiki"/>
 </javascript>
 <login>
 <!--   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>-->

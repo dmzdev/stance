@@ -81,6 +81,7 @@ var dmz =
         , Exit: false
         , Help: false
         , Bookcase: false
+        , Resource: false
         }
    , LoggedIn = false
    , groupAdvisors = {}
@@ -203,7 +204,6 @@ updateGraphicsForGroup = function (groupHandle) {
                );
          }
       }
-
       Object.keys(PageLink).forEach(function (key) {
 
          var item
@@ -223,10 +223,10 @@ updateGraphicsForGroup = function (groupHandle) {
          case "Newspaper": attr = dmz.stance.NewspaperImageHandle; break;
          case "Memo": attr = dmz.stance.InboxImageHandle; break;
          case "Lobbyist": attr = dmz.stance.PhoneImageHandle; break;
-         case "Resource": attr = dmz.stance.ResourceImageHandle; break;
          case "Vote": attr = dmz.stance.VoteImageHandle; break;
          case "Help": attr = dmz.stance.HelpImageHandle; break;
          case "Bookcase": attr = dmz.stance.BookcaseImageHandle; break;
+         case "Resource": attr = dmz.stance.ResourceImageHandle; break;
          default: self.log.warn ("Key ("+key+") has no associated handle."); break;
          }
          if (attr) {
@@ -464,6 +464,7 @@ setupMainWindow = function () {
 _exports.addPage = function (name, widget, func, onHome) {
 
    var dialog;
+
    if (name && PageLink[name] && widget) {
 
       if (PageLink[widget] && PageLink[widget].dialog) {
@@ -483,7 +484,6 @@ _exports.addPage = function (name, widget, func, onHome) {
       PageLink[name].pixmap.cursor(dmz.ui.consts.PointingHandCursor);
       PageLink[name].widget = widget;
    }
-   else { self.log.error(name, widget, PageLink[name]); }
 };
 
 _exports.highlight = function (name) {

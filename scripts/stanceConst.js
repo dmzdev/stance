@@ -67,6 +67,7 @@ var dmz =
         , AdvisorPermissionsHandle: dmz.defs.createNamedHandle("advisor_permissions")
         , ObserverPermissionsHandle: dmz.defs.createNamedHandle("observer_permissions")
         , TechPermissionsHandle: dmz.defs.createNamedHandle("tech_permissions")
+        , GroupWikiLinkHandle: dmz.defs.createNamedHandle("wiki_link")
 
         // Link Attr Handles
         , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
