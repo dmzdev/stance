@@ -636,6 +636,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
          advisorImages = setGroupTemplate(group, groupTemplateComboBox.currentIndex());
          advisorImages = advisorImages ? advisorImages : [];
          dmz.object.activate(group);
+         dmz.object.scalar(group, dmz.stance.ID, (dmz.object.superLinks(CurrentGameHandle, dmz.stance.GameGroupHandle) || []).length);
          dmz.object.link(dmz.stance.GameGroupHandle, group, CurrentGameHandle);
 
          admins = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameObservers) || [];

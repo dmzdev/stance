@@ -28,7 +28,7 @@ var dmz =
    }
 
    // UI Elements
-   , pdfViewer = dmz.ui.loader.load("StudentPdfDialog.ui")
+   , pdfViewer = dmz.ui.loader.load("MediaDialog.ui")
    , pdfScrollArea = pdfViewer.lookup("pdfScrollArea")
    , scrollFormContent = pdfScrollArea.widget()
    , pdfContentLayout = dmz.ui.layout.createVBoxLayout()
@@ -368,7 +368,7 @@ initiateMediaPostItemUi = function (mediaItem) {
    if (mediaItem && !mediaItem.ui) {
 
       mediaItem.ui = {};
-      mediaItem.ui.postItem = dmz.ui.loader.load("PdfPostItem.ui");
+      mediaItem.ui.postItem = dmz.ui.loader.load("MediaPostItem.ui");
       mediaItem.ui.titleLabel = mediaItem.ui.postItem.lookup("titleLabel");
       mediaItem.ui.createdByLabel = mediaItem.ui.postItem.lookup("postedByLabel");
       mediaItem.ui.tagLabel = mediaItem.ui.postItem.lookup("tagLabel");
@@ -756,18 +756,22 @@ function (objHandle, attrHandle, newVal, oldVal) {
    if (PdfItems[objHandle]) {
 
       PdfItems[objHandle].active = newVal;
+      if (newVal && !oldVal) { checkNotifications(); }
    }
    else if (Memos[objHandle]) {
 
       Memos[objHandle].active = newVal;
+      if (newVal && !oldVal) { checkNotifications(); }
    }
    else if (Newspapers[objHandle]) {
 
       Newspapers[objHandle].active = newVal;
+      if (newVal && !oldVal) { checkNotifications(); }
    }
    else if (Videos[objHandle]) {
 
       Videos[objHandle].active = newVal;
+      if (newVal && !oldVal) { checkNotifications(); }
    }
 });
 
