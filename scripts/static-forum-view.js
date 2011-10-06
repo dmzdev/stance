@@ -36,7 +36,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    var retData = { update: false, onHome: false, widget: false, observers: {} }
      , content
      , avatar
-        // UI elements
+     // UI elements
      , _view = false
      , _scrollArea = false
      , _mainLayout = false

@@ -30,9 +30,6 @@
       <!-- <state name="Selected"/> -->
       <!-- <state name="Highlight"/> -->
    </filter>
-<!--   <db app="stance_1003_1004"/> -->
-<!--   <db app="stance_ben"/> -->
-<!--   <message login-success="Archive_Loaded_Message"/> -->
 </web-services-object>
 <archive-auto-cache>
    <auto-restore value="false"/>

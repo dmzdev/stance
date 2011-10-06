@@ -62,6 +62,12 @@ list.push(function (objs) {
    objs.forEach(function (group) {
 
       var handle;
+
+      dmz.object.text(group, dmz.stance.BookcaseImageHandle, "Cartel1_bookcase");
+      dmz.object.text(group, dmz.stance.HelpImageHandle, "Cartel1_help");
+      dmz.object.text(group, dmz.stance.ResourceImageHandle, "Cartel1_resources");
+      dmz.object.text(group, dmz.stance.GroupWikiLinkHandle, "http://www.google.com");
+
       self.log.warn
          ( "Adding Help Forum to:", dmz.stance.getDisplayName(group)
          , dmz.object.superLinks(group, dmz.stance.HelpLink)
@@ -84,6 +90,7 @@ list.push(function (objs) {
    objs.forEach(function (user) {
 
       var permissions = dmz.object.state(user, dmz.stance.Permissions);
+
       if (!permissions || !permissions.bool()) {
 
          if (dmz.object.flag(user, dmz.stance.AdminHandle)) {
@@ -95,6 +102,7 @@ list.push(function (objs) {
 
          self.log.warn ("Resetting permissions for", dmz.stance.getDisplayName(user));
          dmz.object.state(user, dmz.stance.Permissions, permissions);
+         dmz.object.flag(user, dmz.stance.ActiveHandle, true);
       }
    });
 });
@@ -111,6 +119,7 @@ list.push(function (objs) {
    objs.forEach(function (user) {
 
       var permission = -1;
+
       if (dmz.stance.isAllowed(user, dmz.stance.SwitchGroupFlag)) {
 
          if (dmz.stance.isAllowed(user, dmz.stance.AlterMediaFlag)) {
@@ -131,7 +140,11 @@ list.push(function (objs) {
 
          permission = dmz.stance.ADVISOR_PERMISSION;
       }
-      if (permission !== -1) { dmz.object.scalar(user, dmz.stance.Permissions, permission); }
+      if (permission !== -1) {
+
+         dmz.object.scalar(user, dmz.stance.Permissions, permission);
+         dmz.object.flag(user, dmz.stance.ActiveHandle, true);
+      }
    });
 });
 
