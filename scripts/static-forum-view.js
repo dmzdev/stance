@@ -596,6 +596,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , hil = dmz.object.hil()
            ;
 
+         _Self.log.warn ("create post:", hil, parent,  message);
          if (hil && parent && message) {
 
             post = dmz.object.create(_PostType);

@@ -59,9 +59,10 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       dmz.object.text.observe(self, dmz.stance.TextHandle, RetData.observers.text);
       dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, RetData.observers.createdAt);
       dmz.object.link.observe(self, dmz.stance.CreatedByHandle, RetData.observers.createdBy);
-      dmz.object.link.observe(self, dmz.stance.ForumLink, RetData.observers.forumLink);
+      dmz.object.link.observe(self, dmz.stance.HelpLink, RetData.observers.forumLink);
       dmz.object.link.observe(self, dmz.stance.ParentHandle, RetData.observers.parentLink);
       dmz.object.flag.observe(self, dmz.stance.ActiveHandle, RetData.observers.onActive);
+      dmz.object.data.observe(self, dmz.stance.TagHandle, RetData.observers.tag);
       dmz.object.state.observe(self, dmz.stance.Permissions, RetData.observers.permissions);
 
       dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
