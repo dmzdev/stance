@@ -38,6 +38,7 @@ var dmz =
    , Newspapers = {}
    , Videos = {}
    , Lobbyists = {}
+   , PdfItems = {}
    , Posts = {}
    , Comments = {}
    , Questions = {}
@@ -83,6 +84,7 @@ var dmz =
    , setNewspapersSeenLabel
    , setVideosSeenLabel
    , setMemosSeenLabel
+   , setPdfItemsSeenLabel
    , setLastLoginSeenLabel
    , setUserNameLabel
    , setVotedOnLabel
@@ -1235,6 +1237,24 @@ setMemosSeenLabel = function (userHandle) {
    }
 };
 
+setPdfItemsSeenLabel = function (userHandle) {
+
+   var tempHandle
+     , totalGroupPdfItems
+     , userSeenPdfItems
+     ;
+
+   if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].groupHandle &&
+      Groups[Users[userHandle].groupHandle]) {
+
+      Users[userHandle].ui.pdfItemsSeenLabel.text(
+         "<b>PDFs Seen: </b>" +
+         Users[userHandle].pdfItemsSeen.length +
+         "<b>/</b>" +
+         Groups[Users[userHandle].groupHandle].pdfItems.length);
+   }
+};
+
 setLastLoginSeenLabel = function (userHandle) {
 
    if (Users[userHandle] && Users[userHandle].ui) {
@@ -1345,6 +1365,7 @@ createUserWidget = function (userHandle) {
       userItem.ui.newspapersSeenLabel = userWidget.lookup("newspapersSeenLabel");
       userItem.ui.videosSeenLabel = userWidget.lookup("videosSeenLabel");
       userItem.ui.lobbyistsSeenLabel = userWidget.lookup("lobbyistsSeenLabel");
+      userItem.ui.pdfItemsSeenLabel = userWidget.lookup("pdfItemsSeenLabel");
       userItem.ui.votedOnLabel = userWidget.lookup("votedOnLabel");
       userItem.ui.showUserStatisticsButton = userWidget.lookup("userStatisticsButton");
       userItem.ui.contentLayout = userWidget.lookup("contentLayout");
@@ -1378,6 +1399,7 @@ createUserWidget = function (userHandle) {
       setVideosSeenLabel(userItem.handle);
       setNewspapersSeenLabel(userItem.handle);
       setLobbyistsSeenLabel(userItem.handle);
+      setPdfItemsSeenLabel(userItem.handle);
       setVotedOnLabel(userItem.handle);
       setUserPictureLabel(userItem.handle);
       setVotesSeenLabel(userItem.handle);
@@ -1409,6 +1431,7 @@ fillGroupInfoWidget = function (groupHandle) {
       groupItem.ui.totalVotesLabel = groupWidget.lookup("videosSeenLabel");
       groupItem.ui.totalQuestionsLabel = groupWidget.lookup("lobbyistsSeenLabel");
       groupItem.ui.totalMediaLabel = groupWidget.lookup("votesSeenLabel");
+      groupWidget.lookup("pdfItemsSeenLabel").hide();
       groupItem.ui.memberCountLabel = groupWidget.lookup("votedOnLabel");
       groupItem.ui.showGroupStatisticsButton = groupWidget.lookup("userStatisticsButton");
       groupItem.ui.contentLayout = groupWidget.lookup("contentLayout");
@@ -1592,6 +1615,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , newspapers: []
          , videos: []
          , lobbyists: []
+         , pdfItems: []
          , members: []
          , posts: []
          , comments: []
@@ -1615,6 +1639,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , videosSeen: []
          , newspapersSeen: []
          , lobbyistsSeen: []
+         , pdfItemsSeen: []
          , posts: []
          , comments: []
          , questions: []
@@ -1624,6 +1649,10 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          Users[objHandle].latestVoteTime = dmz.stance.userAttribute(
             objHandle,
             dmz.stance.VoteTimeHandle);
+         if (dmz.stance.isAllowed(objHandle, dmz.stance.SwitchGroupFlag) || !Users[objHandle].active) {
+
+            delete Users[objHandle];
+         }
       });
    }
    else if (objType.isOfType(dmz.stance.MemoType)) {
@@ -1641,6 +1670,10 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    else if (objType.isOfType(dmz.stance.LobbyistType)) {
 
       Lobbyists[objHandle] = { handle: objHandle };
+   }
+   else if (objType.isOfType(dmz.stance.PdfItemType)) {
+
+      PdfItems[objHandle] = { handle: objHandle };
    }
    else if (objType.isOfType(dmz.stance.VoteType)) {
 
@@ -1677,15 +1710,6 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , votesPassed: []
          , votesFailed: []
          };
-   }
-});
-
-dmz.object.flag.observe(self, dmz.stance.AdminHandle,
-function (objHandle, attrHandle, newVal, oldVal) {
-
-   if (Users[objHandle]) {
-
-      Users[objHandle].adminFlag = newVal;
    }
 });
 
@@ -1732,7 +1756,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Users[supHandle].groupHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         if (!dmz.object.flag(supHandle, dmz.stance.AdminHandle) && Groups[subHandle]) {
+         if (!dmz.stance.isAllowed(supHandle, dmz.stance.SwitchGroupFlag) && Users[supHandle] &&
+            Groups[subHandle]) {
 
             Groups[subHandle].members.push(supHandle);
          }
@@ -1767,6 +1792,10 @@ function (objHandle, attrHandle, newVal, oldVal) {
 
       Lobbyists[objHandle].message = newVal;
    }
+   else if (PdfItems[objHandle]) {
+
+      PdfItems[objHandle].link = newVal;
+   }
    else if (Comments[objHandle]) {
 
       Comments[objHandle].text = newVal;
@@ -1796,9 +1825,43 @@ function (objHandle, attrHandle, newVal, oldVal) {
 
       Lobbyists[objHandle].title = newVal;
    }
+   else if (PdfItems[objHandle]) {
+
+      PdfItems[objHandle].title = newVal;
+   }
    else if (Advisors[objHandle]) {
 
       Advisors[objHandle].title = newVal;
+   }
+});
+
+dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
+function (objHandle, attrHandle, newVal, oldVal) {
+
+   if (Memos[objHandle]) {
+
+      Memos[objHandle].active = newVal;
+
+   }
+   else if (Newspapers[objHandle]) {
+
+      Newspapers[objHandle].active = newVal;
+   }
+   else if (Videos[objHandle]) {
+
+      Videos[objHandle].active = newVal;
+   }
+   else if (Lobbyists[objHandle]) {
+
+      Lobbyists[objHandle].active = newVal;
+   }
+   else if (PdfItems[objHandle]) {
+
+      PdfItems[objHandle].active = newVal;
+   }
+   else if (Users[objHandle]) {
+
+      Users[objHandle].active = newVal;
    }
 });
 
@@ -1858,13 +1921,16 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle]) {
+         if (Memos[supHandle].active) {
 
-            Users[subHandle].memosSeen.push(supHandle);
-         }
-         else if (Groups[subHandle]) {
+            if (Users[subHandle]) {
 
-            Groups[subHandle].memos.push(subHandle);
+               Users[subHandle].memosSeen.push(supHandle);
+            }
+            else if (Groups[subHandle]) {
+
+               Groups[subHandle].memos.push(subHandle);
+            }
          }
       });
    }
@@ -1872,13 +1938,16 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle]) {
+         if (Newspapers[supHandle].active) {
 
-            Users[subHandle].newspapersSeen.push(supHandle);
-         }
-         else if (Groups[subHandle]) {
+            if (Users[subHandle]) {
 
-            Groups[subHandle].newspapers.push(subHandle);
+               Users[subHandle].newspapersSeen.push(supHandle);
+            }
+            else if (Groups[subHandle]) {
+
+               Groups[subHandle].newspapers.push(subHandle);
+            }
          }
       });
    }
@@ -1886,13 +1955,16 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle]) {
+         if (Videos[supHandle].active) {
 
-            Users[subHandle].videosSeen.push(supHandle);
-         }
-         else if (Groups[subHandle]) {
+            if (Users[subHandle]) {
 
-            Groups[subHandle].videos.push(subHandle);
+               Users[subHandle].videosSeen.push(supHandle);
+            }
+            else if (Groups[subHandle]) {
+
+               Groups[subHandle].videos.push(subHandle);
+            }
          }
       });
    }
@@ -1900,13 +1972,33 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle]) {
+         if (Lobbyists[supHandle].active) {
 
-            Users[subHandle].lobbyistsSeen.push(supHandle);
+            if (Users[subHandle]) {
+
+               Users[subHandle].lobbyistsSeen.push(supHandle);
+            }
+            else if (Groups[subHandle]) {
+
+               Groups[subHandle].lobbyists.push(subHandle);
+            }
          }
-         else if (Groups[subHandle]) {
+      });
+   }
+   else if (dmz.object.type(supHandle).isOfType(dmz.stance.PdfItemType)) {
 
-            Groups[subHandle].lobbyists.push(subHandle);
+      dmz.time.setTimer(self, function () {
+
+         if (PdfItems[supHandle].active) {
+
+            if (Users[subHandle]) {
+
+               Users[subHandle].pdfItemsSeen.push(supHandle);
+            }
+            else if (Groups[subHandle]) {
+
+               Groups[subHandle].pdfItems.push(supHandle);
+            }
          }
       });
    }
@@ -2025,7 +2117,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Votes[supHandle].createdByHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle]) {
+         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
+            Users[subHandle].active) {
 
             Users[subHandle].votesCreated.push(subHandle);
             if (Votes[supHandle].state !== undefined) {
@@ -2059,7 +2152,11 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Posts[supHandle].createdByHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle]) { Users[subHandle].posts.push(supHandle); }
+         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
+            Users[subHandle].active) {
+
+            Users[subHandle].posts.push(supHandle);
+         }
       });
    }
    else if (Comments[supHandle]) {
@@ -2067,14 +2164,19 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Comments[supHandle].createdByHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle]) { Users[subHandle].comments.push(supHandle); }
+         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
+            Users[subHandle].active) {
+
+            Users[subHandle].comments.push(supHandle);
+         }
       });
    }
    else if (Questions[supHandle]) {
 
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle]) {
+         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
+            Users[subHandle].active) {
 
             Users[subHandle].questions.push(supHandle);
          }
@@ -2169,7 +2271,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Decisions[subHandle].noVotes = (Decisions[subHandle].noVotes || 0) + 1;
       dmz.time.setTimer (self, function () {
 
-         if (Users[supHandle]) {
+         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
+            Users[subHandle].active) {
 
             Users[supHandle].votedNoOn.push(subHandle);
          }
@@ -2185,7 +2288,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Decisions[subHandle].noVotes = (Decisions[subHandle].yesVotes || 0) + 1;
       dmz.time.setTimer (self, function () {
 
-         if (Users[supHandle]) {
+         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
+            Users[subHandle].active) {
 
             Users[supHandle].votedYesOn.push(subHandle);
          }

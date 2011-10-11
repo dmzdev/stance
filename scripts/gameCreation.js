@@ -488,6 +488,7 @@ userFromGroup = function (item) {
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
 
    var data = injectItems[handle] || userItems[handle];
+
    if (data) {
 
       data.active = value;
@@ -1251,16 +1252,26 @@ modifyInjectItem = function (widgetItem) {
    var handle = widgetItem ? widgetItem.data() : false
      , item = handle ? injectItems[handle] : false
      , count = MediaGroupFLayout.rowCount()
+     , type
      , itor
      , pic
+     , urlEnd
      ;
 
    if (item) {
 
-      if (dmz.object.type(handle).isOfType(dmz.stance.MemoType) ||
-         dmz.object.type(handle).isOfType(dmz.stance.NewspaperType) ||
-         dmz.object.type(handle).isOfType(dmz.stance.VideoType) ||
-         dmz.object.type(handle).isOfType(dmz.stance.PdfItemType)) {
+      type = dmz.object.type(handle);
+      Object.keys(MediaTypes).forEach(function (key) {
+
+         if (MediaTypes[key].type.isOfType(type)) {
+
+            urlEnd = MediaTypes[key].urlEnd;
+         }
+      });
+      if (type.isOfType(dmz.stance.MemoType) ||
+         type.isOfType(dmz.stance.NewspaperType) ||
+         type.isOfType(dmz.stance.VideoType) ||
+         type.isOfType(dmz.stance.PdfItemType)) {
 
          for (itor = 0; itor < count; itor += 1) {
 
@@ -1273,19 +1284,23 @@ modifyInjectItem = function (widgetItem) {
          MediaTitleText.text(dmz.object.text(handle, dmz.stance.TitleHandle));
          MediaUrlText.text(dmz.object.text(handle, dmz.stance.TextHandle));
          MediaURLWarning.text("");
-
          ActiveCheckBox.show();
          ActiveLabel.show();
-         if (dmz.object.flag(handle, dmz.stance.ActiveHandle)) {
-
-            ActiveCheckBox.setChecked(true);
-         }
-         else { ActiveCheckBox.setChecked(false); }
+         ActiveCheckBox.setChecked(dmz.object.flag(handle, dmz.stance.ActiveHandle));
          ActiveCheckBox.show();
+
 
          MediaOkButton.observe(self, "clicked", function () {
 
-            CreateMediaInjectDialog.accept();
+            if (MediaUrlText.text().lastIndexOf(urlEnd) === -1) {
+
+               MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
+            }
+            else if (!MediaTitleText.text()) {
+
+               MediaURLWarning.text("<font color=\"red\"> Invalid Title.</font>");
+            }
+            else { CreateMediaInjectDialog.accept(); }
          });
 
          CreateMediaInjectDialog.open(self, function (value) {
@@ -1297,6 +1312,8 @@ modifyInjectItem = function (widgetItem) {
                   dmz.object.flag(handle, dmz.stance.ActiveHandle, true);
                }
                else { dmz.object.flag(handle, dmz.stance.ActiveHandle, false); }
+               dmz.object.text(handle, dmz.stance.TitleHandle, MediaTitleText.text());
+               dmz.object.text(handle, dmz.stance.TextHandle, MediaUrlText.text());
             }
             for (itor = 0; itor < count; itor += 1) {
 
@@ -1310,7 +1327,7 @@ modifyInjectItem = function (widgetItem) {
             MediaTitleText.text("");
          });
       }
-      else if (dmz.object.type(handle).isOfType(dmz.stance.LobbyistType)) {
+      else if (type.isOfType(dmz.stance.LobbyistType)) {
 
          lobbyistPictureList.hide();
          lobbyistGroupList.hide();
@@ -1376,6 +1393,8 @@ mediaInjectButtons = function () {
             type.isOfType(dmz.stance.PdfItemType)) {
 
             ActiveCheckBox.setChecked(true);
+            ActiveCheckBox.show();
+            ActiveLabel.show();
             MediaOkButton.observe(self, "clicked", function () {
 
                var text = MediaUrlText.text()
@@ -1394,6 +1413,10 @@ mediaInjectButtons = function () {
                if (text.lastIndexOf(urlEnd) === -1) {
 
                   MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
+               }
+               else if (!MediaTitleText.text()) {
+
+                  MediaURLWarning.text("<font color=\"red\"> Invalid Title.</font>");
                }
                else if (!somethingChecked) {
 

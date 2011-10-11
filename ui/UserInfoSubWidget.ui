@@ -91,6 +91,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="pdfItemsSeenLabel">
+       <property name="text">
+        <string>pdfItemsSeenLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="votesSeenLabel">
        <property name="text">
         <string>VotesSeenLabel</string>
