@@ -109,10 +109,7 @@ ShowStudentsMessage.subscribe(self, function () {
       createGroupTabs();
       userInfoWidget.show();
    }
-   else if (previouslyOpened) {
-
-      userInfoWidget.show();
-   }
+   else if (previouslyOpened) { userInfoWidget.show(); }
 });
 
 createPieChart = function (data, labelFnc, scene, zero) {
@@ -131,7 +128,7 @@ createPieChart = function (data, labelFnc, scene, zero) {
       graphLabel = scene.addText(labelFnc(total));
       graphLabel.pos(20 + x, y);
       startAngle = 0
-      data.forEach(function (item, index){
+      data.forEach(function (item, index) {
 
          var spanAngle = item.amt / total * 360 * 16
            , ellipse = scene.addEllipse(x + 30, y + 30, 200, 200, startAngle, spanAngle, 0, item.brush)
@@ -1155,10 +1152,7 @@ setVotesSeenLabel = function (userHandle) {
 
             greaterThanUserTime = true;
          }
-         if (greaterThanUserTime) {
-
-            unseenVotes += 1;
-         }
+         if (greaterThanUserTime) { unseenVotes += 1; }
       });
       totalGroupVotes = totalGroupVotes.length;
       Users[userHandle].ui.votesSeenLabel.text("<b>Votes Seen: </b>" + (totalGroupVotes - unseenVotes) + "<b>/</b>" + totalGroupVotes);
@@ -1716,36 +1710,21 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 dmz.object.text.observe(self, dmz.stance.NameHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Groups[objHandle]) {
-
-      Groups[objHandle].name = newVal;
-   }
-   else if (Users[objHandle]) {
-
-      Users[objHandle].uuid = newVal;
-   }
-   else if (Advisors[objHandle]) {
-
-      Advisors[objHandle].name = newVal;
-   }
+   if (Groups[objHandle]) { Groups[objHandle].name = newVal; }
+   else if (Users[objHandle]) { Users[objHandle].uuid = newVal; }
+   else if (Advisors[objHandle]) { Advisors[objHandle].name = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.DisplayNameHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Users[objHandle]) {
-
-      Users[objHandle].name = newVal;
-   }
+   if (Users[objHandle]) { Users[objHandle].name = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.PictureHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Users[objHandle]) {
-
-      Users[objHandle].picture = newVal;
-   }
+   if (Users[objHandle]) { Users[objHandle].picture = newVal; }
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
@@ -1768,150 +1747,68 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 dmz.object.text.observe(self, dmz.stance.TextHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Votes[objHandle]) {
-
-      Votes[objHandle].question = newVal;
-   }
-   else if (Decisions[objHandle]) {
-
-      Decisions[objHandle].advisorResponse = newVal;
-   }
-   else if (Memos[objHandle]) {
-
-      Memos[objHandle].link = newVal;
-   }
-   else if (Newspapers[objHandle]) {
-
-      Newspapers[objHandle].link = newVal;
-   }
-   else if (Videos[objHandle]) {
-
-      Videos[objHandle].link = newVal;
-   }
-   else if (Lobbyists[objHandle]) {
-
-      Lobbyists[objHandle].message = newVal;
-   }
-   else if (PdfItems[objHandle]) {
-
-      PdfItems[objHandle].link = newVal;
-   }
-   else if (Comments[objHandle]) {
-
-      Comments[objHandle].text = newVal;
-   }
-   else if (Posts[objHandle]) {
-
-      Posts[objHandle].text = newVal;
-   }
+   if (Votes[objHandle]) { Votes[objHandle].question = newVal; }
+   else if (Decisions[objHandle]) { Decisions[objHandle].advisorResponse = newVal; }
+   else if (Memos[objHandle]) { Memos[objHandle].link = newVal; }
+   else if (Newspapers[objHandle]) { Newspapers[objHandle].link = newVal; }
+   else if (Videos[objHandle]) { Videos[objHandle].link = newVal; }
+   else if (Lobbyists[objHandle]) { Lobbyists[objHandle].message = newVal; }
+   else if (PdfItems[objHandle]) { PdfItems[objHandle].link = newVal; }
+   else if (Comments[objHandle]) { Comments[objHandle].text = newVal; }
+   else if (Posts[objHandle]) { Posts[objHandle].text = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.TitleHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Memos[objHandle]) {
-
-      Memos[objHandle].title = newVal;
-   }
-   else if (Newspapers[objHandle]) {
-
-      Newspapers[objHandle].title = newVal;
-   }
-   else if (Videos[objHandle]) {
-
-      Videos[objHandle].title = newVal;
-   }
-   else if (Lobbyists[objHandle]) {
-
-      Lobbyists[objHandle].title = newVal;
-   }
-   else if (PdfItems[objHandle]) {
-
-      PdfItems[objHandle].title = newVal;
-   }
-   else if (Advisors[objHandle]) {
-
-      Advisors[objHandle].title = newVal;
-   }
+   if (Memos[objHandle]) { Memos[objHandle].title = newVal; }
+   else if (Newspapers[objHandle]) { Newspapers[objHandle].title = newVal; }
+   else if (Videos[objHandle]) { Videos[objHandle].title = newVal; }
+   else if (Lobbyists[objHandle]) { Lobbyists[objHandle].title = newVal; }
+   else if (PdfItems[objHandle]) { PdfItems[objHandle].title = newVal; }
+   else if (Advisors[objHandle]) { Advisors[objHandle].title = newVal; }
 });
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Memos[objHandle]) {
-
-      Memos[objHandle].active = newVal;
-
-   }
-   else if (Newspapers[objHandle]) {
-
-      Newspapers[objHandle].active = newVal;
-   }
-   else if (Videos[objHandle]) {
-
-      Videos[objHandle].active = newVal;
-   }
-   else if (Lobbyists[objHandle]) {
-
-      Lobbyists[objHandle].active = newVal;
-   }
-   else if (PdfItems[objHandle]) {
-
-      PdfItems[objHandle].active = newVal;
-   }
-   else if (Users[objHandle]) {
-
-      Users[objHandle].active = newVal;
-   }
+   if (Memos[objHandle]) { Memos[objHandle].active = newVal; }
+   else if (Newspapers[objHandle]) { Newspapers[objHandle].active = newVal; }
+   else if (Videos[objHandle]) { Videos[objHandle].active = newVal; }
+   else if (Lobbyists[objHandle]) { Lobbyists[objHandle].active = newVal; }
+   else if (PdfItems[objHandle]) { PdfItems[objHandle].active = newVal; }
+   else if (Users[objHandle]) { Users[objHandle].active = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.NameHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Lobbyists[objHandle]) {
-
-      Lobbysts[objHandle].name = newVal;
-   }
+   if (Lobbyists[objHandle]) { Lobbysts[objHandle].name = newVal; }
 });
 
 dmz.object.scalar.observe(self, dmz.stance.VoteState,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Votes[objHandle]) {
-
-      Votes[objHandle].state = newVal;
-   }
+   if (Votes[objHandle]) { Votes[objHandle].state = newVal; }
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Votes[objHandle]) {
-
-      Votes[objHandle].postedTime = newVal;
-   }
-   else if (Decisions[objHandle]) {
-
-      Decisions[objHandle].startTime = newVal;
-   }
+   if (Votes[objHandle]) { Votes[objHandle].postedTime = newVal; }
+   else if (Decisions[objHandle]) { Decisions[objHandle].startTime = newVal; }
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.EndedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Decisions[objHandle]) {
-
-      Decisions[objHandle].endTime = newVal;
-   }
+   if (Decisions[objHandle]) { Decisions[objHandle].endTime = newVal; }
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.ExpiredTimeHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Decisions[objHandle]) {
-
-      Decisions[objHandle].expiredTime = newVal;
-   }
+   if (Decisions[objHandle]) { Decisions[objHandle].expiredTime = newVal; }
 });
 
 dmz.object.link.observe(self, dmz.stance.MediaHandle,
@@ -1923,14 +1820,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
          if (Memos[supHandle].active) {
 
-            if (Users[subHandle]) {
-
-               Users[subHandle].memosSeen.push(supHandle);
-            }
-            else if (Groups[subHandle]) {
-
-               Groups[subHandle].memos.push(subHandle);
-            }
+            if (Users[subHandle]) { Users[subHandle].memosSeen.push(supHandle); }
+            else if (Groups[subHandle]) { Groups[subHandle].memos.push(subHandle); }
          }
       });
    }
@@ -1940,14 +1831,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
          if (Newspapers[supHandle].active) {
 
-            if (Users[subHandle]) {
-
-               Users[subHandle].newspapersSeen.push(supHandle);
-            }
-            else if (Groups[subHandle]) {
-
-               Groups[subHandle].newspapers.push(subHandle);
-            }
+            if (Users[subHandle]) { Users[subHandle].newspapersSeen.push(supHandle); }
+            else if (Groups[subHandle]) { Groups[subHandle].newspapers.push(subHandle); }
          }
       });
    }
@@ -1957,14 +1842,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
          if (Videos[supHandle].active) {
 
-            if (Users[subHandle]) {
-
-               Users[subHandle].videosSeen.push(supHandle);
-            }
-            else if (Groups[subHandle]) {
-
-               Groups[subHandle].videos.push(subHandle);
-            }
+            if (Users[subHandle]) { Users[subHandle].videosSeen.push(supHandle); }
+            else if (Groups[subHandle]) { Groups[subHandle].videos.push(subHandle); }
          }
       });
    }
@@ -1974,14 +1853,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
          if (Lobbyists[supHandle].active) {
 
-            if (Users[subHandle]) {
-
-               Users[subHandle].lobbyistsSeen.push(supHandle);
-            }
-            else if (Groups[subHandle]) {
-
-               Groups[subHandle].lobbyists.push(subHandle);
-            }
+            if (Users[subHandle]) { Users[subHandle].lobbyistsSeen.push(supHandle); }
+            else if (Groups[subHandle]) { Groups[subHandle].lobbyists.push(subHandle); }
          }
       });
    }
@@ -1991,14 +1864,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
          if (PdfItems[supHandle].active) {
 
-            if (Users[subHandle]) {
-
-               Users[subHandle].pdfItemsSeen.push(supHandle);
-            }
-            else if (Groups[subHandle]) {
-
-               Groups[subHandle].pdfItems.push(supHandle);
-            }
+            if (Users[subHandle]) { Users[subHandle].pdfItemsSeen.push(supHandle); }
+            else if (Groups[subHandle]) { Groups[subHandle].pdfItems.push(supHandle); }
          }
       });
    }
@@ -2046,10 +1913,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Decisions[supHandle].voteHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         if (Votes[subHandle]) {
-
-            Votes[subHandle].decisionHandle = supHandle;
-         }
+         if (Votes[subHandle]) { Votes[subHandle].decisionHandle = supHandle; }
       });
    }
 });
@@ -2101,10 +1965,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Advisors[supHandle].groupHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         if (Groups[subHandle]) {
-
-            Groups[subHandle].advisors.push(supHandle);
-         }
+         if (Groups[subHandle]) { Groups[subHandle].advisors.push(supHandle); }
       });
    }
 });
@@ -2246,10 +2107,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
             Groups[tempHandles[0]].questions.push(supHandle);
          }
-         if (Advisors[subHandle]) {
-
-            Advisors[subHandle].questions.push(subHandle);
-         }
+         if (Advisors[subHandle]) { Advisors[subHandle].questions.push(subHandle); }
       });
    }
 });
@@ -2257,10 +2115,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 dmz.object.link.observe(self, dmz.stance.VoteGroupHandle,
 function (linkHandle, attrHandle, supHandle, subHandle) {
 
-   if (Votes[supHandle]) {
-
-      Votes[supHandle].groupHandle = subHandle;
-   }
+   if (Votes[supHandle]) { Votes[supHandle].groupHandle = subHandle; }
 });
 
 dmz.object.link.observe(self, dmz.stance.NoHandle,
