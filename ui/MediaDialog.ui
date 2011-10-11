@@ -25,7 +25,7 @@
         <enum>QLayout::SetMinimumSize</enum>
        </property>
        <item>
-        <widget class="QScrollArea" name="pdfScrollArea">
+        <widget class="QScrollArea" name="mediaScrollArea">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -171,7 +171,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QWebView" name="pdfWebView">
+      <widget class="QWebView" name="mediaWebView">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -196,7 +196,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="addPdfButton">
+      <widget class="QPushButton" name="addMediaButton">
        <property name="minimumSize">
         <size>
          <width>180</width>

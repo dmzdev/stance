@@ -109,6 +109,9 @@ var dmz =
    , lobbyistName = editLobbyistDialog.lookup("nameEdit")
    , lobbyistErrorLabel = editLobbyistDialog.lookup("errorLabel")
    , lobbyistOkButton = editLobbyistDialog.lookup("okButton")
+   , lobbyistGroupListLabel = editLobbyistDialog.lookup("groupListLabel")
+   , lobbyistPictureListLabel = editLobbyistDialog.lookup("pictureListLabel")
+   , lobbyistActiveCheckbox = editLobbyistDialog.lookup("activeCheckBox")
 
    , CreateMediaInjectDialog = dmz.ui.loader.load("MediaInjectDialog.ui", editScenarioWidget)
    , MediaTitleText = CreateMediaInjectDialog.lookup("titleText")
@@ -1249,58 +1252,114 @@ modifyInjectItem = function (widgetItem) {
      , item = handle ? injectItems[handle] : false
      , count = MediaGroupFLayout.rowCount()
      , itor
+     , pic
      ;
 
    if (item) {
 
-      //dmz.object.flag(handle, dmz.stance.ActiveHandle, !item.active);
-      for (itor = 0; itor < count; itor += 1) {
+      if (dmz.object.type(handle).isOfType(dmz.stance.MemoType) ||
+         dmz.object.type(handle).isOfType(dmz.stance.NewspaperType) ||
+         dmz.object.type(handle).isOfType(dmz.stance.VideoType) ||
+         dmz.object.type(handle).isOfType(dmz.stance.PdfItemType)) {
 
-         if (dmz.object.linkHandle(dmz.stance.MediaHandle, handle, groupList[itor])) {
-
-            MediaGroupFLayout.at(itor, 1).setChecked(true);
-         }
-         MediaGroupFLayout.at(itor, 1).enabled(false);
-      }
-      MediaTitleText.text(dmz.object.text(handle, dmz.stance.TitleHandle));
-      MediaUrlText.text(dmz.object.text(handle, dmz.stance.TextHandle));
-      MediaURLWarning.text("");
-
-      ActiveCheckBox.show();
-      ActiveLabel.show();
-      if (dmz.object.flag(handle, dmz.stance.ActiveHandle)) {
-
-         ActiveCheckBox.setChecked(true);
-      }
-      else { ActiveCheckBox.setChecked(false); }
-      ActiveCheckBox.show();
-
-      MediaOkButton.observe(self, "clicked", function () {
-
-         CreateMediaInjectDialog.accept();
-      });
-
-      CreateMediaInjectDialog.open(self, function (value) {
-
-         if (value) {
-
-            if (ActiveCheckBox.isChecked()) {
-
-               dmz.object.flag(handle, dmz.stance.ActiveHandle, true);
-            }
-            else { dmz.object.flag(handle, dmz.stance.ActiveHandle, false); }
-         }
          for (itor = 0; itor < count; itor += 1) {
 
-            MediaGroupFLayout.at(itor, 1).setChecked(false);
-            MediaGroupFLayout.at(itor, 1).enabled(true);
+            if (dmz.object.linkHandle(dmz.stance.MediaHandle, handle, groupList[itor])) {
+
+               MediaGroupFLayout.at(itor, 1).setChecked(true);
+            }
+            MediaGroupFLayout.at(itor, 1).enabled(false);
          }
-         ActiveCheckBox.hide();
-         ActiveLabel.hide();
+         MediaTitleText.text(dmz.object.text(handle, dmz.stance.TitleHandle));
+         MediaUrlText.text(dmz.object.text(handle, dmz.stance.TextHandle));
          MediaURLWarning.text("");
-         MediaUrlText.text("");
-         MediaTitleText.text("");
-      });
+
+         ActiveCheckBox.show();
+         ActiveLabel.show();
+         if (dmz.object.flag(handle, dmz.stance.ActiveHandle)) {
+
+            ActiveCheckBox.setChecked(true);
+         }
+         else { ActiveCheckBox.setChecked(false); }
+         ActiveCheckBox.show();
+
+         MediaOkButton.observe(self, "clicked", function () {
+
+            CreateMediaInjectDialog.accept();
+         });
+
+         CreateMediaInjectDialog.open(self, function (value) {
+
+            if (value) {
+
+               if (ActiveCheckBox.isChecked()) {
+
+                  dmz.object.flag(handle, dmz.stance.ActiveHandle, true);
+               }
+               else { dmz.object.flag(handle, dmz.stance.ActiveHandle, false); }
+            }
+            for (itor = 0; itor < count; itor += 1) {
+
+               MediaGroupFLayout.at(itor, 1).setChecked(false);
+               MediaGroupFLayout.at(itor, 1).enabled(true);
+            }
+            ActiveCheckBox.hide();
+            ActiveLabel.hide();
+            MediaURLWarning.text("");
+            MediaUrlText.text("");
+            MediaTitleText.text("");
+         });
+      }
+      else if (dmz.object.type(handle).isOfType(dmz.stance.LobbyistType)) {
+
+         lobbyistPictureList.hide();
+         lobbyistGroupList.hide();
+         lobbyistPictureListLabel.hide();
+         lobbyistGroupListLabel.hide();
+         pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(dmz.object.text(handle, dmz.stance.PictureHandle)));
+         if (pic) { lobbyistPictureLabel.pixmap(pic); }
+         lobbyistMessage.text(dmz.object.text(handle, dmz.stance.TextHandle));
+         lobbyistTitle.text(dmz.object.text(handle, dmz.stance.TitleHandle));
+         lobbyistName.text(dmz.object.text(handle, dmz.stance.NameHandle));
+         lobbyistActiveCheckbox.setChecked(dmz.object.flag(handle, dmz.stance.ActiveHandle));
+         lobbyistOkButton.observe(self, "clicked", function () {
+
+            var title = lobbyistTitle.text()
+              , message = lobbyistMessage.text()
+              ;
+
+            if (!message && !title) {
+
+               lobbyistErrorLabel.text
+                  ("<center><font color=\"red\">Please enter a title and message.</font></center>");
+            }
+            else if (!message) {
+
+               lobbyistErrorLabel.text("<center><font color=\"red\">Please enter a message.</font></center>");
+            }
+            else if (!title) {
+
+               lobbyistErrorLabel.text("<center><font color=\"red\">Please enter a title.</font></center>");
+            }
+            else { editLobbyistDialog.accept(); }
+         });
+         editLobbyistDialog.open(self, function (result) {
+
+            var groupIndex = lobbyistGroupList.currentIndex()
+              , links
+              , text
+              , lobbyistHandle
+              ;
+
+            if (result) {
+
+               dmz.object.text(handle, dmz.stance.NameHandle, (lobbyistName.text() || "N/A"));
+               dmz.object.text(handle, dmz.stance.TitleHandle, lobbyistTitle.text());
+               dmz.object.text(handle, dmz.stance.TextHandle, lobbyistMessage.text());
+               dmz.object.flag(handle, dmz.stance.ActiveHandle, lobbyistActiveCheckbox.isChecked());
+            }
+         });
+      }
    }
 };
 
@@ -1360,8 +1419,7 @@ mediaInjectButtons = function () {
                   dmz.object.flag(media, dmz.stance.UpdateStartTimeHandle, true);
                   links = dmz.object.superLinks(CurrentGameHandle, dmz.stance.MediaHandle);
                   dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
-                  if (ActiveCheckBox.isChecked()) { dmz.object.flag(media, dmz.stance.ActiveHandle, true); }
-                  else { dmz.object.flag(media, dmz.stance.ActiveHandle, false); }
+                  dmz.object.flag(media, dmz.stance.ActiveHandle, ActiveCheckBox.isChecked());
                   dmz.object.link(dmz.stance.MediaHandle, media, CurrentGameHandle);
                   for (itor = 0; itor < count; itor += 1) {
 
@@ -1383,14 +1441,18 @@ mediaInjectButtons = function () {
                else { MediaURLWarning.text(""); }
             });
          }
+         else if (type.isOfType(dmz.stance.LobbyistType)) {
 
-         if (type.isOfType(dmz.stance.LobbyistType)) {
-
+            lobbyistPictureList.show();
+            lobbyistGroupList.show();
+            lobbyistPictureListLabel.show();
+            lobbyistGroupListLabel.show();
             lobbyistPictureList.currentIndex(0);
             lobbyistGroupList.currentIndex(0);
             lobbyistMessage.text("");
             lobbyistTitle.text("");
             lobbyistName.text("");
+            lobbyistActiveCheckbox.setChecked(true);
             lobbyistOkButton.observe(self, "clicked", function () {
 
                var title = lobbyistTitle.text()
@@ -1432,7 +1494,7 @@ mediaInjectButtons = function () {
                   dmz.object.flag(lobbyistHandle, dmz.stance.UpdateStartTimeHandle, true);
                   links = dmz.object.superLinks(CurrentGameHandle, dmz.stance.MediaHandle);
                   dmz.object.scalar(lobbyistHandle, dmz.stance.ID, links ? links.length : 0);
-                  dmz.object.flag(lobbyistHandle, dmz.stance.ActiveHandle, true);
+                  dmz.object.flag(lobbyistHandle, dmz.stance.ActiveHandle, lobbyistActiveCheckbox.isChecked());
                   dmz.object.activate(lobbyistHandle);
 
                   dmz.object.link(dmz.stance.MediaHandle, lobbyistHandle, groupList[groupIndex]);

@@ -73,7 +73,12 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , wikiWidget
          , function () {
 
-            wikiViewer.page().mainFrame().load(Groups[userGroupHandle].wikiLink);
+            var site;
+
+            if (Groups[userGroupHandle].wikiLink) {
+
+               wikiViewer.page().mainFrame().load(Groups[userGroupHandle].wikiLink);
+            }
          }
          , function () { wikiViewer.setHtml("<center><b>Loading...</b><center>"); }
          );
