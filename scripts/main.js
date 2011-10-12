@@ -515,9 +515,10 @@ function (linkObjHandle, attrHandle, advisorHandle, groupHandle) {
    }
 });
 
-dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHandle, value) {
+dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHandle, value, prev) {
 
-   if ((handle === dmz.object.hil()) && stackedWidget && value.and(dmz.stance.SwitchGroupFlag).bool()) {
+   if ((handle === dmz.object.hil()) && stackedWidget &&
+      value.xor(prev).and(dmz.stance.SwitchGroupFlag).bool()) {
 
       stackedWidget.currentIndex(SPLASH_INDEX);
    }

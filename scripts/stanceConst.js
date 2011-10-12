@@ -132,6 +132,7 @@ var dmz =
         , getVoteStatus: false
         , userAttribute: false
         , getLastTimeStamp: false
+        , getTags: false
         }
 
    , States =
@@ -300,6 +301,17 @@ var dmz =
              , Handles.ObserverPermissionsHandle
              , Handles.TechPermissionsHandle
              ]
+        , NOTIFICATION_HANDLES:
+             [ Handles.PinTimeHandle
+             , Handles.ForumTimeHandle
+             , Handles.VoteTimeHandle
+             , Handles.Advisor0TimeHandle
+             , Handles.Advisor1TimeHandle
+             , Handles.Advisor2TimeHandle
+             , Handles.Advisor3TimeHandle
+             , Handles.Advisor4TimeHandle
+             , Handles.HelpTimeHandle
+             ]
         , STATES: States
         }
    , getDisplayName
@@ -351,6 +363,7 @@ var dmz =
       , States.ApproveAdvisor3Flag
       , States.ApproveAdvisor4Flag
       ];
+
 }());
 
 getTags = function (data) {
@@ -477,7 +490,8 @@ addUITextLimit = function (script, maxLength, target, submitButton, current, tot
 userAttribute = function (handle, attribute, value) {
 
    var type = dmz.object.type(handle)
-     , isAdmin = dmz.object.flag(handle, Handles.AdminHandle)
+//     , isAdmin = dmz.object.flag(handle, Handles.AdminHandle)
+     , isAdmin = Functions.isAllowed(handle, States.SwitchGroupFlag)
      , dataHandle
      , retval
      ;

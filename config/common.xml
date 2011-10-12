@@ -25,11 +25,6 @@
       <menu text="&amp;Help"/>
    </menu-bar>
 </main-window>
-<cleanup>
-   <cleanup>
-      <type name="current_user"/>
-   </cleanup>
-</cleanup>
 <webMap>
 <!--   <url name="http://dev.chds.us/?dystopia:stance"/> -->
    <url name="http://www.chds.us/?dystopia:stance"/>

@@ -1634,12 +1634,15 @@ endGameButton.observe(self, "clicked", function () {
          "on how to prepare for the AAR.\nThank you for participating!");
 });
 
-dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHandle, value) {
+dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHandle, value, prev) {
 
    var list
      , active
      , state
+     , dataHandle
+     , groups
      ;
+
    if (userItems[handle]) {
 
       userItems[handle].state = value;
@@ -1658,8 +1661,44 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
       if (value.and(dmz.stance.SwitchGroupFlag).bool() &&
          !dmz.object.linkHandle(dmz.stance.GameObservers, handle, CurrentGameHandle)) {
 
+         groups = dmz.object.superLinks(CurrentGameHandle, dmz.stance.GameGroupHandle) || [];
+         groups.forEach(function (groupHandle) {
+
+            var linkHandle = dmz.object.linkHandle(dmz.stance.DataLinkHandle, handle, groupHandle)
+              , data = dmz.object.linkAttributeObject(linkHandle)
+              ;
+
+            if (!data) {
+
+               data = dmz.object.create(dmz.stance.DataType);
+               if (!linkHandle) {
+
+                  linkHandle = dmz.object.link(dmz.stance.DataLinkHandle, handle, groupHandle);
+               }
+               dmz.object.linkAttributeObject(linkHandle, data);
+            }
+
+            dmz.stance.NOTIFICATION_HANDLES.forEach(function (timeHandle) {
+
+               dmz.object.timeStamp(data, timeHandle, dmz.object.timeStamp(handle, timeHandle));
+            });
+         });
          dmz.object.link(dmz.stance.GameObservers, handle, CurrentGameHandle);
       }
+      else if (!value.and(dmz.stance.SwitchGroupFlag).bool() && prev &&
+         prev.and(dmz.stance.SwitchGroupFlag).bool() &&
+         dmz.object.linkHandle(dmz.stance.GameObservers, handle, CurrentGameHandle)) {
+
+         dataHandle =
+            dmz.object.linkAttributeObject(
+               dmz.object.linkHandle(dmz.stance.DataLinkHandle, handle, getUserGroupHandle(handle)));
+
+         dmz.stance.NOTIFICATION_HANDLES.forEach(function (timeHandle) {
+
+            dmz.object.timeStamp(handle, timeHandle, dmz.object.timeStamp(dataHandle, timeHandle));
+         });
+      }
+
 
       if (handle === dmz.object.hil()) {
 
@@ -1803,8 +1842,10 @@ setupPermissionTable = function () {
             });
          }(col));
 
-         if ((flagName === "ChangePermissionsFlag") &&
-            (dmz.stance.PERMISSION_LABELS[col] === "Tech")) {
+         if (((flagName === "ChangePermissionsFlag") &&
+               (col === dmz.stance.TECH_PERMISSION)) ||
+            ((col === dmz.stance.ADVISOR_PERMISSION) &&
+               flags[flagName].and(dmz.stance.AdvisorFlags).bool())) {
 
             button.enabled(false);
          }

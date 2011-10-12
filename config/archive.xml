@@ -2,7 +2,8 @@
 <dmz>
 <plugin-list>
    <plugin name="dmzArchiveModuleBasic" scope="archive-module"/>
-   <plugin name="dmzArchivePluginAutoLoad"/>
+   <!-- <plugin name="dmzArchivePluginAutoLoad"/> -->
+   <!--<plugin name="dmzArchivePluginMessageLoad" scope="archive-message-load"/>-->
    <plugin name="dmzArchivePluginAutoCache" scope="archive-auto-cache"/>
    <plugin name="dmzArchivePluginObject" scope="archive-object"/>
 <!--   <plugin name="dmzArchivePluginUndo"/>-->
@@ -24,9 +25,4 @@
       </attribute>
    </filter>
 </archive-object>
-<archive-auto-cache>
-<!--   <auto-restore value="false"/>-->
-<!--   <save file="cache.xml"/>-->
-<!--   <archive-updated-message name="Archive_Updated_Message"/>-->
-</archive-auto-cache>
 </dmz>
