@@ -204,15 +204,12 @@ addMediaButton.observe(self, "clicked", function () {
    if ((titleTextEdit.text() !== "") && (linkTextEdit.text() !== "") &&
       dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) {
 
-      if ((CurrentType === "PdfItem") && dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) {
+      if (((CurrentType === "PdfItem") && dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) ||
+         dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag)) {
 
-         isAllowed = true;
-      }
-      else if (dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag)){
-
-         isAllowed = true;
-      }
-      if (isAllowed) {
+         //isAllowed = true;
+      //}
+      //if (isAllowed) {
          mediaItemHandle = dmz.object.create(TypesMap[CurrentType]);
          dmz.object.text(mediaItemHandle, dmz.stance.TitleHandle, titleTextEdit.text());
          dmz.object.text(mediaItemHandle, dmz.stance.TextHandle, linkTextEdit.text());
@@ -283,13 +280,13 @@ mouseEvent = function (object, type) {
                   "' height='" + (mediaWebView.page().height() - 20) +
                   "' style='border: none;'></iframe></center>");
             }
-            else if ((CurrentType === "Video") && mediaItem.link){
+            else if ((CurrentType === "Video") && mediaItem.link) {
 
                mediaWebView.page().mainFrame().load(
                      "http://www.chds.us/?stance:youtube&video=" + mediaItem.link +
                      "&width=" + (mediaWebView.page().width() - 20) +"&height=" + (mediaWebView.page().height() - 20));
             }
-            else if (mediaItem.link){
+            else if (mediaItem.link) {
 
                mediaWebView.page().mainFrame().load(mediaItem.link);
             }
@@ -606,10 +603,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
       Groups[objHandle] = { handle: objHandle };
    }
-   else if (objType.isOfType(dmz.stance.GameType)) {
-
-      currentGameHandle = objHandle;
-   }
+   else if (objType.isOfType(dmz.stance.GameType)) { currentGameHandle = objHandle; }
 });
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
