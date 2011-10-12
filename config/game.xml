@@ -97,7 +97,7 @@
          <image name="Bookcase" resource="Cartel1_bookcase"/>
          <image name="Resource" resource="Cartel1_resources"/>
       </set>
-      <!--<set name="WHC" background="WHC_background" highlight="PushNotify">
+      <set name="WHC" background="WHC_background" highlight="PushNotify">
          <image name="Exit" resource="WHC_exit"/>
          <image name="Forum" resource="WHC_computer"/>
          <image name="Map" resource="WHC_map"/>
@@ -113,7 +113,8 @@
          <image name="Vote" resource="WHC_vote"/>
          <image name="Help" resource="WHC_help"/>
          <image name="Bookcase" resource="WHC_bookcase"/>
-      </set>-->
+         <image name="Resource" resource="WHC_resources"/>
+      </set>
       <set name="MexicanGov" background="MexicanGov_background" highlight="PushNotify">
          <image name="Exit" resource="MexicanGov_exit"/>
          <image name="Forum" resource="MexicanGov_computer"/>
@@ -168,7 +169,7 @@
          <image name="Bookcase" resource="ACLU_bookcase"/>
          <image name="Resource" resource="ACLU_resources"/>
       </set>
-      <!--<set name="CBP" background="CBP_background" highlight="PushNotify">
+      <set name="CBP" background="CBP_background" highlight="PushNotify">
          <image name="Exit" resource="CBP_exit"/>
          <image name="Forum" resource="CBP_computer"/>
          <image name="Map" resource="CBP_map"/>
@@ -185,7 +186,7 @@
          <image name="Help" resource="CBP_help"/>
          <image name="Bookcase" resource="CBP_bookcase"/>
          <image name="Resource" resource="CBP_resources"/>
-      </set>-->
+      </set>
    </group-picture-set>
    <lobbyist-pictures>
       <picture name="lob_0"/>

@@ -372,7 +372,11 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
 init = function () {
 
+   var pic;
+
    tagButton.hide();
+   pic = dmz.ui.graph.createPixmap(dmz.resources.findFile("tagButton"));
+   if (pic) { tagButton.setIcon(pic); }
    tagButton.styleSheet(dmz.stance.YELLOW_BUTTON);
    deleteButton.hide();
    deleteButton.styleSheet(dmz.stance.RED_BUTTON);

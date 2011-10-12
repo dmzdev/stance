@@ -75,10 +75,11 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
             var site;
 
-            if (Groups[userGroupHandle].wikiLink) {
+            if (Groups[userGroupHandle] && Groups[userGroupHandle].wikiLink) {
 
                wikiViewer.page().mainFrame().load(Groups[userGroupHandle].wikiLink);
             }
+            else { wikiViewer.setHtml("<center><b>No Wiki Set Up...</b><center>"); }
          }
          , function () { wikiViewer.setHtml("<center><b>Loading...</b><center>"); }
          );

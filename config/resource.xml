@@ -14,6 +14,7 @@
    <resource name="Splash" file="STANCE_splash.png"/>
 <!--   <resource name="PushNotify" file="PushNotify.png"/> -->
    <resource name="PushNotify" file="stanceNotify.png"/>
+   <resource name="tagButton" file="tag3.png"/>
 <!--  AVATARS -->
    <resource name="AvatarEye" file="avatar_AllSeeingEye.png"/>
    <resource name="AvatarBox" file="AvatarBox.png"/>
@@ -365,13 +366,6 @@
       <loc x="823" y="60"/>
       <alt name="WHC_trade_alt"/>
    </resource>
-   <resource name="WHC_calendar" file="WHC_calendar.png">
-      <loc x="819" y="376"/>
-      <month x="28" y="12"/>
-      <day x="10" y="30"/>
-      <year x="-15" y="30"/>
-      <font name="Times" size="27" weight="75"/>
-   </resource>
    <resource name="WHC_computer" file="WHC_computer.png">
       <loc x="464" y="215"/>
    </resource>
@@ -379,21 +373,25 @@
       <loc x="222" y="36"/>
    </resource>
    <resource name="WHC_map" file="WHC_map.png">
-      <loc x="1060" y="44"/>
+      <loc x="1060" y="43"/>
    </resource>
    <resource name="WHC_memos" file="WHC_memos.png">
       <loc x="1010" y="495"/>
       <offset x="0" y="30"/>
    </resource>
+   <resource name="WHC_bookcase" file="WHC_bookcase.png">
+      <loc x="25" y="236"/>
+   </resource>
    <resource name="WHC_newspaper" file="WHC_newspaper.png">
       <loc x="81" y="507"/>
       <offset x="0" y="30"/>
    </resource>
-<!--
-   <resource name="WHC_resources" file="WHC_resources.png">
-      <loc x="4" y="44"/>
+   <resource name="WHC_resources" file="WHC_resource.png">
+      <loc x="3" y="44"/>
    </resource>
--->
+   <resource name="WHC_help" file="WHC_help.png">
+      <loc x="824" y="389"/>
+   </resource>
    <resource name="WHC_tv" file="WHC_tv.png">
       <loc x="222" y="312"/>
    </resource>
@@ -611,7 +609,6 @@
    <resource name="ACLU_adv4_alt" file="ACLU_ad05_security.png"/>
 
 <!-- CBP IMAGES -->
-<!--Still need the resources-->
    <resource name="CBP_adv0" file="CBP_ad01.png">
       <loc x="347" y="92"/>
       <alt name="CBP_adv0_alt"/>
@@ -639,6 +636,12 @@
    <resource name="CBP_exit" file="CBP_exit.png">
       <loc x="209" y="0"/>
    </resource>
+   <resource name="CBP_help" file="CBP_help.png">
+      <loc x="803" y="298"/>
+   </resource>
+   <resource name="CBP_bookcase" file="CBP_bookcase.png">
+      <loc x="28" y="286"/>
+   </resource>
    <resource name="CBP_map" file="CBP_map.png">
       <loc x="1052" y="80"/>
       <offset x="0" y="15"/>
@@ -650,11 +653,9 @@
       <loc x="282" y="487"/>
       <offset x="0" y="40"/>
    </resource>
-<!--
-   <resource name="CBP_resources" file="CBP_resources.png">
+   <resource name="CBP_resources" file="CBP_board.png">
       <loc x="0" y="72"/>
    </resource>
--->
    <resource name="CBP_tv" file="CBP_tv.png">
       <loc x="282" y="241"/>
       <offset x="0" y="90"/>
@@ -666,7 +667,7 @@
    <resource name="CBP_vote" file="CBP_vote.png">
       <loc x="933" y="368"/>
    </resource>
-   <resource name="CBP_background" file="CBP_main.jpg">
+   <resource name="CBP_background" file="CBP_main.jpeg">
       <loc x="0" y="0"/>
    </resource>
    <resource name="CBP_adv0_alt" file="CBP_ad01_outreach.png"/>

@@ -287,7 +287,7 @@
       <item row="0" column="2">
        <widget class="QPushButton" name="tagButton">
         <property name="text">
-         <string>T</string>
+         <string>Tag</string>
         </property>
        </widget>
       </item>

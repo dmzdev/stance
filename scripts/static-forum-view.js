@@ -176,6 +176,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , label
            , form
            , count
+           , pic
            ;
 
          post.layout = dmz.ui.layout.createGridLayout();
@@ -206,6 +207,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          post.cancel.hide();
          post.confirmDelete = false;
          post.tagButton = post.item.lookup("tagButton");
+         pic = dmz.ui.graph.createPixmap(dmz.resources.findFile("tagButton"));
+         if (pic) { post.tagButton.setIcon(pic); }
          post.tagButton.styleSheet(YELLOW_BUTTON);
          if (!_ShowTagButton) { post.tagButton.hide(); }
          post.tagLabel = post.item.lookup("tagLabel");
@@ -269,6 +272,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , comment = {}
            , text
            , count
+           , pic
            ;
 
          if (post) {
@@ -296,8 +300,9 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             comment.cancel.styleSheet(RED_BUTTON);
             comment.cancel.hide();
             comment.confirmDelete = false;
-
             comment.tagButton = comment.item.lookup("tagButton");
+            pic = dmz.ui.graph.createPixmap(dmz.resources.findFile("tagButton"));
+            if (pic) { comment.tagButton.setIcon(pic); }
             comment.tagButton.styleSheet(YELLOW_BUTTON);
             if (!_ShowTagButton) { comment.tagButton.hide(); }
             comment.tagLabel = comment.item.lookup("tagLabel");

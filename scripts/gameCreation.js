@@ -591,7 +591,7 @@ editScenarioWidget.observe(self, "editGroupButton", "clicked", function () {
    else { self.log.error ("No group templates found."); }
 
    groupNameEdit.text(dmz.stance.getDisplayName(groupHandle));
-   groupWikiLinkEdit.text(dmz.object.text(groupHandle, dmz.stance.GroupWikiLinkHandle));
+   groupWikiLinkEdit.text(dmz.object.text(groupHandle, dmz.stance.GroupWikiLinkHandle) || "");
    AddGroupDialog.open(self, function (value) {
 
       dmz.object.text(groupHandle, dmz.stance.NameHandle, groupNameEdit.text());
@@ -630,7 +630,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
       if (value) {
 
          group = dmz.object.create(dmz.stance.GroupType);
-         name = groupNameEdit.text();
+         name = groupNameEdit.text() || "N/A";
          wikiLink = groupWikiLinkEdit.text();
          dmz.object.text(group, dmz.stance.NameHandle, name);
          dmz.object.text(group, dmz.stance.GroupWikiLinkHandle, wikiLink);

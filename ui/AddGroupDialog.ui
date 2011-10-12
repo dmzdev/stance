@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>432</width>
-    <height>174</height>
+    <height>200</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,6 +26,16 @@
    </item>
    <item row="0" column="1">
     <widget class="QLineEdit" name="nameEdit"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Wiki Link:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="wikiLinkEdit"/>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="homeScreenLabel">
@@ -75,16 +85,6 @@
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Wiki Link:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="wikiLinkEdit"/>
    </item>
   </layout>
  </widget>

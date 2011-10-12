@@ -120,10 +120,15 @@ createPieChart = function (data, labelFnc, scene, zero) {
      , startAngle
      , items = []
      , total = 0
+     , everythingZero = true
      ;
 
    if (data && scene) {
 
+      data.forEach(function (item) {
+
+         if (item.amt !== 0) { everythingZero = false; }
+      });
       data.forEach(function (item) { total += (item.amt || 0); });
       graphLabel = scene.addText(labelFnc(total));
       graphLabel.pos(20 + x, y);
@@ -131,14 +136,18 @@ createPieChart = function (data, labelFnc, scene, zero) {
       data.forEach(function (item, index) {
 
          var spanAngle = item.amt / total * 360 * 16
-           , ellipse = scene.addEllipse(x + 30, y + 30, 200, 200, startAngle, spanAngle, 0, item.brush)
+           , ellipse = 0
            , legendBox = dmz.ui.graph.createRectItem(0, 0, 15, 15, graphLabel)
            , legendLabel
            ;
 
+         if (!everythingZero) {
+
+            ellipse = scene.addEllipse(x + 30, y + 30, 200, 200, startAngle, spanAngle, 0, item.brush);
+         }
          legendLabel =
             dmz.ui.graph.createTextItem
-               ( item.label + " - " + item.amt + " ("+ (Math.round(item.amt / total * 10000)/100) + "%)"
+               ( item.label + " - " + item.amt + " ("+ (Math.round(item.amt / (total || 1) * 10000)/100) + "%)"
                , legendBox);
 
          legendBox.pos(250, index * 20 + 20);
@@ -148,10 +157,12 @@ createPieChart = function (data, labelFnc, scene, zero) {
          items.push(legendLabel);
          startAngle += spanAngle;
       });
+      if (everythingZero) {
 
+         scene.addEllipse(x + 30, y + 30, 200, 200, 0, 360 * 16, 0);
+      }
       items.push(graphLabel);
    }
-
    return items;
 };
 /* user graphs */
@@ -2126,8 +2137,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Decisions[subHandle].noVotes = (Decisions[subHandle].noVotes || 0) + 1;
       dmz.time.setTimer (self, function () {
 
-         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
-            Users[subHandle].active) {
+         if (Users[supHandle] && !dmz.stance.isAllowed(supHandle, dmz.stance.SwitchGroupFlag) &&
+            Users[supHandle].active) {
 
             Users[supHandle].votedNoOn.push(subHandle);
          }
@@ -2143,8 +2154,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Decisions[subHandle].noVotes = (Decisions[subHandle].yesVotes || 0) + 1;
       dmz.time.setTimer (self, function () {
 
-         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
-            Users[subHandle].active) {
+         if (Users[supHandle] && !dmz.stance.isAllowed(supHandle, dmz.stance.SwitchGroupFlag) &&
+            Users[supHandle].active) {
 
             Users[supHandle].votedYesOn.push(subHandle);
          }

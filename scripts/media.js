@@ -273,7 +273,7 @@ mouseEvent = function (object, type) {
             dmz.object.link(dmz.stance.MediaHandle, mediaItem.handle, hil);
             mediaItem.ui.notificationLabel.hide();
             mediaItem.ui.postItem.styleSheet("* { background-color: rgb(180, 180, 180); border-style: solid; }");
-            if (CurrentType === "PdfItem") {
+            if ((CurrentType === "PdfItem") && mediaItem.link) {
 
                mediaWebView.setHtml(
                   "<center><iframe src='http://docs.google.com/viewer?" +
@@ -283,13 +283,16 @@ mouseEvent = function (object, type) {
                   "' height='" + (mediaWebView.page().height() - 20) +
                   "' style='border: none;'></iframe></center>");
             }
-            else if (CurrentType === "Video"){
+            else if ((CurrentType === "Video") && mediaItem.link){
 
                mediaWebView.page().mainFrame().load(
                      "http://www.chds.us/?stance:youtube&video=" + mediaItem.link +
                      "&width=" + (mediaWebView.page().width() - 20) +"&height=" + (mediaWebView.page().height() - 20));
             }
-            else { mediaWebView.page().mainFrame().load(mediaItem.link); }
+            else if (mediaItem.link){
+
+               mediaWebView.page().mainFrame().load(mediaItem.link);
+            }
          });
       }
       else if ((object == mediaItem.ui.postItem) && (type == dmz.ui.event.Enter)) {
@@ -947,10 +950,14 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
 init = function () {
 
+   var pic;
+
    scrollFormContent.layout(mediaContentLayout);
    mediaContentLayout.addStretch(1);
    groupSelectionLayout.addStretch(1);
    tagButton.hide();
+   pic = dmz.ui.graph.createPixmap(dmz.resources.findFile("tagButton"));
+   if (pic) { tagButton.setIcon(pic); }
    tagButton.styleSheet(dmz.stance.YELLOW_BUTTON);
    deleteButton.hide();
    deleteButton.styleSheet(dmz.stance.RED_BUTTON);
