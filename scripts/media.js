@@ -388,7 +388,7 @@ initiateMediaPostItemUi = function (mediaItem) {
       mediaItem.ui.notificationLabel = dmz.ui.label.create(mediaItem.ui.postItem);
       mediaItem.ui.notificationLabel.fixedWidth(34);
       mediaItem.ui.titleLabel.text(mediaItem.title);
-      mediaItem.ui.createdByLabel.text(mediaItem.createdBy);
+      mediaItem.ui.createdByLabel.text(mediaItem.createdBy || "Admin");
       mediaItem.ui.postItem.eventFilter(self, mouseEventHandler);
       setTagLabels(mediaItem);
       if (mediaItem.viewed.indexOf(hil) === -1) { // not seen

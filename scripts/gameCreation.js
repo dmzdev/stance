@@ -1444,6 +1444,7 @@ mediaInjectButtons = function () {
                   dmz.object.scalar(media, dmz.stance.ID, links ? links.length : 0);
                   dmz.object.flag(media, dmz.stance.ActiveHandle, ActiveCheckBox.isChecked());
                   dmz.object.link(dmz.stance.MediaHandle, media, CurrentGameHandle);
+                  dmz.object.link(dmz.stance.CreatedByHandle, media, dmz.object.hil());
                   for (itor = 0; itor < count; itor += 1) {
 
                      if (MediaGroupFLayout.at(itor, 1).isChecked()) {
