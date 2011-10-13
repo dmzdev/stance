@@ -39,6 +39,7 @@ var dmz =
         , BioHandle: dmz.defs.createNamedHandle("bio")
         , CommentHandle: dmz.defs.createNamedHandle("comment")
         , CreatedByHandle: dmz.defs.createNamedHandle("created_by")
+        , ApprovedByHandle: dmz.defs.createNamedHandle("approved_by")
         , DisplayNameHandle: dmz.defs.createNamedHandle("display_name")
         , DurationHandle: dmz.defs.createNamedHandle("duration")
         , ID: dmz.defs.createNamedHandle("id")
@@ -87,12 +88,14 @@ var dmz =
         , HelpLink: dmz.defs.createNamedHandle("help_link")
 
         /* Time handles, and handles to be removed later */
+        , UpdatePostedTimeHandle: dmz.defs.createNamedHandle("update_posted_time_handle")
         , UpdateStartTimeHandle: dmz.defs.createNamedHandle("update_start_time_handle")
         , UpdateEndTimeHandle: dmz.defs.createNamedHandle("update_end_time_handle")
+        , UpdateExpiredTimeHandle: dmz.defs.createNamedHandle("update_expire_time_handle")
+        , PostedAtServerTimeHandle: dmz.defs.createNamedHandle("posted_at_server_time")
         , CreatedAtServerTimeHandle: dmz.defs.createNamedHandle("created_at_server_time")
         , EndedAtServerTimeHandle: dmz.defs.createNamedHandle("ended_at_server_time")
         , ExpiredTimeHandle: dmz.defs.createNamedHandle("expire_time_handle")
-        , UpdateExpiredTimeHandle: dmz.defs.createNamedHandle("update_expire_time_handle")
 
         // Notification Time Handles
         , PinTimeHandle: dmz.defs.createNamedHandle("pin_time")
@@ -188,7 +191,7 @@ var dmz =
              , States.ChangeMapFlag
              , States.AskAdvisor0Flag
              , States.AskAdvisor1Flag
-             , States.AskAdvisor2Flag
+             , States.DuraAskAdvisor2Flag
              , States.AskAdvisor3Flag
              , States.AskAdvisor4Flag
              , States.AnswerAdvisor0Flag
