@@ -156,7 +156,6 @@ updateEndTime = function (voteHandle) {
 
    var voteItem;
 
-   self.log.error("updateEndTime");
    if (VoteObjects[voteHandle] && VoteObjects[voteHandle].ui) {
 
       voteItem = VoteObjects[voteHandle];
@@ -606,7 +605,6 @@ setYesNoLabels = function (voteHandle) {
                toDate(voteItem.startTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
       }
-      self.log.error(voteItem.endTime);
       if (voteItem.endTime !== undefined) {
 
          voteItem.ui.endTimeLabel.text(
