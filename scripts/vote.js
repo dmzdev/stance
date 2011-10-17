@@ -29,7 +29,7 @@ var dmz =
    , contentLayout = dmz.ui.layout.createVBoxLayout()
 
    // Variables
-   , SEND_MAIL = false
+   , SEND_MAIL = true
    , EmailMod = false
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , VoteObjects = {}
@@ -131,24 +131,15 @@ updateStateUI = function (voteHandle, pastState) {
       }
       else if (voteItem.state === dmz.stance.VOTE_ACTIVE) {
 
-         if (VoteObjects[voteHandle].decisionHandle) {
-
-            setActiveLabels(voteHandle);
-            insertFunction();
-         }
-         else {
-
-            dmz.time.setTimer(self, 1, function () { updateStateUI(voteHandle, pastState); });
-         }
+         setActiveLabels(voteHandle);
+         insertFunction();
       }
    }
 };
 
 updateStartTime = function (voteHandle) {
 
-   var voteItem
-     , decisionItem
-     ;
+   var voteItem;
 
    if (VoteObjects[voteHandle] && VoteObjects[voteHandle].ui) {
 
@@ -163,10 +154,9 @@ updateStartTime = function (voteHandle) {
 
 updateEndTime = function (voteHandle) {
 
-   var voteItem
-     , decisionItem
-     ;
+   var voteItem;
 
+   self.log.error("updateEndTime");
    if (VoteObjects[voteHandle] && VoteObjects[voteHandle].ui) {
 
       voteItem = VoteObjects[voteHandle];
@@ -180,9 +170,7 @@ updateEndTime = function (voteHandle) {
 
 updateExpiredTime = function (voteHandle) {
 
-   var voteItem
-     , decisionItem
-     ;
+   var voteItem;
 
    if (VoteObjects[voteHandle] && VoteObjects[voteHandle].ui) {
 
@@ -213,7 +201,6 @@ updatePostedTime = function (voteHandle) {
 updateVotes = function (voteHandle) {
 
    var voteItem
-     , decisionItem
      , totalUsedVotes = 0
      , totalVotes = numberOfNonAdminUsers(userGroupHandle);
      ;
@@ -264,7 +251,6 @@ updateTags = function (voteHandle) {
 setDeniedLabels = function (voteHandle) {
 
    var voteItem
-     , decisionItem
      , pic
      ;
 
@@ -620,6 +606,7 @@ setYesNoLabels = function (voteHandle) {
                toDate(voteItem.startTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
       }
+      self.log.error(voteItem.endTime);
       if (voteItem.endTime !== undefined) {
 
          voteItem.ui.endTimeLabel.text(
@@ -943,7 +930,6 @@ isVoteOver = function (voteHandle) {
      , yesVotes
      , noVotes
      , totalUsers = numberOfNonAdminUsers(userGroupHandle)
-     , decisionHandle
      , tempHandles
      , voteState
      , voteItem
@@ -996,7 +982,7 @@ isVoteOver = function (voteHandle) {
          }
          if (SEND_MAIL && newState && voteHandle.groupHandle) {
 
-            EmailMod.sendVoteEmail(VoteObjects[voteHandle], newState, DecisionObjects[decisionHandle]);
+            EmailMod.sendVoteEmail(VoteObjects[voteHandle], newState);
          }
       }
    }

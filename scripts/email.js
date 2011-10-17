@@ -69,7 +69,7 @@ _exports.sendTechEmail = function (targets, title, text) {
    return email;
 };
 
-_exports.sendVoteEmail = function (voteItem, state, decisionItem) {
+_exports.sendVoteEmail = function (voteItem, state) {
 
    var email
      , subject
@@ -140,19 +140,19 @@ _exports.sendVoteEmail = function (voteItem, state, decisionItem) {
 
          text += "\nAdvisor Response: " + (voteItem.ui.decisionTextEdit.text() || "No");
       }
-      else if ((state === dmz.stance.VOTE_NO) && decisionItem) {
+      else if (state === dmz.stance.VOTE_NO) {
 
          text +=
-            "\nAdvisor Response: " + decisionItem.advisorResponse +
-            "\nYes Votes: " + (decisionItem.yesVotes || "0") +
-            "\nNo Votes: " + (decisionItem.noVotes || "0");
+            "\nAdvisor Response: " + voteItem.advisorResponse +
+            "\nYes Votes: " + (voteItem.yesVotes || "0") +
+            "\nNo Votes: " + (voteItem.noVotes || "0");
       }
-      else if ((state === dmz.stance.VOTE_YES) && decisionItem) {
+      else if (state === dmz.stance.VOTE_YES) {
 
          text +=
-            "\nAdvisor Response: " + decisionItem.advisorResponse +
-            "\nYes Votes: " + (decisionItem.yesVotes || "0") +
-            "\nNo Votes: " + (decisionItem.noVotes) || "0";
+            "\nAdvisor Response: " + voteItem.advisorResponse +
+            "\nYes Votes: " + (voteItem.yesVotes || "0") +
+            "\nNo Votes: " + (voteItem.noVotes) || "0";
       }
    }
    if (sendList.length && subject && text) {

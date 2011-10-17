@@ -132,13 +132,10 @@ taskBlocked = function () {
 
       votes.forEach(function (voteHandle) {
 
-         var decision = getVoteDecision(voteHandle)
-           , voteState = dmz.object.scalar(voteHandle, dmz.stance.VoteState)
-           ;
+         var voteState = dmz.object.scalar(voteHandle, dmz.stance.VoteState);
 
-         if (!decision ||
-            ((voteState === dmz.stance.VOTE_APPROVAL_PENDING) ||
-               (voteState === dmz.stance.VOTE_ACTIVE))) {
+         if ((voteState === dmz.stance.VOTE_APPROVAL_PENDING) ||
+            (voteState === dmz.stance.VOTE_ACTIVE)) {
 
             result = "New tasks cannot be submitted while your group has an active task.";
          }

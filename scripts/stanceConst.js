@@ -191,7 +191,7 @@ var dmz =
              , States.ChangeMapFlag
              , States.AskAdvisor0Flag
              , States.AskAdvisor1Flag
-             , States.DuraAskAdvisor2Flag
+             , States.AskAdvisor2Flag
              , States.AskAdvisor3Flag
              , States.AskAdvisor4Flag
              , States.AnswerAdvisor0Flag

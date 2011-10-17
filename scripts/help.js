@@ -27,9 +27,39 @@ var dmz =
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , MaxMessageLength = 2000
+   , Posts = {}
+   , Comments = {}
+
+   , hil
+
+   // Functions
+   , highlightHelp
    ;
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
+
+/*highlightHelp = function () {
+
+
+};
+
+dmz.object.flag.observe(self, dmz.object.HILAttribute,
+function (objHandle, attrHandle, value) {
+
+   if (value) { hil = objHandle; }
+});
+
+dmz.object.create.observe(self, function (objHandle, objType) {
+
+   if (objType.isOfType(dmz.stance.PostType)) {
+
+      Posts[objHandle] = { handle: objHandle }
+   }
+   else if (objType.isOfType(dmz.stance.CommentType)) {
+
+      Comments[objH]
+   }
+});*/
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 

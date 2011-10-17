@@ -1,6 +1,6 @@
 function(doc) {
 
-   if ((doc.type === "object") && (doc.object) && (doc.object.attributes) && (doc.object_type !== "decision")) {
+   if ((doc.type === "object") && (doc.object) && (doc.object.attributes) && (doc.object_type !== "vote")) {
 
       doc.object.attributes.forEach(function (attr) {
 

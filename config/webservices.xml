@@ -41,7 +41,7 @@
 </login-dialog>
 <chds-login>
    <login-target name="dmzWebServicesModuleQt"/>
-   <defaultdb name="stance_ben"/>
+   <defaultdb name="stance_vlad"/>
    <!-- <attribute database="databaseName"/> -->
    <picture-grid>
       <row>
