@@ -33,7 +33,7 @@
 </web-services-object>
 <archive-auto-cache>
    <auto-restore value="false"/>
-   <message skipped="Login_Skipped" load="Login_Success_Message" database="Login_Message"/>
+   <message skipped="Login_Skipped_Message" load="Login_Success_Message" database="Login_Message"/>
 </archive-auto-cache>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>
