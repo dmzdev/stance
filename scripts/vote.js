@@ -186,7 +186,8 @@ updatePostedTime = function (voteHandle) {
 
    var voteItem;
 
-   if (VoteObjects[voteHandle] && VoteObjects[voteHandle].ui) {
+   if (VoteObjects[voteHandle] && VoteObjects[voteHandle].ui &&
+      (!VoteObjects[voteHandle].startTime || (VoteObjects[voteHandle].startTime === 0))) {
 
       voteItem = VoteObjects[voteHandle];
       voteItem.ui.startTimeLabel.text(
@@ -225,6 +226,7 @@ updateTags = function (voteHandle) {
       if (VoteObjects[voteHandle].tags && dmz.stance.isAllowed(hil, dmz.stance.SeeTagFlag) &&
          VoteObjects[voteHandle].tags.length) {
 
+         VoteObjects[voteHandle].ui.tagsLayout.insertWidget(0, VoteObjects[voteHandle].ui.tagLabel);
          VoteObjects[voteHandle].ui.tagLabel.show();
          VoteObjects[voteHandle].ui.tagLabel.text("<b>Tags: </b>" + VoteObjects[voteHandle].tags.toString());
       }
@@ -232,18 +234,24 @@ updateTags = function (voteHandle) {
 
          VoteObjects[voteHandle].ui.tagLabel.text("");
          VoteObjects[voteHandle].ui.tagLabel.hide();
+         VoteObjects[voteHandle].ui.tagsLayout.removeWidget(VoteObjects[voteHandle].ui.tagLabel);
       }
       if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag)) {
 
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile("tagButton"));
          if (pic) { VoteObjects[voteHandle].ui.tagButton.setIcon(pic); }
+         VoteObjects[voteHandle].ui.tagsLayout.addWidget(VoteObjects[voteHandle].ui.tagButton);
          VoteObjects[voteHandle].ui.tagButton.show();
          VoteObjects[voteHandle].ui.tagButton.observe(self, "clicked", function () {
 
             dmz.stance.TAG_MESSAGE.send(dmz.data.wrapHandle(voteHandle));
          });
       }
-      else { VoteObjects[voteHandle].ui.tagButton.hide(); }
+      else {
+
+         VoteObjects[voteHandle].ui.tagButton.hide();
+         VoteObjects[voteHandle].ui.tagsLayout.removeWidget(VoteObjects[voteHandle].ui.tagButton);
+      }
    }
 };
 
@@ -685,6 +693,7 @@ initiateVoteUI = function (voteHandle) {
       voteItem.ui.noButton = dmz.ui.button.createPushButton("Deny");
       voteItem.ui.buttonLayout = voteItem.ui.postItem.lookup("buttonLayout");
       voteItem.ui.textLayout = voteItem.ui.postItem.lookup("textLayout");
+      voteItem.ui.tagsLayout = voteItem.ui.postItem.lookup("tagsLayout");
       voteItem.ui.tagLabel = voteItem.ui.postItem.lookup("tagLabel");
       voteItem.ui.tagButton = voteItem.ui.postItem.lookup("tagButton");
       voteItem.ui.tagButton.styleSheet(dmz.stance.YELLOW_BUTTON);
@@ -1116,7 +1125,7 @@ function (objHandle, attrHandle, newVal, prevVal) {
    if (VoteObjects[objHandle]) {
 
       VoteObjects[objHandle].state = newVal;
-      dmz.time.setTimer(self, 1, function () {
+      dmz.time.setTimer(self, function () {
 
          if (newVal === dmz.stance.VOTE_EXPIRED) { isVoteOver(objHandle); }
          updateStateUI(objHandle, prevVal);
