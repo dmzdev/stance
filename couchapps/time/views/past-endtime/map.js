@@ -5,6 +5,7 @@ function(doc) {
       var updateStartTime = false
         , updateEndTime = false
         , updateExpireTime = false
+        , voteState = -1
         ;
 
       doc.object.attributes.forEach(function (attr) {
@@ -21,8 +22,13 @@ function(doc) {
 
             updateExpireTime = attr.flag.value;
          }
+         if (attr.name === "vote_state") {
+
+            voteState = attr.scalar.value;
+         }
       });
-      if (!updateStartTime && !updateEndTime && !updateExpireTime) {
+      if (!updateStartTime && !updateEndTime && !updateExpireTime &&
+         (voteState === 2)) {
 
          emit(doc.object, null);
       }

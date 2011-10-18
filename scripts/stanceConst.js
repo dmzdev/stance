@@ -281,9 +281,9 @@ var dmz =
         , PRIORITY_SECOND: 2
         , PRIORITY_THIRD: 3
         , TIME_FORMAT: "MMM-dd hh:mm tt"
-        , RED_BUTTON: "* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
-        , GREEN_BUTTON: "* { background-color: green; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
-        , YELLOW_BUTTON: "* { background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; }"
+        , RED_BUTTON: "* { background-color: red; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; color: black; }"
+        , GREEN_BUTTON: "* { background-color: green; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; color: black; }"
+        , YELLOW_BUTTON: "* { background-color: yellow; border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; padding: 5px; color: black; }"
         , STUDENT_PERMISSION: 0
         , ADMIN_PERMISSION: 1
         , ADVISOR_PERMISSION: 2
