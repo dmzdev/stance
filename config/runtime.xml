@@ -24,6 +24,7 @@
    <object-type name="data"/>
    <object-type name="help-forum"/>
    <object-type name="pdf-item"/>
+   <object-type name="LinkData"/>
    <message name="AddPinMessage"/>
    <message name="PinAddedMessage"/>
    <message name="RemovePinMessage"/>

@@ -224,8 +224,8 @@ var dmz =
         , TechPermissions: // Seriously, do we really need "permission" to do anything?
              [ States.SwitchGroupFlag
              , States.ChangeMapFlag
-             , States.CreateVoteFlag
-             //, States.CastVoteFlag
+//             , States.CreateVoteFlag
+//             , States.CastVoteFlag
              , States.AskAdvisor0Flag
              , States.AskAdvisor1Flag
              , States.AskAdvisor2Flag
