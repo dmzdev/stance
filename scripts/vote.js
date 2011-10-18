@@ -156,7 +156,6 @@ updateEndTime = function (voteHandle) {
 
    var voteItem;
 
-   self.log.error("updateEndTime");
    if (VoteObjects[voteHandle] && VoteObjects[voteHandle].ui) {
 
       voteItem = VoteObjects[voteHandle];
@@ -265,7 +264,7 @@ setDeniedLabels = function (voteHandle) {
             dmz.stance.STATE_STR[voteItem.state]);
          if (voteItem.state === dmz.stance.VOTE_DENIED) {
 
-            voteItem.ui.postItem.styleSheet("* { background-color: rgb(70, 70, 70); }");
+            voteItem.ui.postItem.styleSheet("* { background-color: rgb(70, 70, 70); color: white; }");
          }
       }
       if (voteItem.userPicture) {
@@ -606,7 +605,6 @@ setYesNoLabels = function (voteHandle) {
                toDate(voteItem.startTime).toString(dmz.stance.TIME_FORMAT) :
                "Less than 5 min ago"));
       }
-      self.log.error(voteItem.endTime);
       if (voteItem.endTime !== undefined) {
 
          voteItem.ui.endTimeLabel.text(
@@ -913,8 +911,8 @@ createDecision = function (decisionValue, voteHandle, duration, reason) {
       dmz.object.flag(voteHandle, dmz.stance.UpdateExpiredTimeHandle, true);
       dmz.object.timeStamp(voteHandle, dmz.stance.EndedAtServerTimeHandle, 0);
       dmz.object.flag(voteHandle, dmz.stance.UpdateEndTimeHandle, false);
-      duration *= 3600; //convert to unix seconds
-      //duration *= 60;
+      //duration *= 3600; //convert to unix seconds
+      duration *= 1;
       dmz.object.timeStamp(voteHandle, dmz.stance.DurationHandle, duration);
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_ACTIVE);
    }
@@ -952,6 +950,7 @@ isVoteOver = function (voteHandle) {
          }
          if (noVotes >= (totalUsers / 2)) {
 
+            self.log.error(noVotes, totalUsers, (totalUsers / 2));
             dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
             dmz.object.flag(voteHandle, dmz.stance.UpdateEndTimeHandle, true);
          }
@@ -1256,7 +1255,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
    if (VoteObjects[subHandle]) {
 
-      VoteObjects[subHandle].noVotes = (VoteObjects[subHandle].yesVotes || 0) + 1;
+      VoteObjects[subHandle].yesVotes = (VoteObjects[subHandle].yesVotes || 0) + 1;
       dmz.time.setTimer(self, function () {
 
          updateVotes(subHandle);

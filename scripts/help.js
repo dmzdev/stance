@@ -27,39 +27,9 @@ var dmz =
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , MaxMessageLength = 2000
-   , Posts = {}
-   , Comments = {}
-
-   , hil
-
-   // Functions
-   , highlightHelp
    ;
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
-
-/*highlightHelp = function () {
-
-
-};
-
-dmz.object.flag.observe(self, dmz.object.HILAttribute,
-function (objHandle, attrHandle, value) {
-
-   if (value) { hil = objHandle; }
-});
-
-dmz.object.create.observe(self, function (objHandle, objType) {
-
-   if (objType.isOfType(dmz.stance.PostType)) {
-
-      Posts[objHandle] = { handle: objHandle }
-   }
-   else if (objType.isOfType(dmz.stance.CommentType)) {
-
-      Comments[objH]
-   }
-});*/
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
@@ -74,7 +44,42 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , forumType: dmz.stance.HelpForumType
          , parentHandle: dmz.stance.ParentHandle
          , groupLinkHandle: dmz.stance.HelpLink
-         , highlight: function (handle) { module.highlight("Help"); }
+         , highlight: function (forumHandle) { module.highlight("Help"); }
+         , canHighlight: function (forums, itemHandle) {
+
+              var hil = dmz.object.hil()
+                , helpForum = false
+                , parentPost
+                , author
+                , allowed = false;
+                ;
+
+              forums.forEach(function (forumObject) {
+
+                 if (dmz.object.type(forumObject.handle).isOfType(dmz.stance.HelpForumType)) {
+
+                    helpForum = true;
+                 }
+              });
+
+              if (dmz.object.type(itemHandle).isOfType(dmz.stance.CommentType) && helpForum) {
+
+                 parentPost = dmz.object.subLinks(itemHandle, dmz.stance.ParentHandle);
+                 if (parentPost) {
+
+                    parentPost = parentPost[0];
+                    author = dmz.object.subLinks(parentPost, dmz.stance.CreatedByHandle);
+                    if (author &&
+                       ((author[0] === hil) || dmz.stance.isAllowed(author[0], dmz.stance.AnswerHelpFlag))) {
+
+                       allowed = true;
+                    }
+                 }
+              }
+              if (dmz.stance.isAllowed(hil, dmz.stance.AnswerHelpFlag)) { allowed = true; };
+
+              return allowed;
+         }
          , canReplyTo: function () { return dmz.stance.isAllowed(dmz.object.hil(), dmz.stance.AnswerHelpFlag); }
          , postBlocked: function () {
 

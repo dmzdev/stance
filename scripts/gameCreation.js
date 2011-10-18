@@ -1395,6 +1395,8 @@ mediaInjectButtons = function () {
             ActiveCheckBox.setChecked(true);
             ActiveCheckBox.show();
             ActiveLabel.show();
+            MediaTitleText.text("");
+            MediaUrlText.text("");
             MediaOkButton.observe(self, "clicked", function () {
 
                var text = MediaUrlText.text()

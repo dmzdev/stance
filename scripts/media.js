@@ -803,7 +803,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          PdfItems[supHandle].groups.push(subHandle);
          dmz.time.setTimer(self, function () {
 
-            if ((PdfItems[supHandle].viewed.indexOf(hil) === -1) && PdfItems[supHandle].active) {
+            if ((PdfItems[supHandle].viewed.indexOf(hil) === -1) && PdfItems[supHandle].active &&
+               (PdfItems[supHandle].groups.indexOf(userGroupHandle) !== -1)) {
 
                MainModule.highlight("Bookcase");
             }
@@ -826,9 +827,10 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          Memos[supHandle].groups.push(subHandle);
          dmz.time.setTimer(self, function () {
 
-            if ((Memos[supHandle].viewed.indexOf(hil) === -1) && Memos[supHandle].active) {
+            if ((Memos[supHandle].viewed.indexOf(hil) === -1) && Memos[supHandle].active &&
+               (Memos[supHandle].groups.indexOf(userGroupHandle) !== -1)) {
 
-               MainModule.highlight("Memos");
+               MainModule.highlight("Memo");
             }
             if ((indexOfMediaItem(Memos[supHandle]) === -1) && beenOpened){
 
@@ -849,7 +851,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          Newspapers[supHandle].groups.push(subHandle);
          dmz.time.setTimer(self, function () {
 
-            if ((Newspapers[supHandle].viewed.indexOf(hil) === -1) && Newspapers[supHandle].active) {
+            if ((Newspapers[supHandle].viewed.indexOf(hil) === -1) && Newspapers[supHandle].active &&
+               (Newspapers[supHandle].groups.indexOf(userGroupHandle) !== -1)) {
 
                MainModule.highlight("Newspaper");
             }
@@ -872,7 +875,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          Videos[supHandle].groups.push(subHandle);
          dmz.time.setTimer(self, function () {
 
-            if ((Videos[supHandle].viewed.indexOf(hil) === -1) && Videos[supHandle].active) {
+            if ((Videos[supHandle].viewed.indexOf(hil) === -1) && Videos[supHandle].active &&
+               (Videos[supHandle].groups.indexOf(userGroupHandle) !== -1)) {
 
                MainModule.highlight("Video");
             }
@@ -944,7 +948,9 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
 init = function () {
 
-   var pic;
+   var pic
+     , parent
+     ;
 
    scrollFormContent.layout(mediaContentLayout);
    mediaContentLayout.addStretch(1);
