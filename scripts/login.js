@@ -74,6 +74,24 @@ _activateUser = function (name) {
    }
 }
 
+dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
+function (objHandle, attrHandle, newVal, oldVal) {
+
+   dmz.time.setTimer(self, 2, function () {
+
+      var type = dmz.object.type(objHandle)
+        , value = dmz.object.text(objHandle, dmz.stance.NameHandle)
+        ;
+
+      self.log.error(objHandle);
+      if (type && type.isOfType (dmz.stance.UserType)) {
+
+         _userList[value] = objHandle;
+         _activateUser (value);
+      }
+      });
+});
+
 _login = function (data) {
 
    var timeStamp
@@ -84,9 +102,12 @@ _login = function (data) {
 
       _window.title(_title);
       _admin = data.boolean("admin");
-      _userName = data.string(dmz.stance.NameHandle);
+      dmz.time.setTimer(self, 2, function () {
 
-      _activateUser(_userName);
+         _userName = data.string(dmz.stance.NameHandle);
+
+         _activateUser(_userName);
+      });
    }
 }
 
@@ -126,12 +147,15 @@ dmz.object.create.observe(self, function (handle, type) {
 
 dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, value) {
 
+   dmz.time.setTimer(self, 2, function () {
    var type = dmz.object.type(handle);
-   if (type && type.isOfType (dmz.stance.UserType)) {
 
-      _userList[value] = handle;
-      _activateUser (value);
-   }
+      if (type && type.isOfType (dmz.stance.UserType)) {
+
+         _userList[value] = handle;
+         _activateUser (value);
+      }
+   });
 });
 
 dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,

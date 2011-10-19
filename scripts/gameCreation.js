@@ -640,7 +640,7 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
          dmz.object.scalar(group, dmz.stance.ID, (dmz.object.superLinks(CurrentGameHandle, dmz.stance.GameGroupHandle) || []).length);
          dmz.object.link(dmz.stance.GameGroupHandle, group, CurrentGameHandle);
 
-         admins = dmz.object.subLinks(CurrentGameHandle, dmz.stance.GameObservers) || [];
+         admins = dmz.object.superLinks(CurrentGameHandle, dmz.stance.GameObservers) || [];
          admins.forEach(function (observerHandle) {
 
             var linkHandle = dmz.object.link(dmz.stance.DataLinkHandle, observerHandle, group)
@@ -1578,7 +1578,7 @@ function (objHandle, attrHandle, value) {
 
             TabWidget.add(AlterUsersTab.widget, AlterUsersTab.name);
          }
-         else { TabWidget.widget.hide(); }
+         else { AlterUsersTab.widget.hide(); }
          if (dmz.stance.isAllowed(objHandle, dmz.stance.ChangePermissionsFlag)) {
 
             if (!haveSetupPermissionTable) { setupPermissionTable(); }
@@ -1674,13 +1674,13 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
             if (!data) {
 
                data = dmz.object.create(dmz.stance.DataType);
+               dmz.object.activate(data);
                if (!linkHandle) {
 
                   linkHandle = dmz.object.link(dmz.stance.DataLinkHandle, handle, groupHandle);
                }
                dmz.object.linkAttributeObject(linkHandle, data);
             }
-
             dmz.stance.NOTIFICATION_HANDLES.forEach(function (timeHandle) {
 
                dmz.object.timeStamp(data, timeHandle, dmz.object.timeStamp(handle, timeHandle));

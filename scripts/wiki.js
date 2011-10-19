@@ -33,6 +33,8 @@ var dmz =
 
    // Variables
    , hil
+   , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
+   , LoginSkipped = false
    , userGroupHandle
    , Groups = {}
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
@@ -59,6 +61,8 @@ function (objHandle, attrHandle, newVal, oldVal) {
    if (Groups[objHandle]) { Groups[objHandle].wikiLink = newVal; }
 });
 
+LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
+
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
    var list;
@@ -75,11 +79,15 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
             var site;
 
-            if (Groups[userGroupHandle] && Groups[userGroupHandle].wikiLink) {
+            if (!LoginSkipped) {
 
-               wikiViewer.page().mainFrame().load(Groups[userGroupHandle].wikiLink);
+               if (Groups[userGroupHandle] && Groups[userGroupHandle].wikiLink) {
+
+                  wikiViewer.page().mainFrame().load(Groups[userGroupHandle].wikiLink);
+               }
+               else { wikiViewer.setHtml("<center><b>No whiteboard set up...</b><center>"); }
             }
-            else { wikiViewer.setHtml("<center><b>No Wiki Set Up...</b><center>"); }
+            else { wikiViewer.setHtml("<center><b>Can't view wiki when not logged in.<b></center>"); }
          }
          , function () { wikiViewer.setHtml("<center><b>Loading...</b><center>"); }
          );

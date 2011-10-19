@@ -1024,20 +1024,18 @@ updateLastSeen = function () {
             latestTime = voteItem.startTime;
          }
       }
-      if (latestTime) {
-
-         dmz.stance.userAttribute(hil, dmz.stance.VoteTimeHandle, latestTime);
-      }
+      if (latestTime) { dmz.stance.userAttribute(hil, dmz.stance.VoteTimeHandle, latestTime); }
    });
 };
 
 checkForNotifications = function () {
 
-   var lastUserTime = dmz.stance.userAttribute(hil, dmz.stance.VoteTimeHandle) || 0
+   var lastUserTime = dmz.stance.userAttribute(hil, dmz.stance.VoteTimeHandle)
      , voteItem
      , lastVoteTime = 0
      ;
 
+   if (lastUserTime === undefined) { lastUserTime = 0; }
    Object.keys(VoteObjects).forEach(function (key) {
 
       voteItem = VoteObjects[key];
@@ -1073,6 +1071,7 @@ function (objHandle, attrHandle, value) {
 
          hil = objHandle;
          userGroupHandle = dmz.stance.getUserGroupHandle(hil);
+         self.log.error(userGroupHandle);
          Object.keys(VoteObjects).forEach(function (key) {
 
             isVoteOver(VoteObjects[key].handle);

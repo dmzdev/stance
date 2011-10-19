@@ -47,6 +47,8 @@ var dmz =
    // Variables
    , hil
    , beenOpened = false
+   , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
+   , LoginSkipped = false
    , userGroupHandle
    , currentGameHandle
    , Groups = {}
@@ -270,25 +272,32 @@ mouseEvent = function (object, type) {
             dmz.object.link(dmz.stance.MediaHandle, mediaItem.handle, hil);
             mediaItem.ui.notificationLabel.hide();
             mediaItem.ui.postItem.styleSheet("* { background-color: rgb(180, 180, 180); border-style: solid; }");
-            if ((CurrentType === "PdfItem") && mediaItem.link) {
+            if (!LoginSkipped) {
 
-               mediaWebView.setHtml(
-                  "<center><iframe src='http://docs.google.com/viewer?" +
-                  "url=" + encodeURIComponent(mediaItem.link) +
-                  "&embedded=true'" +
-                  "width='" + (mediaWebView.page().width() - 20) +
-                  "' height='" + (mediaWebView.page().height() - 20) +
-                  "' style='border: none;'></iframe></center>");
+               if ((CurrentType === "PdfItem") && mediaItem.link) {
+
+                  mediaWebView.setHtml(
+                     "<center><iframe src='http://docs.google.com/viewer?" +
+                     "url=" + encodeURIComponent(mediaItem.link) +
+                     "&embedded=true'" +
+                     "width='" + (mediaWebView.page().width() - 20) +
+                     "' height='" + (mediaWebView.page().height() - 20) +
+                     "' style='border: none;'></iframe></center>");
+               }
+               else if ((CurrentType === "Video") && mediaItem.link) {
+
+                  mediaWebView.page().mainFrame().load(
+                        "http://www.chds.us/?stance:youtube&video=" + mediaItem.link +
+                        "&width=" + (mediaWebView.page().width() - 20) +"&height=" + (mediaWebView.page().height() - 20));
+               }
+               else if (mediaItem.link) {
+
+                  mediaWebView.page().mainFrame().load(mediaItem.link);
+               }
             }
-            else if ((CurrentType === "Video") && mediaItem.link) {
+            else {
 
-               mediaWebView.page().mainFrame().load(
-                     "http://www.chds.us/?stance:youtube&video=" + mediaItem.link +
-                     "&width=" + (mediaWebView.page().width() - 20) +"&height=" + (mediaWebView.page().height() - 20));
-            }
-            else if (mediaItem.link) {
-
-               mediaWebView.page().mainFrame().load(mediaItem.link);
+               mediaWebView.setHtml("<center><b>Can't load media when not logged in.</b></center>");
             }
          });
       }
@@ -893,6 +902,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       }
    }
 });
+
+LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
