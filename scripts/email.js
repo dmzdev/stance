@@ -25,6 +25,7 @@ _exports.sendEmail = function (targets, title, text) {
          var type = dmz.object.type(userHandle)
            , name = dmz.object.text(userHandle, dmz.stance.NameHandle)
            ;
+
          if (type && type.isOfType(dmz.stance.UserType) && !userFilterList[name]) {
 
             userListStr = userListStr.concat(name + ",");
@@ -171,6 +172,8 @@ _exports.sendVoteEmail = function (voteItem, state) {
       list.forEach(function (userConfig) {
 
          var name = userConfig.string("name");
+
+         self.log.error(name);
          if (name) { userFilterList[name] = true; }
       });
    }

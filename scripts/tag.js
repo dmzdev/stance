@@ -58,6 +58,18 @@ currentList.observe(self, "itemActivated", function (item) {
    tagList[item.text()].hidden(false);
 });
 
+dmz.message.subscribe(self, dmz.stance.AUTOMATIC_TAG_MESSAGE, function (data) {
+
+   var voteHandle = data.handle(dmz.stance.ObjectHandle, 0)
+     , tagString = data.string(dmz.stance.TagHandle, 0)
+     , voteData = dmz.data.create();
+     ;
+
+   voteData.string(dmz.stance.TagHandle, 0, tagString);
+   voteData.number(dmz.stance.TotalHandle, 0, 1);
+   dmz.object.data(voteHandle, dmz.stance.TagHandle, voteData);
+});
+
 dmz.message.subscribe(self, "TagMessage", function (data) {
 
    var handle = dmz.data.unwrapHandle(data)

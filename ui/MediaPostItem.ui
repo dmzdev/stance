@@ -59,7 +59,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="postedByHeaderLabel">
      <property name="styleSheet">
       <string notr="true"/>
      </property>

@@ -29,7 +29,6 @@ var dmz =
    , MaxMessageLength = 2000
    ;
 
-LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
@@ -55,6 +54,12 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          };
       RetData = dmz.forumView.setupForumView(forumData);
 
+      LoginSkippedMessage.subscribe(self, function (data) {
+
+         LoginSkipped = true;
+         RetData.hideTagButtons();
+         RetData.hideDeleteButtons();
+      });
       dmz.object.create.observe(self, RetData.observers.create);
       dmz.object.text.observe(self, dmz.stance.TextHandle, RetData.observers.text);
       dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, RetData.observers.createdAt);
@@ -70,7 +75,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
          if (dmz.object.hil() === userHandle) {
 
-            RetData.updateForUser(userHandle);
+            RetData.updateForUser(userHandle, 0, LoginSkipped);
             RetData.checkHighlight();
          }
       });
@@ -81,7 +86,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          var type = dmz.object.type(objHandle);
          if (value && type && type.isOfType(dmz.stance.UserType)) {
 
-            RetData.updateForUser(objHandle);
+            RetData.updateForUser(objHandle, 0 , LoginSkipped);
             RetData.checkHighlight();
          }
       });

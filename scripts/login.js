@@ -83,7 +83,6 @@ function (objHandle, attrHandle, newVal, oldVal) {
         , value = dmz.object.text(objHandle, dmz.stance.NameHandle)
         ;
 
-      self.log.error(objHandle);
       if (type && type.isOfType (dmz.stance.UserType)) {
 
          _userList[value] = objHandle;

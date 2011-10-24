@@ -29,6 +29,14 @@ var dmz =
    , contentLayout = dmz.ui.layout.createVBoxLayout()
 
    // Variables
+   , YES_BUTTON_STYLE = "* { background-color: rgb(70, 240, 70); }"
+   , NO_BUTTON_STYLE = "* { background-color: rgb(240, 70, 70); }"
+   , LOGIN_SKIPPED_BUTTON_STYLE = "* { background-color: rgb(130, 130, 130); }"
+   , PENDING_STYLE = "* { background-color: rgb(240, 240, 240); }"
+   , ACTIVE_STYLE = "* { background-color: rgb(240, 240, 70); }"
+   , DENIED_STYLE = "* { background-color: rgb(70, 70, 70); color: white; }"
+   , YES_STYLE = "* { background-color: rgb(70, 240, 70); }"
+   , NO_STYLE = "* { background-color: rgb(240, 70, 70); }"
    , SEND_MAIL = true
    , EmailMod = false
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
@@ -213,7 +221,11 @@ updateVotes = function (voteHandle) {
       totalUsedVotes += (voteItem.noVotes || 0);
       voteItem.ui.yesVotesLabel.text("<b>Yes Votes: </b>" + (voteItem.yesVotes || 0));
       totalUsedVotes += (voteItem.yesVotes || 0);
-      voteItem.ui.undecidedVotesLabel.text("<b>Undecided Votes: </b>" + (totalVotes - totalUsedVotes));
+      if ((totalVotes - totalUsedVotes) >= 0) {
+
+         voteItem.ui.undecidedVotesLabel.text("<b>Undecided Votes: </b>" + (totalVotes - totalUsedVotes));
+      }
+      else { voteItem.ui.undecidedVotesLabel.text("<b>Undecided Votes: </b>0"); }
    }
 };
 
@@ -236,7 +248,7 @@ updateTags = function (voteHandle) {
          VoteObjects[voteHandle].ui.tagLabel.hide();
          VoteObjects[voteHandle].ui.tagsLayout.removeWidget(VoteObjects[voteHandle].ui.tagLabel);
       }
-      if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag)) {
+      if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag) && !LoginSkipped) {
 
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile("tagButton"));
          if (pic) { VoteObjects[voteHandle].ui.tagButton.setIcon(pic); }
@@ -272,7 +284,7 @@ setDeniedLabels = function (voteHandle) {
             dmz.stance.STATE_STR[voteItem.state]);
          if (voteItem.state === dmz.stance.VOTE_DENIED) {
 
-            voteItem.ui.postItem.styleSheet("* { background-color: rgb(70, 70, 70); color: white; }");
+            voteItem.ui.postItem.styleSheet(DENIED_STYLE);
          }
       }
       if (voteItem.userPicture) {
@@ -347,7 +359,7 @@ setApprovalPendingLabels = function (voteHandle) {
             dmz.stance.STATE_STR[voteItem.state]);
          if (voteItem.state === dmz.stance.VOTE_APPROVAL_PENDING) {
 
-            voteItem.ui.postItem.styleSheet("* { background-color: rgb(240, 240, 240); }");
+            voteItem.ui.postItem.styleSheet(PENDING_STYLE);
          }
       }
       if (voteItem.userPicture) {
@@ -401,13 +413,13 @@ setApprovalPendingLabels = function (voteHandle) {
          voteItem.ui.textLayout.insertWidget(1, voteItem.ui.decisionTextEdit);
          if (LoginSkipped) {
 
-            voteItem.ui.yesButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
-            voteItem.ui.noButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
+            voteItem.ui.yesButton.styleSheet(LOGIN_SKIPPED_BUTTON_STYLE);
+            voteItem.ui.noButton.styleSheet(LOGIN_SKIPPED_BUTTON_STYLE);
          }
          else {
 
-            voteItem.ui.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
-            voteItem.ui.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
+            voteItem.ui.yesButton.styleSheet(YES_BUTTON_STYLE);
+            voteItem.ui.noButton.styleSheet(NO_BUTTON_STYLE);
             voteItem.ui.yesButton.observe(self, "clicked", function () {
 
                voteItem.ui.yesButton.hide();
@@ -459,7 +471,7 @@ setActiveLabels = function (voteHandle) {
             dmz.stance.STATE_STR[voteItem.state]);
          if (voteItem.state === dmz.stance.VOTE_ACTIVE) {
 
-            voteItem.ui.postItem.styleSheet("* { background-color: rgb(240, 240, 70); }");
+            voteItem.ui.postItem.styleSheet(ACTIVE_STYLE);
          }
       }
       if (voteItem.userPicture) {
@@ -514,8 +526,8 @@ setActiveLabels = function (voteHandle) {
          voteItem.ui.buttonLayout.insertWidget(1, voteItem.ui.noButton);
          if (!LoginSkipped) {
 
-            voteItem.ui.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
-            voteItem.ui.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
+            voteItem.ui.yesButton.styleSheet(YES_BUTTON_STYLE);
+            voteItem.ui.noButton.styleSheet(NO_BUTTON_STYLE);
             voteItem.ui.yesButton.observe(self, "clicked", function () {
 
                userVoted(dmz.object.hil(), voteItem.handle, true);
@@ -531,8 +543,8 @@ setActiveLabels = function (voteHandle) {
          }
          else {
 
-            voteItem.ui.yesButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
-            voteItem.ui.noButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
+            voteItem.ui.yesButton.styleSheet(YES_BUTTON_STYLE);
+            voteItem.ui.noButton.styleSheet(NO_BUTTON_STYLE);
          }
       }
       else {
@@ -569,11 +581,11 @@ setYesNoLabels = function (voteHandle) {
             dmz.stance.STATE_STR[voteItem.state]);
          if (voteItem.state === dmz.stance.VOTE_NO) {
 
-            voteItem.ui.postItem.styleSheet("* { background-color: rgb(240, 70, 70); }");
+            voteItem.ui.postItem.styleSheet(NO_STYLE);
          }
          else if (voteItem.state === dmz.stance.VOTE_YES) {
 
-            voteItem.ui.postItem.styleSheet("* { background-color: rgb(70, 240, 70); }");
+            voteItem.ui.postItem.styleSheet(YES_STYLE);
          }
       }
       if (voteItem.userPicture) {
@@ -628,8 +640,8 @@ setYesNoLabels = function (voteHandle) {
          voteItem.ui.buttonLayout.insertWidget(1, voteItem.ui.noButton);
          if (!LoginSkipped) {
 
-            voteItem.ui.yesButton.styleSheet("* { background-color: rgb(70, 240, 70); }");
-            voteItem.ui.noButton.styleSheet("* { background-color: rgb(240, 70, 70); }");
+            voteItem.ui.yesButton.styleSheet(YES_BUTTON_STYLE);
+            voteItem.ui.noButton.styleSheet(NO_BUTTON_STYLE);
             voteItem.ui.yesButton.observe(self, "clicked", function () {
 
                userVoted(dmz.object.hil(), voteItem.handle, true);
@@ -645,8 +657,8 @@ setYesNoLabels = function (voteHandle) {
          }
          else {
 
-            voteItem.ui.yesButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
-            voteItem.ui.noButton.styleSheet("* { background-color: rgb(130, 130, 130); }");
+            voteItem.ui.yesButton.styleSheet(YES_BUTTON_STYLE);
+            voteItem.ui.noButton.styleSheet(NO_BUTTON_STYLE);
          }
       }
       else {
@@ -959,7 +971,6 @@ isVoteOver = function (voteHandle) {
          }
          if (noVotes >= (totalUsers / 2)) {
 
-            self.log.error(noVotes, totalUsers, (totalUsers / 2));
             dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_NO);
             dmz.object.flag(voteHandle, dmz.stance.UpdateEndTimeHandle, true);
          }
@@ -1071,7 +1082,6 @@ function (objHandle, attrHandle, value) {
 
          hil = objHandle;
          userGroupHandle = dmz.stance.getUserGroupHandle(hil);
-         self.log.error(userGroupHandle);
          Object.keys(VoteObjects).forEach(function (key) {
 
             isVoteOver(VoteObjects[key].handle);

@@ -131,23 +131,36 @@ changeState = function (state) {
 
 initialButtonObserve = function () {
 
-   var isAllowed = false;
+   var isAllowedToDelete = false
+     , isAllowedToPost = false
+     ;
 
-   if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag)) { tagButton.show(); }
+   if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag) && !LoginSkipped) { tagButton.show(); }
    else { tagButton.hide(); }
-   if ((CurrentType === "PdfItem") && dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) {
+   if ((CurrentType === "PdfItem") && dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag) &&
+      !LoginSkipped) {
 
-      isAllowed = true;
+      isAllowedToPost = true;
+      if (CurrentItem.createdByHandle === hil) { isAllowedToDelete = true; }
    }
-   else if (dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag)) {
+   else if (dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag) && !LoginSkipped) {
 
-      isAllowed = true;
+      isAllowedToDelete = true;
+      isAllowedToPost = true;
    }
-   if (isAllowed) {
+   if (isAllowedToDelete) {
 
       deleteButton.observe(self, "clicked", function () { clickDelete(); });
       cancelButton.hide();
       deleteButton.show();
+   }
+   else {
+
+      cancelButton.hide();
+      deleteButton.hide();
+   }
+   if (isAllowedToPost) {
+
       linkTextEdit.show();
       linkTextLabel.show();
       titleTextEdit.show();
@@ -156,8 +169,6 @@ initialButtonObserve = function () {
    }
    else {
 
-      cancelButton.hide();
-      deleteButton.hide();
       linkTextEdit.hide();
       linkTextLabel.hide();
       titleTextEdit.hide();
@@ -200,7 +211,6 @@ addMediaButton.observe(self, "clicked", function () {
 
    var mediaItemHandle
      , atLeastOneChecked = false
-     , isAllowed = false
      ;
 
    if ((titleTextEdit.text() !== "") && (linkTextEdit.text() !== "") &&
@@ -209,9 +219,6 @@ addMediaButton.observe(self, "clicked", function () {
       if (((CurrentType === "PdfItem") && dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) ||
          dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag)) {
 
-         //isAllowed = true;
-      //}
-      //if (isAllowed) {
          mediaItemHandle = dmz.object.create(TypesMap[CurrentType]);
          dmz.object.text(mediaItemHandle, dmz.stance.TitleHandle, titleTextEdit.text());
          dmz.object.text(mediaItemHandle, dmz.stance.TextHandle, linkTextEdit.text());
@@ -265,6 +272,7 @@ mouseEvent = function (object, type) {
             CurrentItem.ui.postItem.styleSheet("* { background-color: rgb(210, 210, 210); border-style: solid; }");
          }
          CurrentItem = mediaItem;
+         initialButtonObserve();
          dmz.time.setTimer(self, function () {
 
             // link and set widget to dark grey (current)
@@ -394,10 +402,20 @@ initiateMediaPostItemUi = function (mediaItem) {
       mediaItem.ui.titleLabel = mediaItem.ui.postItem.lookup("titleLabel");
       mediaItem.ui.createdByLabel = mediaItem.ui.postItem.lookup("postedByLabel");
       mediaItem.ui.tagLabel = mediaItem.ui.postItem.lookup("tagLabel");
+      mediaItem.ui.postedByHeaderLabel = mediaItem.ui.postItem.lookup("postedByHeaderLabel");
       mediaItem.ui.notificationLabel = dmz.ui.label.create(mediaItem.ui.postItem);
       mediaItem.ui.notificationLabel.fixedWidth(34);
       mediaItem.ui.titleLabel.text(mediaItem.title);
-      mediaItem.ui.createdByLabel.text(mediaItem.createdBy || "Admin");
+      if (mediaItem.createdByHandle && (mediaItem.createdByPermissions === dmz.stance.STUDENT_PERMISSION)) {
+
+         mediaItem.ui.createdByLabel.text(mediaItem.createdBy);
+      }
+      else if (mediaItem.createdByHandle &&
+         (mediaItem.createdByPermissions === dmz.stance.ADMIN_PERMISSION) || (mediaItem.createdByPermissions === dmz.stance.TECH_PERMISSION)) {
+
+         mediaItem.ui.createdByLabel.hide();
+         mediaItem.ui.postedByHeaderLabel.hide();
+      }
       mediaItem.ui.postItem.eventFilter(self, mouseEventHandler);
       setTagLabels(mediaItem);
       if (mediaItem.viewed.indexOf(hil) === -1) { // not seen
@@ -774,6 +792,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       dmz.time.setTimer(self, function () {
 
          PdfItems[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
+         PdfItems[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
       });
    }
    else if (Memos[supHandle]) {
@@ -782,6 +801,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       dmz.time.setTimer(self, function () {
 
          Memos[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
+         Memos[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
       });
    }
    else if (Newspapers[supHandle]) {
@@ -790,6 +810,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       dmz.time.setTimer(self, function () {
 
          Newspapers[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
+         Newspapers[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
       });
    }
    else if (Videos[supHandle]) {
@@ -798,6 +819,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       dmz.time.setTimer(self, function () {
 
          Videos[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
+         Videos[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
       });
    }
 });

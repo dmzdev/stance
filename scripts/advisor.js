@@ -14,6 +14,7 @@ var dmz =
       , widget: require("dmz/ui/widget")
       }
    , stance: require("stanceConst")
+   , data: require("dmz/runtime/data")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
@@ -275,8 +276,12 @@ createAdvisorWindow = function (windowStr, idx) {
          var handle
            , text = data.task.text.text()
            , hil = dmz.object.hil()
+           , groupHandle = dmz.stance.getUserGroupHandle(hil)
+           , groupName
+           , voteNumber
            , voteItem = {}
            , tempHandles
+           , dataObject
            ;
 
          if (text.length) {
@@ -290,6 +295,17 @@ createAdvisorWindow = function (windowStr, idx) {
             dmz.object.link(dmz.stance.CreatedByHandle, handle, hil);
             dmz.object.link(dmz.stance.VoteGroupHandle, handle, dmz.stance.getUserGroupHandle(hil));
             dmz.object.activate(handle);
+            // generate automatic tag
+            if (groupHandle) {
+
+               groupName = dmz.stance.getDisplayName(groupHandle)
+               voteNumber = dmz.object.superLinks(groupHandle, dmz.stance.VoteGroupHandle) || [];
+               voteNumber = voteNumber.length;
+               dataObject = dmz.data.create();
+               dataObject.handle(dmz.stance.ObjectHandle, 0, handle);
+               dataObject.string(dmz.stance.TagHandle, 0, (groupName + " vote " + voteNumber));
+               dmz.stance.AUTOMATIC_TAG_MESSAGE.send(dataObject)
+            }
             // send approval email (1)
             voteItem.handle = handle;
             tempHandles = dmz.object.subLinks(hil, dmz.stance.GroupMembersHandle);

@@ -24,18 +24,33 @@ var dmz =
 
    // Variables
    , RetData = false
+   , EmailMod = false
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , MaxMessageLength = 2000
+   , TechList = []
    ;
 
-LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
+dmz.module.subscribe(self, "email", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) { EmailMod = module; }
+});
+
+dmz.object.scalar.observe(self, dmz.stance.Permissions,
+function (objHandle, attrHandle, newVal, oldVal) {
+
+   if (newVal === dmz.stance.TECH_PERMISSION) {
+
+      TechList.push(objHandle);
+   }
+});
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
    var forumData;
    if (Mode === dmz.module.Activate) {
 
+      self.log.error(EmailMod);
       forumData =
          { self: self
          , postType: dmz.stance.PostType
@@ -44,6 +59,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , forumType: dmz.stance.HelpForumType
          , parentHandle: dmz.stance.ParentHandle
          , groupLinkHandle: dmz.stance.HelpLink
+         , emailMod: EmailMod
+         , techList: TechList
          , highlight: function (forumHandle) { module.highlight("Help"); }
          , canHighlight: function (forums, itemHandle) {
 
@@ -90,6 +107,12 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          };
       RetData = dmz.forumView.setupForumView(forumData);
 
+      LoginSkippedMessage.subscribe(self, function (data) {
+
+         LoginSkipped = true;
+         RetData.hideTagButtons();
+         RetData.hideDeleteButtons();
+      });
       dmz.object.create.observe(self, RetData.observers.create);
       dmz.object.text.observe(self, dmz.stance.TextHandle, RetData.observers.text);
       dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, RetData.observers.createdAt);

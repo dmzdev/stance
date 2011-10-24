@@ -44,6 +44,8 @@ var dmz =
    // Variables
    , hil
    , userGroupHandle
+   , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
+   , LoginSkipped = false
    , Groups = {}
    , Lobbyists = {}
    , LobbyistsArray = []
@@ -64,11 +66,13 @@ var dmz =
    , init
    ;
 
+LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
+
 initialButtonObserve = function () {
 
-   if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag)) { tagButton.show(); }
+   if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag) && !LoginSkipped) { tagButton.show(); }
    else { tagButton.hide(); }
-   if (dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag)) {
+   if (dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag) && !LoginSkipped) {
 
       deleteButton.observe(self, "clicked", function () {
 

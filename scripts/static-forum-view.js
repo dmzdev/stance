@@ -70,6 +70,9 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _TimeHandle
      , _ShowTagButton = false
      , _ShowTagLabel = false
+     , _EmailMod
+     , _TechList
+     , _LoginSkipped
 
      , _LatestTimeStamp = -1
      , _WasBlocked = false
@@ -114,6 +117,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    _Highlight = forumData.highlight;
    _CanHighlight = forumData.canHighlight || function () { return true; };
    _OnNewPost = forumData.onNewPost || function () {};
+   _EmailMod = forumData.emailMod;
+   _TechList = forumData.techList;
 
    MaxMessageLength = forumData.messageLength;
    MaxReplyLength = forumData.replyLength || MaxMessageLength;
@@ -611,6 +616,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          var post
            , item
            , hil = dmz.object.hil()
+           , groupHandle = false
+           , recipientList = []
            ;
 
          if (hil && parent && message) {
@@ -624,6 +631,45 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             dmz.object.link(_ParentLinkHandle, post, parent);
             dmz.object.link(dmz.stance.CreatedByHandle, post, hil);
             dmz.object.activate(post);
+            if (_EmailMod && _TechList) {
+
+               if (dmz.object.scalar(hil, dmz.stance.Permissions) === dmz.stance.TECH_PERMISSION) {
+
+                  groupHandle = dmz.stance.getUserGroupHandle(hil);
+                  if (groupHandle) {
+
+                     recipientList = dmz.object.superLinks(groupHandle, dmz.stance.GroupMembersHandle) || [];
+                     if (recipientList.indexOf(hil) !== -1) {
+
+                        recipientList.splice(recipientList.indexOf(hil), 1);
+                     }
+                     recipientList = recipientList.concat(_TechList);
+                     recipientList = recipientList.filter(function (userHandle) {
+
+                        return dmz.object.flag(userHandle, dmz.stance.ActiveHandle);
+                     });
+                     _EmailMod.sendEmail
+                        ( recipientList
+                        , "STANCE Tech has posted to the help forum. (DO NOT REPLY)"
+                        , "Post: " + message
+                        );
+                  }
+               }
+               else {
+
+                  recipientList = _TechList;
+                  recipientList = recipientList.filter(function (techHandle) {
+
+                     return dmz.object.flag(techHandle, dmz.stance.ActiveHandle);
+                  });
+                  recipientList.push(hil);
+                  _EmailMod.sendEmail
+                     ( recipientList
+                     , "STANCE User " + dmz.stance.getDisplayName(hil) +" has posted to the help forum. (DO NOT REPLY)"
+                     , "Post: " + message
+                     );
+               }
+            }
 
             item = _postList[post];
             if (item) { _scrollArea.ensureVisible (item.item); }
@@ -635,6 +681,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          var comment
            , item
            , hil = dmz.object.hil()
+           , parentAuthor
+           , recipientList = []
            ;
 
          if (hil && parent && message) {
@@ -647,6 +695,54 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             dmz.object.link(_ParentLinkHandle, comment, parent);
             dmz.object.link(dmz.stance.CreatedByHandle, comment, hil);
             dmz.object.activate(comment);
+            if (_EmailMod && _TechList) {
+
+               parentAuthor = dmz.object.subLinks(parent, dmz.stance.CreatedByHandle) || [];
+               if (parentAuthor.length) {
+
+                  parentAuthor = parentAuthor[0];
+                  recipientList.push(parentAuthor);
+                  if (parentAuthor !== hil) { recipientList.push(hil); }
+                  if (dmz.object.scalar(hil, dmz.stance.Permissions) === dmz.stance.TECH_PERMISSION) {
+
+                     if (dmz.object.scalar(parentAuthor, dmz.stance.Permissions) === dmz.stance.TECH_PERMISSION) {
+
+                        _EmailMod.sendEmail
+                           ( recipientList
+                           , "STANCE Tech has followed up on his own help post. (DO NOT REPLY)"
+                           , "Comment: " + message
+                           );
+                     }
+                     else {
+
+                        _EmailMod.sendEmail
+                           ( recipientList
+                           , "STANCE Tech has commented on a help post from " + dmz.stance.getDisplayName(parentAuthor) + ". (DO NOT REPLY)"
+                           , "Comment: " + message
+                           );
+                     }
+                  }
+                  else {
+
+                     if (dmz.object.scalar(parentAuthor, dmz.stance.Permissions) === dmz.stance.TECH_PERMISSION) {
+
+                        _EmailMod.sendEmail
+                           ( recipientList
+                           , "STANCE User " + dmz.stance.getDisplayName(hil) + " has commented on the Tech's help post. (DO NOT REPLY)"
+                           , "Comment: " + message
+                           );
+                     }
+                     else {
+
+                        _EmailMod.sendEmail
+                           ( recipientList
+                           , "STANCE User " + dmz.stance.getDisplayName(hil) + " has commented on a help post from " + dmz.stance.getDisplayName(parentAuthor) + ". (DO NOT REPLY)"
+                           , "Comment: " + message
+                           );
+                     }
+                  }
+               }
+            }
 
             item = _commentList[comment];
             if (item) { _scrollArea.ensureVisible (item.item); }
@@ -737,7 +833,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          if (latest > _LatestTimeStamp) { _Highlight(); }
       };
 
-      _updateForumForUser = function (userHandle, forumHandle) {
+      _updateForumForUser = function (userHandle, forumHandle, loginSkipped) {
 
          var forumList
            , forum
@@ -746,7 +842,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            ;
 
          _ShowDeleteButtons = dmz.stance.isAllowed(userHandle, dmz.stance.DeletePostsFlag);
-         _ShowTagButton = dmz.stance.isAllowed(userHandle, dmz.stance.TagDataFlag);
+         _ShowTagButton = (dmz.stance.isAllowed(userHandle, dmz.stance.TagDataFlag) && !loginSkipped);
          _ShowTagLabel = dmz.stance.isAllowed(userHandle, dmz.stance.SeeTagFlag);
          _LatestTimeStamp = dmz.stance.userAttribute(userHandle, _TimeHandle) || 0;
          group = dmz.stance.getUserGroupHandle(userHandle);
@@ -897,6 +993,42 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             }
          }
       };
+
+      retData.hideTagButtons = function () {
+
+         Object.keys(_postList).forEach(function (key) {
+
+            if (_postList[key].tagButton) {
+
+               _postList[key].tagButton.hide();
+            }
+         });
+         Object.keys(_commentList).forEach(function (key) {
+
+            if (_commentList[key].tagButton) {
+
+               _commentList[key].tagButton.hide();
+            }
+         });
+      }
+
+      retData.hideDeleteButtons = function () {
+
+         Object.keys(_postList).forEach(function (key) {
+
+            if (_postList[key].close) {
+
+               _postList[key].close.hide();
+            }
+         });
+         Object.keys(_commentList).forEach(function (key) {
+
+            if (_commentList[key].close) {
+
+               _commentList[key].close.hide();
+            }
+         });
+      }
 
       retData.update = function (forumHandle) {
 

@@ -258,6 +258,7 @@ var dmz =
         }
    , Messages =
         { TAG_MESSAGE: dmz.message.create("TagMessage")
+        , AUTOMATIC_TAG_MESSAGE: dmz.message.create("AutomaticTagMessage")
         }
 
    , Constants =
