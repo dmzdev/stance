@@ -262,6 +262,8 @@ mouseEventHandler = function (object, event) { mouseEvent(object, event.type());
 
 mouseEvent = function (object, type) {
 
+   var youtubeVID;
+
    CurrentArray.forEach(function (mediaItem) {
 
       if ((object == mediaItem.ui.postItem) && (type == dmz.ui.event.MouseButtonPress) &&
@@ -295,9 +297,17 @@ mouseEvent = function (object, type) {
                }
                else if ((CurrentType === "Video") && mediaItem.link) {
 
-                  mediaWebView.page().mainFrame().load(
-                        "http://www.chds.us/?stance:youtube&video=" + mediaItem.link +
+                  // add regex here to extract the vidID from mediaItem.link and
+                  // make that in instead of mediaItem.link
+                  youtubeVID = /v=[\w]+(?=&)?/.exec(mediaItem.link);
+                  if (youtubeVID) {
+
+                     youtubeVID = new String(youtubeVID[0]);
+                     youtubeVID = youtubeVID.replace("v=", "");
+                     mediaWebView.page().mainFrame().load(
+                        "http://www.chds.us/?stance:youtube&video=" + youtubeVID +
                         "&width=" + (mediaWebView.page().width() - 20) +"&height=" + (mediaWebView.page().height() - 20));
+                  }
                }
                else if (mediaItem.link) {
 
@@ -407,7 +417,6 @@ initiateMediaPostItemUi = function (mediaItem) {
       mediaItem.ui.notificationLabel = dmz.ui.label.create(mediaItem.ui.postItem);
       mediaItem.ui.notificationLabel.fixedWidth(34);
       mediaItem.ui.titleLabel.text(mediaItem.title);
-      self.log.error(mediaItem.createdByPermissions);
       if (mediaItem.createdByHandle && (mediaItem.createdByPermissions === dmz.stance.STUDENT_PERMISSION)) {
 
          mediaItem.ui.createdByLabel.text(mediaItem.createdBy);

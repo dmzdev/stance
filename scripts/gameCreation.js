@@ -149,7 +149,7 @@ var dmz =
         { Video:
            { type: dmz.stance.VideoType
            , button: "addVideoInjectButton"
-           , urlEnd: ""
+           , urlEnd: "www.youtube.com"
            , listItems: {}
            , list: videoList
            }
@@ -170,7 +170,7 @@ var dmz =
         , PdfItem:
            { type: dmz.stance.PdfItemType
            , button: "addPdfItemButton"
-           , urlEnd: ""
+           , urlEnd: ".pdf"
            , listItems: {}
            , list: pdfItemList
            }
