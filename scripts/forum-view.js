@@ -43,6 +43,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , forumType: dmz.stance.ForumType
          , parentHandle: dmz.stance.ParentHandle
          , groupLinkHandle: dmz.stance.ForumLink
+         , showItemHasBeenTagged: true
          , highlight: function (handle) { module.highlight("Forum"); }
          , canReplyTo: function () { return dmz.stance.isAllowed(dmz.object.hil(), dmz.stance.ForumPostFlag); }
          , postBlocked: function () {
@@ -86,6 +87,16 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          var type = dmz.object.type(objHandle);
          if (value && type && type.isOfType(dmz.stance.UserType)) {
 
+            if (dmz.stance.isAllowed(objHandle, dmz.stance.DeletePostsFlag)) {
+
+               RetData.showDeleteButtons();
+            }
+            else { RetData.hideDeleteButtons(); }
+            if (dmz.stance.isAllowed(objHandle, dmz.stance.TagDataFlag)) {
+
+               RetData.showTagButtons();
+            }
+            else { RetData.hideTagButtons(); }
             RetData.updateForUser(objHandle, 0 , LoginSkipped);
             RetData.checkHighlight();
          }

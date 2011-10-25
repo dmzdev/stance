@@ -50,7 +50,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
    var forumData;
    if (Mode === dmz.module.Activate) {
 
-      self.log.error(EmailMod);
       forumData =
          { self: self
          , postType: dmz.stance.PostType

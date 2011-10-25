@@ -173,7 +173,6 @@ _exports.sendVoteEmail = function (voteItem, state) {
 
          var name = userConfig.string("name");
 
-         self.log.error(name);
          if (name) { userFilterList[name] = true; }
       });
    }

@@ -70,6 +70,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _TimeHandle
      , _ShowTagButton = false
      , _ShowTagLabel = false
+     , _ShowItemHasBeenTagged
      , _EmailMod
      , _TechList
      , _LoginSkipped
@@ -118,6 +119,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    _CanHighlight = forumData.canHighlight || function () { return true; };
    _OnNewPost = forumData.onNewPost || function () {};
    _EmailMod = forumData.emailMod;
+   _ShowItemHasBeenTagged = forumData.showItemHasBeenTagged || false;
    _TechList = forumData.techList;
 
    MaxMessageLength = forumData.messageLength;
@@ -219,7 +221,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          post.tagButton.styleSheet(YELLOW_BUTTON);
          if (!_ShowTagButton) { post.tagButton.hide(); }
          post.tagLabel = post.item.lookup("tagLabel");
-         if (!_ShowTagLabel) { post.tagLabel.hide(); }
+         if (!_ShowTagLabel && !_ShowItemHasBeenTagged) { post.tagLabel.hide(); }
 
          post.postedBy = post.item.lookup("postedByLabel");
          post.postedAt = post.item.lookup("postedAtLabel");
@@ -313,7 +315,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             comment.tagButton.styleSheet(YELLOW_BUTTON);
             if (!_ShowTagButton) { comment.tagButton.hide(); }
             comment.tagLabel = comment.item.lookup("tagLabel");
-            if (!_ShowTagLabel) { comment.tagLabel.hide(); }
+            if (!_ShowTagLabel && !_ShowItemHasBeenTagged) { comment.tagLabel.hide(); }
 
             post.commentList.push(comment);
             post.layout.addWidget(comment.item, post.layout.rowCount(), 1);
@@ -516,7 +518,14 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
          if (item && item.tagLabel) {
 
-            if (data && data.tags) { item.tagLabel.text(data.tags.toString()); }
+            if (data && data.tags) {
+
+               if (_ShowTagLabel) { item.tagLabel.text(data.tags.toString()); }
+               else if (_ShowItemHasBeenTagged) {
+
+                  item.tagLabel.text("Strategically Important");
+               }
+            }
             else { item.tagLabel.text(""); }
          }
       };
@@ -998,17 +1007,11 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
          Object.keys(_postList).forEach(function (key) {
 
-            if (_postList[key].tagButton) {
-
-               _postList[key].tagButton.hide();
-            }
+            if (_postList[key].tagButton) { _postList[key].tagButton.hide(); }
          });
          Object.keys(_commentList).forEach(function (key) {
 
-            if (_commentList[key].tagButton) {
-
-               _commentList[key].tagButton.hide();
-            }
+            if (_commentList[key].tagButton) { _commentList[key].tagButton.hide(); }
          });
       }
 
@@ -1016,17 +1019,35 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
          Object.keys(_postList).forEach(function (key) {
 
-            if (_postList[key].close) {
-
-               _postList[key].close.hide();
-            }
+            if (_postList[key].close) { _postList[key].close.hide(); }
          });
          Object.keys(_commentList).forEach(function (key) {
 
-            if (_commentList[key].close) {
+            if (_commentList[key].close) { _commentList[key].close.hide(); }
+         });
+      }
 
-               _commentList[key].close.hide();
-            }
+      retData.showTagButtons = function () {
+
+         Object.keys(_postList).forEach(function (key) {
+
+            if (_postList[key].tagButton) { _postList[key].tagButton.show(); }
+         });
+         Object.keys(_commentList).forEach(function (key) {
+
+            if (_commentList[key].tagButton) { _commentList[key].tagButton.show(); }
+         });
+      }
+
+      retData.showDeleteButtons = function () {
+
+         Object.keys(_postList).forEach(function (key) {
+
+            if (_postList[key].close) { _postList[key].close.show(); }
+         });
+         Object.keys(_commentList).forEach(function (key) {
+
+            if (_commentList[key].close) { _commentList[key].close.show(); }
          });
       }
 

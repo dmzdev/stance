@@ -49,6 +49,7 @@ var dmz =
    , beenOpened = false
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
+   , canSeeTags = false
    , userGroupHandle
    , currentGameHandle
    , Groups = {}
@@ -346,7 +347,7 @@ setTagLabels = function (mediaItem) {
 
    if (mediaItem && mediaItem.ui) {
 
-      if (mediaItem.tags && mediaItem.tags.length) {
+      if (mediaItem.tags && mediaItem.tags.length && canSeeTags) {
 
          mediaItem.ui.tagLabel.show();
          mediaItem.ui.tagLabel.text(mediaItem.tags.toString());
@@ -406,6 +407,7 @@ initiateMediaPostItemUi = function (mediaItem) {
       mediaItem.ui.notificationLabel = dmz.ui.label.create(mediaItem.ui.postItem);
       mediaItem.ui.notificationLabel.fixedWidth(34);
       mediaItem.ui.titleLabel.text(mediaItem.title);
+      self.log.error(mediaItem.createdByPermissions);
       if (mediaItem.createdByHandle && (mediaItem.createdByPermissions === dmz.stance.STUDENT_PERMISSION)) {
 
          mediaItem.ui.createdByLabel.text(mediaItem.createdBy);
@@ -655,6 +657,7 @@ function (objHandle, attrHandle, value) {
          VideosArray = [];
          CurrentItem = 0;
          mediaWebView.setHtml("");
+         canSeeTags = dmz.stance.isAllowed(objHandle, dmz.stance.SeeTagFlag);
          Object.keys(PdfItems).forEach(function (key) {
 
             if (PdfItems[key].ui) { delete PdfItems[key].ui; }

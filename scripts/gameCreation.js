@@ -433,8 +433,9 @@ groupComboBox.observe(self, "currentIndexChanged", function (index) {
       members = dmz.object.superLinks(groupHandle, dmz.stance.GroupMembersHandle) || [];
       members = members.filter(function (handle) {
 
-         return dmz.stance.isAllowed(handle, dmz.stance.SwitchGroupFlag) &&
-            dmz.stance.isAllowed(handle, dmz.stance.ForumPostFlag);
+         return !dmz.stance.isAllowed(handle, dmz.stance.SwitchGroupFlag) &&
+            dmz.stance.isAllowed(handle, dmz.stance.ForumPostFlag) &&
+            dmz.object.flag(handle, dmz.stance.ActiveHandle);
       });
       count = groupStudentList.count();
       for (idx = 0; idx < count; idx += 1) {
