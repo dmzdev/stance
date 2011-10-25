@@ -380,7 +380,8 @@ function (linkObjHandle, attrHandle, studentHandle, groupHandle) {
 
    if (!userList[studentHandle] &&
       !dmz.stance.isAllowed(studentHandle, dmz.stance.SwitchGroupFlag) &&
-      !dmz.stance.isAllowed(studentHandle, dmz.stance.ForumPostFlag)) {
+      dmz.stance.isAllowed(studentHandle, dmz.stance.ForumPostFlag) &&
+      dmz.object.flag(studentHandle, dmz.stance.ActiveHandle)) {
 
       userList[studentHandle] =
          groupStudentList.addItem(dmz.stance.getDisplayName(studentHandle), studentHandle);

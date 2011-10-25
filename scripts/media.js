@@ -302,7 +302,7 @@ mouseEvent = function (object, type) {
                   youtubeVID = /v=[\w]+(?=&)?/.exec(mediaItem.link);
                   if (youtubeVID) {
 
-                     youtubeVID = new String(youtubeVID[0]);
+                     youtubeVID = youtubeVID[0];
                      youtubeVID = youtubeVID.replace("v=", "");
                      mediaWebView.page().mainFrame().load(
                         "http://www.chds.us/?stance:youtube&video=" + youtubeVID +
