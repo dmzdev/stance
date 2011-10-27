@@ -3,8 +3,8 @@ lmk.set_name ("stanceapp")
 lmk.add_vars {
    appName = "STANCE",
    majorVersion = "1",
-   minorVersion = "1",
-   bugVersion = "7",
+   minorVersion = "2",
+   bugVersion = "0",
    releaseType = "test 0",
    aboutImage = "assets/DMZ-Version.png",
 }

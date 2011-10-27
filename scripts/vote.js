@@ -29,8 +29,8 @@ var dmz =
    , contentLayout = dmz.ui.layout.createVBoxLayout()
 
    // Variables
-   , YES_BUTTON_STYLE = "* { background-color: rgb(70, 240, 70); }"
-   , NO_BUTTON_STYLE = "* { background-color: rgb(240, 70, 70); }"
+   , YES_BUTTON_STYLE = "* { background-color: rgb(30, 200, 30); }"
+   , NO_BUTTON_STYLE = "* { background-color: rgb(200, 30, 30); }"
    , LOGIN_SKIPPED_BUTTON_STYLE = "* { background-color: rgb(130, 130, 130); }"
    , PENDING_STYLE = "* { background-color: rgb(240, 240, 240); }"
    , ACTIVE_STYLE = "* { background-color: rgb(240, 240, 70); }"
@@ -932,8 +932,8 @@ createDecision = function (decisionValue, voteHandle, duration, reason) {
       dmz.object.flag(voteHandle, dmz.stance.UpdateExpiredTimeHandle, true);
       dmz.object.timeStamp(voteHandle, dmz.stance.EndedAtServerTimeHandle, 0);
       dmz.object.flag(voteHandle, dmz.stance.UpdateEndTimeHandle, false);
-      //duration *= 3600; //convert to unix seconds
-      duration *= 1;
+      duration *= 3600; //convert to unix seconds
+      //duration *= 1;
       dmz.object.timeStamp(voteHandle, dmz.stance.DurationHandle, duration);
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_ACTIVE);
    }
