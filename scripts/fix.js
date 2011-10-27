@@ -95,7 +95,7 @@ list.push(function (objs) {
 
          if (dmz.object.flag(user, dmz.stance.AdminHandle)) {
 
-            if (dmz.stance.getDisplayName(user) === "Watcher") { permissions = dmz.stanceAdminPermissions; }
+            if (dmz.stance.getDisplayName(user) === "Watcher") { permissions = dmz.stance.AdminPermissions; }
             else { permissions = dmz.stance.TechPermissions; }
          }
          else { permissions = dmz.stance.StudentPermissions; }

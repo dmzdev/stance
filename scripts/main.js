@@ -517,7 +517,7 @@ function (linkObjHandle, attrHandle, advisorHandle, groupHandle) {
 
 dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHandle, value, prev) {
 
-   if ((handle === dmz.object.hil()) && stackedWidget &&
+   if ((handle === dmz.object.hil()) && stackedWidget && prev &&
       value.xor(prev).and(dmz.stance.SwitchGroupFlag).bool()) {
 
       stackedWidget.currentIndex(SPLASH_INDEX);

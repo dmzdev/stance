@@ -154,11 +154,7 @@ taskBlocked = function () {
 LoginSkippedMessage.subscribe(self, function (data) {
 
    LoginSkipped = true;
-   AdvisorWindows.forEach(function (data) {
-
-      self.log.error("WINDOW!");
-      data.question.updateLoggedIn(LoginSkipped);
-   });
+   AdvisorWindows.forEach(function (data) { data.question.updateLoggedIn(LoginSkipped); });
 });
 
 createAdvisorWindow = function (windowStr, idx) {
@@ -559,7 +555,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             module.addPage
                ( str
                , data.window
-               , function (width, height) { self.log.error("update", getHILAdvisor(index), LoginSkipped); data.update(getHILAdvisor(index), LoginSkipped); }
+               , function (width, height) { data.update(getHILAdvisor(index), LoginSkipped); }
                , function () { data.onHome(); }
                );
          }(idx));
