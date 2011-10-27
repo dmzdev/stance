@@ -417,6 +417,7 @@ initiateMediaPostItemUi = function (mediaItem) {
       mediaItem.ui.notificationLabel = dmz.ui.label.create(mediaItem.ui.postItem);
       mediaItem.ui.notificationLabel.fixedWidth(34);
       mediaItem.ui.titleLabel.text(mediaItem.title);
+      self.log.error("initiateMediaUi", mediaItem.createdByHandle, mediaItem.createdByPermissions, mediaItem.createdBy);
       if (mediaItem.createdByHandle && (mediaItem.createdByPermissions === dmz.stance.STUDENT_PERMISSION)) {
 
          mediaItem.ui.createdByLabel.text(mediaItem.createdBy);
@@ -801,38 +802,26 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
    if (PdfItems[supHandle]) {
 
       PdfItems[supHandle].createdByHandle = subHandle;
-      dmz.time.setTimer(self, function () {
-
-         PdfItems[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
-         PdfItems[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
-      });
+      PdfItems[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
+      PdfItems[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
    }
    else if (Memos[supHandle]) {
 
       Memos[supHandle].createdByHandle = subHandle;
-      dmz.time.setTimer(self, function () {
-
-         Memos[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
-         Memos[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
-      });
+      Memos[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
+      Memos[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
    }
    else if (Newspapers[supHandle]) {
 
       Newspapers[supHandle].createdByHandle = subHandle;
-      dmz.time.setTimer(self, function () {
-
-         Newspapers[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
-         Newspapers[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
-      });
+      Newspapers[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
+      Newspapers[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
    }
    else if (Videos[supHandle]) {
 
       Videos[supHandle].createdByHandle = subHandle;
-      dmz.time.setTimer(self, function () {
-
-         Videos[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
-         Videos[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
-      });
+      Videos[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
+      Videos[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
    }
 });
 

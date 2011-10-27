@@ -151,7 +151,15 @@ taskBlocked = function () {
    return result;
 };
 
-LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
+LoginSkippedMessage.subscribe(self, function (data) {
+
+   LoginSkipped = true;
+   AdvisorWindows.forEach(function (data) {
+
+      self.log.error("WINDOW!");
+      data.question.updateLoggedIn(LoginSkipped);
+   });
+});
 
 createAdvisorWindow = function (windowStr, idx) {
 
@@ -234,7 +242,8 @@ createAdvisorWindow = function (windowStr, idx) {
                  if (!getQuestionAnswer(questionHandle) &&
                     !advisorAnswerPermission(
                        hil,
-                       dmz.stance.getAuthorHandle(questionHandle))) {
+                       dmz.stance.getAuthorHandle(questionHandle)) &&
+                    dmz.object.flag(questionHandle, dmz.stance.ActiveHandle)) {
 
                     result = "New questions cannot be submitted while another question is active with the current advisor.";
                  }
@@ -270,7 +279,7 @@ createAdvisorWindow = function (windowStr, idx) {
       data.infoWindow.title.text(dmz.object.text(advisorHandle, dmz.stance.TitleHandle));
       data.infoWindow.picture.pixmap(getAvatarPixmap(advisorHandle).scaled(94, 125));
 
-      if (data.question && data.question.update) { data.question.update(advisorHandle); }
+      if (data.question && data.question.update) { data.question.update(advisorHandle, LoginSkipped); }
       data.task.submit.observe(self, "clicked", function () {
 
          var handle
@@ -550,7 +559,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             module.addPage
                ( str
                , data.window
-               , function (width, height) { data.update(getHILAdvisor(index), width, height); }
+               , function (width, height) { self.log.error("update", getHILAdvisor(index), LoginSkipped); data.update(getHILAdvisor(index), LoginSkipped); }
                , function () { data.onHome(); }
                );
          }(idx));

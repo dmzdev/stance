@@ -87,12 +87,12 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          var type = dmz.object.type(objHandle);
          if (value && type && type.isOfType(dmz.stance.UserType)) {
 
-            if (dmz.stance.isAllowed(objHandle, dmz.stance.DeletePostsFlag)) {
+            if (dmz.stance.isAllowed(objHandle, dmz.stance.DeletePostsFlag) && !LoginSkipped) {
 
                RetData.showDeleteButtons();
             }
             else { RetData.hideDeleteButtons(); }
-            if (dmz.stance.isAllowed(objHandle, dmz.stance.TagDataFlag)) {
+            if (dmz.stance.isAllowed(objHandle, dmz.stance.TagDataFlag) && !LoginSkipped) {
 
                RetData.showTagButtons();
             }

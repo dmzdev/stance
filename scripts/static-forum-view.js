@@ -219,6 +219,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile("tagButton"));
          if (pic) { post.tagButton.setIcon(pic); }
          post.tagButton.styleSheet(YELLOW_BUTTON);
+         require("sys").puts("SHOW TAG", _ShowTagButton);
          if (!_ShowTagButton) { post.tagButton.hide(); }
          post.tagLabel = post.item.lookup("tagLabel");
          if (!_ShowTagLabel && !_ShowItemHasBeenTagged) { post.tagLabel.hide(); }
@@ -842,6 +843,14 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          if (latest > _LatestTimeStamp) { _Highlight(); }
       };
 
+      retData.updateLoggedIn = function (loggedInStatus) {
+
+         require("sys").puts(loggedInStatus);
+         _ShowTagButton = !loggedInStatus;
+         _ShowDeleteButtons = !loggedInStatus;
+         require("sys").puts(_ShowTagButton, _ShowDeleteButtons);
+      }
+
       _updateForumForUser = function (userHandle, forumHandle, loginSkipped) {
 
          var forumList
@@ -850,7 +859,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , avatar = _view.lookup("avatarLabel")
            ;
 
-         _ShowDeleteButtons = dmz.stance.isAllowed(userHandle, dmz.stance.DeletePostsFlag);
+         _ShowDeleteButtons = (dmz.stance.isAllowed(userHandle, dmz.stance.DeletePostsFlag) && !loginSkipped);
+         require("sys").puts("UpdateForumForUser", loginSkipped);
          _ShowTagButton = (dmz.stance.isAllowed(userHandle, dmz.stance.TagDataFlag) && !loginSkipped);
          _ShowTagLabel = dmz.stance.isAllowed(userHandle, dmz.stance.SeeTagFlag);
          _LatestTimeStamp = dmz.stance.userAttribute(userHandle, _TimeHandle) || 0;
@@ -1051,12 +1061,13 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          });
       }
 
-      retData.update = function (forumHandle) {
+      retData.update = function (forumHandle, loginSkipped) {
 
          IsCurrentWindow = true;
          if (!_forumHandle || forumHandle) {
 
-            _updateForumForUser(dmz.object.hil(), forumHandle);
+            require("sys").puts("update", loginSkipped, forumHandle);
+            _updateForumForUser(dmz.object.hil(), forumHandle, loginSkipped);
          }
       };
 
@@ -1098,6 +1109,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
          if ((handle === dmz.object.hil()) && prev &&
             value.xor(prev).and(dmz.stance.TagDataFlag.or(dmz.stance.SeeTagFlag)).bool()) {
 
+            require("sys").puts("permissions observer");
             _updateForumForUser(handle);
          }
       };
