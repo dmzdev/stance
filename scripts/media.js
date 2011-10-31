@@ -418,7 +418,6 @@ initiateMediaPostItemUi = function (mediaItem) {
       mediaItem.ui.notificationLabel = dmz.ui.label.create(mediaItem.ui.postItem);
       mediaItem.ui.notificationLabel.fixedWidth(34);
       mediaItem.ui.titleLabel.text(mediaItem.title);
-      self.log.error("initiateMediaUi", mediaItem.createdByHandle, mediaItem.createdByPermissions, mediaItem.createdBy);
       if (mediaItem.createdByHandle && (mediaItem.createdByPermissions === dmz.stance.STUDENT_PERMISSION)) {
 
          mediaItem.ui.createdByLabel.text(mediaItem.createdBy);
