@@ -29,7 +29,8 @@ var dmz =
 
    // UI Elements
    , wikiWidget = dmz.ui.loader.load("WikiForm.ui")
-   , wikiViewer = wikiWidget.lookup("wikiWebView")
+   , wikiViewer = dmz.ui.webview.create()
+   //, wikiViewer = wikiWidget.lookup("wikiWebView")
 
    // Variables
    , hil
@@ -95,4 +96,5 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
    }
 });
 
+wikiWidget.lookup("wikiLayout").addWidget(wikiViewer);
 wikiViewer.setHtml("<center><b>Loading...</b><center>");
