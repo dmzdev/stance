@@ -695,9 +695,7 @@ function (objHandle, attrHandle, value) {
                if (!Groups[key].ui) {
 
                   Groups[key].ui = {};
-                  Groups[key].ui.nameLabel = dmz.ui.label.create("<b>" + Groups[key].name + "</b>");
-                  Groups[key].ui.checkBox = dmz.ui.button.createCheckBox();
-                  groupSelectionLayout.insertWidget(0, Groups[key].ui.nameLabel);
+                  Groups[key].ui.checkBox = dmz.ui.button.createCheckBox(Groups[key].name);
                   groupSelectionLayout.insertWidget(0, Groups[key].ui.checkBox);
                   if (key == userGroupHandle) { Groups[key].ui.checkBox.setChecked(true); }
                   else { Groups[key].ui.checkBox.setChecked(false); }

@@ -59,7 +59,7 @@
             <x>0</x>
             <y>0</y>
             <width>178</width>
-            <height>527</height>
+            <height>515</height>
            </rect>
           </property>
          </widget>
@@ -113,6 +113,9 @@
             </item>
            </layout>
           </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="groupSelectionLayout"/>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -186,9 +189,6 @@
         <string>Add Pdf Link</string>
        </property>
       </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="groupSelectionLayout"/>
      </item>
      <item>
       <spacer name="horizontalSpacer">
