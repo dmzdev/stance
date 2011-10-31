@@ -33,7 +33,8 @@ var dmz =
    , scrollFormContent = mediaScrollArea.widget()
    , mediaContentLayout = dmz.ui.layout.createVBoxLayout()
    , groupSelectionLayout = mediaViewer.lookup("groupSelectionLayout")
-   , mediaWebView = mediaViewer.lookup("mediaWebView")
+   , mediaWebView = dmz.ui.webview.create()
+   //, mediaWebView = mediaViewer.lookup("mediaWebView")
    , addMediaButton = mediaViewer.lookup("addMediaButton")
    , addLinkWidget = mediaViewer.lookup("addLinkWidget")
    , titleTextEdit = mediaViewer.lookup("titleTextEdit")
@@ -986,6 +987,7 @@ init = function () {
      , parent
      ;
 
+   mediaViewer.lookup("mainViewLayout").addWidget(mediaWebView);
    scrollFormContent.layout(mediaContentLayout);
    mediaContentLayout.addStretch(1);
    groupSelectionLayout.addStretch(1);
