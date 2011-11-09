@@ -31,10 +31,9 @@ var dmz =
 
    // Consts
    , ADVISOR_COUNT = 5
-   , MAX_QUESTION_STR_LEN = 500
+   , MAX_QUESTION_STR_LEN = 140
    , MAX_QUESTION_REPLY_LEN = 500
-   , MAX_TASK_STR_LEN = 500
-   , MAX_TASK_REPLY_LEN = 500
+   , MAX_TASK_STR_LEN = 140
 
    // Variables
    , MainModule
@@ -86,9 +85,10 @@ var dmz =
    , advisorAskPermission
    ;
 
-advisorAnswerPermission = function (hil, advisorHandle) {
+advisorAnswerPermission = function (author, advisorHandle) {
 
-   return dmz.stance.isAllowed(hil, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(advisorHandle, dmz.stance.ID)]);
+   self.log.warn ("advisorAnswerPermission:", author, advisorHandle, dmz.stance.isAllowed(author, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(advisorHandle, dmz.stance.ID)]));
+   return dmz.stance.isAllowed(author, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(advisorHandle, dmz.stance.ID)]);
 }
 
 advisorAskPermission = function (hil, advisorHandle) {
@@ -180,7 +180,7 @@ createAdvisorWindow = function (windowStr, idx) {
    data.task.text = data.task.widget.lookup("textEdit");
    data.task.submit = data.task.widget.lookup("submitButton");
    data.task.widget.lookup("cancelButton").hide();
-   data.task.widget.lookup("gridLayout").addWidget(dmz.ui.label.create("Submit Vote:"), 0, 1, 1, 3);
+   data.task.widget.lookup("gridLayout").addWidget(dmz.ui.label.create("Request Action:"), 0, 1, 1, 3);
    data.task.widget.styleSheet("QFrame { background-color: rgb(230, 110, 110); }");
    data.task.text.styleSheet(
       "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
@@ -202,10 +202,7 @@ createAdvisorWindow = function (windowStr, idx) {
       , forumType: dmz.stance.AdvisorType
       , parentHandle: dmz.stance.QuestionLinkHandle
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
-      , useForumData: function (advisorHandle) {
-
-           return advisorAnswerPermission(dmz.object.hil(), advisorHandle);
-        }
+      , useForumData: advisorAnswerPermission
       , messageLength: MAX_QUESTION_STR_LEN
       , replyLength: MAX_QUESTION_REPLY_LEN
       , highlight: function (handle) {

@@ -130,7 +130,7 @@ _exports.sendVoteEmail = function (voteItem, state) {
    }
    if (voteItem.question) {
 
-      text = "Question: " + voteItem.question;
+      text = "Proposal: " + voteItem.question;
       if (state === dmz.stance.VOTE_ACTIVE) {
 
          text +=
