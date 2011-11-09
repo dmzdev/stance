@@ -59,14 +59,14 @@
             <x>0</x>
             <y>0</y>
             <width>178</width>
-            <height>496</height>
+            <height>470</height>
            </rect>
           </property>
          </widget>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox">
+        <widget class="QCheckBox" name="addMediaCheckBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -104,7 +104,7 @@
          <property name="minimumSize">
           <size>
            <width>180</width>
-           <height>50</height>
+           <height>20</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -165,6 +165,26 @@
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="errorLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="groupSelectionLayout">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+           </layout>
+          </item>
+          <item>
            <widget class="QPushButton" name="addMediaButton">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -182,9 +202,6 @@
              <string>Add Pdf Link</string>
             </property>
            </widget>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="groupSelectionLayout"/>
           </item>
          </layout>
         </widget>
@@ -274,7 +291,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>checkBox</sender>
+   <sender>addMediaCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>addWidget</receiver>
    <slot>setVisible(bool)</slot>

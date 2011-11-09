@@ -94,7 +94,7 @@ _exports.sendVoteEmail = function (voteItem, state) {
          subject = "STANCE " + groupName + " needs a vote approved. (DO NOT REPLY)";
          sendList = groupUserList.filter(function (userHandle) {
 
-            return dmz.object.flag(userHandle, dmz.stance.AdminHandle);
+            return dmz.stance.isAllowed(userHandle, dmz.stance.SwitchGroupFlag);
          });
       }
       else if (state === dmz.stance.VOTE_ACTIVE) {
@@ -103,7 +103,7 @@ _exports.sendVoteEmail = function (voteItem, state) {
          subject = "STANCE " + groupName + " has an active vote. (DO NOT REPLY)";
          sendList = groupUserList.filter(function (userHandle) {
 
-            return !dmz.object.flag(userHandle, dmz.stance.AdminHandle);
+            return !dmz.stance.isAllowed(userHandle, dmz.stance.SwitchGroupFlag);
          });
       }
       else if (state === dmz.stance.VOTE_DENIED) {
@@ -112,7 +112,7 @@ _exports.sendVoteEmail = function (voteItem, state) {
          subject = "STANCE " + groupName + " has had a vote denied. (DO NOT REPLY)";
          sendList = groupUserList.filter(function (userHandle) {
 
-            return !dmz.object.flag(userHandle, dmz.stance.AdminHandle);
+            return !dmz.stance.isAllowed(userHandle, dmz.stance.SwitchGroupFlag);
          });
       }
       else if (state === dmz.stance.VOTE_NO) {

@@ -1212,7 +1212,11 @@ editScenarioWidget.observe(self, "allGroupButton", "clicked", function () {
 
          studentList.forEach(function (student) {
 
-            vLayout.addWidget(dmz.ui.label.create(dmz.stance.getDisplayName(student)));
+            if (!dmz.stance.isAllowed(student, dmz.stance.SwitchGroupFlag) &&
+               dmz.object.flag(student, dmz.stance.ActiveHandle)) {
+
+               vLayout.addWidget(dmz.ui.label.create(dmz.stance.getDisplayName(student)));
+            }
          });
       }
       groupBox.layout(vLayout);

@@ -89,14 +89,26 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
             if (dmz.stance.isAllowed(objHandle, dmz.stance.DeletePostsFlag) && !LoginSkipped) {
 
-               RetData.showDeleteButtons();
+               dmz.time.setTimer(self, function () {
+
+                  RetData.showDeleteButtons();
+               });
             }
             else { RetData.hideDeleteButtons(); }
             if (dmz.stance.isAllowed(objHandle, dmz.stance.TagDataFlag) && !LoginSkipped) {
 
-               RetData.showTagButtons();
+               dmz.time.setTimer(self, function () {
+
+                  RetData.showTagButtons();
+               });
             }
-            else { RetData.hideTagButtons(); }
+            else {
+
+               dmz.time.setTimer(self, function () {
+
+                  RetData.hideTagButtons();
+               });
+            }
             RetData.updateForUser(objHandle, 0 , LoginSkipped);
             RetData.checkHighlight();
          }

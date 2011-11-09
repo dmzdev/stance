@@ -29,8 +29,8 @@ var dmz =
    , contentLayout = dmz.ui.layout.createVBoxLayout()
 
    // Variables
-   , YES_BUTTON_STYLE = "* { background-color: rgb(30, 200, 30); }"
-   , NO_BUTTON_STYLE = "* { background-color: rgb(200, 30, 30); }"
+   , YES_BUTTON_STYLE = "* { background-color: rgb(30, 200, 30); border-style: outset; border-width: 2px; border-radius: 6px; border-color: black; }"
+   , NO_BUTTON_STYLE = "* { background-color: rgb(200, 30, 30); border-style: outset; border-width: 2px; border-radius: 6px; border-color: black; }"
    , LOGIN_SKIPPED_BUTTON_STYLE = "* { background-color: rgb(130, 130, 130); }"
    , PENDING_STYLE = "* { background-color: rgb(240, 240, 240); }"
    , ACTIVE_STYLE = "* { background-color: rgb(240, 240, 70); }"
@@ -294,7 +294,7 @@ setDeniedLabels = function (voteHandle) {
       }
       if (voteItem.postedBy) {
 
-         voteItem.ui.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
+         voteItem.ui.postedByLabel.text("<b>Requested By: </b>" + voteItem.postedBy);
       }
       if (voteItem.question) {
 
@@ -369,7 +369,7 @@ setApprovalPendingLabels = function (voteHandle) {
       }
       if (voteItem.postedBy) {
 
-         voteItem.ui.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
+         voteItem.ui.postedByLabel.text("<b>Requested By: </b>" + voteItem.postedBy);
       }
       if (voteItem.question) {
 
@@ -481,7 +481,7 @@ setActiveLabels = function (voteHandle) {
       }
       if (voteItem.postedBy) {
 
-         voteItem.ui.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
+         voteItem.ui.postedByLabel.text("<b>Requested By: </b>" + voteItem.postedBy);
       }
       if (voteItem.question) {
 
@@ -595,7 +595,7 @@ setYesNoLabels = function (voteHandle) {
       }
       if (voteItem.postedBy) {
 
-         voteItem.ui.postedByLabel.text("<b>Posted By: </b>" + voteItem.postedBy);
+         voteItem.ui.postedByLabel.text("<b>Requested By: </b>" + voteItem.postedBy);
       }
       if (voteItem.question) {
 
@@ -954,7 +954,8 @@ isVoteOver = function (voteHandle) {
      , voteItem
      ;
 
-   if (totalUsers && voteHandle && VoteObjects[voteHandle]) {
+   if (totalUsers && voteHandle && VoteObjects[voteHandle] &&
+      (userGroupHandle === VoteObjects[voteHandle].groupHandle)) {
 
       voteItem = VoteObjects[voteHandle];
       yesVotes = voteItem.yesVotes || 0;
@@ -999,7 +1000,7 @@ isVoteOver = function (voteHandle) {
                dmz.object.timeStamp(voteHandle, dmz.stance.ExpiredTimeHandle));
             newState = dmz.stance.VOTE_YES;
          }
-         if (SEND_MAIL && newState && voteHandle.groupHandle) {
+         if (SEND_MAIL && newState && voteItem.groupHandle) {
 
             EmailMod.sendVoteEmail(VoteObjects[voteHandle], newState);
          }

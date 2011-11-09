@@ -34,9 +34,9 @@ var dmz =
    , mediaContentLayout = dmz.ui.layout.createVBoxLayout()
    , groupSelectionLayout = mediaViewer.lookup("groupSelectionLayout")
    , mediaWebView = dmz.ui.webview.create()
-   //, mediaWebView = mediaViewer.lookup("mediaWebView")
+   , errorLabel = mediaViewer.lookup("errorLabel")
    , addMediaButton = mediaViewer.lookup("addMediaButton")
-   , addLinkWidget = mediaViewer.lookup("addLinkWidget")
+   , addWidget = mediaViewer.lookup("addWidget")
    , titleTextEdit = mediaViewer.lookup("titleTextEdit")
    , linkTextEdit = mediaViewer.lookup("linkTextEdit")
    , titleTextLabel = mediaViewer.lookup("titleTextLabel")
@@ -44,6 +44,8 @@ var dmz =
    , tagButton = mediaViewer.lookup("tagButton")
    , deleteButton = mediaViewer.lookup("deleteButton")
    , cancelButton = mediaViewer.lookup("cancelButton")
+   , addLinkWidget = mediaViewer.lookup("addLinkWidget")
+   , addMediaCheckBox = mediaViewer.lookup("addMediaCheckBox")
 
    // Variables
    , hil
@@ -70,6 +72,25 @@ var dmz =
       , "Newspaper": dmz.stance.NewspaperType
       , "Video": dmz.stance.VideoType
       }
+   , MediaTypes =
+        { "Video":
+           { type: dmz.stance.VideoType
+           , urlEnd: "www.youtube.com"
+           }
+        , "Memo":
+           { type: dmz.stance.MemoType
+           , urlEnd: "?stance:view&id="
+           }
+        , "Newspaper":
+           { type: dmz.stance.NewspaperType
+           , urlEnd: "?stance:view&id="
+           }
+        , "PdfItem":
+           { type: dmz.stance.PdfItemType
+           , urlEnd: ".pdf"
+           }
+        , Lobbyist: { type: dmz.stance.LobbyistType }
+        }
    , CurrentItem
    , CurrentType
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
@@ -168,6 +189,8 @@ initialButtonObserve = function () {
       titleTextEdit.show();
       titleTextLabel.show();
       addMediaButton.show();
+      addMediaCheckBox.show();
+      addWidget.show();
    }
    else {
 
@@ -176,6 +199,8 @@ initialButtonObserve = function () {
       titleTextEdit.hide();
       titleTextLabel.hide();
       addMediaButton.hide();
+      addMediaCheckBox.hide();
+      addWidget.hide();
    }
 };
 
@@ -218,43 +243,51 @@ addMediaButton.observe(self, "clicked", function () {
    if ((titleTextEdit.text() !== "") && (linkTextEdit.text() !== "") &&
       dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) {
 
-      if (((CurrentType === "PdfItem") && dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) ||
-         dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag)) {
+      self.log.error(MediaTypes[CurrentType].urlEnd);
+      if (linkTextEdit.text().lastIndexOf(MediaTypes[CurrentType].urlEnd) !== -1) {
 
-         mediaItemHandle = dmz.object.create(TypesMap[CurrentType]);
-         dmz.object.text(mediaItemHandle, dmz.stance.TitleHandle, titleTextEdit.text());
-         dmz.object.text(mediaItemHandle, dmz.stance.TextHandle, linkTextEdit.text());
-         if (CurrentType === "PdfItem") {
+         if (((CurrentType === "PdfItem") && dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) ||
+            dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag)) {
 
-            dmz.object.link(dmz.stance.CreatedByHandle, mediaItemHandle, hil);
+            mediaItemHandle = dmz.object.create(TypesMap[CurrentType]);
+            dmz.object.text(mediaItemHandle, dmz.stance.TitleHandle, titleTextEdit.text());
+            dmz.object.text(mediaItemHandle, dmz.stance.TextHandle, linkTextEdit.text());
+            if (CurrentType === "PdfItem") {
+
+               dmz.object.link(dmz.stance.CreatedByHandle, mediaItemHandle, hil);
+            }
+            dmz.object.link(dmz.stance.MediaHandle, mediaItemHandle, hil);
+            dmz.object.link(dmz.stance.MediaHandle, mediaItemHandle, currentGameHandle);
+            dmz.object.flag(mediaItemHandle, dmz.stance.UpdateStartTimeHandle, true);
+            dmz.object.timeStamp(mediaItemHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
+            dmz.object.flag(mediaItemHandle, dmz.stance.ActiveHandle, true);
+            if (dmz.stance.isAllowed(hil, dmz.stance.SwitchGroupFlag)) {
+
+               Object.keys(Groups).forEach(function (key) {
+
+                  if (Groups[key].ui && Groups[key].ui.checkBox && Groups[key].ui.checkBox.isChecked()) {
+
+                     atLeastOneChecked = true;
+                     dmz.object.link(dmz.stance.MediaHandle, mediaItemHandle, Groups[key].handle);
+                  }
+               });
+            }
+            else {
+
+               atLeastOneChecked = true;
+               dmz.object.link(dmz.stance.MediaHandle, mediaItemHandle, userGroupHandle);
+            }
+            if (atLeastOneChecked) {
+
+               dmz.object.activate(mediaItemHandle);
+               titleTextEdit.text("");
+               linkTextEdit.text("");
+               errorLabel.text("");
+            }
          }
-         dmz.object.link(dmz.stance.MediaHandle, mediaItemHandle, hil);
-         dmz.object.link(dmz.stance.MediaHandle, mediaItemHandle, currentGameHandle);
-         dmz.object.flag(mediaItemHandle, dmz.stance.UpdateStartTimeHandle, true);
-         dmz.object.timeStamp(mediaItemHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
-         dmz.object.flag(mediaItemHandle, dmz.stance.ActiveHandle, true);
-         if (dmz.stance.isAllowed(hil, dmz.stance.SwitchGroupFlag)) {
+      } else {
 
-            Object.keys(Groups).forEach(function (key) {
-
-               if (Groups[key].ui && Groups[key].ui.checkBox && Groups[key].ui.checkBox.isChecked()) {
-
-                  atLeastOneChecked = true;
-                  dmz.object.link(dmz.stance.MediaHandle, mediaItemHandle, Groups[key].handle);
-               }
-            });
-         }
-         else {
-
-            atLeastOneChecked = true;
-            dmz.object.link(dmz.stance.MediaHandle, mediaItemHandle, userGroupHandle);
-         }
-         if (atLeastOneChecked) {
-
-            dmz.object.activate(mediaItemHandle);
-            titleTextEdit.text("");
-            linkTextEdit.text("");
-         }
+         errorLabel.text("<font color=\"red\"> Invalid Link.</font>");
       }
    }
 });
@@ -526,6 +559,7 @@ openWindow = function () {
    beenOpened = true;
    titleTextEdit.text("");
    linkTextEdit.text("");
+   errorLabel.text("");
    initialButtonObserve();
    Object.keys(CurrentMap).forEach(function (key) {
 
