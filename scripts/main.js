@@ -34,8 +34,6 @@ var dmz =
    , stackedWidget = main.lookup("stackedWidget")
    , mainGView = main.lookup("graphicsView")
    , gscene
-   , WindowDialog
-   , dialogLayout
    , lastDialogWidget
 
    // Consts
@@ -440,8 +438,6 @@ setupMainWindow = function () {
 
       gscene.eventFilter(self, mouseEvent);
       dmz.ui.mainWindow.centralWidget(main);
-      WindowDialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget());
-      dialogLayout = WindowDialog.lookup("verticalLayout");
       mainGView.eventFilter(self, function (object, event) {
 
          var type = event.type()
@@ -475,6 +471,7 @@ _exports.addPage = function (name, widget, func, onHome) {
       else {
 
          dialog = dmz.ui.loader.load("WindowDialog.ui", dmz.ui.mainWindow.centralWidget());
+         dialog.opacity(1);
          if (dmz.defs.OperatingSystem === dmz.defs.Win32) { dialog.setWindowsHint(); }
          dialog.lookup("scrollArea").widget(widget);
          PageLink[name].dialog = dialog;

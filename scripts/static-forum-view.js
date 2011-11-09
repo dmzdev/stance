@@ -477,7 +477,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
             if (item && item.postedBy) {
 
-               if (_UseForumDataForAdmin(_forumHandle)) {
+               if (_UseForumDataForAdmin(data.authorHandle, _forumHandle)) {
 
                   item.postedBy.text ("<b>" + dmz.stance.getDisplayName(_forumHandle) + "</b>");
                   _setUserAvatar(_forumHandle, item.avatar);
@@ -771,7 +771,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
                delete post.commentList[comment.handle];
             });
 
-            if (post.addComment) { post.addComment.cancel.click(); }
+            if (post.addComment) { post.addComment.lookup("cancelButton").click(); }
             post.layout.removeWidget(post.item);
             post.item.hide();
             _postCache.push (post.item);
