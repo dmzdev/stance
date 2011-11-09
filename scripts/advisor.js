@@ -87,7 +87,6 @@ var dmz =
 
 advisorAnswerPermission = function (author, advisorHandle) {
 
-   self.log.warn ("advisorAnswerPermission:", author, advisorHandle, dmz.stance.isAllowed(author, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(advisorHandle, dmz.stance.ID)]));
    return dmz.stance.isAllowed(author, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(advisorHandle, dmz.stance.ID)]);
 }
 

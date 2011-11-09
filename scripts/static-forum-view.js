@@ -477,7 +477,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
 
             if (item && item.postedBy) {
 
-               if (_UseForumDataForAdmin(data.postedBy, _forumHandle)) {
+               if (_UseForumDataForAdmin(data.authorHandle, _forumHandle)) {
 
                   item.postedBy.text ("<b>" + dmz.stance.getDisplayName(_forumHandle) + "</b>");
                   _setUserAvatar(_forumHandle, item.avatar);
