@@ -25,11 +25,22 @@ var dmz =
             }
             , dmz.ui.mainWindow.centralWidget()
             )
+    , failedDialog =
+         dmz.ui.messageBox.create(
+            { type: dmz.ui.messageBox.Warning
+            , text: "Unable to connect to game server!"
+            , informativeText: "You are now in offline use mode!"
+            , standardButtons: [dmz.ui.messageBox.Ok]
+            , defaultButton: dmz.ui.messageBox.Ok
+            }
+            , dmz.ui.mainWindow.centralWidget()
+            )
 
     // Constants
     , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
     , LogoutMessage = dmz.message.create("Logout_Message")
     , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
+    , LoginErrorMessage = dmz.message.create("Login_Error_Message")
     , TimeStampAttr = dmz.defs.createNamedHandle("time-stamp")
     // Variables
     , _window = dmz.ui.mainWindow.window()
@@ -123,6 +134,11 @@ LoginSkippedMessage.subscribe(self, function () {
    dmz.object.flag(handle, dmz.object.HILAttribute, true);
 });
 
+LoginErrorMessage.subscribe(self, function () {
+
+   failedDialog.open(self, function () {});
+});
+
 LogoutMessage.subscribe(self, function () {
 
    if (_userHandle) { dmz.object.flag(_userHandle, dmz.object.HILAttribute, false); }
@@ -147,13 +163,14 @@ dmz.object.create.observe(self, function (handle, type) {
 dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, value) {
 
    dmz.time.setTimer(self, 2, function () {
-   var type = dmz.object.type(handle);
 
-      if (type && type.isOfType (dmz.stance.UserType)) {
+      var type = dmz.object.type(handle);
 
-         _userList[value] = handle;
-         _activateUser (value);
-      }
+         if (type && type.isOfType (dmz.stance.UserType)) {
+
+            _userList[value] = handle;
+            _activateUser (value);
+         }
    });
 });
 

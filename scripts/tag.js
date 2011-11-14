@@ -21,7 +21,9 @@ var dmz =
    }
 
    // UI Elements
-   , tagWindow = dmz.ui.loader.load("TagWindow.ui")
+   , WindowName = "EditScenarioForm"
+   , parent = dmz.ui.mainWindow.window().lookup(WindowName)
+   , tagWindow = dmz.ui.loader.load("TagDialog.ui", parent)
    , tagText = tagWindow.lookup("newTagText")
    , currentList = tagWindow.lookup("currentList")
    , masterList = tagWindow.lookup("masterList")
@@ -32,6 +34,7 @@ var dmz =
    // Variables
    , tagList = {}
    , currentTagList = {}
+   , dialogMode = false
    ;
 
 tagWindow.observe(self, "addButton", "clicked", function () {
@@ -83,16 +86,18 @@ dmz.message.subscribe(self, "TagMessage", function (data) {
       currentTagList[tag].hidden(current);
    });
 
-   tagWindow.observe(self, "updateButton", "clicked", function () {
+   tagWindow.open(self, function (result) {
 
-      var data = dmz.data.create();
-      list = Object.keys(currentTagList).filter(function (tag) { return !currentTagList[tag].hidden(); });
-      list.forEach(function (tag, index) { data.string(dmz.stance.TagHandle, index, tag); });
-      data.number(dmz.stance.TotalHandle, 0, list.length);
-      dmz.object.data(handle, dmz.stance.TagHandle, data);
-      tagWindow.hide();
+      self.log.warn ("Result:", result);
+      if (result) {
+
+         var data = dmz.data.create();
+         list = Object.keys(currentTagList).filter(function (tag) { return !currentTagList[tag].hidden(); });
+         list.forEach(function (tag, index) { data.string(dmz.stance.TagHandle, index, tag); });
+         data.number(dmz.stance.TotalHandle, 0, list.length);
+         dmz.object.data(handle, dmz.stance.TagHandle, data);
+      }
    });
-   tagWindow.show();
 });
 
 dmz.object.data.observe(self, dmz.stance.TagHandle, function (handle, attr, data) {
@@ -107,5 +112,3 @@ dmz.object.data.observe(self, dmz.stance.TagHandle, function (handle, attr, data
       }
    });
 });
-
-tagWindow.hide();
