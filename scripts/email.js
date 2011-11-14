@@ -153,7 +153,7 @@ _exports.sendVoteEmail = function (voteItem, state) {
          text +=
             "\nAdvisor Response: " + voteItem.advisorResponse +
             "\nYes Votes: " + (voteItem.yesVotes || "0") +
-            "\nNo Votes: " + (voteItem.noVotes) || "0";
+            "\nNo Votes: " + (voteItem.noVotes || "0");
       }
    }
    if (sendList.length && subject && text) {

@@ -22,7 +22,7 @@ function(doc) {
             updateExpireFlag = attr.flag.value;
          }
       });
-      if (updateStartFlag && updateExpireFlag && !updateEndFlag) {
+      if (updateStartFlag && updateExpireFlag) {
 
          emit(doc.object, null);
       }
