@@ -502,7 +502,7 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
 
       startGameButton.enabled(!value);
       endGameButton.enabled(value);
-      self.log.error(value, oldValue);
+      self.log.error(value, oldValue, loggedIn);
    }
 });
 
