@@ -932,8 +932,8 @@ createDecision = function (decisionValue, voteHandle, duration, reason) {
       dmz.object.flag(voteHandle, dmz.stance.UpdateExpiredTimeHandle, true);
       dmz.object.timeStamp(voteHandle, dmz.stance.EndedAtServerTimeHandle, 0);
       dmz.object.flag(voteHandle, dmz.stance.UpdateEndTimeHandle, false);
-      duration *= 3600; //convert to unix seconds
-      //duration *= 1;
+      //duration *= 3600; //convert to unix seconds
+      duration *= 1;
       dmz.object.timeStamp(voteHandle, dmz.stance.DurationHandle, duration);
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_ACTIVE);
    }

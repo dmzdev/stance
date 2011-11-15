@@ -663,9 +663,20 @@ editScenarioWidget.observe(self, "addGroupButton", "clicked", function () {
             if (idx < advisorImages.length) {
 
                resource = dmz.resources.lookupConfig(advisorImages[idx]);
-               if (resource) { file = dmz.resources.findFile(resource.string("alt.name")); }
-               if (!file) { file = dmz.resources.findFile(resource.string("name")); }
-               if (file) { dmz.object.text(handle, dmz.stance.PictureHandle, advisorImages[idx]); }
+               if (resource) {
+
+                  file = dmz.resources.findFile(resource.string("alt.name"));
+                  if (file) { dmz.object.text(handle, dmz.stance.PictureHandle, resource.string("alt.name")); }
+                  else {
+
+                     file = dmz.resources.findFile(resource.string("name"));
+                     if (file) {
+
+                        dmz.object.text(handle, dmz.stance.PictureHandle, resource.string("name"));
+                     }
+                     else { self.log.error("Picture for advisor could not be located."); }
+                  }
+               }
             }
             dmz.object.activate(handle);
             dmz.object.link(dmz.stance.AdvisorGroupHandle, handle, group);
