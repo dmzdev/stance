@@ -134,6 +134,7 @@ var dmz =
 
    // Variables
    , showStudentsMessage = dmz.message.create("showStudentsWindow")
+   , loggedIn = false
    , GroupButtonList = {}
    , EmailMod = false
    , groupList = []
@@ -188,6 +189,7 @@ var dmz =
    , AdvisorCount = 5
    , AvatarPixmapList = {}
    , ToggledMessage = dmz.message.create("ToggledGroupMessage")
+   , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
    , haveSetupPermissionTable = false
 
    // Function decls
@@ -487,7 +489,7 @@ userFromGroup = function (item) {
    }
 };
 
-dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value) {
+dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, value, oldValue) {
 
    var data = injectItems[handle] || userItems[handle];
 
@@ -500,6 +502,7 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
 
       startGameButton.enabled(!value);
       endGameButton.enabled(value);
+      self.log.error(value, oldValue);
    }
 });
 
@@ -1637,21 +1640,31 @@ startGameButton.observe(self, "clicked", function () {
    self.log.warn("Start Game");
 });
 
+LoginSuccessMessage.subscribe(self, function (data) {
+
+   loggedIn = true;
+});
+
 endGameButton.observe(self, "clicked", function () {
 
    var list = [];
+
    dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle, false);
    Object.keys(userItems).forEach(function (key) {
 
       list.push(userItems[key].handle);
 //      dmz.object.state(userItems[key].handle, dmz.stance.Permissions, dmz.stance.SwitchGroupFlag);
-      dmz.object.scalar(userItems[key].handle, dmz.stance.Permissions, dmz.stance.OBSERVER_PERMISSION);
+      if (dmz.object.scalar(userItems[key].handle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) {
+
+         dmz.object.scalar(userItems[key].handle, dmz.stance.Permissions, dmz.stance.OBSERVER_PERMISSION);
+      }
    });
    EmailMod.sendEmail(
       list,
       "Your STANCE game has ended!",
       "Your STANCE game is now over! Please stay tuned for additional instructions " +
          "on how to prepare for the AAR.\nThank you for participating!");
+
 });
 
 dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHandle, value, prev) {
@@ -1711,7 +1724,7 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
 
          dataHandle =
             dmz.object.linkAttributeObject(
-               dmz.object.linkHandle(dmz.stance.DataLinkHandle, handle, getUserGroupHandle(handle)));
+               dmz.object.linkHandle(dmz.stance.DataLinkHandle, handle, dmz.stance.getUserGroupHandle(handle)));
 
          dmz.stance.NOTIFICATION_HANDLES.forEach(function (timeHandle) {
 
