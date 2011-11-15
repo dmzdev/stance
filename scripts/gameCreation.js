@@ -134,7 +134,6 @@ var dmz =
 
    // Variables
    , showStudentsMessage = dmz.message.create("showStudentsWindow")
-   , loggedIn = false
    , GroupButtonList = {}
    , EmailMod = false
    , groupList = []
@@ -502,7 +501,6 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
 
       startGameButton.enabled(!value);
       endGameButton.enabled(value);
-      self.log.error(value, oldValue, loggedIn);
    }
 });
 
@@ -1638,11 +1636,6 @@ startGameButton.observe(self, "clicked", function () {
       "Your STANCE game has just begun. Please log on at your earliest convenience and "+
          "examine the initial scenario description.");
    self.log.warn("Start Game");
-});
-
-LoginSuccessMessage.subscribe(self, function (data) {
-
-   loggedIn = true;
 });
 
 endGameButton.observe(self, "clicked", function () {

@@ -44,6 +44,7 @@ var dmz =
    // Variables
    , lastItem
 
+   , CurrentGameHandle = false
    , VideoHomeMessage = dmz.message.create("VideoHome")
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
@@ -492,6 +493,39 @@ _exports.highlight = function (name) {
       if (highlight) { highlight.show(); }
    }
 };
+
+dmz.object.create.observe(self, function (objHandle, objType) {
+
+   if (objType.isOfType(dmz.stance.GameType)) {
+
+      CurrentGameHandle = objHandle;
+   }
+});
+
+dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
+function (objHandle, attrHandle, newVal, oldVal) {
+
+   var messageBox;
+
+   if ((objHandle === CurrentGameHandle) && !newVal && oldVal &&
+      (dmz.object.scalar(dmz.object.hil(), dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION)) {
+
+      dmz.ui.messageBox.create(
+         { type: dmz.ui.messageBox.Warning
+         , text: "Your permissions have been changed remotely, please restart the game."
+         , standardButtons: [dmz.ui.messageBox.Ok]
+         , defaultButton: dmz.ui.messageBox.Ok
+         }
+         , dmz.ui.mainWindow.centralWidget()
+         ).open (self, function (value, dialog) {
+
+            if (value === dmz.ui.messageBox.Ok) {
+
+               dmz.sys.requestExit();
+            }
+         });
+   }
+});
 
 dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
 function (linkObjHandle, attrHandle, advisorHandle, groupHandle) {
