@@ -165,12 +165,11 @@ dmz.object.text.observe(self, dmz.stance.NameHandle, function (handle, attr, val
    dmz.time.setTimer(self, 2, function () {
 
       var type = dmz.object.type(handle);
+      if (type && type.isOfType (dmz.stance.UserType)) {
 
-         if (type && type.isOfType (dmz.stance.UserType)) {
-
-            _userList[value] = handle;
-            _activateUser (value);
-         }
+         _userList[value] = handle;
+         _activateUser (value);
+      }
    });
 });
 

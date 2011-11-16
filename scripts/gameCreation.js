@@ -1711,7 +1711,7 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
 
          dataHandle =
             dmz.object.linkAttributeObject(
-               dmz.object.linkHandle(dmz.stance.DataLinkHandle, handle, getUserGroupHandle(handle)));
+               dmz.object.linkHandle(dmz.stance.DataLinkHandle, handle, dmz.stance.getUserGroupHandle(handle)));
 
          dmz.stance.NOTIFICATION_HANDLES.forEach(function (timeHandle) {
 

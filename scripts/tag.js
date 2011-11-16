@@ -88,7 +88,6 @@ dmz.message.subscribe(self, "TagMessage", function (data) {
 
    tagWindow.open(self, function (result) {
 
-      self.log.warn ("Result:", result);
       if (result) {
 
          var data = dmz.data.create();
