@@ -1,6 +1,6 @@
 #define BuildMode "opt"
 #define AppName "stance"
-#define AppVerName "stance 1.2.1"
+#define AppVerName "stance 1.2.2"
 #define Publisher "CHDS"
 #define AppURL "http://dmzdev.org"
 #define AppExeName "stance.exe"
