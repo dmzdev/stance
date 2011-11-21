@@ -243,7 +243,6 @@ addMediaButton.observe(self, "clicked", function () {
    if ((titleTextEdit.text() !== "") && (linkTextEdit.text() !== "") &&
       dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) {
 
-      self.log.error(MediaTypes[CurrentType].urlEnd);
       if (linkTextEdit.text().lastIndexOf(MediaTypes[CurrentType].urlEnd) !== -1) {
 
          if (((CurrentType === "PdfItem") && dmz.stance.isAllowed(hil, dmz.stance.InjectPDFFlag)) ||
@@ -338,7 +337,6 @@ mouseEvent = function (object, type) {
 
                      youtubeVID = youtubeVID[0];
                      youtubeVID = youtubeVID.replace("v=", "");
-                     self.log.error(youtubeVID);
                      mediaWebView.page().mainFrame().load(
                         "http://www.chds.us/?stance:youtube&video=" + youtubeVID +
                         "&width=" + (mediaWebView.page().width() - 20) +"&height=" + (mediaWebView.page().height() - 20));
@@ -629,6 +627,7 @@ checkNotifications = function () {
 exitFunction = function () {
 
    checkNotifications();
+   addMediaCheckBox.setChecked(true);
    mediaWebView.setHtml("<Center><b>Loading...</b></center>");
 };
 
