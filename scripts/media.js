@@ -333,11 +333,12 @@ mouseEvent = function (object, type) {
 
                   // add regex here to extract the vidID from mediaItem.link and
                   // make that in instead of mediaItem.link
-                  youtubeVID = /v=[\w]+(?=&)?/.exec(mediaItem.link);
+                  youtubeVID = /v=[\w\-]+(?=&)?/.exec(mediaItem.link);
                   if (youtubeVID) {
 
                      youtubeVID = youtubeVID[0];
                      youtubeVID = youtubeVID.replace("v=", "");
+                     self.log.error(youtubeVID);
                      mediaWebView.page().mainFrame().load(
                         "http://www.chds.us/?stance:youtube&video=" + youtubeVID +
                         "&width=" + (mediaWebView.page().width() - 20) +"&height=" + (mediaWebView.page().height() - 20));
