@@ -224,17 +224,20 @@ createAdvisorWindow = function (windowStr, idx) {
 
            var questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
              , hil = dmz.object.hil()
-             , result
+             , result = false
              ;
 
-           if (!advisorAnswerPermission(hil, advisorHandle)) {
+           if (LoginSkipped || !hil) { result = "New questions cannot be created without logging in."; }
+           else if (!advisorAskPermission(hil, advisorHandle)) {
+
+              result = "You do not have permission to post here.";
+           }
+           else if (!advisorAnswerPermission(hil, advisorHandle)) {
 
               questions.forEach(function (questionHandle) {
 
                  if (!getQuestionAnswer(questionHandle) &&
-                    !advisorAnswerPermission(
-                       hil,
-                       dmz.stance.getAuthorHandle(questionHandle)) &&
+                    !advisorAnswerPermission(dmz.stance.getAuthorHandle(questionHandle), advisorHandle) &&
                     dmz.object.flag(questionHandle, dmz.stance.ActiveHandle)) {
 
                     result = "New questions cannot be submitted while another question is active with the current advisor.";
@@ -242,12 +245,6 @@ createAdvisorWindow = function (windowStr, idx) {
               });
            }
 
-           if (!advisorAskPermission(hil, advisorHandle)) {
-
-              result = "You do not have permission to post here.";
-           }
-
-           if (LoginSkipped || !hil) { result = "New questions cannot be created without logging in."; }
            return result;
         }
       });
