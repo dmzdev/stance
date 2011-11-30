@@ -500,7 +500,7 @@
       <loc x="0" y="254"/>
    </resource>
    <resource name="Cartel2_exit" file="Cartel2_exit.png">
-      <loc x="288" y="23"/>
+      <loc x="228" y="23"/>
    </resource>
    <resource name="Cartel2_background" file="Cartel2_full.png">
       <loc x="0" y="0"/>

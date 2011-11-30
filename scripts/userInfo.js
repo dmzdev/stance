@@ -101,6 +101,7 @@ var dmz =
    , init
    ;
 
+
 ShowStudentsMessage.subscribe(self, function () {
 
    if (!userInfoWidget.visible() && !previouslyOpened) {
