@@ -347,6 +347,10 @@ getVoteDecision = function (voteHandle) {
 getQuestionAnswer = function (questionHandle) {
 
    var result = dmz.object.superLinks(questionHandle, dmz.stance.QuestionLinkHandle) || [];
+   result = result.filter(function (questionHandle) {
+
+      return dmz.object.flag(questionHandle, dmz.stance.ActiveHandle);
+   });
    return result[0];
 };
 
