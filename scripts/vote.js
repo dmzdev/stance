@@ -440,7 +440,8 @@ setApprovalPendingLabels = function (voteHandle) {
                voteItem.ui.noButton.hide();
                voteItem.ui.yesButton.hide();
                createDecision(
-                  false, voteItem.handle,
+                  false,
+                  voteItem.handle,
                   voteItem.ui.timeBox.value(),
                   voteItem.ui.decisionTextEdit.text() || "No.");
                //send vote is denied email (3)
