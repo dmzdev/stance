@@ -641,6 +641,7 @@
    </resource>
    <resource name="CBP_bookcase" file="CBP_bookcase.png">
       <loc x="28" y="286"/>
+      <offset x="0" y="20"/>
    </resource>
    <resource name="CBP_map" file="CBP_map.png">
       <loc x="1052" y="80"/>
@@ -662,7 +663,7 @@
    </resource>
    <resource name="CBP_videophone" file="CBP_vidphone.png">
       <loc x="71" y="363"/>
-      <offset x="50" y="10"/>
+      <offset x="50" y="110"/>
    </resource>
    <resource name="CBP_vote" file="CBP_vote.png">
       <loc x="933" y="368"/>

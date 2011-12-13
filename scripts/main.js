@@ -490,7 +490,7 @@ _exports.highlight = function (name) {
    if (name && PageLink[name]) {
 
       highlight = PageLink[name].highlight;
-      if (highlight) { highlight.show(); }
+      if (highlight) { highlight.show();}
    }
 };
 
