@@ -58,6 +58,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , IsCurrentWindow = false
      , viewedWindow = false
      , MaxMessageLength = 0
+     , MaxAdminMessageLength = 0
      , MaxReplyLength = 0
 
      , _Self
@@ -123,6 +124,7 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    _TechList = forumData.techList;
 
    MaxMessageLength = forumData.messageLength;
+   MaxAdminMessageLength = forumData.adminMessageLength || MaxMessageLength;
    MaxReplyLength = forumData.replyLength || MaxMessageLength;
 
    if (_Self && _PostType && _CommentType && _ForumType && _ParentLinkHandle &&
@@ -854,12 +856,30 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
            , forum
            , group
            , avatar = _view.lookup("avatarLabel")
+           , msgLength = MaxMessageLength
            ;
 
          _ShowDeleteButtons = (dmz.stance.isAllowed(userHandle, dmz.stance.DeletePostsFlag) && !loginSkipped);
          _ShowTagButton = (dmz.stance.isAllowed(userHandle, dmz.stance.TagDataFlag) && !loginSkipped);
          _ShowTagLabel = dmz.stance.isAllowed(userHandle, dmz.stance.SeeTagFlag);
          _LatestTimeStamp = dmz.stance.userAttribute(userHandle, _TimeHandle) || 0;
+
+         if (dmz.stance.isAllowed(userHandle, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(forumHandle, dmz.stance.ID)])) {
+
+            msgLength = MaxAdminMessageLength;
+         }
+
+         _Self.log.warn ("Advisor:", dmz.object.scalar(forumHandle, dmz.stance.ID), dmz.stance.AdvisorAnswerSet[dmz.object.scalar(forumHandle, dmz.stance.ID)]);
+         _Self.log.warn ("Advisor:", dmz.stance.isAllowed(userHandle, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(forumHandle, dmz.stance.ID)]), msgLength);
+         dmz.stance.addUITextLimit
+            ( _Self
+            , msgLength
+            , _view.lookup("postTextEdit")
+            , _view.lookup("postSubmitButton")
+            , _view.lookup("currentCharAmt")
+            , _view.lookup("totalCharAmt")
+            );
+
          group = dmz.stance.getUserGroupHandle(userHandle);
 
          if (avatar) { _setUserAvatar(userHandle, avatar); }

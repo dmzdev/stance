@@ -32,6 +32,7 @@ var dmz =
    // Consts
    , ADVISOR_COUNT = 5
    , MAX_QUESTION_STR_LEN = 140
+   , MAX_ADMIN_POST_STR_LEN = 400
    , MAX_QUESTION_REPLY_LEN = 500
    , MAX_TASK_STR_LEN = 140
 
@@ -203,6 +204,7 @@ createAdvisorWindow = function (windowStr, idx) {
       , groupLinkHandle: dmz.stance.AdvisorGroupHandle
       , useForumData: advisorAnswerPermission
       , messageLength: MAX_QUESTION_STR_LEN
+      , adminMessageLength: MAX_ADMIN_POST_STR_LEN
       , replyLength: MAX_QUESTION_REPLY_LEN
       , highlight: function (handle) {
 
