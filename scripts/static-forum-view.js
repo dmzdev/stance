@@ -869,8 +869,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
             msgLength = MaxAdminMessageLength;
          }
 
-         _Self.log.warn ("Advisor:", dmz.object.scalar(forumHandle, dmz.stance.ID), dmz.stance.AdvisorAnswerSet[dmz.object.scalar(forumHandle, dmz.stance.ID)]);
-         _Self.log.warn ("Advisor:", dmz.stance.isAllowed(userHandle, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(forumHandle, dmz.stance.ID)]), msgLength);
          dmz.stance.addUITextLimit
             ( _Self
             , msgLength
