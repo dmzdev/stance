@@ -956,7 +956,7 @@ isVoteOver = function (voteHandle) {
      , voteItem
      ;
 
-   if (totalUsers && voteHandle && VoteObjects[voteHandle] &&
+   if ((totalUsers !== undefined) && voteHandle && VoteObjects[voteHandle] &&
       (userGroupHandle === VoteObjects[voteHandle].groupHandle)) {
 
       voteItem = VoteObjects[voteHandle];

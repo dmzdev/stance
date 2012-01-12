@@ -1275,7 +1275,6 @@ modifyInjectItem = function (widgetItem) {
          ActiveCheckBox.setChecked(dmz.object.flag(handle, dmz.stance.ActiveHandle));
          ActiveCheckBox.show();
 
-
          MediaOkButton.observe(self, "clicked", function () {
 
             if (MediaUrlText.text().lastIndexOf(urlEnd) === -1) {
@@ -1378,11 +1377,22 @@ mediaInjectButtons = function () {
             type.isOfType(dmz.stance.VideoType) ||
             type.isOfType(dmz.stance.PdfItemType)) {
 
+            var groupItor
+              , groupCount = MediaGroupFLayout.rowCount()
+              ;
+
             ActiveCheckBox.setChecked(true);
             ActiveCheckBox.show();
             ActiveLabel.show();
             MediaTitleText.text("");
             MediaUrlText.text("");
+            for (groupItor = 0; groupItor < groupCount; groupItor += 1) {
+
+               if (type.isOfType(dmz.stance.NewspaperType)) {
+
+                  MediaGroupFLayout.at(groupItor, 1).setChecked(true);
+               }
+            }
             MediaOkButton.observe(self, "clicked", function () {
 
                var text = MediaUrlText.text()
@@ -1391,13 +1401,6 @@ mediaInjectButtons = function () {
                  , count = MediaGroupFLayout.rowCount()
                  ;
 
-               for (itor = 0; itor < count; itor += 1) {
-
-                  if (MediaGroupFLayout.at(itor, 1).isChecked()) {
-
-                     somethingChecked = true;
-                  }
-               }
                if (text.lastIndexOf(urlEnd) === -1) {
 
                   MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
@@ -1421,6 +1424,7 @@ mediaInjectButtons = function () {
                  , links
                  ;
 
+               self.log.error(value);
                if (value && type) {
 
                   media = dmz.object.create(type);
@@ -1441,16 +1445,17 @@ mediaInjectButtons = function () {
                      }
                   }
                   dmz.object.activate(media);
-
-                  MediaTitleText.text("");
-                  MediaUrlText.text("");
-                  MediaURLWarning.text("");
-                  for (itor = 0; itor < count; itor += 1) {
-
-                     MediaGroupFLayout.at(itor, 1).setChecked(false);
-                  }
                }
-               else { MediaURLWarning.text(""); }
+               for (itor = 0; itor < count; itor += 1) {
+
+                  MediaGroupFLayout.at(itor, 1).setChecked(false);
+                  MediaGroupFLayout.at(itor, 1).enabled(true);
+               }
+               ActiveCheckBox.hide();
+               ActiveLabel.hide();
+               MediaURLWarning.text("");
+               MediaUrlText.text("");
+               MediaTitleText.text("");
             });
          }
          else if (type.isOfType(dmz.stance.LobbyistType)) {
@@ -1511,6 +1516,7 @@ mediaInjectButtons = function () {
 
                   dmz.object.link(dmz.stance.MediaHandle, lobbyistHandle, groupList[groupIndex]);
                   dmz.object.link(dmz.stance.MediaHandle, lobbyistHandle, CurrentGameHandle);
+                  dmz.object.link(dmz.stance.CreatedByHandle, lobbyistHandle, dmz.object.hil());
                }
             });
          }

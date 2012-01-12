@@ -110,6 +110,7 @@ var dmz =
    , removeFromScrollArea
    , indexOfMediaItem
    , insertIntoScrollArea
+   , setGroupCheckboxes
    , openWindow
    , checkNotifications
    , exitFunction
@@ -551,6 +552,32 @@ insertIntoScrollArea = function (mediaItem) {
    }
 };
 
+setGroupCheckboxes = function () {
+
+   Object.keys(Groups).forEach(function (key) {
+
+      if (!Groups[key].ui) {
+
+         Groups[key].ui = {};
+         Groups[key].ui.checkBox = dmz.ui.button.createCheckBox(Groups[key].name);
+         groupSelectionLayout.insertWidget(0, Groups[key].ui.checkBox);
+         if (key == userGroupHandle || CurrentType === "Newspaper") {
+
+            Groups[key].ui.checkBox.setChecked(true);
+         }
+         else { Groups[key].ui.checkBox.setChecked(false); }
+      }
+      else {
+
+         if (key == userGroupHandle || CurrentType === "Newspaper") {
+
+            Groups[key].ui.checkBox.setChecked(true);
+         }
+         else { Groups[key].ui.checkBox.setChecked(false); }
+      }
+   });
+};
+
 openWindow = function () {
 
    var index = 0;
@@ -569,6 +596,7 @@ openWindow = function () {
          insertIntoScrollArea(CurrentMap[key]);
       }
    });
+   setGroupCheckboxes();
    if (CurrentArray && CurrentArray[0]) {
 
       mouseEvent(CurrentArray[0].ui.postItem, dmz.ui.event.MouseButtonPress);
@@ -721,24 +749,9 @@ function (objHandle, attrHandle, value) {
             addMediaButton.hide();
          }
          if (dmz.stance.isAllowed(hil, dmz.stance.SwitchGroupFlag)) {
+
             initialButtonObserve();
-
-            Object.keys(Groups).forEach(function (key) {
-
-               if (!Groups[key].ui) {
-
-                  Groups[key].ui = {};
-                  Groups[key].ui.checkBox = dmz.ui.button.createCheckBox(Groups[key].name);
-                  groupSelectionLayout.insertWidget(0, Groups[key].ui.checkBox);
-                  if (key == userGroupHandle) { Groups[key].ui.checkBox.setChecked(true); }
-                  else { Groups[key].ui.checkBox.setChecked(false); }
-               }
-               else {
-
-                  if (key == userGroupHandle) { Groups[key].ui.checkBox.setChecked(true); }
-                  else { Groups[key].ui.checkBox.setChecked(false); }
-               }
-            });
+            setGroupCheckboxes();
          }
       });
    }

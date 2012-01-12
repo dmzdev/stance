@@ -17,6 +17,7 @@ var dmz =
       , event: require("dmz/ui/event")
       }
    , stance: require("stanceConst")
+   , data: require("dmz/runtime/data")
    , defs: require("dmz/runtime/definitions")
    , object: require("dmz/components/object")
    , objectType: require("dmz/runtime/objectType")
@@ -1613,6 +1614,11 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , votesPassed: []
          , votesFailed: []
          , votesCreated: []
+         , memosCreated: []
+         , newspapersCreated: []
+         , videosCreated: []
+         , lobbyistsCreated: []
+         , pdfItemsCreated: []
          , memos: []
          , newspapers: []
          , videos: []
@@ -1623,6 +1629,16 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , comments: []
          , questions: []
          , advisors: []
+         , memoTags: 0
+         , newspaperTags: 0
+         , videoTags: 0
+         , lobbyistTags: 0
+         , pdfItemTags: 0
+         , voteTags: 0
+         , postTags: 0
+         , commentTags: 0
+         , questionTags: 0
+         , totalTags: 0
          };
    }
    else if (objType.isOfType(dmz.stance.UserType)) {
@@ -1637,6 +1653,11 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , votesCreated: []
          , votedNoOn: []
          , votedYesOn: []
+         , memosCreated: []
+         , videosCreated: []
+         , newspapersCreated: []
+         , lobbyistsCreated: []
+         , pdfItemsCreated: []
          , memosSeen: []
          , videosSeen: []
          , newspapersSeen: []
@@ -1645,6 +1666,16 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , posts: []
          , comments: []
          , questions: []
+         , memoTags: 0
+         , newspaperTags: 0
+         , videoTags: 0
+         , lobbyistTags: 0
+         , pdfItemTags: 0
+         , voteTags: 0
+         , postTags: 0
+         , commentTags: 0
+         , questionTags: 0
+         , totalTags: 0
          };
       dmz.time.setTimer(self, function () {
 
@@ -1660,42 +1691,43 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    }
    else if (objType.isOfType(dmz.stance.MemoType)) {
 
-      Memos[objHandle] = { handle: objHandle };
+      Memos[objHandle] = { handle: objHandle, tags: 0 };
    }
    else if (objType.isOfType(dmz.stance.NewspaperType)) {
 
-      Newspapers[objHandle] = { handle: objHandle };
+      Newspapers[objHandle] = { handle: objHandle, tags: 0 };
    }
    else if (objType.isOfType(dmz.stance.VideoType)) {
 
-      Videos[objHandle] = { handle: objHandle };
+      Videos[objHandle] = { handle: objHandle, tags: 0 };
    }
    else if (objType.isOfType(dmz.stance.LobbyistType)) {
 
-      Lobbyists[objHandle] = { handle: objHandle };
+      Lobbyists[objHandle] = { handle: objHandle, tags: 0 };
    }
    else if (objType.isOfType(dmz.stance.PdfItemType)) {
 
-      PdfItems[objHandle] = { handle: objHandle };
+      PdfItems[objHandle] = { handle: objHandle, tags: 0 };
    }
    else if (objType.isOfType(dmz.stance.VoteType)) {
 
-      Votes[objHandle] = { handle: objHandle };
+      Votes[objHandle] = { handle: objHandle, tags: 0 };
    }
    else if (objType.isOfType(dmz.stance.PostType)) {
 
       Posts[objHandle] =
          { handle: objHandle
          , comments: []
+         , tags: 0
          };
    }
    else if (objType.isOfType(dmz.stance.CommentType)) {
 
-      Comments[objHandle] = { handle: objHandle };
+      Comments[objHandle] = { handle: objHandle, tags: 0 };
    }
    else if (objType.isOfType(dmz.stance.QuestionType)) {
 
-      Questions[objHandle] = { handle: objHandle };
+      Questions[objHandle] = { handle: objHandle, tags: 0 };
    }
    else if (objType.isOfType(dmz.stance.AdvisorType)) {
 
@@ -1709,6 +1741,201 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , votesPassed: []
          , votesFailed: []
          };
+   }
+});
+
+dmz.object.data.observe(self, dmz.stance.TagHandle,
+function (objHandle, attrHandle, newVal, oldVal) {
+
+   var numOfTags = 0;
+   if (Votes[objHandle]) {
+
+      numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
+
+      self.log.error("Vote Tag", objHandle);
+      Votes[objHandle].tags = numOfTags;
+      dmz.time.setTimer(self, function () {
+
+         if (Votes[objHandle].createdByHandle && Users[Votes[objHandle].createdByHandle]) {
+
+            Users[Votes[objHandle].createdByHandle].voteTags += numOfTags;
+            Users[Votes[objHandle].createdByHandle].totalTags += numOfTags;
+            if (Users[Votes[objHandle].createdByHandle].groupHandle &&
+               Groups[Users[Votes[objHandle].createdByHandle].groupHandle]) {
+
+               Groups[Users[Votes[objHandle].createdByHandle].groupHandle].voteTags += numOfTags;
+               Groups[Users[Votes[objHandle].createdByHandle].groupHandle].totalTags += numOfTags;
+            }
+         }
+      });
+   }
+   else if (Memos[objHandle]) {
+
+      numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
+
+      self.log.error("Memo Tag", objHandle);
+      Memos[objHandle].tags = numOfTags;
+      dmz.time.setTimer(self, function () {
+
+         if (Memos[objHandle].createdByHandle && Users[Memos[objHandle].createdByHandle]) {
+
+            Users[Memos[objHandle].createdByHandle].memoTags += numOfTags;
+            Users[Memos[objHandle].createdByHandle].totalTags += numOfTags;
+            if (Users[Memos[objHandle].createdByHandle].groupHandle &&
+               Groups[Users[Memos[objHandle].createdByHandle].groupHandle]) {
+
+               Groups[Users[Memos[objHandle].createdByHandle].groupHandle].memoTags += numOfTags;
+               Groups[Users[Memos[objHandle].createdByHandle].groupHandle].totalTags += numOfTags;
+            }
+         }
+      });
+   }
+   else if (Newspapers[objHandle]) {
+
+      numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
+
+      self.log.error("Newspaper Tag", objHandle);
+      Newspapers[objHandle].tags = numOfTags;
+      dmz.time.setTimer(self, function () {
+
+         if (Newspapers[objHandle].createdByHandle && Users[Newspapers[objHandle].createdByHandle]) {
+
+            Users[Newspapers[objHandle].createdByHandle].newspaperTags += numOfTags;
+            Users[Newspapers[objHandle].createdByHandle].totalTags += numOfTags;
+            if (Users[Newspapers[objHandle].createdByHandle].groupHandle &&
+               Groups[Users[Newspapers[objHandle].createdByHandle].groupHandle]) {
+
+               Groups[Users[Newspapers[objHandle].createdByHandle].groupHandle].newspaperTags += numOfTags;
+               Groups[Users[Newspapers[objHandle].createdByHandle].groupHandle].totalTags += numOfTags;
+            }
+         }
+      });
+   }
+   else if (Videos[objHandle]) {
+
+      numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
+
+      self.log.error("Video Tag", objHandle);
+      Videos[objHandle].tags = numOfTags;
+      dmz.time.setTimer(self, function () {
+
+         if (Videos[objHandle].createdByHandle && Users[Videos[objHandle].createdByHandle]) {
+
+            Users[Videos[objHandle].createdByHandle].videoTags += numOfTags;
+            Users[Videos[objHandle].createdByHandle].totalTags += numOfTags;
+            if (Users[Videos[objHandle].createdByHandle].groupHandle &&
+               Groups[Users[Videos[objHandle].createdByHandle].groupHandle]) {
+
+               Groups[Users[Videos[objHandle].createdByHandle].groupHandle].videoTags += numOfTags;
+               Groups[Users[Videos[objHandle].createdByHandle].groupHandle].totalTags += numOfTags;
+            }
+         }
+      });
+   }
+   else if (Lobbyists[objHandle]) {
+
+      numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
+
+      self.log.error("Lobbyist", objHandle);
+      Lobbyists[objHandle].tags = numOfTags;
+      dmz.time.setTimer(self, function () {
+
+         if (Lobbyists[objHandle].createdByHandle && Users[Lobbyists[objHandle].createdByHandle]) {
+
+            Users[Lobbyists[objHandle].createdByHandle].lobbyistTags += numOfTags;
+            Users[Lobbyists[objHandle].createdByHandle].totalTags += numOfTags;
+            if (Users[Lobbyists[objHandle].createdByHandle].groupHandle &&
+               Groups[Users[Lobbyists[objHandle].createdByHandle].groupHandle]) {
+
+               Groups[Users[Lobbyists[objHandle].createdByHandle].groupHandle].lobbyistTags += numOfTags;
+               Groups[Users[Lobbyists[objHandle].createdByHandle].groupHandle].totalTags += numOfTags;
+            }
+         }
+      });
+   }
+   else if (PdfItems[objHandle]) {
+
+      numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
+
+      self.log.error("PdfItem Tag", objHandle);
+      PdfItems[objHandle].tags = numOfTags;
+      dmz.time.setTimer(self, function () {
+
+         if (PdfItems[objHandle].createdByHandle && Users[PdfItems[objHandle].createdByHandle]) {
+
+            Users[PdfItems[objHandle].createdByHandle].pdfItemTags += numOfTags;
+            Users[PdfItems[objHandle].createdByHandle].totalTags += numOfTags;
+            if (Users[PdfItems[objHandle].createdByHandle].groupHandle &&
+               Groups[Users[PdfItems[objHandle].createdByHandle].groupHandle]) {
+
+               Groups[Users[PdfItems[objHandle].createdByHandle].groupHandle].pdfItemTags += numOfTags;
+               Groups[Users[PdfItems[objHandle].createdByHandle].groupHandle].totalTags += numOfTags;
+            }
+         }
+      });
+   }
+   else if (Posts[objHandle]) {
+
+      numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
+
+      self.log.error("Post Tag", objHandle);
+      Posts[objHandle].tags = numOfTags;
+      dmz.time.setTimer(self, function () {
+
+         if (Posts[objHandle].createdByHandle && Users[Posts[objHandle].createdByHandle]) {
+
+            Users[Posts[objHandle].createdByHandle].postTags += numOfTags;
+            Users[Posts[objHandle].createdByHandle].totalTags += numOfTags;
+            if (Users[Posts[objHandle].createdByHandle].groupHandle &&
+               Groups[Users[Posts[objHandle].createdByHandle].groupHandle]) {
+
+               Groups[Users[Posts[objHandle].createdByHandle].groupHandle].postTags += numOfTags;
+               Groups[Users[Posts[objHandle].createdByHandle].groupHandle].totalTags += numOfTags;
+            }
+         }
+      });
+   }
+   else if (Comments[objHandle]) {
+
+      numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
+
+      self.log.error("Comment Tag", objHandle);
+      Comments[objHandle].tags = numOfTags;
+      dmz.time.setTimer(self, function () {
+
+         if (Comments[objHandle].createdByHandle && Users[Comments[objHandle].createdByHandle]) {
+
+            Users[Comments[objHandle].createdByHandle].commentTags += numOfTags;
+            Users[Comments[objHandle].createdByHandle].totalTags += numOfTags;
+            if (Users[Comments[objHandle].createdByHandle].groupHandle &&
+               Groups[Users[Comments[objHandle].createdByHandle].groupHandle]) {
+
+               Groups[Users[Comments[objHandle].createdByHandle].groupHandle].commentTags += numOfTags;
+               Groups[Users[Comments[objHandle].createdByHandle].groupHandle].totalTags += numOfTags;
+            }
+         }
+      });
+   }
+   else if (Questions[objHandle]) {
+
+      numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
+
+      self.log.error("Question Tag", objHandle);
+      Questions[objHandle].tags = numOfTags;
+      dmz.time.setTimer(self, function () {
+
+         if (Questions[objHandle].createdByHandle && Users[Questions[objHandle].createdByHandle]) {
+
+            Users[Questions[objHandle].createdByHandle].questionTags += numOfTags;
+            Users[Questions[objHandle].createdByHandle].totalTags += numOfTags;
+            if (Users[Questions[objHandle].createdByHandle].groupHandle &&
+               Groups[Users[Questions[objHandle].createdByHandle].groupHandle]) {
+
+               Groups[Users[Questions[objHandle].createdByHandle].groupHandle].questionTags += numOfTags;
+               Groups[Users[Questions[objHandle].createdByHandle].groupHandle].totalTags += numOfTags;
+            }
+         }
+      });
    }
 });
 
@@ -2046,6 +2273,86 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
             Users[subHandle].active) {
 
             Users[subHandle].questions.push(supHandle);
+         }
+      });
+   }
+   else if (Memos[supHandle]) {
+
+      dmz.time.setTimer(self, function () {
+
+         if (Users[subHandle] && ((dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
+            Users[subHandle].active) {
+
+            Users[subHandle].memosCreated.push(supHandle);
+            if (Users[subHandle].groupHandle && Groups[Users[subHandle].groupHandle]) {
+
+               Groups[Users[subHandle].groupHandle].memosCreated.push(supHandle);
+            }
+         }
+      });
+   }
+   else if (Newspapers[supHandle]) {
+
+      dmz.time.setTimer(self, function () {
+
+         if (Users[subHandle] && ((dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
+            Users[subHandle].active) {
+
+            Users[supHandle].newspapersCreated.push(supHandle);
+            if (Users[subHandle].groupHandle && Groups[Users[subHandle].groupHandle]) {
+
+               Groups[Users[subHandle].groupHandle].newspapersCreated.push(supHandle);
+            }
+         }
+      });
+   }
+   else if (Videos[supHandle]) {
+
+      dmz.time.setTimer(self, function () {
+
+         if (Users[subHandle] && ((dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
+            Users[subHandle].active) {
+
+            Users[supHandle].videosCreated.push(supHandle);
+            if (Users[subHandle].groupHandle && Groups[Users[subHandle].groupHandle]) {
+
+               Groups[Users[subHandle].groupHandle].videosCreated.push(supHandle);
+            }
+         }
+      });
+   }
+   else if (Lobbyists[supHandle]) {
+
+      dmz.time.setTimer(self, function () {
+
+         if (Users[subHandle] && ((dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
+            Users[subHandle].active) {
+
+            Users[supHandle].lobbyistsCreated.push(supHandle);
+            if (Users[subHandle].groupHandle && Groups[Users[subHandle].groupHandle]) {
+
+               Groups[Users[subHandle].groupHandle].lobbyistsCreated.push(supHandle);
+            }
+         }
+      });
+   }
+   else if (PdfItems[supHandle]) {
+
+      dmz.time.setTimer(self, function () {
+
+         if (Users[subHandle] && ((dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
+            Users[subHandle].active) {
+
+            Users[supHandle].pdfItemsCreated.push(supHandle);
+            if (Users[subHandle].groupHandle && Groups[Users[subHandle].groupHandle]) {
+
+               Groups[Users[subHandle].groupHandle].pdfItemsCreated.push(supHandle);
+            }
          }
       });
    }
