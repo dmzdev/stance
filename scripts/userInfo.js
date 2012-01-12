@@ -100,7 +100,6 @@ var dmz =
    , init
    ;
 
-
 ShowStudentsMessage.subscribe(self, function () {
 
    if (!userInfoWidget.visible() && !previouslyOpened) {
@@ -263,7 +262,7 @@ voteAlignment = function (userHandle) {
 
       createPieChart
          ( legend
-         , function (total) { return "Vote Alignment: (Total Voted On Votes: " + total + ")"}
+         , function (total) { return "Vote Alignment: (Total Voted On Votes: " + total + ")" }
          , Users[userHandle].ui.graphicsScene
          , { x:0, y: 300 }
          );
@@ -1652,7 +1651,8 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          Users[objHandle].latestVoteTime = dmz.stance.userAttribute(
             objHandle,
             dmz.stance.VoteTimeHandle);
-         if (dmz.stance.isAllowed(objHandle, dmz.stance.SwitchGroupFlag) || !Users[objHandle].active) {
+         if (!((dmz.object.scalar(objHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(objHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) || !Users[objHandle].active) {
 
             delete Users[objHandle];
          }
@@ -1732,7 +1732,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
    if (Users[objHandle]) { Users[objHandle].picture = newVal; }
 });
 
-dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
+dmz.object.link.observe(self, dmz.stance.OriginalGroupHandle,
 function (linkHandle, attrHandle, supHandle, subHandle) {
 
    if (Users[supHandle]) {
@@ -1740,10 +1740,11 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Users[supHandle].groupHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         if (!dmz.stance.isAllowed(supHandle, dmz.stance.SwitchGroupFlag) && Users[supHandle] &&
-            Groups[subHandle]) {
+         if (((dmz.object.scalar(supHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(supHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
+            Users[supHandle] && Groups[subHandle]) {
 
-            Groups[subHandle].members.push(supHandle);
+               Groups[subHandle].members.push(supHandle);
          }
       });
    }
@@ -1979,7 +1980,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Votes[supHandle].createdByHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
+         if (Users[subHandle] && ((dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
             Users[subHandle].active) {
 
             Users[subHandle].votesCreated.push(subHandle);
@@ -2014,7 +2016,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Posts[supHandle].createdByHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
+         if (Users[subHandle] && ((dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
             Users[subHandle].active) {
 
             Users[subHandle].posts.push(supHandle);
@@ -2026,7 +2029,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Comments[supHandle].createdByHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
+         if (Users[subHandle] && ((dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
             Users[subHandle].active) {
 
             Users[subHandle].comments.push(supHandle);
@@ -2037,7 +2041,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
       dmz.time.setTimer(self, function () {
 
-         if (Users[subHandle] && !dmz.stance.isAllowed(subHandle, dmz.stance.SwitchGroupFlag) &&
+         if (Users[subHandle] && ((dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(subHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
             Users[subHandle].active) {
 
             Users[subHandle].questions.push(supHandle);
@@ -2127,7 +2132,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Votes[subHandle].noVotes = (Votes[subHandle].noVotes || 0) + 1;
       dmz.time.setTimer (self, function () {
 
-         if (Users[supHandle] && !dmz.stance.isAllowed(supHandle, dmz.stance.SwitchGroupFlag) &&
+         if (Users[supHandle] && ((dmz.object.scalar(supHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(supHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
             Users[supHandle].active) {
 
             Users[supHandle].votedNoOn.push(subHandle);
@@ -2144,7 +2150,8 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Votes[subHandle].noVotes = (Votes[subHandle].yesVotes || 0) + 1;
       dmz.time.setTimer (self, function () {
 
-         if (Users[supHandle] && !dmz.stance.isAllowed(supHandle, dmz.stance.SwitchGroupFlag) &&
+         if (Users[supHandle] && ((dmz.object.scalar(supHandle, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) ||
+            dmz.object.scalar(supHandle, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) &&
             Users[supHandle].active) {
 
             Users[supHandle].votedYesOn.push(subHandle);

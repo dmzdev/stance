@@ -69,6 +69,7 @@ var dmz =
         , ObserverPermissionsHandle: dmz.defs.createNamedHandle("observer_permissions")
         , TechPermissionsHandle: dmz.defs.createNamedHandle("tech_permissions")
         , GroupWikiLinkHandle: dmz.defs.createNamedHandle("wiki_link")
+        , ExpiredHandle: dmz.defs.createNamedHandle("expired")
 
         // Link Attr Handles
         , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
@@ -86,6 +87,7 @@ var dmz =
         , MediaHandle: dmz.defs.createNamedHandle("game_media")
         , DataLinkHandle: dmz.defs.createNamedHandle("data_link")
         , HelpLink: dmz.defs.createNamedHandle("help_link")
+        , OriginalGroupHandle: dmz.defs.createNamedHandle("original_group")
 
         /* Time handles, and handles to be removed later */
         , UpdatePostedTimeHandle: dmz.defs.createNamedHandle("update_posted_time_handle")

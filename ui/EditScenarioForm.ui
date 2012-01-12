@@ -295,16 +295,6 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QToolButton" name="removeStudentButton">
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="arrowType">
-              <enum>Qt::LeftArrow</enum>
-             </property>
-            </widget>
-           </item>
           </layout>
          </item>
          <item row="2" column="0">
@@ -329,18 +319,6 @@
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Note: Names in red are currently disabled.</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>

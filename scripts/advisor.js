@@ -289,6 +289,7 @@ createAdvisorWindow = function (windowStr, idx) {
             dmz.object.text(handle, dmz.stance.TextHandle, text);
             dmz.object.timeStamp(handle, dmz.stance.PostedAtServerTimeHandle, 0);
             dmz.object.flag(handle, dmz.stance.UpdatePostedTimeHandle, true);
+            dmz.object.flag(handle, dmz.stance.ExpiredHandle, false);
             dmz.object.link(dmz.stance.VoteLinkHandle, handle, advisorHandle);
             dmz.object.link(dmz.stance.CreatedByHandle, handle, hil);
             dmz.object.link(dmz.stance.VoteGroupHandle, handle, dmz.stance.getUserGroupHandle(hil));

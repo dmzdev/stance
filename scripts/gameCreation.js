@@ -195,7 +195,6 @@ var dmz =
    , toTimeStamp = dmz.util.dateToTimeStamp
    , toDate = dmz.util.timeStampToDate
    , userToGroup
-   , userFromGroup
    , setup
    , readGroupTemplates
    , setGroupTemplate
@@ -394,12 +393,6 @@ function (linkObjHandle, attrHandle, studentHandle, groupHandle) {
 dmz.object.link.observe(self, dmz.stance.GameUngroupedUsersHandle,
 function (linkObjHandle, attrHandle, userHandle, gameHandle) {
 
-   var links = dmz.object.subLinks(userHandle, dmz.stance.GroupMembersHandle);
-   if (links) {
-
-      dmz.object.unlinkSubObjects(userHandle, dmz.stance.GroupMembersHandle);
-   }
-
    if (!userList[userHandle]) {
 
       userList[userHandle] = ungroupedStudentList.addItem(
@@ -462,28 +455,9 @@ userToGroup = function (item) {
       if (objHandle && (currentIndex < groupList.length)) {
 
          dmz.object.link(dmz.stance.GroupMembersHandle, objHandle, groupList[currentIndex]);
+         dmz.object.link(dmz.stance.OriginalGroupHandle, objHandle, groupList[currentIndex]);
          ungroupedStudentList.removeItem(item);
          groupStudentList.addItem(item);
-      }
-   }
-};
-
-userFromGroup = function (item) {
-
-   var objHandle
-     , currentIndex
-     , count = groupComboBox.count()
-     ;
-
-   if (item && count) {
-
-      objHandle = item.data();
-      currentIndex = groupComboBox.currentIndex();
-      if (objHandle && (currentIndex < groupList.length)) {
-
-         dmz.object.link(dmz.stance.GameUngroupedUsersHandle, objHandle, CurrentGameHandle);
-         groupStudentList.removeItem(item);
-         ungroupedStudentList.addItem(item);
       }
    }
 };
@@ -570,12 +544,6 @@ editScenarioWidget.observe(self, "addStudentButton", "clicked", function () {
    userToGroup(ungroupedStudentList.currentItem());
 });
 
-editScenarioWidget.observe(self, "removeStudentButton", "clicked", function () {
-
-   userFromGroup(groupStudentList.currentItem());
-});
-
-groupStudentList.observe(self, "itemActivated", userFromGroup);
 ungroupedStudentList.observe(self, "itemActivated", userToGroup);
 
 editScenarioWidget.observe(self, "editGroupButton", "clicked", function () {
@@ -1589,8 +1557,11 @@ function (objHandle, attrHandle, value) {
             active = dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle);
             startGameButton.enabled(!active);
             endGameButton.enabled(active);
-            showStudentsButton.enabled(true);
             TabWidget.add(AlterGroupsTab.widget, AlterGroupsTab.name);
+         }
+         if (dmz.stance.isAllowed(objHandle, dmz.stance.StudentDataFlag)) {
+
+            showStudentsButton.enabled(true);
          }
          if (dmz.stance.isAllowed(objHandle, dmz.stance.AlterUsersFlag)) {
 
@@ -1629,7 +1600,10 @@ startGameButton.observe(self, "clicked", function () {
 
    var list = [];
    dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle, true);
-   Object.keys(userItems).forEach(function (key) { list.push(userItems[key].handle); });
+   Object.keys(userItems).forEach(function (key) {
+
+      list.push(userItems[key].handle);
+   });
    EmailMod.sendEmail(
       list,
       "Your STANCE game has begun!",
@@ -1683,7 +1657,6 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
             });
          }
       }
-
       if (value.and(dmz.stance.SwitchGroupFlag).bool() &&
          !dmz.object.linkHandle(dmz.stance.GameObservers, handle, CurrentGameHandle)) {
 
@@ -1724,8 +1697,6 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
             dmz.object.timeStamp(handle, timeHandle, dmz.object.timeStamp(dataHandle, timeHandle));
          });
       }
-
-
       if (handle === dmz.object.hil()) {
 
          if (value.and(dmz.stance.AlterGroupsFlag).bool()) {
@@ -1733,14 +1704,14 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
             active = dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle);
             startGameButton.enabled(!active);
             endGameButton.enabled(active);
-            showStudentsButton.enabled(true);
          }
          else {
 
             startGameButton.enabled(false);
             endGameButton.enabled(false);
-            showStudentsButton.enabled(false);
          }
+         if (value.and(dmz.stance.StudentDataFlag).bool()) { showStudentsButton.enabled(true); }
+         else { showStudentsButton.enabled(false); }
       }
 
       if (value.and(dmz.stance.AlterUsersFlag).bool()) { list = TechListWidget; }

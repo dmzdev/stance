@@ -635,7 +635,8 @@ setYesNoLabels = function (voteHandle) {
                "Less than 5 min ago"));
       }
       updateVotes(voteHandle);
-      if (dmz.stance.isAllowed(hil, dmz.stance.CastVoteFlag) && !hasUserVoted(hil, voteItem.handle)) {
+      if (dmz.stance.isAllowed(hil, dmz.stance.CastVoteFlag) && !hasUserVoted(hil, voteItem.handle) &&
+         !voteItem.expired) {
 
          voteItem.ui.buttonLayout.insertWidget(0, voteItem.ui.yesButton);
          voteItem.ui.buttonLayout.insertWidget(1, voteItem.ui.noButton);
@@ -1109,6 +1110,15 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    if (objType.isOfType(dmz.stance.VoteType)) {
 
       VoteObjects[objHandle] = { handle: objHandle };
+   }
+});
+
+dmz.object.flag.observe(self, dmz.stance.ExpiredHandle,
+function (objHandle, attrHandle, newVal, oldVal) {
+
+   if (VoteObjects[objHandle]) {
+
+      VoteObjects[objHandle].expired = newVal;
    }
 });
 
