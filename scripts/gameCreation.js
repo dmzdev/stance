@@ -1660,29 +1660,36 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
       if (value.and(dmz.stance.SwitchGroupFlag).bool() &&
          !dmz.object.linkHandle(dmz.stance.GameObservers, handle, CurrentGameHandle)) {
 
-         groups = dmz.object.superLinks(CurrentGameHandle, dmz.stance.GameGroupHandle) || [];
-         groups.forEach(function (groupHandle) {
+         dmz.time.setTimer(self, 0.5, function () {
 
-            var linkHandle = dmz.object.linkHandle(dmz.stance.DataLinkHandle, handle, groupHandle)
-              , data = dmz.object.linkAttributeObject(linkHandle)
-              ;
+            if (!dmz.object.linkHandle(dmz.stance.GameObservers, handle, CurrentGameHandle)) {
 
-            if (!data) {
+               groups = dmz.object.superLinks(CurrentGameHandle, dmz.stance.GameGroupHandle) || [];
+               groups.forEach(function (groupHandle) {
 
-               data = dmz.object.create(dmz.stance.DataType);
-               dmz.object.activate(data);
-               if (!linkHandle) {
+                  var linkHandle = dmz.object.linkHandle(dmz.stance.DataLinkHandle, handle, groupHandle)
+                    , data = dmz.object.linkAttributeObject(linkHandle)
+                    ;
 
-                  linkHandle = dmz.object.link(dmz.stance.DataLinkHandle, handle, groupHandle);
-               }
-               dmz.object.linkAttributeObject(linkHandle, data);
+                  if (!data) {
+
+                     data = dmz.object.create(dmz.stance.DataType);
+                     dmz.object.activate(data);
+                     if (!linkHandle) {
+
+                        linkHandle = dmz.object.link(dmz.stance.DataLinkHandle, handle, groupHandle);
+                     }
+                     dmz.object.linkAttributeObject(linkHandle, data);
+                  }
+                  dmz.stance.NOTIFICATION_HANDLES.forEach(function (timeHandle) {
+
+                     dmz.object.timeStamp(data, timeHandle, dmz.object.timeStamp(handle, timeHandle));
+                  });
+               });
+               dmz.object.link(dmz.stance.GameObservers, handle, CurrentGameHandle);
             }
-            dmz.stance.NOTIFICATION_HANDLES.forEach(function (timeHandle) {
 
-               dmz.object.timeStamp(data, timeHandle, dmz.object.timeStamp(handle, timeHandle));
-            });
          });
-         dmz.object.link(dmz.stance.GameObservers, handle, CurrentGameHandle);
       }
       else if (!value.and(dmz.stance.SwitchGroupFlag).bool() && prev &&
          prev.and(dmz.stance.SwitchGroupFlag).bool() &&
