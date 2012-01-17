@@ -207,6 +207,7 @@ createAdvisorWindow = function (windowStr, idx) {
       , highlight: function (handle) {
 
            var str;
+
            if (!handle) { MainModule.highlight(windowStr); }
            else {
 
@@ -256,7 +257,40 @@ createAdvisorWindow = function (windowStr, idx) {
 
    data.onHome = function () {
 
-      if (data.question && data.question.onHome) { data.question.onHome(); }
+      if (data.question && data.question.onHome) {
+
+         var userHandle = dmz.object.hil()
+           , userPermissions
+           ;
+
+         data.question.onHome();
+         if (userHandle) {
+
+            userPermissions = dmz.object.scalar(userHandle, dmz.stance.Permissions);
+            if ((userPermissions === dmz.stance.TECH_PERMISSION) ||
+               (userPermissions === dmz.stance.ADMIN_PERMISSION)) {
+
+               AdvisorWindows.forEach(function (data) {
+
+                  var advisorHandle = getHILAdvisor(data.advisorIndex)
+                    , questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
+                    , authorHandle
+                    , answerHandle
+                    ;
+
+                  questions.forEach(function (questionHandle) {
+
+                     authorHandle = dmz.stance.getAuthorHandle(questionHandle) || userHandle;
+                     answerHandle = getQuestionAnswer(questionHandle);
+                     if ((userHandle !== authorHandle) && !answerHandle) {
+
+                        MainModule.highlight(data.windowStr);
+                     }
+                  });
+               });
+            }
+         }
+      }
    };
 
    data.update = function (advisorHandle, width, height) {
@@ -450,6 +484,7 @@ function (linkObjHandle, attrHandle, userHandle, groupHandle) {
            , userTime = dmz.stance.userAttribute(userHandle, AdvisorTimeHandles[data.advisorIndex]) || 0
            , questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
            , doHighlight = false
+           , userPermissions = dmz.object.scalar(userHandle, dmz.stance.Permissions);
            ;
 
          data.question.setTimestamp(userTime);
@@ -459,17 +494,25 @@ function (linkObjHandle, attrHandle, userHandle, groupHandle) {
               , answerHandle
               , authorHandle
               ;
+
             if (!doHighlight) {
 
                authorHandle = dmz.stance.getAuthorHandle(questionHandle) || userHandle;
+               answerHandle = getQuestionAnswer(questionHandle);
                if (userHandle !== authorHandle) {
 
                   time = dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
+
                   if (time > userTime) { doHighlight = true; }
+
+                  if ((userPermissions === dmz.stance.TECH_PERMISSION) ||
+                     (userPermissions === dmz.stance.ADMIN_PERMISSION)) {
+
+                     if (!answerHandle) { doHighlight = true; }
+                  }
                }
                else {
 
-                  answerHandle = getQuestionAnswer(questionHandle);
                   authorHandle = dmz.stance.getAuthorHandle(answerHandle);
                   if (userHandle !== authorHandle) {
 
@@ -499,6 +542,7 @@ function (objHandle, attrHandle, value) {
            , userTime = dmz.stance.userAttribute(objHandle, AdvisorTimeHandles[data.advisorIndex]) || 0
            , questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
            , doHighlight = false
+           , userPermissions = dmz.object.scalar(objHandle, dmz.stance.Permissions);
            ;
 
          data.question.setTimestamp(userTime);
@@ -508,13 +552,20 @@ function (objHandle, attrHandle, value) {
               , answerHandle
               , authorHandle
               ;
+
             if (!doHighlight) {
 
                authorHandle = dmz.stance.getAuthorHandle(questionHandle) || objHandle;
+               answerHandle = getQuestionAnswer(questionHandle);
                if (objHandle !== authorHandle) {
 
                   time = dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
                   if (time > userTime) { doHighlight = true; }
+                  if ((userPermissions === dmz.stance.TECH_PERMISSION) ||
+                     (userPermissions === dmz.stance.ADMIN_PERMISSION)) {
+
+                     if (!answerHandle) { doHighlight = true; }
+                  }
                }
                else {
 

@@ -2086,8 +2086,6 @@ function (objHandle, attrHandle, newVal, oldVal) {
    if (Votes[objHandle]) {
 
       numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
-
-      self.log.error("Vote Tag", objHandle);
       Votes[objHandle].tags = numOfTags;
       dmz.time.setTimer(self, function () {
 
@@ -2107,8 +2105,6 @@ function (objHandle, attrHandle, newVal, oldVal) {
    else if (Memos[objHandle]) {
 
       numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
-
-      self.log.error("Memo Tag", objHandle);
       Memos[objHandle].tags = numOfTags;
       dmz.time.setTimer(self, function () {
 
@@ -2128,8 +2124,6 @@ function (objHandle, attrHandle, newVal, oldVal) {
    else if (Newspapers[objHandle]) {
 
       numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
-
-      self.log.error("Newspaper Tag", objHandle);
       Newspapers[objHandle].tags = numOfTags;
       dmz.time.setTimer(self, function () {
 
@@ -2149,8 +2143,6 @@ function (objHandle, attrHandle, newVal, oldVal) {
    else if (Videos[objHandle]) {
 
       numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
-
-      self.log.error("Video Tag", objHandle);
       Videos[objHandle].tags = numOfTags;
       dmz.time.setTimer(self, function () {
 
@@ -2170,8 +2162,6 @@ function (objHandle, attrHandle, newVal, oldVal) {
    else if (Lobbyists[objHandle]) {
 
       numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
-
-      self.log.error("Lobbyist", objHandle);
       Lobbyists[objHandle].tags = numOfTags;
       dmz.time.setTimer(self, function () {
 
@@ -2191,8 +2181,6 @@ function (objHandle, attrHandle, newVal, oldVal) {
    else if (PdfItems[objHandle]) {
 
       numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
-
-      self.log.error("PdfItem Tag", objHandle);
       PdfItems[objHandle].tags = numOfTags;
       dmz.time.setTimer(self, function () {
 
@@ -2212,8 +2200,6 @@ function (objHandle, attrHandle, newVal, oldVal) {
    else if (Posts[objHandle]) {
 
       numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
-
-      self.log.error("Post Tag", objHandle);
       Posts[objHandle].tags = numOfTags;
       dmz.time.setTimer(self, function () {
 
@@ -2233,8 +2219,6 @@ function (objHandle, attrHandle, newVal, oldVal) {
    else if (Comments[objHandle]) {
 
       numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
-
-      self.log.error("Comment Tag", objHandle);
       Comments[objHandle].tags = numOfTags;
       dmz.time.setTimer(self, function () {
 
@@ -2254,8 +2238,6 @@ function (objHandle, attrHandle, newVal, oldVal) {
    else if (Questions[objHandle]) {
 
       numOfTags = newVal.number(dmz.stance.TotalHandle, 0) || 0;
-
-      self.log.error("Question Tag", objHandle);
       Questions[objHandle].tags = numOfTags;
       dmz.time.setTimer(self, function () {
 
