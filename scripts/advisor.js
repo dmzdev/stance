@@ -88,6 +88,7 @@ var dmz =
 
 advisorAnswerPermission = function (author, advisorHandle) {
 
+   //infinite loop here somehow, look into it later.
    return dmz.stance.isAllowed(author, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(advisorHandle, dmz.stance.ID)]);
 }
 

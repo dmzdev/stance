@@ -23,6 +23,7 @@ var dmz =
    , resources: require("dmz/runtime/resources")
    , message: require("dmz/runtime/messaging")
    , module: require("dmz/runtime/module")
+   , mask: require("dmz/types/mask")
    }
    , DateJs = require("datejs/time")
 
@@ -1758,9 +1759,8 @@ dmz.object.scalar.observe(self, dmz.stance.Permissions, function (handle, attrHa
    if (userItems[handle]) {
 
       userItems[handle].permission = value;
-      state = dmz.object.state(CurrentGameHandle, dmz.stance.PERMISSION_HANDLES[value]);
+      state = dmz.object.state(CurrentGameHandle, dmz.stance.PERMISSION_HANDLES[value]) || dmz.mask.create();
       if ((value === dmz.stance.ADVISOR_PERMISSION) && userItems[handle].state) {
-
 
          state = state.unset(dmz.stance.AdvisorFlags).or(userItems[handle].state.and(dmz.stance.AdvisorFlags));
          if (!state.equal(userItems[handle].state)) {
