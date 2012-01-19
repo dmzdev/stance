@@ -430,10 +430,7 @@ setApprovalPendingLabels = function (voteHandle) {
                   voteItem.ui.timeBox.value(),
                   voteItem.ui.decisionTextEdit.text() || "Okay.");
                //send vote is approved/active email (2)
-               if (SEND_MAIL) {
-
-                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_ACTIVE);
-               }
+               if (SEND_MAIL) { EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_ACTIVE); }
             });
             voteItem.ui.noButton.observe(self, "clicked", function () {
 
@@ -445,10 +442,7 @@ setApprovalPendingLabels = function (voteHandle) {
                   voteItem.ui.timeBox.value(),
                   voteItem.ui.decisionTextEdit.text() || "No.");
                //send vote is denied email (3)
-               if (SEND_MAIL) {
-
-                  EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_DENIED);
-               }
+               if (SEND_MAIL) { EmailMod.sendVoteEmail(voteItem, dmz.stance.VOTE_DENIED); }
             });
          }
       }
