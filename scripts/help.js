@@ -61,7 +61,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , emailMod: EmailMod
          , techList: TechList
          , highlight: function (forumHandle) { module.highlight("Help"); }
-         , forumViewCSS: "#postFrame { background-color: rgb(230, 100, 100); }"
+         , forumViewCSS: "#postFrame { background-color: rgb(230, 110, 110); }"
          , forumLabelText: "Ask a Technical Help Question:"
          , canHighlight: function (forums, itemHandle) {
 

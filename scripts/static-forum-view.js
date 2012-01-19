@@ -38,7 +38,6 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , avatar
      // UI elements
      , _view = false
-     , _forumViewWidget
      , _scrollArea = false
      , _mainLayout = false
      , _postTextEdit = false

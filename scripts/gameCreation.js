@@ -917,7 +917,6 @@ editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
 
             if (widget.isChecked()) { state = state.or(dmz.stance.AdvisorSets[index]); }
          });
-
          dmz.object.state(user, dmz.stance.Permissions, state);
          dmz.object.activate(user);
          dmz.object.link(dmz.stance.GroupMembersHandle, user, groupList[advisorGroupList.currentIndex()]);
