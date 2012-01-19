@@ -891,6 +891,7 @@ editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
 editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
 
    setAdvisorList(0);
+   advisorEnabledCheckBox.setChecked(true);
    createAdvisorDialog.open(self, function (value, dialog) {
 
       var user
