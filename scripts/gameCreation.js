@@ -1768,9 +1768,13 @@ dmz.object.scalar.observe(self, dmz.stance.Permissions, function (handle, attrHa
             dmz.object.state(handle, dmz.stance.Permissions, state);
          }
       }
-      else if (state || userItems[handle].state || !state.equal(userItems[handle].state)) {
+      else if (state || userItems[handle].state) {
 
          dmz.object.state(handle, dmz.stance.Permissions, state);
+      }
+      else {
+
+         self.log.error ("No viable state for Permission value:", value, "on object:", handle);
       }
    }
 });
