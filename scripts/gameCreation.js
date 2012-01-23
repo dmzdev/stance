@@ -23,6 +23,7 @@ var dmz =
    , resources: require("dmz/runtime/resources")
    , message: require("dmz/runtime/messaging")
    , module: require("dmz/runtime/module")
+   , mask: require("dmz/types/mask")
    }
    , DateJs = require("datejs/time")
 
@@ -190,6 +191,8 @@ var dmz =
    , ToggledMessage = dmz.message.create("ToggledGroupMessage")
    , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
    , haveSetupPermissionTable = false
+   , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
+   , LoginSkipped = false
 
    // Function decls
    , toTimeStamp = dmz.util.dateToTimeStamp
@@ -208,6 +211,23 @@ var dmz =
    ;
 
 self.shutdown = function () { dmz.ui.mainWindow.removeDock(DockName); }
+
+LoginSkippedMessage.subscribe(self, function (data) {
+
+   LoginSkipped = true;
+   editScenarioWidget.lookup("createTechButton").enabled(false);
+   editScenarioWidget.lookup("createAdminButton").enabled(false);
+   editScenarioWidget.lookup("createObserverButton").enabled(false);
+   editScenarioWidget.lookup("createAdvisorButton").enabled(false);
+   editScenarioWidget.lookup("createPlayerButton").enabled(false);
+   Object.keys(MediaTypes).forEach(function (key) {
+
+      editScenarioWidget.lookup(MediaTypes[key].button).enabled(false);
+   });
+   editScenarioWidget.lookup("addGroupButton").enabled(false);
+   editScenarioWidget.lookup("editGroupButton").enabled(false);
+   editScenarioWidget.lookup("addStudentButton").enabled(false);
+});
 
 editScenarioWidget.observe(self, "showStudentsButton", "clicked", function () {
 
@@ -448,7 +468,7 @@ userToGroup = function (item) {
      , count = groupComboBox.count()
      ;
 
-   if (item && count) {
+   if (item && count && !LoginSkipped) {
 
       objHandle = item.data();
       currentIndex = groupComboBox.currentIndex();
@@ -687,7 +707,7 @@ groupAdvisorList.observe(self, "itemActivated", function (item) {
      ;
 
    pictureLabel.clear();
-   if (advisorHandle) {
+   if (advisorHandle && !LoginSkipped) {
 
       groupHandle = groupList[advisorGroupComboBox.currentIndex()];
       data = dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle);
@@ -741,6 +761,8 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
+         dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
+         dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.STUDENT_PERMISSION);
          dmz.object.state(
             user,
@@ -776,6 +798,8 @@ editScenarioWidget.observe(self, "createAdminButton", "clicked", function () {
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
+         dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
+         dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.ADMIN_PERMISSION);
          dmz.object.state(
             user,
@@ -811,6 +835,8 @@ editScenarioWidget.observe(self, "createObserverButton", "clicked", function () 
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
+         dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
+         dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.OBSERVER_PERMISSION);
          dmz.object.state(
             user,
@@ -846,6 +872,8 @@ editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
+         dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
+         dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.TECH_PERMISSION);
          dmz.object.state(
             user,
@@ -863,6 +891,7 @@ editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
 editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
 
    setAdvisorList(0);
+   advisorEnabledCheckBox.setChecked(true);
    createAdvisorDialog.open(self, function (value, dialog) {
 
       var user
@@ -880,13 +909,14 @@ editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
             dmz.ui.crypto.hash(text.toLowerCase(), dmz.ui.crypto.Sha1));
          dmz.object.text(user, dmz.stance.DisplayNameHandle, advisorDisplayNameEdit.text());
          dmz.object.flag(user, dmz.stance.ActiveHandle, advisorEnabledCheckBox.isChecked());
+         dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
+         dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.ADVISOR_PERMISSION);
          state = dmz.object.state(CurrentGameHandle, dmz.stance.AdvisorPermissionsHandle) || dmz.stance.AdvisorPermissions;
          advisorCB.forEach(function (widget, index) {
 
             if (widget.isChecked()) { state = state.or(dmz.stance.AdvisorSets[index]); }
          });
-
          dmz.object.state(user, dmz.stance.Permissions, state);
          dmz.object.activate(user);
          dmz.object.link(dmz.stance.GroupMembersHandle, user, groupList[advisorGroupList.currentIndex()]);
@@ -905,7 +935,7 @@ StudentListWidget.observe(self, "itemActivated", function (item) {
      , isEnabled
      ;
 
-   if (item) {
+   if (item && !LoginSkipped) {
 
       objHandle = item.data();
       studentDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
@@ -973,7 +1003,7 @@ AdminListWidget.observe(self, "itemActivated", function (item) {
      , isEnabled
      ;
 
-   if (item) {
+   if (item && !LoginSkipped) {
 
       objHandle = item.data();
       studentDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
@@ -1021,7 +1051,7 @@ ObserverListWidget.observe(self, "itemActivated", function (item) {
      , isEnabled
      ;
 
-   if (item) {
+   if (item && !LoginSkipped) {
 
       avatarList.enabled(false);
       objHandle = item.data();
@@ -1069,7 +1099,7 @@ TechListWidget.observe(self, "itemActivated", function (item) {
      , isEnabled
      ;
 
-   if (item) {
+   if (item && !LoginSkipped) {
 
       objHandle = item.data();
       studentDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
@@ -1118,7 +1148,9 @@ AdvisorListWidget.observe(self, "itemActivated", function (item) {
      , isEnabled
      ;
 
-   if (item) {
+   if (item && !LoginSkipped) {
+
+      var userPermissions;
 
       objHandle = item.data();
       advisorDisplayNameEdit.text(dmz.object.text(objHandle, dmz.stance.DisplayNameHandle));
@@ -1127,7 +1159,22 @@ AdvisorListWidget.observe(self, "itemActivated", function (item) {
       advisorGroupList.enabled(false);
       enabled = dmz.object.flag(objHandle, dmz.stance.ActiveHandle);
       advisorEnabledCheckBox.setChecked(enabled);
-      createStudentDialog.open(self, function (value, dialog) {
+      userPermissions = dmz.object.state(objHandle, dmz.stance.Permissions);
+      setAdvisorList(0);
+      advisorCB.forEach(function (key, index) {
+
+         if (userPermissions.and(dmz.stance.AdvisorSets[index]).bool()) {
+
+            key.setChecked(true);
+            key.enabled(false);
+         }
+         else {
+
+            key.setChecked(false);
+            key.enabled(true);
+         }
+      });
+      createAdvisorDialog.open(self, function (value, dialog) {
 
          var name
            , text
@@ -1153,6 +1200,11 @@ AdvisorListWidget.observe(self, "itemActivated", function (item) {
          advisorEmailEdit.clear();
          advisorEnabledCheckBox.setChecked(true);
          advisorGroupList.enabled(true);
+         advisorCB.forEach(function (key) {
+
+            key.enabled(true);
+            key.setChecked(false);
+         });
       });
    }
 });
@@ -1424,7 +1476,6 @@ mediaInjectButtons = function () {
                  , links
                  ;
 
-               self.log.error(value);
                if (value && type) {
 
                   media = dmz.object.create(type);
@@ -1525,13 +1576,15 @@ mediaInjectButtons = function () {
 
    Object.keys(MediaTypes).forEach(function (type) {
 
-      editScenarioWidget.observe(
-         self,
-         MediaTypes[type].button,
-         "clicked",
+      if (!LoginSkipped) {
+         editScenarioWidget.observe(
+            self,
+            MediaTypes[type].button,
+            "clicked",
          generateMediaInjectFunction(MediaTypes[type].type, MediaTypes[type].urlEnd));
 
-      MediaTypes[type].list.observe(self, "itemActivated", modifyInjectItem);
+         MediaTypes[type].list.observe(self, "itemActivated", modifyInjectItem);
+      }
    });
 };
 
@@ -1738,8 +1791,7 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
       }
       else if (value.and(dmz.stance.CastVoteFlag).bool()) { list = StudentListWidget; }
       else if (value.and(dmz.stance.SwitchGroupFlag).bool()) { list = ObserverListWidget; }
-      else if (value.and(dmz.stance.StudentDataFlag).bool()) { list = AdvisorListWidget; }
-
+      else if (value.and(dmz.stance.AdvisorSets).bool()) { list = AdvisorListWidget; }
       if (list) {
 
          if (!userItems[handle].item) {
@@ -1758,9 +1810,8 @@ dmz.object.scalar.observe(self, dmz.stance.Permissions, function (handle, attrHa
    if (userItems[handle]) {
 
       userItems[handle].permission = value;
-      state = dmz.object.state(CurrentGameHandle, dmz.stance.PERMISSION_HANDLES[value]);
+      state = dmz.object.state(CurrentGameHandle, dmz.stance.PERMISSION_HANDLES[value]) || dmz.mask.create();
       if ((value === dmz.stance.ADVISOR_PERMISSION) && userItems[handle].state) {
-
 
          state = state.unset(dmz.stance.AdvisorFlags).or(userItems[handle].state.and(dmz.stance.AdvisorFlags));
          if (!state.equal(userItems[handle].state)) {

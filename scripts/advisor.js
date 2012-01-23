@@ -88,6 +88,7 @@ var dmz =
 
 advisorAnswerPermission = function (author, advisorHandle) {
 
+   //infinite loop here somehow, look into it later.
    return dmz.stance.isAllowed(author, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(advisorHandle, dmz.stance.ID)]);
 }
 
@@ -206,6 +207,7 @@ createAdvisorWindow = function (windowStr, idx) {
       , messageLength: MAX_QUESTION_STR_LEN
       , adminMessageLength: MAX_ADMIN_POST_STR_LEN
       , replyLength: MAX_QUESTION_REPLY_LEN
+      , forumLabelText: "Query Advisor:"
       , highlight: function (handle) {
 
            var str;
@@ -277,6 +279,7 @@ createAdvisorWindow = function (windowStr, idx) {
                   var advisorHandle = getHILAdvisor(data.advisorIndex)
                     , questions = dmz.object.superLinks(advisorHandle, dmz.stance.QuestionLinkHandle) || []
                     , authorHandle
+                    , authorPermissions
                     , answerHandle
                     ;
 
@@ -284,7 +287,11 @@ createAdvisorWindow = function (windowStr, idx) {
 
                      authorHandle = dmz.stance.getAuthorHandle(questionHandle) || userHandle;
                      answerHandle = getQuestionAnswer(questionHandle);
-                     if ((userHandle !== authorHandle) && !answerHandle) {
+                     authorPermissions = dmz.object.scalar(authorHandle, dmz.stance.Permissions);
+                     if ((userHandle !== authorHandle) && !answerHandle &&
+                        (authorPermissions !== dmz.stance.TECH_PERMISSION) &&
+                        (authorPermissions !== dmz.stance.ADMIN_PERMISSION) &&
+                        (authorPermissions !== dmz.stance.ADVISOR_PERMISSION)) {
 
                         MainModule.highlight(data.windowStr);
                      }
@@ -366,8 +373,8 @@ createAdvisorWindow = function (windowStr, idx) {
       postTextEditWidget.styleSheet(
          "QTextEdit:disabled { background-color: rgb(170, 170, 170); } " +
          "QTextEdit { background-color: rgb(255, 255, 255); } ");
-      data.queryLabel = dmz.ui.label.create("Query Advisor:")
-      data.layout.addWidget(data.queryLabel);
+      //data.queryLabel = dmz.ui.label.create("Query Advisor:")
+      //data.layout.addWidget(data.queryLabel);
       data.layout.addWidget(data.question.widget);
    }
    data.layout.margins(1);
@@ -495,22 +502,27 @@ function (linkObjHandle, attrHandle, userHandle, groupHandle) {
             var time
               , answerHandle
               , authorHandle
+              , authorPermissions
               ;
 
             if (!doHighlight) {
 
                authorHandle = dmz.stance.getAuthorHandle(questionHandle) || userHandle;
                answerHandle = getQuestionAnswer(questionHandle);
+               authorPermissions = dmz.object.scalar(authorHandle, dmz.stance.Permissions);
                if (userHandle !== authorHandle) {
 
                   time = dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
-
                   if (time > userTime) { doHighlight = true; }
 
-                  if ((userPermissions === dmz.stance.TECH_PERMISSION) ||
-                     (userPermissions === dmz.stance.ADMIN_PERMISSION)) {
+                  if (((userPermissions === dmz.stance.TECH_PERMISSION) ||
+                     (userPermissions === dmz.stance.ADMIN_PERMISSION)) &&
+                     !answerHandle && questionHandle &&
+                     (authorPermissions !== dmz.stance.TECH_PERMISSION) &&
+                     (authorPermissions !== dmz.stance.ADMIN_PERMISSION) &&
+                     (authorPermissions !== dmz.stance.ADVISOR_PERMISSION)) {
 
-                     if (!answerHandle) { doHighlight = true; }
+                        doHighlight = true;
                   }
                }
                else {
@@ -553,20 +565,27 @@ function (objHandle, attrHandle, value) {
             var time
               , answerHandle
               , authorHandle
+              , authorPermissions
               ;
 
             if (!doHighlight) {
 
                authorHandle = dmz.stance.getAuthorHandle(questionHandle) || objHandle;
+               authorPermissions = dmz.object.scalar(authorHandle, dmz.stance.Permissions);
                answerHandle = getQuestionAnswer(questionHandle);
                if (objHandle !== authorHandle) {
 
                   time = dmz.object.timeStamp(questionHandle, dmz.stance.CreatedAtServerTimeHandle) || 0;
                   if (time > userTime) { doHighlight = true; }
-                  if ((userPermissions === dmz.stance.TECH_PERMISSION) ||
-                     (userPermissions === dmz.stance.ADMIN_PERMISSION)) {
 
-                     if (!answerHandle) { doHighlight = true; }
+                  if (((userPermissions === dmz.stance.TECH_PERMISSION) ||
+                     (userPermissions === dmz.stance.ADMIN_PERMISSION)) &&
+                     !answerHandle && questionHandle &&
+                     (authorPermissions !== dmz.stance.TECH_PERMISSION) &&
+                     (authorPermissions !== dmz.stance.ADMIN_PERMISSION) &&
+                     (authorPermissions !== dmz.stance.ADVISOR_PERMISSION)) {
+
+                        doHighlight = true;
                   }
                }
                else {

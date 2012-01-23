@@ -57,6 +57,7 @@ var dmz =
         , Permissions: dmz.defs.createNamedHandle("permissions")
         , GameObservers: dmz.defs.createNamedHandle("game_observers")
         , TagHandle: dmz.defs.createNamedHandle("tag")
+        , Achievements: dmz.defs.createNamedHandle("achievements")
 
         // Object-specific handles
         , VoteState: dmz.defs.createNamedHandle("vote_state")
@@ -98,6 +99,8 @@ var dmz =
         , CreatedAtServerTimeHandle: dmz.defs.createNamedHandle("created_at_server_time")
         , EndedAtServerTimeHandle: dmz.defs.createNamedHandle("ended_at_server_time")
         , ExpiredTimeHandle: dmz.defs.createNamedHandle("expire_time_handle")
+        , LastLoginTimeHandle: dmz.defs.createNamedHandle("last_login_time_handle")
+        , UpdateLastLoginTimeHandle: dmz.defs.createNamedHandle("update_last_login_time_handle")
 
         // Notification Time Handles
         , PinTimeHandle: dmz.defs.createNamedHandle("pin_time")
@@ -138,6 +141,14 @@ var dmz =
         , userAttribute: false
         , getLastTimeStamp: false
         , getTags: false
+        }
+   , Achievements =
+        { ProposedVoteAchievement: dmz.defs.lookupState("Proposed_Vote")
+        , VotedOneTimeAchievement: dmz.defs.lookupState("Voted_One_Time")
+        , VotedFourTimesAchievement: dmz.defs.lookupState("Voted_Four_Times")
+        , AskedQuestionAchievement: dmz.defs.lookupState("Asked_Question")
+        , PostedMessageAchievement: dmz.defs.lookupState("Posted_Message")
+        , CommentedOnMessageAchievement: dmz.defs.lookupState("Commented_On_Message")
         }
 
    , States =
@@ -550,6 +561,11 @@ Functions.isAllowed = isAllowed;
    Object.keys(Constants).forEach(function (fncName) {
 
       dmz.util.defineConst(exports, fncName, Constants[fncName]);
+   });
+
+   Object.keys(Achievements).forEach(function (fncName) {
+
+      dmz.util.defineConst(exports, fncName, Achievements[fncName]);
    });
 
    Object.keys(States).forEach(function (fncName) {

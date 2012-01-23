@@ -74,6 +74,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
      , _ShowItemHasBeenTagged
      , _EmailMod
      , _TechList
+     , _ForumViewCSS
+     , _ForumLabelText
      , _LoginSkipped
 
      , _LatestTimeStamp = -1
@@ -122,6 +124,8 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
    _EmailMod = forumData.emailMod;
    _ShowItemHasBeenTagged = forumData.showItemHasBeenTagged || false;
    _TechList = forumData.techList;
+   _ForumViewCSS = forumData.forumViewCSS || "";
+   _ForumLabelText = forumData.forumLabelText;
 
    MaxMessageLength = forumData.messageLength;
    MaxAdminMessageLength = forumData.adminMessageLength || MaxMessageLength;
@@ -131,6 +135,9 @@ dmz.util.defineConst(exports, "setupForumView", function (forumData) {
       _CanReplyTo && _PostBlocked && _Highlight && _TimeHandle && _CanHighlight) {
 
       _view = dmz.ui.loader.load("ForumView.ui");
+      _view.styleSheet(_ForumViewCSS);
+      if (_ForumLabelText) { _view.lookup("forumLabel").text(_ForumLabelText); }
+      else { _view.lookup("forumLabel").hide() }
       retData.widget = _view;
       _scrollArea = _view.lookup("scrollArea");
       retData.scrollArea = _scrollArea;

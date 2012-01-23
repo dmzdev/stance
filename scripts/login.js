@@ -70,6 +70,7 @@ self.shutdown = function () {
 _activateUser = function (name) {
 
    var handle;
+
    if (_userName && (name === _userName)) {
 
       handle = _userList[_userName];
@@ -94,7 +95,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
         , value = dmz.object.text(objHandle, dmz.stance.NameHandle)
         ;
 
-      if (type && type.isOfType (dmz.stance.UserType)) {
+      if (type && type.isOfType(dmz.stance.UserType)) {
 
          _userList[value] = objHandle;
          _activateUser (value);
@@ -104,9 +105,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
 
 _login = function (data) {
 
-   var timeStamp
-     , date
-     ;
+   var timeStamp;
 
    if (data && dmz.data.isTypeOf(data)) {
 
@@ -115,7 +114,6 @@ _login = function (data) {
       dmz.time.setTimer(self, 2, function () {
 
          _userName = data.string(dmz.stance.NameHandle);
-
          _activateUser(_userName);
       });
    }
@@ -197,12 +195,13 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
          self.log.debug("User logged out");
       }
    }
-
    if (value && type && type.isOfType(dmz.stance.UserType)) {
+
 
       _userHandle = handle;
       name = dmz.stance.getDisplayName(_userHandle);
       _setTitle(_userHandle);
+      dmz.object.flag(_userHandle, dmz.stance.UpdateLastLoginTimeHandle, true);
       self.log.info("User identified: " + name);
    }
 });
