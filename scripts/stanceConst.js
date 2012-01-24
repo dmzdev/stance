@@ -142,8 +142,9 @@ var dmz =
         , getLastTimeStamp: false
         , getTags: false
         }
-   , Achievements =
-        { ProposedVoteAchievement: dmz.defs.lookupState("Proposed_Vote")
+   , AchievementStates =
+        { LoggedInAchievement: dmz.defs.lookupState("Logged_In")
+        , ProposedVoteAchievement: dmz.defs.lookupState("Proposed_Vote")
         , VotedOneTimeAchievement: dmz.defs.lookupState("Voted_One_Time")
         , VotedFourTimesAchievement: dmz.defs.lookupState("Voted_Four_Times")
         , AskedQuestionAchievement: dmz.defs.lookupState("Asked_Question")
@@ -186,6 +187,15 @@ var dmz =
         , ChangePermissionsFlag: dmz.defs.lookupState("Change_Permission_Sets")
         }
 
+   , Achievements =
+        [ AchievementStates.LoggedInAchievement
+        , AchievementStates.ProposedVoteAchievement
+        , AchievementStates.VotedOneTimeAchievement
+        , AchievementStates.VotesFourTimesAchievement
+        , AchievementStates.AskedQuestionAchievement
+        , AchievementStates.PostedMessageAchievement
+        , AchievementStates.CommentedOnMessageAchievement
+        ]
    , Permissions =
         { StudentPermissions:
              [ States.CreateVoteFlag
@@ -341,7 +351,10 @@ var dmz =
    , userAttribute
    , getLastTimeStamp
    , createPermissionSet
+   , unlockAchievement
+   , hasAchievement
    , isAllowed
+   , getAchievementStates
    , getSingleStates
    ;
 
@@ -407,6 +420,40 @@ getSingleStates = function () {
       if (dmz.mask.isTypeOf(States[name])) { results[name] = States[name]; }
    });
    return results;
+};
+
+getAchievementStates = function () {
+
+   var results = {};
+   Object.keys(Achievements).forEach(function (name) {
+
+      if (dmz.mask.isTypeOf(Achievements[name])) { results[name] = Achievements[name]; }
+   });
+   return results;
+};
+
+unlockAchievement = function (handle, achievement, self) {
+
+   var achievements = dmz.object.state(handle, Handles.Achievements) || dmz.mask.create();
+
+   if (handle && achievement && achievements && dmz.mask.isTypeOf(achievement)) {
+
+      achievements = achievements.or(achievement);
+      dmz.object.state(handle, Handles.Achievements, achievements);
+   }
+};
+
+hasAchievement = function (handle, achievement) {
+
+   var achievements = dmz.object.state(handle, Handles.Achievements)
+     , result = false
+     ;
+
+   if (achievements && achievement && dmz.mask.isTypeOf(state)) {
+
+      result = achievements.and(achievement).bool();
+   }
+   return result;
 };
 
 isAllowed = function (handle, state) {
@@ -529,6 +576,7 @@ userAttribute = function (handle, attribute, value) {
 };
 
 Functions.getTags = getTags;
+Functions.getAchievementStates = getAchievementStates;
 Functions.getSingleStates = getSingleStates;
 Functions.getDisplayName = getDisplayName;
 Functions.getAuthorHandle = getAuthorHandle;
@@ -539,6 +587,8 @@ Functions.getVoteStatus = getVoteStatus;
 Functions.userAttribute = userAttribute;
 Functions.getLastTimeStamp = getLastTimeStamp;
 Functions.isAllowed = isAllowed;
+Functions.unlockAchievement = unlockAchievement;
+Functions.hasAchievement = hasAchievement;
 
 (function () {
 

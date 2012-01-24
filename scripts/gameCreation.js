@@ -73,7 +73,6 @@ var dmz =
           }
         , editScenarioWidget
         )
-
    , createStudentDialog = dmz.ui.loader.load("CreateStudentDialog.ui", editScenarioWidget)
    , avatarList = createStudentDialog.lookup("avatarList")
    , avatarLabel = createStudentDialog.lookup("avatarLabel")
@@ -1831,6 +1830,7 @@ gamePermissionObs = function (gameHandle, attrHandle, state) {
    var index = dmz.stance.PERMISSION_HANDLES.indexOf(attrHandle)
      , advisorState
      ;
+
    updatePermissionTable(index, state);
    // update all users with that permission level
    Object.keys(userItems).forEach(function (key) {

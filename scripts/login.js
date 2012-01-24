@@ -42,6 +42,7 @@ var dmz =
     , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
     , LoginErrorMessage = dmz.message.create("Login_Error_Message")
     , TimeStampAttr = dmz.defs.createNamedHandle("time-stamp")
+
     // Variables
     , _window = dmz.ui.mainWindow.window()
     , _title = _window.title()
@@ -54,6 +55,7 @@ var dmz =
     , _haveSetServerTime = false
     , _haveToggled = false
     , ToggledMessage = dmz.message.create("ToggledGroupMessage")
+
     // Functions
     , toTimeStamp = dmz.util.dateToTimeStamp
     , toDate = dmz.util.timeStampToDate
@@ -80,6 +82,7 @@ _activateUser = function (name) {
          if (dmz.object.flag(handle, dmz.stance.ActiveHandle)) {
 
             dmz.object.flag(handle, dmz.object.HILAttribute, true);
+            dmz.stance.unlockAchievement(_userHandle, dmz.stance.LoggedInAchievement, self);
          }
          else { disabledDialog.open(self, function () { dmz.sys.requestExit(); }); }
       }
@@ -100,7 +103,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
          _userList[value] = objHandle;
          _activateUser (value);
       }
-      });
+   });
 });
 
 _login = function (data) {
@@ -196,7 +199,6 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
       }
    }
    if (value && type && type.isOfType(dmz.stance.UserType)) {
-
 
       _userHandle = handle;
       name = dmz.stance.getDisplayName(_userHandle);

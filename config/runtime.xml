@@ -36,6 +36,7 @@
    <message name="ToggledGroupMessage"/>
    <message name="TagMessage"/>
 
+   <state name="Logged_In"/>
    <state name="Proposed_Vote"/>
    <state name="Voted_One_Time"/>
    <state name="Voted_Four_Times"/>
