@@ -81,6 +81,7 @@ var dmz =
         , Help: false
         , Bookcase: false
         , Resource: false
+        , Rolodex: false
         }
    , LoggedIn = false
    , groupAdvisors = {}
@@ -226,6 +227,7 @@ updateGraphicsForGroup = function (groupHandle) {
          case "Help": attr = dmz.stance.HelpImageHandle; break;
          case "Bookcase": attr = dmz.stance.BookcaseImageHandle; break;
          case "Resource": attr = dmz.stance.ResourceImageHandle; break;
+         case "Rolodex": attr = dmz.stance.RolodexImageHandle; break;
          default: self.log.warn ("Key ("+key+") has no associated handle."); break;
          }
          if (attr) {

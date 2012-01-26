@@ -156,6 +156,9 @@
       <loc x="1002" y="267"/>
       <offset x="30" y="0"/>
    </resource>
+   <resource name="demo_rolodex" file="demo_address.png">
+      <loc x="721" y="522"/>
+   </resource>
 <!-- BLACK&WHITE IMAGES -->
    <resource name="bw_exit" file="bw-exit.png">
       <loc x="227" y="38"/>
@@ -276,6 +279,9 @@
       <loc x="1027" y="252"/>
       <offset x="5" y="10"/>
    </resource>
+   <resource name="Business_rolodex" file="Business_address.png">
+      <loc x="742" y="518"/>
+   </resource>
    <resource name="Business_adv0_alt" file="business_ad01_pr.png"/>
    <resource name="Business_adv1_alt" file="business_ad02_security.png"/>
    <resource name="Business_adv2_alt" file="business_ad03_trade.png"/>
@@ -339,6 +345,9 @@
    </resource>
    <resource name="Cartel1_vote" file="Cartel1_vote.png">
       <loc x="1004" y="304"/>
+   </resource>
+   <resource name="Cartel1_rolodex" file="Cartel1_address.png">
+      <loc x="774" y="521"/>
    </resource>
    <resource name="Cartel1_adv0_alt" file="Cartel1_ad01_political.png"/>
    <resource name="Cartel1_adv1_alt" file="Cartel1_ad02_distribution.png"/>
@@ -470,6 +479,9 @@
       <loc x="974" y="289"/>
       <offset x="5" y="0"/>
    </resource>
+   <resource name="MexicanGov_rolodex" file="MexicanGov_address.png">
+      <loc x="721" y="517"/>
+   </resource>
    <resource name="MexicanGov_adv0_alt" file="MexicanGov_ad01_outreach.png"/>
    <resource name="MexicanGov_adv1_alt" file="MexicanGov_ad02_diplomatic.png"/>
    <resource name="MexicanGov_adv2_alt" file="MexicanGov_ad03_domesticGovernance.png"/>
@@ -536,6 +548,9 @@
    <resource name="Cartel2_vote" file="Cartel2_vote.png">
       <loc x="1078" y="377"/>
    </resource>
+   <resource name="Cartel2_rolodex" file="Cartel2_address.png">
+      <loc x="719" y="526"/>
+   </resource>
    <resource name="Cartel2_adv0_alt" file="Cartel2_ad01_information.png"/>
    <resource name="Cartel2_adv1_alt" file="Cartel2_ad02_enforcement.png"/>
    <resource name="Cartel2_adv2_alt" file="Cartel2_ad03_business.png"/>
@@ -601,6 +616,9 @@
    </resource>
    <resource name="ACLU_background" file="ACLU_full.png">
       <loc x="0" y="0"/>
+   </resource>
+   <resource name="ACLU_rolodex" file="ACLU_address.png">
+      <loc x="721" y="522"/>
    </resource>
    <resource name="ACLU_adv0_alt" file="ACLU_ad01_legal.png"/>
    <resource name="ACLU_adv1_alt" file="ACLU_ad02_laRaza.png"/>

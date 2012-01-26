@@ -129,6 +129,7 @@ var dmz =
         , CalendarImageHandle: dmz.defs.createNamedHandle("calendar_image")
         , HelpImageHandle: dmz.defs.createNamedHandle("help_image")
         , BookcaseImageHandle: dmz.defs.createNamedHandle("bookcase_image")
+        , RolodexImageHandle: dmz.defs.createNamedHandle("rolodex_image")
         }
 
    , Functions =
