@@ -57,6 +57,8 @@
    <resource name="AvatarZambada4" file="avatar_zambada_4.jpg"/>
    <resource name="AvatarZambada5" file="avatar_zambada_5.jpg"/>
    <resource name="Jake" file="jake-50x50.jpg"/>
+<!-- ACHIEVEMENT ICONS -->
+   <resource name="Logged_In_Image" file="Logged_In_Image.jpg"/>
 <!-- MAP ICONS -->
    <resource name="Generic" file="GenericMarker-sm.png">
       <webMap file="GenericMarker.png"/>

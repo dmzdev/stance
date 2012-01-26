@@ -58,6 +58,7 @@ var dmz =
         , GameObservers: dmz.defs.createNamedHandle("game_observers")
         , TagHandle: dmz.defs.createNamedHandle("tag")
         , Achievements: dmz.defs.createNamedHandle("achievements")
+        , PreviousAchievements: dmz.defs.createNamedHandle("previously_seen_achievements")
 
         // Object-specific handles
         , VoteState: dmz.defs.createNamedHandle("vote_state")
@@ -145,6 +146,7 @@ var dmz =
    , AchievementStates =
         { LoggedInAchievement: dmz.defs.lookupState("Logged_In")
         , ProposedVoteAchievement: dmz.defs.lookupState("Proposed_Vote")
+        , OpenedVoteWindowAchievement: dmz.defs.lookupState("Opened_Vote_Window")
         , VotedOneTimeAchievement: dmz.defs.lookupState("Voted_One_Time")
         , VotedFourTimesAchievement: dmz.defs.lookupState("Voted_Four_Times")
         , AskedQuestionAchievement: dmz.defs.lookupState("Asked_Question")
@@ -190,6 +192,7 @@ var dmz =
    , Achievements =
         [ AchievementStates.LoggedInAchievement
         , AchievementStates.ProposedVoteAchievement
+        , AchievementStates.OpenedVoteWindowAchievement
         , AchievementStates.VotedOneTimeAchievement
         , AchievementStates.VotesFourTimesAchievement
         , AchievementStates.AskedQuestionAchievement
@@ -425,14 +428,14 @@ getSingleStates = function () {
 getAchievementStates = function () {
 
    var results = {};
-   Object.keys(Achievements).forEach(function (name) {
+   Object.keys(AchievementStates).forEach(function (name) {
 
-      if (dmz.mask.isTypeOf(Achievements[name])) { results[name] = Achievements[name]; }
+      if (dmz.mask.isTypeOf(AchievementStates[name])) { results[name] = AchievementStates[name]; }
    });
    return results;
 };
 
-unlockAchievement = function (handle, achievement, self) {
+unlockAchievement = function (handle, achievement) {
 
    var achievements = dmz.object.state(handle, Handles.Achievements) || dmz.mask.create();
 
@@ -613,9 +616,9 @@ Functions.hasAchievement = hasAchievement;
       dmz.util.defineConst(exports, fncName, Constants[fncName]);
    });
 
-   Object.keys(Achievements).forEach(function (fncName) {
+   Object.keys(AchievementStates).forEach(function (fncName) {
 
-      dmz.util.defineConst(exports, fncName, Achievements[fncName]);
+      dmz.util.defineConst(exports, fncName, AchievementStates[fncName]);
    });
 
    Object.keys(States).forEach(function (fncName) {

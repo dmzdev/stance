@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dmz>
+<achievements>
+   <achievement-set name="Achievement Set">
+      <achievement name="Logged_In" title="Logged In" description="You have logged in at least once." resource="Logged_In_Image"/>
+      <achievement name="Proposed_Vote" title="Proposed Vote" descriptiong="You have proposed a vote at least once." resource="Logged_In_Image"/>
+      <achievement name="Opened_Vote_Window" title="Opened Vote Window" description="You have opened the vote window." resource="Logged_In_Image"/>
+      <achievement name="Voted_One_Time" title="Voted One Time" description="You have voted at least once."/>
+      <achievement name="Voted_Four_Times" title="Voted Four Times" description="You have voted at least four times."/>
+      <achievement name="Asked_Question" title="Asked a Question" description="You have asked a question."/>
+      <achievement name="Posted_Message" title="Posted a Message" description="You have posted a question."/>
+      <achievement name="Commented_On_Message" title="Commeneted on a Message" description="You have commented on a message."/>
+   </achievement-set>
+</achievements>
 <main>
    <help-list>
       <email address="techsupport@chds.us"/>

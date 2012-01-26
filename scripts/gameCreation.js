@@ -277,7 +277,7 @@ readGroupTemplates = function () {
          }
       }
    });
-}
+};
 
 setGroupTemplate = function (groupHandle, templateIndex) {
 
@@ -329,7 +329,7 @@ setGroupTemplate = function (groupHandle, templateIndex) {
       }
    }
    return advisorImages;
-}
+};
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 

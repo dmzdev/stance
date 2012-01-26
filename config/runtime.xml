@@ -38,6 +38,7 @@
 
    <state name="Logged_In"/>
    <state name="Proposed_Vote"/>
+   <state name="Opened_Vote_Window"/>
    <state name="Voted_One_Time"/>
    <state name="Voted_Four_Times"/>
    <state name="Asked_Question"/>

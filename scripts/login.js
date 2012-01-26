@@ -82,12 +82,12 @@ _activateUser = function (name) {
          if (dmz.object.flag(handle, dmz.stance.ActiveHandle)) {
 
             dmz.object.flag(handle, dmz.object.HILAttribute, true);
-            dmz.stance.unlockAchievement(_userHandle, dmz.stance.LoggedInAchievement, self);
+            dmz.stance.unlockAchievement(_userHandle, dmz.stance.LoggedInAchievement);
          }
          else { disabledDialog.open(self, function () { dmz.sys.requestExit(); }); }
       }
    }
-}
+};
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
