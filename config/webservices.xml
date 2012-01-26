@@ -34,6 +34,9 @@
 <archive-auto-cache>
    <auto-restore value="false"/>
    <message skipped="Login_Skipped_Message" load="Login_Success_Message" database="Login_Message"/>
+   <version name="time-stamp" max-delta="346000"> <!-- 4 days -->
+      <mask name="timeStamp"/>
+   </version>
 </archive-auto-cache>
 <login-dialog>
    <login-target name="dmzWebServicesModuleQt"/>

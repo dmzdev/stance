@@ -34,6 +34,7 @@
       <image name="Help" resource="demo_help"/>
       <image name="Bookcase" resource="demo_bookcase"/>
       <image name="Resource" resource="demo_resources"/>
+      <image name="Rolodex" resource="demo_rolodex"/>
    </set>
 </main>
 <gameCreation>
@@ -55,24 +56,8 @@
          <image name="Help" resource="demo_help"/>
          <image name="Bookcase" resource="demo_bookcase"/>
          <image name="Resource" resource="demo_resources"/>
+         <image name="Rolodex" resource="demo_rolodex"/>
       </set>
-      <!--<set name="bw" background="bw_background" highlight="PushNotify">
-         <image name="Exit" resource="bw_exit"/>
-         <image name="Forum" resource="bw_computer"/>
-         <image name="Map" resource="bw_map"/>
-         <image name="Video" resource="bw_tv"/>
-         <image name="Newspaper" resource="bw_newspaper"/>
-         <image name="Memo" resource="bw_memos"/>
-         <image name="Lobbyist" resource="bw_videophone"/>
-         <image name="Advisor" resource="bw_adv0"/>
-         <image name="Advisor" resource="bw_adv1"/>
-         <image name="Advisor" resource="bw_adv2"/>
-         <image name="Advisor" resource="bw_adv3"/>
-         <image name="Advisor" resource="bw_adv4"/>
-         <image name="Vote" resource="bw_vote"/>
-         <image name="Help" resource="bw_help"/>
-         <image name="Bookcase" resource="bw_bookcase"/>
-      </set>-->
       <set name="Business" background="Business_background" highlight="PushNotify">
          <image name="Advisor" resource="Business_adv0"/>
          <image name="Advisor" resource="Business_adv1"/>
@@ -90,6 +75,7 @@
          <image name="Help" resource="Business_help"/>
          <image name="Bookcase" resource="Business_bookcase"/>
          <image name="Resource" resource="Business_resources"/>
+         <image name="Rolodex" resource="Business_rolodex"/>
       </set>
       <set name="Cartel1" background="Cartel1_background" highlight="PushNotify">
          <image name="Advisor" resource="Cartel1_adv0"/>
@@ -108,6 +94,7 @@
          <image name="Help" resource="Cartel1_help"/>
          <image name="Bookcase" resource="Cartel1_bookcase"/>
          <image name="Resource" resource="Cartel1_resources"/>
+         <image name="Rolodex" resource="Cartel1_rolodex"/>
       </set>
       <set name="WHC" background="WHC_background" highlight="PushNotify">
          <image name="Exit" resource="WHC_exit"/>
@@ -126,6 +113,7 @@
          <image name="Help" resource="WHC_help"/>
          <image name="Bookcase" resource="WHC_bookcase"/>
          <image name="Resource" resource="WHC_resources"/>
+         <image name="Rolodex" resource="WHC_rolodex"/>
       </set>
       <set name="MexicanGov" background="MexicanGov_background" highlight="PushNotify">
          <image name="Exit" resource="MexicanGov_exit"/>
@@ -144,6 +132,7 @@
          <image name="Help" resource="MexicanGov_help"/>
          <image name="Bookcase" resource="MexicanGov_bookcase"/>
          <image name="Resource" resource="MexicanGov_resources"/>
+         <image name="Rolodex" resource="MexicanGov_rolodex"/>
       </set>
       <set name="Cartel2" background="Cartel2_background" highlight="PushNotify">
          <image name="Exit" resource="Cartel2_exit"/>
@@ -162,6 +151,7 @@
          <image name="Help" resource="Cartel2_help"/>
          <image name="Bookcase" resource="Cartel2_bookcase"/>
          <image name="Resource" resource="Cartel2_resources"/>
+         <image name="Rolodex" resource="Cartel2_rolodex"/>
       </set>
       <set name="ACLU" background="ACLU_background" highlight="PushNotify">
          <image name="Exit" resource="ACLU_exit"/>
@@ -180,6 +170,7 @@
          <image name="Help" resource="ACLU_help"/>
          <image name="Bookcase" resource="ACLU_bookcase"/>
          <image name="Resource" resource="ACLU_resources"/>
+         <image name="Rolodex" resource="ACLU_rolodex"/>
       </set>
       <set name="CBP" background="CBP_background" highlight="PushNotify">
          <image name="Exit" resource="CBP_exit"/>
@@ -198,6 +189,7 @@
          <image name="Help" resource="CBP_help"/>
          <image name="Bookcase" resource="CBP_bookcase"/>
          <image name="Resource" resource="CBP_resources"/>
+         <image name="Rolodex" resource="CBP_rolodex"/>
       </set>
    </group-picture-set>
    <lobbyist-pictures>
