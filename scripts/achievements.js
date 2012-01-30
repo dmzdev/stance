@@ -52,6 +52,14 @@ var dmz =
    , init
    ;
 
+/*dmz.object.create.observe(self, function (objHandle, objType) {
+
+   if (objType.isOfType(dmz.stance.GroupType)) {
+
+      dmz.object.text(objHandle, dmz.stance.RolodexImageHandle, "");
+   }
+});*/
+
 addAchievementUIElement = function (achievement) {
 
    var achievementItem = dmz.ui.loader.load("AchievementItem.ui")

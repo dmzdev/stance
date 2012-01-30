@@ -309,6 +309,7 @@ setGroupTemplate = function (groupHandle, templateIndex) {
             case "Calendar": attr = dmz.stance.CalendarImageHandle; break;
             case "Help": attr = dmz.stance.HelpImageHandle; break;
             case "Bookcase": attr = dmz.stance.BookcaseImageHandle; break;
+            case "Rolodex": attr = dmz.stance.RolodexImageHandle; break;
             default: self.log.warn ("Key ("+key+") has no associated handle."); break;
             }
 
@@ -322,7 +323,6 @@ setGroupTemplate = function (groupHandle, templateIndex) {
 
                data.string(dmz.stance.AdvisorImageHandle, idx, advisorImages[idx]);
             }
-
             dmz.object.data(groupHandle, dmz.stance.AdvisorImageHandle, data);
             dmz.object.scalar(groupHandle, dmz.stance.AdvisorImageCountHandle, idx);
          }
