@@ -37,28 +37,13 @@ var dmz =
    , Users = {}
    , beenOpened = false
    , hil
-   , dock = dmz.ui.mainWindow.createDock
-        ( "Show Achievements"
-        , { area: dmz.ui.consts.RightToolBarArea
-          , allowedAreas: [dmz.ui.consts.AllDockWidgetAreas]
-          , floating: true
-          , visible: false
-          }
-        , achievementForm
-        )
+   , _exports = {}
+
    // Functions
    , addAchievementUIElement
    , initialWindowOpen
    , init
    ;
-
-/*dmz.object.create.observe(self, function (objHandle, objType) {
-
-   if (objType.isOfType(dmz.stance.GroupType)) {
-
-      dmz.object.text(objHandle, dmz.stance.RolodexImageHandle, "");
-   }
-});*/
 
 addAchievementUIElement = function (achievement) {
 
@@ -96,7 +81,9 @@ addAchievementUIElement = function (achievement) {
    contentLayout.insertWidget(0, achievementItem);
 };
 
-initialWindowOpen = function () {
+_exports.achievementForm = achievementForm;
+
+_exports.initialWindowOpen = function () {
 
    var allAchievements = dmz.stance.getAchievementStates();
 
@@ -112,11 +99,6 @@ initialWindowOpen = function () {
       });
    }
 };
-
-dock.observe(self, "visibilityChanged", function (value) {
-
-   if (hil && value) { initialWindowOpen(); }
-});
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
@@ -171,12 +153,10 @@ function (userHandle, attrHandle, state) {
 
 init = function () {
 
-   dmz.time.setTimer(self, function () {
-
-      dock.hide();
-   });
    formContent.layout(contentLayout);
    contentLayout.addStretch(1);
 };
 
 init();
+
+dmz.module.publish(self, _exports);

@@ -34,6 +34,8 @@
    <instance name="tag"/>
    <instance name="wiki"/>
    <instance name="achievements"/>
+   <instance name="userMessager"/>
+   <instance name="messagerAchievementCombo"/>
 </javascript>
 <login>
 <!--   <fake-login value="true" name="ssshillc@nps.edu" admin="false"/>-->
