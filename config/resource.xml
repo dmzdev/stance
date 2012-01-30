@@ -410,6 +410,9 @@
    <resource name="WHC_vote" file="WHC_vote.png">
       <loc x="943" y="324"/>
    </resource>
+   <resource name="WHC_rolodex" file="WHC_addressBook.png">
+      <loc x="850" y="547"/>
+   </resource>
    <resource name="WHC_background" file="WHC_office.png">
       <loc x="0" y="0"/>
    </resource>
