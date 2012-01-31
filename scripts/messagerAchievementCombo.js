@@ -61,6 +61,10 @@ closeWindow = function () {
 
       UserMessagerMod.closeWindow();
    }
+   if (AchievementsMod) {
+
+      AchievementsMod.closeWindow();
+   }
 };
 
 dmz.module.subscribe(self, "userMessager", function (Mode, module) {

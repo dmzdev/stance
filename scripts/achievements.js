@@ -35,17 +35,24 @@ var dmz =
    // Variables
    , ACHIEVEMENT_STYLE = "*{ background-color: rgb(220, 220, 220); }"
    , Users = {}
+   , Achievements = []
+   , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , beenOpened = false
    , hil
    , _exports = {}
 
    // Functions
+   , removeNotifications
    , addAchievementUIElement
-   , initialWindowOpen
    , init
    ;
 
-addAchievementUIElement = function (achievement) {
+removeNotifications = function () {
+
+   Achievements.forEach(function (item) { item.notif.hide(); });
+};
+
+addAchievementUIElement = function (achievement, isNew) {
 
    var achievementItem = dmz.ui.loader.load("AchievementItem.ui")
      , achievementTitleLabel = achievementItem.lookup("achievementTitleLabel")
@@ -56,8 +63,12 @@ addAchievementUIElement = function (achievement) {
      , achievementName = ""
      , achievementDescription = ""
      , achievementImage = ""
+     , notificationLabel = dmz.ui.label.create(achievementItem);
      ;
 
+   notificationLabel.fixedWidth(34);
+   notificationLabel.pixmap((dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify"))));
+   notificationLabel.move(0, 0);
    list.forEach(function (listItem) {
 
       achievementList = listItem.get("achievement") || [];
@@ -79,6 +90,9 @@ addAchievementUIElement = function (achievement) {
    achievementTitleLabel.text("<b>Title: </b>" + achievementName);
    achievementDescriptionLabel.text("<b>Description: </b>" + achievementDescription);
    contentLayout.insertWidget(0, achievementItem);
+   if (isNew) { notificationLabel.show(); }
+   else { notificationLabel.hide(); }
+   Achievements.push({ ui: achievementItem, notif: notificationLabel });
 };
 
 _exports.achievementForm = achievementForm;
@@ -95,24 +109,59 @@ _exports.initialWindowOpen = function () {
          if (Users[hil] && Users[hil].achievements &&
             Users[hil].achievements.and(allAchievements[key]).bool()) {
 
-            addAchievementUIElement(allAchievements[key]);
+            if ((Users[hil].previousAchievements &&
+               !Users[hil].achievements.and(allAchievements[key]).and(Users[hil].previousAchievements).bool()) ||
+               !Users[hil].previousAchievements) {
+
+               addAchievementUIElement(allAchievements[key], true);
+            }
+            else {
+
+               addAchievementUIElement(allAchievements[key], false);
+            }
          }
       });
    }
 };
 
+_exports.closeWindow = function () {
+
+   removeNotifications();
+   dmz.object.state(hil, dmz.stance.PreviousAchievements, Users[hil].achievements);
+};
+
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
-   if (value) { hil = objHandle; }
+   if (value) {
+
+      hil = objHandle;
+      dmz.time.setTimer(self, function () {
+
+         if (Users[objHandle] && !Users[objHandle].previousAchievements && Users[objHandle].achievements) {
+
+            MainModule.highlight("Rolodex");
+         }
+         else if (Users[objHandle] &&
+            Users[objHandle].previousAchievements &&
+            Users[objHandle].achievements &&
+            Users[objHandle].previousAchievements.xor(Users[objHandle].achievements).bool()) {
+
+            MainModule.highlight("Rolodex");
+         }
+      });
+   }
 });
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
-   if (objType.isOfType(dmz.stance.UserType)) {
+   if (objType.isOfType(dmz.stance.UserType)) { Users[objHandle] = { handle: objHandle }; }
+});
 
-      Users[objHandle] = { handle: objHandle };
-   }
+dmz.object.state.observe(self, dmz.stance.PreviousAchievements,
+function (userHandle, attrHandle, state) {
+
+   if (Users[userHandle]) { Users[userHandle].previousAchievements = state; }
 });
 
 dmz.object.state.observe(self, dmz.stance.Achievements,
@@ -142,13 +191,41 @@ function (userHandle, attrHandle, state) {
       // Above code can account for multiple achievements unlocked at once, uncomment
       // if needed.
       newAchievement = Users[userHandle].achievements.xor(state);
-      addAchievementUIElement(newAchievement);
+      addAchievementUIElement(newAchievement, true);
       //self.log.error("New achievements!", newState, dmz.defs.lookupStateName(newState));
       Users[userHandle].achievements = Users[userHandle].achievements.or(state);
+      dmz.time.setTimer(self, function () {
+
+         if (!Users[userHandle].previousAchievements) { MainModule.highlight("Rolodex"); }
+         else if (Users[userHandle].previousAchievements.xor(Users[userHandle].achievements).bool()) {
+
+            MainModule.highlight("Rolodex");
+         }
+      });
    }
    else if (Users[userHandle]) {
 
       Users[userHandle].achievements = state;
+      dmz.time.setTimer(self, function () {
+
+         if (!Users[userHandle].previousAchievements) { MainModule.highlight("Rolodex"); }
+         else if (Users[userHandle].previousAchievements.xor(Users[userHandle].achievements).bool()) {
+
+            MainModule.highlight("Rolodex");
+         }
+      });
+   }
+});
+
+dmz.module.subscribe(self, "main", function (Mode, module) {
+
+   var list;
+
+   if (Mode === dmz.module.Activate) {
+
+      list = MainModule.list;
+      MainModule = module;
+      if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
 
