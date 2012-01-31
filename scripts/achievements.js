@@ -92,7 +92,8 @@ _exports.initialWindowOpen = function () {
       beenOpened = true;
       Object.keys(allAchievements).forEach(function (key) {
 
-         if (Users[hil].achievements.and(allAchievements[key]).bool()) {
+         if (Users[hil] && Users[hil].achievements &&
+            Users[hil].achievements.and(allAchievements[key]).bool()) {
 
             addAchievementUIElement(allAchievements[key]);
          }

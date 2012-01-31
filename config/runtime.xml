@@ -36,14 +36,16 @@
    <message name="ToggledGroupMessage"/>
    <message name="TagMessage"/>
 
-   <state name="Logged_In"/>
-   <state name="Proposed_Vote"/>
-   <state name="Opened_Vote_Window"/>
-   <state name="Voted_One_Time"/>
-   <state name="Voted_Four_Times"/>
-   <state name="Asked_Question"/>
-   <state name="Posted_Message"/>
-   <state name="Commented_On_Message"/>
+   <state name="Welcome_Back"/>
+   <state name="Right_To_Vote"/>
+   <state name="Frequent_Flyer"/>
+   <state name="Media_Frenzy"/>
+   <state name="Rock_The_Vote"/>
+   <state name="Effective_Communicator"/>
+   <state name="Sage_Advice"/>
+   <state name="On_The_Ballot"/>
+   <state name="Strategist"/>
+   <state name="Disruption_In_The_Force"/>
 
    <state name="Switch_Group"/>
    <state name="Change_Map"/>

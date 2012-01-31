@@ -145,14 +145,16 @@ var dmz =
         , getTags: false
         }
    , AchievementStates =
-        { LoggedInAchievement: dmz.defs.lookupState("Logged_In")
-        , ProposedVoteAchievement: dmz.defs.lookupState("Proposed_Vote")
-        , OpenedVoteWindowAchievement: dmz.defs.lookupState("Opened_Vote_Window")
-        , VotedOneTimeAchievement: dmz.defs.lookupState("Voted_One_Time")
-        , VotedFourTimesAchievement: dmz.defs.lookupState("Voted_Four_Times")
-        , AskedQuestionAchievement: dmz.defs.lookupState("Asked_Question")
-        , PostedMessageAchievement: dmz.defs.lookupState("Posted_Message")
-        , CommentedOnMessageAchievement: dmz.defs.lookupState("Commented_On_Message")
+        { WelcomeBackAchievement: dmz.defs.lookupState("Welcome_Back")
+        , RightToVoteAchievement: dmz.defs.lookupState("Right_To_Vote")
+        , FrequentFlyerAchievement: dmz.defs.lookupState("Frequent_Flyer")
+        , MediaFrenzyAchievement: dmz.defs.lookupState("Media_Frenzy")
+        , RockTheVoteAchievement: dmz.defs.lookupState("Rock_The_Vote")
+        , EffectiveCommunicatorAchievement: dmz.defs.lookupState("Effective_Communicator")
+        , SageAdviceAchievement: dmz.defs.lookupState("Sage_Advice")
+        , OnTheBallotAchievement: dmz.defs.lookupState("On_The_Ballot")
+        , StrategistAchievement: dmz.defs.lookupState("Strategist")
+        , DisruptionInTheForceAchievement: dmz.defs.lookupState("Disruption_In_The_Force")
         }
 
    , States =
@@ -191,14 +193,16 @@ var dmz =
         }
 
    , Achievements =
-        [ AchievementStates.LoggedInAchievement
-        , AchievementStates.ProposedVoteAchievement
-        , AchievementStates.OpenedVoteWindowAchievement
-        , AchievementStates.VotedOneTimeAchievement
-        , AchievementStates.VotesFourTimesAchievement
-        , AchievementStates.AskedQuestionAchievement
-        , AchievementStates.PostedMessageAchievement
-        , AchievementStates.CommentedOnMessageAchievement
+        [ AchievementStates.WelcomeBackAchievement
+        , AchievementStates.RightToVoteAchievement
+        , AchievementStates.FrequentFlyerAchievement
+        , AchievementStates.MediaFrenzyAchievement
+        , AchievementStates.RockTheVoteAchievement
+        , AchievementStates.EffectiveCommunicatorAchievement
+        , AchievementStates.SageAdviceAchievement
+        , AchievementStates.OnTheBallotAchievement
+        , AchievementStates.StrategistAchievement
+        , AchievementStates.DisruptionInTheForceAchievement
         ]
    , Permissions =
         { StudentPermissions:
