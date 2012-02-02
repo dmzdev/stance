@@ -36,6 +36,8 @@ var dmz =
    , MAX_QUESTION_REPLY_LEN = 500
    , MAX_TASK_STR_LEN = 140
 
+   , SAGE_ADVICE_COUNT = 2 // Number of advisors posted to for achievement
+
    // Variables
    , MainModule
    , master =
@@ -73,6 +75,7 @@ var dmz =
         , dmz.stance.Advisor3TimeHandle
         , dmz.stance.Advisor4TimeHandle
         ]
+    , userForumPostTable = {}
 
    // Functions
    , createAdvisorWindow
@@ -88,7 +91,6 @@ var dmz =
 
 advisorAnswerPermission = function (author, advisorHandle) {
 
-   //infinite loop here somehow, look into it later.
    return dmz.stance.isAllowed(author, dmz.stance.AdvisorAnswerSet[dmz.object.scalar(advisorHandle, dmz.stance.ID)]);
 }
 
@@ -463,6 +465,20 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
 dmz.object.link.observe(self, dmz.stance.QuestionLinkHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+   var authorHandle;
+   if (master.questions[superHandle]) {
+
+      authorHandle = dmz.stance.getAuthorHandle(superHandle);
+      if (userForumPostTable[authorHandle]) { userForumPostTable[authorHandle].push(subHandle); }
+      else { userForumPostTable[authorHandle] = [subHandle]; }
+
+      if ((userForumPostTable[authorHandle].length >= SAGE_ADVICE_COUNT) &&
+         !dmz.stance.hasAchievement(authorHandle, dmz.stance.SageAdviceAchievement)) {
+
+         dmz.stance.unlockAchievement(authorHandle, dmz.stance.SageAdviceAchievement);
+      }
+   }
 
    observerLists.parentLink.forEach(function (fnc) { fnc(linkObjHandle, attrHandle, superHandle, subHandle); });
 });
