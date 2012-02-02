@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>306</height>
+    <height>157</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,39 +78,11 @@
     </layout>
    </item>
    <item>
-    <widget class="QTextEdit" name="messageEdit"/>
-   </item>
-   <item>
-    <widget class="QLabel" name="errorLabel">
+    <widget class="QPushButton" name="pingUserButton">
      <property name="text">
-      <string>errorLabel</string>
+      <string>Ping User</string>
      </property>
     </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QPushButton" name="cancelButton">
-       <property name="text">
-        <string>Cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="createButton">
-       <property name="text">
-        <string>Create Email</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="sendButton">
-       <property name="text">
-        <string>Send Email</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </item>
   </layout>
  </widget>

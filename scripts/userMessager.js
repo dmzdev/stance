@@ -40,7 +40,6 @@ var dmz =
    , hil
    , userGroupHandle
    , EmailMod = false
-   , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , _exports = {}
@@ -60,56 +59,37 @@ setupUserButtonObservers = function (userHandle) {
      , recipients = []
      ;
 
-   if (Users[userHandle] && Users[userHandle].ui) {
+   if (Users[userHandle] && Users[userHandle].ui && Users[hil]) {
 
-      Users[userHandle].ui.createButton.show();
-      Users[userHandle].ui.cancelButton.hide();
-      Users[userHandle].ui.sendButton.hide();
-      Users[userHandle].ui.messageEdit.hide();
-      Users[userHandle].ui.messageEdit.text("");
-      Users[userHandle].ui.createButton.observe(self, "clicked", function () {
+      // 129600 = 36Hrs
+      // 21600 = 6Hrs
+      var THIRTY_SIX_HOURS = 129600
+        , SIX_HOURS = 21600
+        ;
 
-         Users[userHandle].ui.errorLabel.hide();
-         Users[userHandle].ui.errorLabel.text("");
-         Users[userHandle].ui.createButton.hide();
-         Users[userHandle].ui.cancelButton.show();
-         Users[userHandle].ui.sendButton.show();
-         Users[userHandle].ui.messageEdit.show();
-         Users[userHandle].ui.messageEdit.text("");
-      });
-      Users[userHandle].ui.cancelButton.observe(self, "clicked", function () {
+      if (dmz.stance.isAllowed(hil, dmz.stance.UnlimitedPingFlag)) {
 
-         Users[userHandle].ui.errorLabel.hide();
-         Users[userHandle].ui.errorLabel.text("");
-         Users[userHandle].ui.createButton.show();
-         Users[userHandle].ui.cancelButton.hide();
-         Users[userHandle].ui.sendButton.hide();
-         Users[userHandle].ui.messageEdit.hide();
-         Users[userHandle].ui.messageEdit.text("");
-      });
-      Users[userHandle].ui.sendButton.observe(self, "clicked", function () {
+         if (Users[userHandle].lastPing && Users[hil].lastLogin && Users[userHandle].lastLogin &&
+            (Users[hil].lastLogin - Users[userhandle].lastPing > SIX_HOURS) &&
+            (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS)) {
 
-         if (Users[userHandle].ui.messageEdit.text() === "") {
-
-            Users[userHandle].ui.errorLabel.show();
-            Users[userHandle].ui.errorLabel.text("<font color=\"red\">Please enter a message.</font>");
+            // Ping again
          }
-         else {
+         else if (Users[userHandle].lastLogin && Users[hil].lastLogin && Users[userHandle].lastPing &&
+            (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
+            (Users[userHandle].lastPing !== 0)) {
 
-            EmailMod.sendEmail(
-               [userHandle],
-               ("STANCE: User " + dmz.object.text(hil, dmz.stance.DisplayNameHandle) + " has sent you a message."),
-               Users[userHandle].ui.messageEdit.text());
-
-            Users[userHandle].ui.errorLabel.hide();
-            Users[userHandle].ui.errorLabel.text("");
-            Users[userHandle].ui.createButton.show();
-            Users[userHandle].ui.cancelButton.hide();
-            Users[userHandle].ui.sendButton.hide();
-            Users[userHandle].ui.messageEdit.hide();
-            Users[userHandle].ui.messageEdit.text("");
+            // First Ping
          }
-      });
+      }
+      else if (dmz.stance.isAllowed(hil, dmz.stance.LimitedPingFlag)) {
+
+
+      }
+      else {
+
+
+      }
    }
 };
 
@@ -135,8 +115,7 @@ setupUserUI = function (userHandle) {
          Users[userHandle].ui.lastLoginLabel.text
             ("<b>Last Login: </b>" + toDate(Users[userHandle].lastLogin).toString(dmz.stance.TIME_FORMAT));
       }
-      Users[userHandle].ui.errorLabel.hide();
-      if (LoginSkipped) { Users[userHandle].ui.createButton.enabled(false); }
+      if (LoginSkipped) { Users[userHandle].ui.pingButton.enabled(false); }
       setupUserButtonObservers(userHandle);
       contentLayout.insertWidget(0, Users[userHandle].ui.userWidget);
    }
@@ -165,11 +144,7 @@ _exports.openWindow = function () {
                Users[key].ui.pictureLabel = userWidget.lookup("pictureLabel");
                Users[key].ui.userNameLabel = userWidget.lookup("userNameLabel");
                Users[key].ui.lastLoginLabel = userWidget.lookup("lastLoginLabel");
-               Users[key].ui.messageEdit = userWidget.lookup("messageEdit");
-               Users[key].ui.cancelButton = userWidget.lookup("cancelButton");
-               Users[key].ui.createButton = userWidget.lookup("createButton");
-               Users[key].ui.sendButton = userWidget.lookup("sendButton");
-               Users[key].ui.errorLabel = userWidget.lookup("errorLabel");
+               Users[key].ui.pingUserButton = userWidget.lookup("pingUserButton");
                setupUserUI(Users[key].handle);
             }
          }
@@ -179,19 +154,6 @@ _exports.openWindow = function () {
 
 _exports.closeWindow = function () {
 
-   Object.keys(Users).forEach(function (key) {
-
-      if (Users[key] && Users[key].ui) {
-
-         Users[key].ui.errorLabel.hide();
-         Users[key].ui.errorLabel.text("");
-         Users[key].ui.createButton.show();
-         Users[key].ui.cancelButton.hide();
-         Users[key].ui.sendButton.hide();
-         Users[key].ui.messageEdit.hide();
-         Users[key].ui.messageEdit.text("");
-      }
-   });
 };
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
@@ -239,6 +201,12 @@ function (objHandle, attrHandle, newVal, oldVal) {
    if (Users[objHandle]) { Users[objHandle].lastLogin = newVal; }
 });
 
+dmz.object.timeStamp.observe(self, dmz.stance.LastPingTimaHandle,
+function (objHandle, attrHandle, newVal, oldVal) {
+
+   if (Users[objHandle]) { Users[objHandle].lastPing = newVal; }
+});
+
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
@@ -258,19 +226,10 @@ dmz.module.subscribe(self, "email", function (Mode, module) {
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
-/*dmz.module.subscribe(self, "main", function (Mode, module) {
+dmz.time.setRepeatingTimer(self, 3600, function () {
 
-   var list;
-
-   if (Mode === dmz.module.Activate) {
-
-      list = MainModule.list;
-      MainModule = module;
-      module.addPage("Rolodex", messagerForm, openWindow, closeWindow);
-      if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
-   }
+   dmz.object.flag(hil, dmz.stance.UpdateLastLoginTimeHandle, true);
 });
-*/
 
 init = function () {
 

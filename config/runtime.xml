@@ -36,16 +36,33 @@
    <message name="ToggledGroupMessage"/>
    <message name="TagMessage"/>
 
-   <state name="Welcome_Back"/>
-   <state name="Right_To_Vote"/>
+   <state name="Welcome_Back_One"/>
+   <state name="Welcome_Back_Two"/>
+   <state name="Welcome_Back_Three"/>
+   <state name="Right_To_Vote_One"/>
+   <state name="Right_To_Vote_Two"/>
+   <state name="Right_To_Vote_Three"/>
    <state name="Frequent_Flyer"/>
    <state name="Media_Frenzy"/>
-   <state name="Rock_The_Vote"/>
-   <state name="Effective_Communicator"/>
-   <state name="Sage_Advice"/>
+   <state name="Rock_The_Vote_One"/>
+   <state name="Rock_The_Vote_Two"/>
+   <state name="Rock_The_Vote_Three"/>
+   <state name="Effective_Communicator_One"/>
+   <state name="Effective_Communicator_Two"/>
+   <state name="Effective_Communicator_Three"/>
+   <state name="Effective_Interrogator_One"/>
+   <state name="Effective_Interrogator_Two"/>
+   <state name="Effective_Interrogator_Three"/>
+   <state name="Sage_Advice_One"/>
+   <state name="Sage_Advice_Two"/>
+   <state name="Sage_Advice_Three"/>
    <state name="On_The_Ballot"/>
-   <state name="Strategist"/>
-   <state name="Disruption_In_The_Force"/>
+   <state name="Strategist_One"/>
+   <state name="Strategist_Two"/>
+   <state name="Strategist_Three"/>
+   <state name="Disruption_In_The_Force_One"/>
+   <state name="Disruption_In_The_Force_Two"/>
+   <state name="Disruption_In_The_Force_Three"/>
 
    <state name="Switch_Group"/>
    <state name="Change_Map"/>
@@ -79,5 +96,7 @@
    <state name="Inject_PDF"/>
    <state name="Modify_Collab_Area"/>
    <state name="Change_Permission_Sets"/>
+   <state name="Limited_Ping"/>
+   <state name="Unlimited_Ping"/>
 </runtime>
 </dmz>

@@ -1,19 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dmz>
-<achievements>
+<achievements2>
    <achievement-set name="Achievement Set">
-      <achievement name="Welcome_Back" title="Welcome Back" description="You have logged in twice." resource="Logged_In_Image"/>
-      <achievement name="Right_To_Vote" title="Right To Vote" descriptiong="You have voted 3 times." resource="Logged_In_Image"/>
-      <achievement name="Frequent_Flyer" title="Frequent Flyer" description="You have logged in for 5 consecutive days." resource="Logged_In_Image"/>
-      <achievement name="Media_Frenzy" title="Media Frenzy" description="You have seen 3 news articles, 3 videos and 3 PDFs." resource="Logged_In_Image"/>
-      <achievement name="Rock_The_Vote" title="Rock The Vote" description="Your vote proposal has successfully been approved for a vote." resource="Logged_In_Image"/>
-      <achievement name="Effective_Communicator" title="Effective Communicator" description="Four of your posts have been tagged as 'strategic posts'." resource="Logged_In_Image"/>
-      <achievement name="Sage_Advice" title="Sage Advice" description="You have asked two different advisors for help." resource="Logged_In_Image"/>
-      <achievement name="On_The_Ballot" title="On The Ballot" description="Your group has successfully tasked all 5 advisors." resource="Logged_In_Image"/>
-      <achievement name="Strategist" title="Strategist" description="Your group has passed 5 votes." resource="Logged_In_Image"/>
-      <achievement name="Disruption_In_The_Force" title="Disruption In The Force" description="Your group has voted for a great transformational agenda." resource="Logged_In_Image"/>
+      <set name="Welcome_Back">
+         <achievement name="Welcome_Back_One" title="Welcome Back I" description="You have logged in twice." resource="Logged_In_Image" level="1"/>
+         <achievement name="Welcome_Back_Two" title="Welcome Back II" description="You have logged in 10 times." resource="Logged_In_Image" level="2"/>
+         <achievement name="Welcome_Back_Three" title="Welcome Back III" description="You have logged in 20 times." resource="Logged_In_Image" level="3"/>
+      </set>
+      <set name="Right_To_Vote">
+         <achievement name="Right_To_Vote_One" title="Right To Vote I" descriptiong="You have voted 3 times." resource="Logged_In_Image" level="1"/>
+         <achievement name="Right_To_Vote_Two" title="Right To Vote II" descriptiong="You have voted 6 times." resource="Logged_In_Image" level="2"/>
+         <achievement name="Right_To_Vote_Three" title="Right To Vote III" descriptiong="You have voted 9 times." resource="Logged_In_Image" level="3"/>
+      </set>
+      <set name="Frequency_Flyer">
+         <achievement name="Frequent_Flyer" title="Frequent Flyer I" description="You have logged in for 5 consecutive days." resource="Logged_In_Image" level="1"/>
+      </set>
+      <set name="Media_Frenzy">
+         <achievement name="Media_Frenzy" title="Media Frenzy" description="You have seen 3 news articles, 3 videos and 3 PDFs." resource="Logged_In_Image" level="1"/>
+      </set>
+      <set name="Welcome_Back">
+         <achievement name="Rock_The_Vote_One" title="Rock The Vote I" description="Your vote proposal has successfully been approved for a vote." resource="Logged_In_Image" level="1"/>
+         <achievement name="Rock_The_Vote_Two" title="Rock The Vote II" description="Your vote proposals have successfully been approved for a vote 3 times." resource="Logged_In_Image" level="2"/>
+         <achievement name="Rock_The_Vote_Three" title="Rock The Vote III" description="Your vote proposals have successfully been approved for a vote 5 times." resource="Logged_In_Image" level="3"/>
+      </set>
+      <set name="Effective_Communicator">
+         <achievement name="Effective_Communicator_One" title="Effective Communicator I" description="Four of your posts have been tagged as 'strategic posts'." resource="Logged_In_Image" level="1"/>
+         <achievement name="Effective_Communicator_Two" title="Effective Communicator II" description="Six of your posts have been tagged as 'strategic posts'." resource="Logged_In_Image" level="2"/>
+         <achievement name="Effective_Communicator_Three" title="Effective Communicator III" description="Eight of your posts have been tagged as 'strategic posts'." resource="Logged_In_Image" level="3"/>
+      </set>
+      <set name="Effective_Interrogator">
+         <achievement name="Effective_Interrogator_One" title="Effective Interrogator I" description="Two of your posts have been tagged as 'strategic questions'." resource="Logged_In_Image" level="1"/>
+         <achievement name="Effective_Interrogator_Two" title="Effective Interrogator II" description="Four of your posts have been tagged as 'strategic questions'." resource="Logged_In_Image" level="2"/>
+         <achievement name="Effective_Interrogator_Three" title="Effective Interrogator III" description="Six of your posts have been tagged as 'strategic questions'." resource="Logged_In_Image" level="3"/>
+      </set>
+      <set name="Sage_Advice">
+         <achievement name="Sage_Advice_One" title="Sage Advice I" description="You have asked one advisor for help." resource="Logged_In_Image" level="1"/>
+         <achievement name="Sage_Advice_Two" title="Sage Advice II" description="You have asked three different advisors for help." resource="Logged_In_Image" level="2"/>
+         <achievement name="Sage_Advice_Three" title="Sage Advice III" description="You have asked five different advisors for help." resource="Logged_In_Image" level="3"/>
+      </set>
+      <set name="On_The_Ballot">
+         <achievement name="On_The_Ballot" title="On The Ballot" description="Your group has successfully tasked all 5 advisors." resource="Logged_In_Image" level="0"/>
+      </set>
+      <set name="Strategist">
+         <achievement name="Strategist_One" title="Strategist I" description="Your group has passed 3 votes." resource="Logged_In_Image" level="1"/>
+         <achievement name="Strategist_Two" title="Strategist II" description="Your group has passed 6 votes." resource="Logged_In_Image" level="2"/>
+         <achievement name="Strategist_Three" title="Strategist III" description="Your group has passed 9 votes." resource="Logged_In_Image" level="3"/>
+      </set>
+      <set name="Disruption_In_The_Force">
+         <achievement name="Disruption_In_The_Force_One" title="Disruption In The Force I" description="Your group has voted for a great transformational agenda." resource="Logged_In_Image" level="1"/>
+         <achievement name="Disruption_In_The_Force_Two" title="Disruption In The Force II" description="Your group has voted for a great transformational agenda twice." resource="Logged_In_Image" level="2"/>
+         <achievement name="Disruption_In_The_Force_Three" title="Disruption In The Force III" description="Your group has voted for a great transformational agenda four times." resource="Logged_In_Image" level="3"/>
+      </set>
    </achievement-set>
-</achievements>
+</achievements2>
 <main>
    <help-list>
       <email address="techsupport@chds.us"/>

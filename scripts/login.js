@@ -204,6 +204,7 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
       name = dmz.stance.getDisplayName(_userHandle);
       _setTitle(_userHandle);
       dmz.object.flag(_userHandle, dmz.stance.UpdateLastLoginTimeHandle, true);
+      dmz.object.timeStamp(_userHandle, dmz.stance.LastPingTimeHandle, 0);
       self.log.info("User identified: " + name);
    }
 });

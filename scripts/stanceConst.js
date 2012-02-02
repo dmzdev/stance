@@ -91,7 +91,7 @@ var dmz =
         , HelpLink: dmz.defs.createNamedHandle("help_link")
         , OriginalGroupHandle: dmz.defs.createNamedHandle("original_group")
 
-        /* Time handles, and handles to be removed later */
+        // Time handles
         , UpdatePostedTimeHandle: dmz.defs.createNamedHandle("update_posted_time_handle")
         , UpdateStartTimeHandle: dmz.defs.createNamedHandle("update_start_time_handle")
         , UpdateEndTimeHandle: dmz.defs.createNamedHandle("update_end_time_handle")
@@ -102,6 +102,7 @@ var dmz =
         , ExpiredTimeHandle: dmz.defs.createNamedHandle("expire_time_handle")
         , LastLoginTimeHandle: dmz.defs.createNamedHandle("last_login_time_handle")
         , UpdateLastLoginTimeHandle: dmz.defs.createNamedHandle("update_last_login_time_handle")
+        , LastPingTimeHandle: dmz.defs.createNamedHandle("last_ping")
 
         // Notification Time Handles
         , PinTimeHandle: dmz.defs.createNamedHandle("pin_time")
@@ -145,18 +146,34 @@ var dmz =
         , getTags: false
         }
    , AchievementStates =
-        { WelcomeBackAchievement: dmz.defs.lookupState("Welcome_Back")
-        , RightToVoteAchievement: dmz.defs.lookupState("Right_To_Vote")
+        { WelcomeBackOneAchievement: dmz.defs.lookupState("Welcome_Back_One")
+        , WelcomeBackTwoAchievement: dmz.defs.lookupState("Welcome_Back_Two")
+        , WelcomeBackThreeAchievement: dmz.defs.lookupState("Welcome_Back_Three")
+        , RightToVoteOneAchievement: dmz.defs.lookupState("Right_To_Vote_One")
+        , RightToVoteTwoAchievement: dmz.defs.lookupState("Right_To_Vote_Two")
+        , RightToVoteThreeAchievement: dmz.defs.lookupState("Right_To_Vote_Three")
         , FrequentFlyerAchievement: dmz.defs.lookupState("Frequent_Flyer")
         , MediaFrenzyAchievement: dmz.defs.lookupState("Media_Frenzy")
-        , RockTheVoteAchievement: dmz.defs.lookupState("Rock_The_Vote")
-        , EffectiveCommunicatorAchievement: dmz.defs.lookupState("Effective_Communicator")
-        , SageAdviceAchievement: dmz.defs.lookupState("Sage_Advice")
+        , RockTheVoteOneAchievement: dmz.defs.lookupState("Rock_The_Vote_One")
+        , RockTheVoteTwoAchievement: dmz.defs.lookupState("Rock_The_Vote_Two")
+        , RockTheVoteThreeAchievement: dmz.defs.lookupState("Rock_The_Vote_Three")
+        , EffectiveCommunicatorOneAchievement: dmz.defs.lookupState("Effective_Communicator_One")
+        , EffectiveCommunicatorTwoAchievement: dmz.defs.lookupState("Effective_Communicator_Two")
+        , EffectiveCommunicatorThreeAchievement: dmz.defs.lookupState("Effective_Communicator_Three")
+        , EffectiveInterrogatorOneAchievement: dmz.defs.lookupState("Effective_Interrogator_One")
+        , EffectiveInterrogatorTwoAchievement: dmz.defs.lookupState("Effective_Interrogator_Two")
+        , EffectiveInterrogatorThreeAchievement: dmz.defs.lookupState("Effective_Interrogator_Three")
+        , SageAdviceAchievement: dmz.defs.lookupState("Sage_Advice_One")
+        , SageAdviceAchievement: dmz.defs.lookupState("Sage_Advice_Two")
+        , SageAdviceAchievement: dmz.defs.lookupState("Sage_Advice_Three")
         , OnTheBallotAchievement: dmz.defs.lookupState("On_The_Ballot")
-        , StrategistAchievement: dmz.defs.lookupState("Strategist")
-        , DisruptionInTheForceAchievement: dmz.defs.lookupState("Disruption_In_The_Force")
+        , StrategistOneAchievement: dmz.defs.lookupState("Strategist_One")
+        , StrategistTwoAchievement: dmz.defs.lookupState("Strategist_Two")
+        , StrategistThreeAchievement: dmz.defs.lookupState("Strategist_Three")
+        , DisruptionInTheForceOneAchievement: dmz.defs.lookupState("Disruption_In_The_Force_One")
+        , DisruptionInTheForceTwoAchievement: dmz.defs.lookupState("Disruption_In_The_Force_Two")
+        , DisruptionInTheForceThreeAchievement: dmz.defs.lookupState("Disruption_In_The_Force_Three")
         }
-
    , States =
         { SwitchGroupFlag: dmz.defs.lookupState("Switch_Group")
         , ChangeMapFlag: dmz.defs.lookupState("Change_Map")
@@ -190,20 +207,55 @@ var dmz =
         , InjectPDFFlag: dmz.defs.lookupState("Inject_PDF")
         , ModifyCollabAreaFlag: dmz.defs.lookupState("Modify_Collab_Area")
         , ChangePermissionsFlag: dmz.defs.lookupState("Change_Permission_Sets")
+        , LimitedPingFlag: dmz.defs.lookupState("Limited_Ping")
+        , UnlimitedPingFlag: dmz.defs.lookupState("Unlimited_Ping")
         }
 
-   , Achievements =
-        [ AchievementStates.WelcomeBackAchievement
-        , AchievementStates.RightToVoteAchievement
-        , AchievementStates.FrequentFlyerAchievement
-        , AchievementStates.MediaFrenzyAchievement
-        , AchievementStates.RockTheVoteAchievement
-        , AchievementStates.EffectiveCommunicatorAchievement
-        , AchievementStates.SageAdviceAchievement
-        , AchievementStates.OnTheBallotAchievement
-        , AchievementStates.StrategistAchievement
-        , AchievementStates.DisruptionInTheForceAchievement
-        ]
+   /*, Achievements =
+        { WelcomeBackAchievements:
+             [ AchievementStates.WelcomeBackOneAchievement
+             , AchievementStates.WelcomeBackTwoAchievement
+             , AchievementStates.WelcomeBackThreeAchievement
+             ]
+        , RightToVoteAchievements:
+             [ AchievementStates.RightToVoteOneAchievement
+             , AchievementStates.RightToVoteTwoAchievement
+             , AchievementStates.RightToVoteThreeAchievement
+             ]
+        , FrequentFlyerAchievements: [ AchievementStates.FrequentFlyerAchievement ]
+        , MediaFrenzyAchievements: [ AchievementStates.MediaFrenzyAchievement ]
+        , RockTheVoteAchievements:
+             [ AchievementStates.RockTheVoteOneAchievement
+             , AchievementStates.RockTheVoteTwoAchievement
+             , AchievementStates.RockTheVoteThreeAchievement
+             ]
+        , EffectiveCommunicatorAchievements:
+             [ AchievementStates.EffectiveCommunicatorOneAchievement
+             , AchievementStates.EffectiveCommunicatorTwoAchievement
+             , AchievementStates.EffectiveCommunicatorThreeAchievement
+             ]
+        , EffectiveInterrogatorAchievements:
+             [ AchievementStates.EffectiveInterrogatorOneAchievement
+             , AchievementStates.EffectiveInterrogatorTwoAchievement
+             , AchievementStates.EffectiveInterrogatorThreeAchievement
+             ]
+        , SageAdviceAchievements:
+             [ AchievementStates.SageAdviceOneAchievement
+             , AchievementStates.SageAdviceTwoAchievement
+             , AchievementStates.SageAdviceThreeAchievement
+             ]
+        , OnTheBallotAchievement: [ AchievementStates.OnTheBallotAchievement ]
+        , StrategistAchievements:
+             [ AchievementStates.StrategistOneAchievement
+             , AchievementStates.StrategistTwoAchievement
+             , AchievementStates.StrategistThreeAchievement
+             ]
+        , DisruptionInTheForceAchievement:
+             [ AchievementStates.DisruptionInTheForceOneAchievement
+             , AchievementStates.DisruptionInTheForceTwoAchievement
+             , AchievementStates.DisruptionInTheForceThreeAchievement
+             ]
+        }*/
    , Permissions =
         { StudentPermissions:
              [ States.CreateVoteFlag
@@ -601,6 +653,7 @@ Functions.hasAchievement = hasAchievement;
 (function () {
 
    dmz.object.allowDefaultAttribute(false);
+
    Object.keys(ObjectTypes).forEach(function (objectTypeName) {
 
       dmz.util.defineConst(exports, objectTypeName, ObjectTypes[objectTypeName]);

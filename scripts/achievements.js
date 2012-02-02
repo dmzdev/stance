@@ -33,7 +33,10 @@ var dmz =
    , contentLayout = dmz.ui.layout.createVBoxLayout()
 
    // Variables
-   , ACHIEVEMENT_STYLE = "*{ background-color: rgb(220, 220, 220); }"
+   , ACHIEVEMENT_STYLE = "*{ background-color: rgb(0, 0, 0); }"
+   , BRONZE_STYLE = "*{ background-color: rgb(150, 90, 56); }"
+   , SILVER_STYLE = "*{ background-color: rgb(168, 168, 168); }"
+   , GOLD_STYLE = "*{ background-color: rgb(217, 164, 65); }"
    , Users = {}
    , Achievements = []
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
@@ -63,7 +66,8 @@ addAchievementUIElement = function (achievement, isNew) {
      , achievementName = ""
      , achievementDescription = ""
      , achievementImage = ""
-     , notificationLabel = dmz.ui.label.create(achievementItem);
+     , notificationLabel = dmz.ui.label.create(achievementItem)
+     , achievementLevel = 3
      ;
 
    notificationLabel.fixedWidth(34);
@@ -78,6 +82,7 @@ addAchievementUIElement = function (achievement, isNew) {
 
             achievementName = achievementItem.string("title") || "";
             achievementDescription = achievementItem.string("description") || "";
+            achievementLevel = achievementItem.number("level");
             achievementImage = achievementItem.string("resource");
             if (achievementImage) { achievementImage = dmz.resources.findFile(achievementImage); }
             if (achievementImage) { achievementImage = dmz.ui.graph.createPixmap(achievementImage); }
@@ -86,7 +91,10 @@ addAchievementUIElement = function (achievement, isNew) {
          }
       });
    });
-   achievementItem.styleSheet(ACHIEVEMENT_STYLE);
+   if (achievementLevel === 3) { achievementItem.styleSheet(ACHIEVEMENT_STYLE); }
+   else if (achievementLevel === 2) { achievementItem.styleSheet(GOLD_STYLE); }
+   else if (achievementLevel === 1) { achievementItem.styleSheet(SILVER_STYLE); }
+   else if (achievementLevel === 0) { achievementItem.styleSheet(BRONZE_STYLE); }
    achievementTitleLabel.text("<b>Title: </b>" + achievementName);
    achievementDescriptionLabel.text("<b>Description: </b>" + achievementDescription);
    contentLayout.insertWidget(0, achievementItem);
@@ -115,10 +123,7 @@ _exports.initialWindowOpen = function () {
 
                addAchievementUIElement(allAchievements[key], true);
             }
-            else {
-
-               addAchievementUIElement(allAchievements[key], false);
-            }
+            else { addAchievementUIElement(allAchievements[key], false); }
          }
       });
    }
