@@ -47,7 +47,7 @@ openWindow = function () {
 
    if (AchievementsMod) {
 
-      AchievementsMod.initialWindowOpen();
+      AchievementsMod.openWindow();
    }
    if (UserMessagerMod) {
 
@@ -72,7 +72,7 @@ dmz.module.subscribe(self, "userMessager", function (Mode, module) {
    if (Mode === dmz.module.Activate) { UserMessagerMod = module; }
 });
 
-dmz.module.subscribe(self, "achievements", function (Mode, module) {
+dmz.module.subscribe(self, "achievements2", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) { AchievementsMod = module; }
 });

@@ -211,51 +211,6 @@ var dmz =
         , UnlimitedPingFlag: dmz.defs.lookupState("Unlimited_Ping")
         }
 
-   /*, Achievements =
-        { WelcomeBackAchievements:
-             [ AchievementStates.WelcomeBackOneAchievement
-             , AchievementStates.WelcomeBackTwoAchievement
-             , AchievementStates.WelcomeBackThreeAchievement
-             ]
-        , RightToVoteAchievements:
-             [ AchievementStates.RightToVoteOneAchievement
-             , AchievementStates.RightToVoteTwoAchievement
-             , AchievementStates.RightToVoteThreeAchievement
-             ]
-        , FrequentFlyerAchievements: [ AchievementStates.FrequentFlyerAchievement ]
-        , MediaFrenzyAchievements: [ AchievementStates.MediaFrenzyAchievement ]
-        , RockTheVoteAchievements:
-             [ AchievementStates.RockTheVoteOneAchievement
-             , AchievementStates.RockTheVoteTwoAchievement
-             , AchievementStates.RockTheVoteThreeAchievement
-             ]
-        , EffectiveCommunicatorAchievements:
-             [ AchievementStates.EffectiveCommunicatorOneAchievement
-             , AchievementStates.EffectiveCommunicatorTwoAchievement
-             , AchievementStates.EffectiveCommunicatorThreeAchievement
-             ]
-        , EffectiveInterrogatorAchievements:
-             [ AchievementStates.EffectiveInterrogatorOneAchievement
-             , AchievementStates.EffectiveInterrogatorTwoAchievement
-             , AchievementStates.EffectiveInterrogatorThreeAchievement
-             ]
-        , SageAdviceAchievements:
-             [ AchievementStates.SageAdviceOneAchievement
-             , AchievementStates.SageAdviceTwoAchievement
-             , AchievementStates.SageAdviceThreeAchievement
-             ]
-        , OnTheBallotAchievement: [ AchievementStates.OnTheBallotAchievement ]
-        , StrategistAchievements:
-             [ AchievementStates.StrategistOneAchievement
-             , AchievementStates.StrategistTwoAchievement
-             , AchievementStates.StrategistThreeAchievement
-             ]
-        , DisruptionInTheForceAchievement:
-             [ AchievementStates.DisruptionInTheForceOneAchievement
-             , AchievementStates.DisruptionInTheForceTwoAchievement
-             , AchievementStates.DisruptionInTheForceThreeAchievement
-             ]
-        }*/
    , Permissions =
         { StudentPermissions:
              [ States.CreateVoteFlag
@@ -413,6 +368,7 @@ var dmz =
    , createPermissionSet
    , unlockAchievement
    , hasAchievement
+   , hasSeenAchievement
    , isAllowed
    , getAchievementStates
    , getSingleStates
@@ -509,7 +465,20 @@ hasAchievement = function (handle, achievement) {
      , result = false
      ;
 
-   if (achievements && achievement && dmz.mask.isTypeOf(state)) {
+   if (achievements && achievement && dmz.mask.isTypeOf(achievement)) {
+
+      result = achievements.and(achievement).bool();
+   }
+   return result;
+};
+
+hasSeenAchievement = function (handle, achievement) {
+
+   var achievements = dmz.object.state(handle, Handles.PreviousAchievements)
+     , result = false
+     ;
+
+   if (achievements && achievement && dmz.mask.isTypeOf(achievement)) {
 
       result = achievements.and(achievement).bool();
    }
@@ -649,6 +618,7 @@ Functions.getLastTimeStamp = getLastTimeStamp;
 Functions.isAllowed = isAllowed;
 Functions.unlockAchievement = unlockAchievement;
 Functions.hasAchievement = hasAchievement;
+Functions.hasSeenAchievement = hasSeenAchievement;
 
 (function () {
 

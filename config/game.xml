@@ -8,17 +8,17 @@
          <achievement name="Welcome_Back_Three" title="Welcome Back III" description="You have logged in 20 times." resource="Logged_In_Image" level="3"/>
       </set>
       <set name="Right_To_Vote">
-         <achievement name="Right_To_Vote_One" title="Right To Vote I" descriptiong="You have voted 3 times." resource="Logged_In_Image" level="1"/>
-         <achievement name="Right_To_Vote_Two" title="Right To Vote II" descriptiong="You have voted 6 times." resource="Logged_In_Image" level="2"/>
-         <achievement name="Right_To_Vote_Three" title="Right To Vote III" descriptiong="You have voted 9 times." resource="Logged_In_Image" level="3"/>
+         <achievement name="Right_To_Vote_One" title="Right To Vote I" description="You have voted 3 times." resource="Logged_In_Image" level="1"/>
+         <achievement name="Right_To_Vote_Two" title="Right To Vote II" description="You have voted 6 times." resource="Logged_In_Image" level="2"/>
+         <achievement name="Right_To_Vote_Three" title="Right To Vote III" description="You have voted 9 times." resource="Logged_In_Image" level="3"/>
       </set>
       <set name="Frequency_Flyer">
-         <achievement name="Frequent_Flyer" title="Frequent Flyer I" description="You have logged in for 5 consecutive days." resource="Logged_In_Image" level="1"/>
+         <achievement name="Frequent_Flyer" title="Frequent Flyer I" description="You have logged in for 5 consecutive days." resource="Logged_In_Image" level="3"/>
       </set>
       <set name="Media_Frenzy">
-         <achievement name="Media_Frenzy" title="Media Frenzy" description="You have seen 3 news articles, 3 videos and 3 PDFs." resource="Logged_In_Image" level="1"/>
+         <achievement name="Media_Frenzy" title="Media Frenzy" description="You have seen 3 news articles, 3 videos and 3 PDFs." resource="Logged_In_Image" level="3"/>
       </set>
-      <set name="Welcome_Back">
+      <set name="Rock_The_Vote">
          <achievement name="Rock_The_Vote_One" title="Rock The Vote I" description="Your vote proposal has successfully been approved for a vote." resource="Logged_In_Image" level="1"/>
          <achievement name="Rock_The_Vote_Two" title="Rock The Vote II" description="Your vote proposals have successfully been approved for a vote 3 times." resource="Logged_In_Image" level="2"/>
          <achievement name="Rock_The_Vote_Three" title="Rock The Vote III" description="Your vote proposals have successfully been approved for a vote 5 times." resource="Logged_In_Image" level="3"/>
@@ -39,7 +39,7 @@
          <achievement name="Sage_Advice_Three" title="Sage Advice III" description="You have asked five different advisors for help." resource="Logged_In_Image" level="3"/>
       </set>
       <set name="On_The_Ballot">
-         <achievement name="On_The_Ballot" title="On The Ballot" description="Your group has successfully tasked all 5 advisors." resource="Logged_In_Image" level="0"/>
+         <achievement name="On_The_Ballot" title="On The Ballot" description="Your group has successfully tasked all 5 advisors." resource="Logged_In_Image" level="3"/>
       </set>
       <set name="Strategist">
          <achievement name="Strategist_One" title="Strategist I" description="Your group has passed 3 votes." resource="Logged_In_Image" level="1"/>

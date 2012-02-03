@@ -32,10 +32,13 @@ var dmz =
    , formContent = scrollArea.widget()
    , contentLayout = dmz.ui.layout.createVBoxLayout()
    // Variables
-   , ACHIEVEMENT_STYLE = "*{ background-color: rgb(0, 0, 0); }"
-   , BRONZE_STYLE = "*{ background-color: rgb(150, 90, 56); }"
-   , SILVER_STYLE = "*{ background-color: rgb(168, 168, 168); }"
-   , GOLD_STYLE = "*{ background-color: rgb(217, 164, 65); }"
+   , ACHIEVEMENT_STYLE = "#Form { background-color: rgb(0, 0, 0); }"
+   , BRONZE_STYLE = "#Form { background-color: rgb(150, 90, 56); }"
+   , SILVER_STYLE = "#Form { background-color: rgb(168, 168, 168); }"
+   , GOLD_STYLE = "#Form { background-color: rgb(217, 164, 65); }"
+   , GOLD = 3
+   , SILVER = 2
+   , BRONZE = 1
    , Users = {}
    , Achievements = {}
    , UIArray = []
@@ -45,30 +48,180 @@ var dmz =
    , _exports = {}
 
    // Functions
-   , createAchievementUIElement
-   , openWindow
+   , checkForNotifications
+   , addAchievementItemUI
    , init
    ;
 
-createAchievementUIElement = function() {
+checkForNotifications = function () {
 
+   if (Users[hil] && Users[hil].achievements) {
+
+      self.log.error(Users[hil].achievements.xor(Users[hil].previousAchievements));
+      if (!Users[hil].previousAchievements) { MainModule.highlight("Rolodex"); self.log.error("high1"); }
+      else if (Users[hil].achievements.xor(Users[hil].previousAchievements).bool()) {
+
+         MainModule.highlight("Rolodex");
+         self.log.error("High2");
+      }
+   }
 };
 
-openWindow = function () {
+addAchievementItemUI = function (achievementSet) {
+
+   if (!achievementSet.ui) {
+
+      self.log.error("ActivatingUI:", achievementSet.name);
+      achievementSet.ui = {};
+      achievementSet.ui.widget = dmz.ui.loader.load("AchievementItem.ui");
+      achievementSet.ui.achievementTitleLabel = achievementSet.ui.widget.lookup("achievementTitleLabel");
+      achievementSet.ui.achievementDescriptionLabel = achievementSet.ui.widget.lookup("achievementDescriptionLabel");
+      achievementSet.ui.achievementPictureLabel = achievementSet.ui.widget.lookup("achievementPictureLabel");
+      achievementSet.ui.notificationLabel = dmz.ui.label.create(achievementSet.ui.widget);
+      achievementSet.ui.notificationLabel.fixedWidth(34);
+      achievementSet.ui.notificationLabel.pixmap((dmz.ui.graph.createPixmap(dmz.resources.findFile("PushNotify"))));
+   }
+   achievementSet.achievements.forEach(function (achievementItem) {
+
+      self.log.error(dmz.stance.hasAchievement(hil, achievementItem.achievement), achievementItem.achievement, Users[hil].achievements, achievementItem.level > achievementSet.currentLevel);
+      if (dmz.stance.hasAchievement(hil, achievementItem.achievement) &&
+         (achievementItem.level > achievementSet.currentLevel)) {
+
+         if (achievementSet.currentLevel === 0) { contentLayout.insertWidget(0, achievementSet.ui.widget); }
+         achievementSet.ui.achievementTitleLabel.text(achievementItem.title);
+         achievementSet.ui.achievementDescriptionLabel.text(achievementItem.description);
+         achievementSet.ui.achievementPictureLabel.pixmap(achievementItem.picturePixmap);
+         achievementSet.currentLevel = achievementItem.level;
+         if (achievementItem.level === GOLD) {
+
+            achievementSet.ui.widget.styleSheet(GOLD_STYLE);
+         }
+         else if (achievementItem.level === SILVER) {
+
+            achievementSet.ui.widget.styleSheet(SILVER_STYLE);
+         }
+         else if (achievementItem.level === BRONZE) {
+
+            achievementSet.ui.widget.styleSheet(BRONZE_STYLE);
+         }
+         if (!dmz.stance.hasSeenAchievement(hil, achievementItem.achievement)) {
+
+            achievementSet.ui.notificationLabel.show();
+         }
+         else { achievementSet.ui.notificationLabel.hide() }
+      }
+   });
+};
+
+_exports.openWindow = function () {
 
    if (!beenOpened) {
 
       Object.keys(Achievements).forEach(function (key) {
 
-         Achievements[key].forEach(function (achievementItem) {
-
-            if (!achievementItem.ui) {
-
-               achievementItem.ui = dmz.ui.loader.load("AchievementItem.ui");
-            }
-         });
+         addAchievementItemUI(Achievements[key]);
       });
    }
+   beenOpened = true;
+};
+
+_exports.closeWindow = function () {
+
+   Object.keys(Achievements).forEach(function (key) {
+
+      Achievements[key].ui.notificationLabel.hide();
+   });
+   if (Users[hil].achievements) {
+
+      dmz.object.state(hil, dmz.stance.PreviousAchievements, Users[hil].achievements);
+   }
+};
+
+_exports.achievementForm = achievementForm;
+
+dmz.object.flag.observe(self, dmz.object.HILAttribute,
+function (objHandle, attrHandle, value) {
+
+   if (value) {
+
+      hil = objHandle;
+      dmz.time.setTimer(self, function () { checkForNotifications(); });
+   }
+});
+
+dmz.object.create.observe(self, function (objHandle, objType) {
+
+   if (objType.isOfType(dmz.stance.UserType)) { Users[objHandle] = { handle: objHandle }; }
+});
+
+dmz.object.state.observe(self, dmz.stance.PreviousAchievements,
+function (userHandle, attrHandle, state) {
+
+   if (Users[userHandle]) { Users[userHandle].previousAchievements = state; }
+});
+
+dmz.object.state.observe(self, dmz.stance.Achievements,
+function (userHandle, attrHandle, state) {
+
+   if (Users[userHandle]) { Users[userHandle].achievements = state; }
+   dmz.time.setTimer(self, function () {
+
+      var newAchievement = false;
+
+      checkForNotifications();
+      if (Users[userHandle].previousAchievements) {
+
+         newAchievement = Users[userHandle].achievements.xor(Users[userHandle].previousAchievements);
+      }
+      if (beenOpened && newAchievement) {
+
+         Object.keys(Achievements).forEach(function (key) {
+
+            Achievements[key].achievements.forEach(function (achievementItem) {
+
+               if (achievementItem.achievement.and(newAchievement).bool()) {
+
+                  addAchievementItemUI(Achievements[key]);
+               }
+            });
+         });
+      }
+   });
+});
+
+init = function () {
+
+   var list = self.config.get("achievement-set.set");
+
+   formContent.layout(contentLayout);
+   contentLayout.addStretch(1);
+   list.forEach(function (setItem) {
+
+      var setItemList = setItem.get("achievement");
+
+      Achievements[setItem.string("name")] =
+      { ui: false
+      , achievements: []
+      , currentLevel: 0
+      , name: setItem.string("name")
+      };
+      setItemList.forEach(function (achievement) {
+
+         var picture = achievement.string("resource");
+
+         if (picture) { picture = dmz.resources.findFile(picture); }
+         if (picture) { picture = dmz.ui.graph.createPixmap(picture); }
+         if (picture) { picture = picture.scaled(80, 80); }
+         Achievements[setItem.string("name")].achievements.push(
+            { name: achievement.string("name")
+            , title: achievement.string("title")
+            , description: achievement.string("description")
+            , picturePixmap: picture
+            , achievement: dmz.defs.lookupState(achievement.string("name"))
+            , level: achievement.number("level")
+            });
+      });
+   });
 };
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
@@ -82,46 +235,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
-
-init = function () {
-
-   var list = self.config.get("achievement-set.set");
-
-   formContent.layout(contentLayout);
-   contentLayout.addStretch(1);
-   list.forEach(function (setItem) {
-
-      Users[setItem.string("name")] = [];
-      var setItemList = setItem.get("achievement");
-      setItemList.forEach(function (achievement) {
-
-         var picture = achievement.string("resource");
-
-         if (picture) { picture = dmz.resources.findFile(picture); }
-         if (picture) { picture = dmz.ui.graph.createPixmap(picture); }
-         if (picture) { picture = picture.scaled(80, 80); }
-         Users[setItem.string("name")].push(
-            { name: achievement.string("name")
-            , title: achievement.string("title")
-            , description: achievement.string("description")
-            , picturePixmap: picture
-            , achievement: dmz.defs.lookupState(achievement.string("name"))
-            , level: achievement.number("level")
-            , ui: false
-            , uiArrayIndex: false
-            });
-      });
-   });
-   /*Object.keys(Users).forEach(function (key) {
-
-      self.log.error("Category:", key);
-      Users[key].forEach(function (achievement) {
-
-         self.log.error(achievement.name, achievement.achievement);
-      });
-      self.log.error("<---------------------------->\n");
-   });*/
-};
 
 init();
 
