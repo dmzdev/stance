@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dmz>
-<achievements2>
+<achievements>
    <achievement-set name="Achievement Set">
       <set name="Welcome_Back">
          <achievement name="Welcome_Back_One" title="Welcome Back I" description="You have logged in twice." resource="Logged_In_Image" level="1"/>
@@ -52,7 +52,7 @@
          <achievement name="Disruption_In_The_Force_Three" title="Disruption In The Force III" description="Your group has voted for a great transformational agenda four times." resource="Logged_In_Image" level="3"/>
       </set>
    </achievement-set>
-</achievements2>
+</achievements>
 <main>
    <help-list>
       <email address="techsupport@chds.us"/>
