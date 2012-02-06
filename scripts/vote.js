@@ -422,6 +422,11 @@ setApprovalPendingLabels = function (voteHandle) {
             voteItem.ui.noButton.styleSheet(NO_BUTTON_STYLE);
             voteItem.ui.yesButton.observe(self, "clicked", function () {
 
+               var authorHandle = dmz.stance.getAuthorHandle(voteItem.handle);
+               if (authorHandle && !dmz.stance.hasAchievement(authorHandle, dmz.stance.RockTheVoteAchievement)) {
+
+                  dmz.stance.unlockAchievement(authorHandle, dmz.stance.RockTheVoteAchievement);
+               }
                voteItem.ui.yesButton.hide();
                voteItem.ui.noButton.hide();
                createDecision(

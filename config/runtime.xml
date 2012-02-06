@@ -35,6 +35,7 @@
    <message name="AppUpdaterChannelMessage"/>
    <message name="ToggledGroupMessage"/>
    <message name="TagMessage"/>
+   <message name="AchievementMessage"/>
 
    <state name="Welcome_Back_One"/>
    <state name="Welcome_Back_Two"/>

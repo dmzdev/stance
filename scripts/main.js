@@ -32,6 +32,9 @@ var dmz =
    , main = dmz.ui.loader.load("main")
 //   , groupBox = main.lookup("groupBox")
    , stackedWidget = main.lookup("stackedWidget")
+   , achievementDialog
+   , achievementPic
+   , achievementText
    , mainGView = main.lookup("graphicsView")
    , gscene
    , lastDialogWidget
@@ -87,13 +90,15 @@ var dmz =
    , groupAdvisors = {}
    , advisorPicture = {}
    , LastGViewSize = false
+   , AchievementQueue = []
+   , DefaultAchievement = "Logged_In_Image"
+   , dialogOpen = false
    , EmailMod =
         { list: []
         , sendMail: function (a, b, c) { this.list.push([a, b, c]); }
         , techList: []
         , sendTechEmail: function (a, b) { this.techList.push([a,b]); }
         }
-
 
    // Messages
    , LoginSuccessMessage = dmz.message.create("Login_Success_Message")
@@ -106,6 +111,7 @@ var dmz =
    , setPixmapFromResource
    , setGItemPos
    , getConfigFont
+   , displayNewAchievements
 
    // API
    , _exports = {}
@@ -284,10 +290,14 @@ mouseEvent = function (object, event) {
                               );
                         }
                      }
+
+                     dialogOpen = true;
                      data.dialog.open(self, function (value) {
 
                         if (data.highlight) { data.highlight.hide(); }
                         if (data.onHome) { data.onHome(value); }
+                        dialogOpen = false;
+                        if (AchievementQueue.length) { displayNewAchievements(); }
                      });
                   });
                }
@@ -319,7 +329,6 @@ function (objHandle, attrHandle, value) {
 
          updateGraphicsForGroup(dmz.stance.getUserGroupHandle(objHandle));
       }
-
 
       Object.keys(PageLink).forEach(function (item) {
 
@@ -441,6 +450,9 @@ setupMainWindow = function () {
 
       gscene.eventFilter(self, mouseEvent);
       dmz.ui.mainWindow.centralWidget(main);
+      achievementDialog = dmz.ui.loader.load("AchievementDialog.ui", dmz.ui.mainWindow.centralWidget())
+      achievementPic = achievementDialog.lookup("pictureLabel")
+      achievementText = achievementDialog.lookup("textLabel")
       mainGView.eventFilter(self, function (object, event) {
 
          var type = event.type()
@@ -630,5 +642,39 @@ dmz.module.subscribe(self, "email", function (Mode, module) {
 });
 
 ToggledGroupMessage.subscribe(self, function (data) { HaveToggled = true; });
+
+displayNewAchievements = function () {
+
+   var obj
+     , file
+     ;
+   if (AchievementQueue.length && !dialogOpen) {
+
+      obj = AchievementQueue.pop();
+      achievementText.text(obj.name);
+      file = dmz.resources.findFile(obj.image) || dmz.resources.findFile(DefaultAchievement);
+      achievementPic.pixmap(dmz.ui.graph.createPixmap(file));
+      dialogOpen = true;
+      achievementDialog.open(self, function () {
+
+         dialogOpen = false;
+         displayNewAchievements();
+      });
+   }
+};
+
+dmz.stance.ACHIEVEMENT_MESSAGE.subscribe(self, function (data) {
+
+   var obj;
+   if (data) {
+
+      AchievementQueue.push(
+         { image: data.string(dmz.stance.PictureHandle) || DefaultAchievement
+         , name: data.string(dmz.stance.NameHandle) || "N/A"
+         });
+
+      if (!dialogOpen) { displayNewAchievements(); }
+   }
+});
 
 dmz.module.publish(self, _exports);
