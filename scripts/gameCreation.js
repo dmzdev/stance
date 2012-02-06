@@ -760,6 +760,7 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
+         dmz.object.timeStamp(user, dmz.stance.LastPingTimeHandle, 0);
          dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.STUDENT_PERMISSION);
@@ -797,6 +798,7 @@ editScenarioWidget.observe(self, "createAdminButton", "clicked", function () {
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
+         dmz.object.timeStamp(user, dmz.stance.LastPingTimeHandle, 0);
          dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.ADMIN_PERMISSION);
@@ -834,6 +836,7 @@ editScenarioWidget.observe(self, "createObserverButton", "clicked", function () 
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
+         dmz.object.timeStamp(user, dmz.stance.LastPingTimeHandle, 0);
          dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.OBSERVER_PERMISSION);
@@ -871,6 +874,7 @@ editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
          dmz.object.text(user, dmz.stance.DisplayNameHandle, studentDisplayNameEdit.text());
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
+         dmz.object.timeStamp(user, dmz.stance.LastPingTimeHandle, 0);
          dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.TECH_PERMISSION);
@@ -908,6 +912,7 @@ editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
             dmz.ui.crypto.hash(text.toLowerCase(), dmz.ui.crypto.Sha1));
          dmz.object.text(user, dmz.stance.DisplayNameHandle, advisorDisplayNameEdit.text());
          dmz.object.flag(user, dmz.stance.ActiveHandle, advisorEnabledCheckBox.isChecked());
+         dmz.object.timeStamp(user, dmz.stance.LastPingTimeHandle, 0);
          dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.ADVISOR_PERMISSION);

@@ -59,7 +59,8 @@ setupUserButtonObservers = function (userHandle) {
      , recipients = []
      ;
 
-   if (Users[userHandle] && Users[userHandle].ui && Users[hil]) {
+   if (Users[userHandle] && Users[userHandle].ui && Users[hil] &&
+      Users[hil].lastLogin && Users[userHandle].lastLogin) {
 
       // 129600 = 36Hrs
       // 21600 = 6Hrs
@@ -69,26 +70,49 @@ setupUserButtonObservers = function (userHandle) {
 
       if (dmz.stance.isAllowed(hil, dmz.stance.UnlimitedPingFlag)) {
 
+         if (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) {
+
+            // Ping again
+            Users[userHandle].ui.pingUserButton.enabled(true);
+            Users[userHandle].ui.pingUserButton.text("Ping User Again");
+         }
+         else if (Users[userHandle].lastLogin && Users[hil].lastLogin &&
+            (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS)) {
+
+            // First Ping
+            Users[userHandle].pingUserButton.enabled(true);
+            Users[userHandle].pingUserButton("Ping User");
+         }
+         else {
+
+            Users[userHandle].pingUserButton.enabled(false);
+         }
+      }
+      else if (dmz.stance.isAllowed(hil, dmz.stance.LimitedPingFlag)) {
+
          if (Users[userHandle].lastPing && Users[hil].lastLogin && Users[userHandle].lastLogin &&
             (Users[hil].lastLogin - Users[userhandle].lastPing > SIX_HOURS) &&
             (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS)) {
 
             // Ping again
+            Users[userHandle].ui.pingUserButton.enabled(true);
+            Users[userHandle].ui.pingUserButton.text("Ping User Again");
          }
          else if (Users[userHandle].lastLogin && Users[hil].lastLogin && Users[userHandle].lastPing &&
-            (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
-            (Users[userHandle].lastPing !== 0)) {
+            (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS)) {
 
             // First Ping
+            Users[userHandle].ui.pingUserButton.enabled(true);
+            Users[userHandle].ui.pingUserButton.text("Ping User Again");
          }
-      }
-      else if (dmz.stance.isAllowed(hil, dmz.stance.LimitedPingFlag)) {
+         else {
 
-
+            Users[userHandle].pingUserButton.enabled(false);
+         }
       }
       else {
 
-
+         Users[userHandle].ui.pingUserButton.enabled(false);
       }
    }
 };
@@ -198,13 +222,36 @@ function (objHandle, attrHandle, newVal, oldVal) {
 dmz.object.timeStamp.observe(self, dmz.stance.LastLoginTimeHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Users[objHandle]) { Users[objHandle].lastLogin = newVal; }
+   if (Users[objHandle]) {
+
+      Users[objHandle].lastLogin = newVal;
+       if (objHandle === hil) {
+
+         dmz.time.setTimer(self, function () {
+
+            Object.keys(Users).forEach(function () {
+
+               setupUserUI(key);
+            });
+         });
+      }
+   }
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.LastPingTimaHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Users[objHandle]) { Users[objHandle].lastPing = newVal; }
+   if (Users[objHandle]) {
+
+      Users[objHandle].lastPing = newVal;
+      dmz.time.setTimer(self, function () {
+
+         Object.keys(Users).forEach(function () {
+
+
+         });
+      });
+   }
 });
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
