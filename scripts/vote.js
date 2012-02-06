@@ -880,6 +880,7 @@ openWindow = function () {
 
    var index = 0;
 
+   dmz.stance.unlockAchievement(hil, dmz.stance.WelcomeBackOneAchievement);
    Object.keys(VoteObjects).forEach(function (key) {
 
       if (VoteObjects[key].groupHandle === userGroupHandle) {

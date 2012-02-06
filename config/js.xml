@@ -33,7 +33,7 @@
    <instance name="media"/>
    <instance name="tag"/>
    <instance name="wiki"/>
-   <instance name="achievements2"/>
+   <instance name="achievements"/>
    <instance name="userMessager"/>
    <instance name="messagerAchievementCombo"/>
 </javascript>

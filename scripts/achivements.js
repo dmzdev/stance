@@ -57,12 +57,10 @@ checkForNotifications = function () {
 
    if (Users[hil] && Users[hil].achievements) {
 
-      self.log.error(Users[hil].achievements.xor(Users[hil].previousAchievements));
-      if (!Users[hil].previousAchievements) { MainModule.highlight("Rolodex"); self.log.error("high1"); }
+      if (!Users[hil].previousAchievements) { MainModule.highlight("Rolodex"); }
       else if (Users[hil].achievements.xor(Users[hil].previousAchievements).bool()) {
 
          MainModule.highlight("Rolodex");
-         self.log.error("High2");
       }
    }
 };
@@ -71,7 +69,6 @@ addAchievementItemUI = function (achievementSet) {
 
    if (!achievementSet.ui) {
 
-      self.log.error("ActivatingUI:", achievementSet.name);
       achievementSet.ui = {};
       achievementSet.ui.widget = dmz.ui.loader.load("AchievementItem.ui");
       achievementSet.ui.achievementTitleLabel = achievementSet.ui.widget.lookup("achievementTitleLabel");
@@ -83,7 +80,6 @@ addAchievementItemUI = function (achievementSet) {
    }
    achievementSet.achievements.forEach(function (achievementItem) {
 
-      self.log.error(dmz.stance.hasAchievement(hil, achievementItem.achievement), achievementItem.achievement, Users[hil].achievements, achievementItem.level > achievementSet.currentLevel);
       if (dmz.stance.hasAchievement(hil, achievementItem.achievement) &&
          (achievementItem.level > achievementSet.currentLevel)) {
 
