@@ -66,6 +66,7 @@ var dmz =
    , VideosArray = []
    , CurrentMap = {}
    , CurrentArray = []
+   , UserViewedTable = {}
    , TypesMap =
       { "PdfItem": dmz.stance.PdfItemType
       , "Memo": dmz.stance.MemoType
@@ -510,6 +511,7 @@ indexOfMediaItem = function (mediaItem) {
 
       if (CurrentArray[itor].handle === mediaItem.handle) { result = itor; }
    }
+
    return result;
 };
 
@@ -822,9 +824,25 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
             }
          });
       }
-      else if (dmz.object.type(subHandle.isOfType(dmz.stance.UserType))) {
+      else if (dmz.object.type(subHandle).isOfType(dmz.stance.UserType)) {
 
          data.viewed.push(subHandle);
+         if (!UserViewedTable[subHandle]) {
+
+            UserViewedTable[subHandle] = {};
+            UserViewedTable[subHandle][dmz.stance.VideoType] = 0;
+            UserViewedTable[subHandle][dmz.stance.MemoType] = 0;
+            UserViewedTable[subHandle][dmz.stance.NewspaperType] = 0;
+            UserViewedTable[subHandle][dmz.stance.PdfItemType] = 0;
+         }
+         UserViewedTable[subHandle][data.type.type] += 1;
+         if ((UserViewedTable[subHandle][dmz.stance.VideoType] >= 3) &&
+            (UserViewedTable[subHandle][dmz.stance.NewspaperType] >= 3) &&
+            (UserViewedTable[subHandle][dmz.stance.PDFItemType] >= 3) &&
+            !dmz.stance.hasAchievement(subHandle, dmz.stance.MediaFrenzyAchievement)) {
+
+            dmz.stance.unlockAchievement(subHandle, dmz.stance.MediaFrenzyAchivement);
+         }
       }
    }
 });
