@@ -848,7 +848,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             , function () { changeState(key); openWindow(); }
             , exitFunction
             );
-         uiItem = "Bookcase";
+         uiItem = "Video";
       });
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
