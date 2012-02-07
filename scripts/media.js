@@ -76,20 +76,23 @@ var dmz =
         { "Video":
            { type: dmz.stance.VideoType
            , urlEnd: "www.youtube.com"
+           , UI: "Video"
            }
         , "Memo":
            { type: dmz.stance.MemoType
            , urlEnd: "?stance:view&id="
+           , UI: "Memo"
            }
         , "Newspaper":
            { type: dmz.stance.NewspaperType
            , urlEnd: "?stance:view&id="
+           , UI: "Newspaper"
            }
         , "PdfItem":
            { type: dmz.stance.PdfItemType
            , urlEnd: ".pdf"
+           , UI: "Bookcase"
            }
-        , Lobbyist: { type: dmz.stance.LobbyistType }
         }
    , CurrentItem
    , CurrentType
@@ -211,8 +214,10 @@ clickDelete = function () {
 
       if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag)) { tagButton.hide(); }
       cancelButton.show();
-      deleteButton.observe(self, "clicked", function () { confirmDelete() });
-      cancelButton.observe(self, "clicked", function () { clickCancel() });
+      deleteButton.observe(self, "clicked", confirmDelete);
+      cancelButton.observe(self, "clicked", clickCancel);
+//      deleteButton.observe(self, "clicked", function () { confirmDelete() });
+//      cancelButton.observe(self, "clicked", function () { clickCancel() });
    }
 };
 
@@ -606,48 +611,20 @@ openWindow = function () {
 
 checkNotifications = function () {
 
-   Object.keys(PdfItems).forEach(function (key) {
+   var list = { "PdfItem": PdfItems, "Memo": Memos, "Newspaper": Newspapers, "Video": Videos };
+   Object.keys(list).forEach(function (listKey) {
 
-      PdfItems[key].groups.forEach(function (groupHandle) {
+      var data = list[listKey];
+      Object.keys(data).forEach(function (key) {
 
-         if ((groupHandle === userGroupHandle) && (PdfItems[key].viewed.indexOf(hil) === -1) &&
-            PdfItems[key].active) {
+         data[key].groups.forEach(function (groupHandle) {
 
-            MainModule.highlight("Bookcase");
-         }
-      });
-   });
-   Object.keys(Memos).forEach(function (key) {
+            if ((groupHandle == userGroupHandle) && (data[key].viewed.indexOf(hil) === -1) &&
+               data[key].active) {
 
-      Memos[key].groups.forEach(function (groupHandle) {
-
-         if ((groupHandle === userGroupHandle) && (Memos[key].viewed.indexOf(hil) === -1) &&
-            Memos[key].active) {
-
-            MainModule.highlight("Memo");
-         }
-      });
-   });
-   Object.keys(Newspapers).forEach(function (key) {
-
-      Newspapers[key].groups.forEach(function (groupHandle) {
-
-         if ((groupHandle === userGroupHandle) && (Newspapers[key].viewed.indexOf(hil) === -1) &&
-            Newspapers[key].active) {
-
-            MainModule.highlight("Newspaper");
-         }
-      });
-   });
-   Object.keys(Videos).forEach(function (key) {
-
-      Videos[key].groups.forEach(function (groupHandle) {
-
-         if ((groupHandle === userGroupHandle) && (Videos[key].viewed.indexOf(hil) === -1) &&
-            Videos[key].active) {
-
-            MainModule.highlight("Video");
-         }
+               MainModule.highlight(data[key].type.UI);
+            }
+         });
       });
    });
 };
@@ -668,6 +645,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , viewed: []
          , groups: []
          , tags: []
+         , type: MediaTypes.PdfItem
          };
    }
    else if (objType.isOfType(dmz.stance.MemoType)) {
@@ -677,6 +655,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , viewed: []
          , groups: []
          , tags: []
+         , type: MediaTypes.Memo
          , createdBy: "Admin"
          };
    }
@@ -687,6 +666,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , viewed: []
          , groups: []
          , tags: []
+         , type: MediaTypes.Newspaper
          , createdBy: "Admin"
          };
    }
@@ -697,6 +677,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , viewed: []
          , groups: []
          , tags: []
+         , type: MediaTypes.Video
          , createdBy: "Admin"
          };
    }
@@ -760,76 +741,42 @@ function (objHandle, attrHandle, value) {
 dmz.object.data.observe(self, dmz.stance.TagHandle,
 function (objHandle, attrHandle, data) {
 
-   if (PdfItems[objHandle]) {
+   var data = PdfItems[objHandle] || Memos[objHandle] || Newspapers[objHandle] || Videos[objHandle];
+   if (data) {
 
-      PdfItems[objHandle].tags = dmz.stance.getTags(data);
-      setTagLabels(PdfItems[objHandle]);
-   }
-   if (Memos[objHandle]) {
-
-      Memos[objHandle].tags = dmz.stance.getTags(data);
-      setTagLabels(Memos[objHandle]);
-   }
-   if (Newspapers[objHandle]) {
-
-      Newspapers[objHandle].tags = dmz.stance.getTags(data);
-      setTagLabels(Newspapers[objHandle]);
-   }
-   if (Videos[objHandle]) {
-
-      Videos[objHandle].tags = dmz.stance.getTags(data);
-      setTagLabels(Videos[objHandle]);
+      data.tags = dmz.stance.getTags(data);
+      setTagLabels(data);
    }
 });
 
 dmz.object.text.observe(self, dmz.stance.TitleHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (PdfItems[objHandle]) { PdfItems[objHandle].title = newVal; }
-   if (Memos[objHandle]) { Memos[objHandle].title = newVal; }
-   if (Newspapers[objHandle]) { Newspapers[objHandle].title = newVal; }
-   if (Videos[objHandle]) { Videos[objHandle].title = newVal; }
+   var data = PdfItems[objHandle] || Memos[objHandle] || Newspapers[objHandle] || Videos[objHandle];
+   if (data) { data.title = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.TextHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (PdfItems[objHandle]) { PdfItems[objHandle].link = newVal; }
-   if (Memos[objHandle]) { Memos[objHandle].link = newVal; }
-   if (Newspapers[objHandle]) { Newspapers[objHandle].link = newVal; }
-   if (Videos[objHandle]) { Videos[objHandle].link = newVal; }
+   var data = PdfItems[objHandle] || Memos[objHandle] || Newspapers[objHandle] || Videos[objHandle];
+   if (data) { data.link = newVal; }
 });
 
 dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (PdfItems[objHandle]) { PdfItems[objHandle].createdAt = newVal; }
-   else if (Memos[objHandle]) { Memos[objHandle].createdAt = newVal; }
-   else if (Newspapers[objHandle]) { Newspapers[objHandle].createdAt = newVal; }
-   else if (Videos[objHandle]) { Videos[objHandle].createdAt = newVal; }
+   var data = PdfItems[objHandle] || Memos[objHandle] || Newspapers[objHandle] || Videos[objHandle];
+   if (data) { data.createdAt = newVal; }
 });
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (PdfItems[objHandle]) {
+   var data = PdfItems[objHandle] || Memos[objHandle] || Newspapers[objHandle] || Videos[objHandle];
+   if (data) {
 
-      PdfItems[objHandle].active = newVal;
-      if (newVal && !oldVal) { checkNotifications(); }
-   }
-   else if (Memos[objHandle]) {
-
-      Memos[objHandle].active = newVal;
-      if (newVal && !oldVal) { checkNotifications(); }
-   }
-   else if (Newspapers[objHandle]) {
-
-      Newspapers[objHandle].active = newVal;
-      if (newVal && !oldVal) { checkNotifications(); }
-   }
-   else if (Videos[objHandle]) {
-
-      Videos[objHandle].active = newVal;
+      data.active = newVal;
       if (newVal && !oldVal) { checkNotifications(); }
    }
 });
@@ -843,130 +790,41 @@ function (objHandle, attrHandle, newVal, oldVal) {
 dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
 function (linkHandle, attrHandle, supHandle, subHandle) {
 
+   var data = PdfItems[supHandle] || Memos[supHandle] || Newspapers[supHandle] || Videos[supHandle];
+   if (data) {
 
-   if (PdfItems[supHandle]) {
-
-      PdfItems[supHandle].createdByHandle = subHandle;
-      PdfItems[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
-      PdfItems[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
-   }
-   else if (Memos[supHandle]) {
-
-      Memos[supHandle].createdByHandle = subHandle;
-      Memos[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
-      Memos[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
-   }
-   else if (Newspapers[supHandle]) {
-
-      Newspapers[supHandle].createdByHandle = subHandle;
-      Newspapers[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
-      Newspapers[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
-   }
-   else if (Videos[supHandle]) {
-
-      Videos[supHandle].createdByHandle = subHandle;
-      Videos[supHandle].createdBy = dmz.stance.getDisplayName(subHandle);
-      Videos[supHandle].createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
+      data.createdByHandle = subHandle;
+      data.createdBy = dmz.stance.getDisplayName(subHandle);
+      data.createdByPermissions = dmz.object.scalar(subHandle, dmz.stance.Permissions);
    }
 });
 
 dmz.object.link.observe(self, dmz.stance.MediaHandle,
 function (linkHandle, attrHandle, supHandle, subHandle) {
 
-   if (PdfItems[supHandle]) {
+   var data = PdfItems[supHandle] || Memos[supHandle] || Newspapers[supHandle] || Videos[supHandle];
+   if (data) {
 
       if (dmz.object.type(subHandle).isOfType(dmz.stance.GroupType)) {
 
-         PdfItems[supHandle].groups.push(subHandle);
+         data.groups.push(subHandle);
          dmz.time.setTimer(self, function () {
 
-            if ((PdfItems[supHandle].viewed.indexOf(hil) === -1) && PdfItems[supHandle].active &&
-               (PdfItems[supHandle].groups.indexOf(userGroupHandle) !== -1)) {
+            if ((data[supHandle].viewed.indexOf(hil) === -1) && data.active &&
+               (data.groups.indexOf(userGroupHandle) !== -1)) {
 
-               MainModule.highlight("Bookcase");
+               MainModule.highlight(data.type.UI);
             }
-            if ((indexOfMediaItem(PdfItems[supHandle]) === -1) && beenOpened){
+            if ((indexOfMediaItem(data) === -1) && beenOpened) {
 
-               initiateMediaPostItemUi(PdfItems[supHandle]);
-               insertIntoScrollArea(PdfItems[supHandle]);
+               initiateMediaPostItemUi(data);
+               insertIntoScrollArea(data);
             }
          });
       }
-      else if (dmz.object.type(subHandle).isOfType(dmz.stance.UserType)) {
+      else if (dmz.object.type(subHandle.isOfType(dmz.stance.UserType))) {
 
-         PdfItems[supHandle].viewed.push(subHandle);
-      }
-   }
-   else if (Memos[supHandle]) {
-
-      if (dmz.object.type(subHandle).isOfType(dmz.stance.GroupType)) {
-
-         Memos[supHandle].groups.push(subHandle);
-         dmz.time.setTimer(self, function () {
-
-            if ((Memos[supHandle].viewed.indexOf(hil) === -1) && Memos[supHandle].active &&
-               (Memos[supHandle].groups.indexOf(userGroupHandle) !== -1)) {
-
-               MainModule.highlight("Memo");
-            }
-            if ((indexOfMediaItem(Memos[supHandle]) === -1) && beenOpened){
-
-               initiateMediaPostItemUi(Memos[supHandle]);
-               insertIntoScrollArea(Memos[supHandle]);
-            }
-         });
-      }
-      else if (dmz.object.type(subHandle).isOfType(dmz.stance.UserType)) {
-
-         Memos[supHandle].viewed.push(subHandle);
-      }
-   }
-   else if (Newspapers[supHandle]) {
-
-      if (dmz.object.type(subHandle).isOfType(dmz.stance.GroupType)) {
-
-         Newspapers[supHandle].groups.push(subHandle);
-         dmz.time.setTimer(self, function () {
-
-            if ((Newspapers[supHandle].viewed.indexOf(hil) === -1) && Newspapers[supHandle].active &&
-               (Newspapers[supHandle].groups.indexOf(userGroupHandle) !== -1)) {
-
-               MainModule.highlight("Newspaper");
-            }
-            if ((indexOfMediaItem(Newspapers[supHandle]) === -1) && beenOpened){
-
-               initiateMediaPostItemUi(Newspapers[supHandle]);
-               insertIntoScrollArea(Newspapers[supHandle]);
-            }
-         });
-      }
-      else if (dmz.object.type(subHandle).isOfType(dmz.stance.UserType)) {
-
-         Newspapers[supHandle].viewed.push(subHandle);
-      }
-   }
-   else if (Videos[supHandle]) {
-
-      if (dmz.object.type(subHandle).isOfType(dmz.stance.GroupType)) {
-
-         Videos[supHandle].groups.push(subHandle);
-         dmz.time.setTimer(self, function () {
-
-            if ((Videos[supHandle].viewed.indexOf(hil) === -1) && Videos[supHandle].active &&
-               (Videos[supHandle].groups.indexOf(userGroupHandle) !== -1)) {
-
-               MainModule.highlight("Video");
-            }
-            if ((indexOfMediaItem(Videos[supHandle]) === -1) && beenOpened){
-
-               initiateMediaPostItemUi(Videos[supHandle]);
-               insertIntoScrollArea(Videos[supHandle]);
-            }
-         });
-      }
-      else if (dmz.object.type(subHandle).isOfType(dmz.stance.UserType)) {
-
-         Videos[supHandle].viewed.push(subHandle);
+         data.viewed.push(subHandle);
       }
    }
 });
@@ -975,52 +833,23 @@ LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
 
-   var list;
-
+   var list
+     , uiItem = mediaViewer
+     ;
    if (Mode === dmz.module.Activate) {
 
       list = MainModule.list;
       MainModule = module;
-      module.addPage
-         ( "Bookcase"
-         , mediaViewer
-         , function () {
+      Object.keys(MediaTypes).forEach(function (key) {
 
-            changeState("PdfItem");
-            openWindow();
-         }
-         , exitFunction
-         );
-      module.addPage
-         ( "Memo"
-         , "Bookcase"
-         , function () {
-
-            changeState("Memo");
-            openWindow();
-         }
-         , exitFunction
-         );
-      module.addPage
-         ( "Newspaper"
-         , "Bookcase"
-         , function () {
-
-            changeState("Newspaper");
-            openWindow();
-         }
-         , exitFunction
-         );
-      module.addPage
-         ( "Video"
-         , "Bookcase"
-         , function () {
-
-            changeState("Video");
-            openWindow();
-         }
-         , exitFunction
-         );
+         module.addPage
+            ( MediaTypes[key].UI
+            , uiItem
+            , function () { changeState(key); openWindow(); }
+            , exitFunction
+            );
+         uiItem = "Bookcase";
+      });
       if (list) { Object.keys(list).forEach(function (str) { module.highlight(str); }); }
    }
 });
