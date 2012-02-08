@@ -10,7 +10,7 @@ var dmz =
    , userFilterList = {}
    ;
 
-_exports.sendEmail = function (targets, title, text) {
+_exports.sendEmail = function (targets, title, text, self) {
 
    var userListStr = ""
      , title = (title && title.length) ? title : "No subject."
@@ -18,6 +18,10 @@ _exports.sendEmail = function (targets, title, text) {
      , email
      ;
 
+   if (self) {
+
+      self.log.error("in email script");
+   };
    if (targets && targets.length) {
 
       targets.forEach(function (userHandle) {

@@ -223,6 +223,7 @@ var dmz =
              , States.ForumPostFlag
              , States.AnswerHelpFlag
              , States.ModifyCollabAreaFlag
+             , States.LimitedPingFlag
              ]
         , AdminPermissions:
              [ States.SwitchGroupFlag
@@ -251,6 +252,7 @@ var dmz =
              , States.TagDataFlag
              , States.SeeTagFlag
              , States.InjectPDFFlag
+             , States.UnlimitedPingFlag
              ]
         , AdvisorPermissions: // Needs to be customized for each advisor user created
              [
@@ -292,6 +294,7 @@ var dmz =
              , States.SeeTagFlag
              , States.InjectPDFFlag
              , States.ChangePermissionsFlag
+             , States.UnlimitedPingFlag
              ]
         }
    , Messages =

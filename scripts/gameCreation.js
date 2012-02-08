@@ -761,7 +761,10 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
          dmz.object.timeStamp(user, dmz.stance.LastPingTimeHandle, 0);
-         dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
+         dmz.object.timeStamp(
+            user,
+            dmz.stance.LastLoginTimeHandle,
+            dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle));
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.STUDENT_PERMISSION);
          dmz.object.state(
@@ -799,7 +802,10 @@ editScenarioWidget.observe(self, "createAdminButton", "clicked", function () {
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
          dmz.object.timeStamp(user, dmz.stance.LastPingTimeHandle, 0);
-         dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
+         dmz.object.timeStamp(
+            user,
+            dmz.stance.LastLoginTimeHandle,
+            dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle));
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.ADMIN_PERMISSION);
          dmz.object.state(
@@ -837,7 +843,10 @@ editScenarioWidget.observe(self, "createObserverButton", "clicked", function () 
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
          dmz.object.timeStamp(user, dmz.stance.LastPingTimeHandle, 0);
-         dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
+         dmz.object.timeStamp(
+            user,
+            dmz.stance.LastLoginTimeHandle,
+            dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle));
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.OBSERVER_PERMISSION);
          dmz.object.state(
@@ -875,7 +884,10 @@ editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
          dmz.object.text(user, dmz.stance.PictureHandle, avatarList.currentText());
          dmz.object.flag(user, dmz.stance.ActiveHandle, studentEnabledCheckBox.isChecked());
          dmz.object.timeStamp(user, dmz.stance.LastPingTimeHandle, 0);
-         dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
+         dmz.object.timeStamp(
+            user,
+            dmz.stance.LastLoginTimeHandle,
+            dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle));
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.TECH_PERMISSION);
          dmz.object.state(
@@ -913,7 +925,10 @@ editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
          dmz.object.text(user, dmz.stance.DisplayNameHandle, advisorDisplayNameEdit.text());
          dmz.object.flag(user, dmz.stance.ActiveHandle, advisorEnabledCheckBox.isChecked());
          dmz.object.timeStamp(user, dmz.stance.LastPingTimeHandle, 0);
-         dmz.object.timeStamp(user, dmz.stance.LastLoginTimeHandle, 0);
+         dmz.object.timeStamp(
+            user,
+            dmz.stance.LastLoginTimeHandle,
+            dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle));
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.ADVISOR_PERMISSION);
          state = dmz.object.state(CurrentGameHandle, dmz.stance.AdvisorPermissionsHandle) || dmz.stance.AdvisorPermissions;
@@ -1457,6 +1472,10 @@ mediaInjectButtons = function () {
                  , count = MediaGroupFLayout.rowCount()
                  ;
 
+               for (itor = 0; itor < count; itor += 1) {
+
+                  if (MediaGroupFLayout.at(itor, 1).isChecked()) { somethingChecked = true; }
+               }
                if (text.lastIndexOf(urlEnd) === -1) {
 
                   MediaURLWarning.text("<font color=\"red\"> Invalid " + type + " URL.</font>");
