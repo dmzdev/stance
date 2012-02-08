@@ -138,7 +138,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
                   RetData.hideTagButtons();
                });
             }
-            RetData.updateForUser(objHandle, 0 , LoginSkipped);
+            RetData.updateForUser(objHandle, 0, LoginSkipped);
             RetData.checkHighlight();
          }
       });
