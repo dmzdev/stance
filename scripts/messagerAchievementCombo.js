@@ -99,7 +99,7 @@ init = function () {
    }
    if (UserMessagerMod) {
 
-      tabs.add(UserMessagerMod.messagerForm, "Email Group Members");
+      tabs.add(UserMessagerMod.messagerForm, "Ping Group Members");
    }
 };
 
