@@ -49,9 +49,10 @@ var dmz =
 
    // Functions
    , toDate = dmz.util.timeStampToDate
+   , doButtons
    , clearLayout
    , sendEmail
-   , setupUserButtonObservers
+   , setupUserButtonText
    , setupUserUI
    , openWindow
    , closeWindow
@@ -119,7 +120,7 @@ sendEmail = function (userHandle) {
    }
 };
 
-setupUserButtonObservers = function (userHandle) {
+setupUserButtonText = function (userHandle) {
 
    var messageText
      , recipients = []
@@ -138,7 +139,6 @@ setupUserButtonObservers = function (userHandle) {
         , SIX_HOURS = 120
         ;
 
-      self.log.error("1", userHandle, Users[userHandle].lastPing, (Users[userHandle].lastPing !== undefined) , (Users[userHandle].lastPing === 0));
       if (dmz.stance.isAllowed(hil, dmz.stance.UnlimitedPingFlag)) {
 
          self.log.error(Users[hil].lastLogin - Users[userHandle].lastLogin);
@@ -146,92 +146,54 @@ setupUserButtonObservers = function (userHandle) {
             (Users[userHandle].lastPing !== undefined) && (Users[userHandle].lastPing === 0)) {
 
             // Ping First Time
-            self.log.error("2", userHandle);
             Users[userHandle].ui.pingUserButton.enabled(true);
             Users[userHandle].ui.pingUserButton.text("Ping User");
-            Users[userHandle].ui.pingUserButton.observe(self, "clicked", function () {
-
-               self.log.error("Ping", userHandle);
-               dmz.object.timeStamp(userHandle, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin);
-               sendEmail(userHandle);
-            });
          }
          else if (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) {
 
             // Ping Again
-            self.log.error("3", userHandle);
             Users[userHandle].ui.pingUserButton.enabled(true);
             Users[userHandle].ui.pingUserButton.text("Ping User Again");
-            Users[userHandle].ui.pingUserButton.observe(self, "clicked", function () {
-
-               dmz.object.timeStamp(userHandle, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin);
-               sendEmail(userHandle);
-            });
          }
          else {
 
-            self.log.error("4", userHandle);
             Users[userHandle].ui.pingUserButton.enabled(false);
             Users[userHandle].ui.pingUserButton.text("Ping User")
          }
       }
       else if (dmz.stance.isAllowed(hil, dmz.stance.LimitedPingFlag)) {
 
-         self.log.error("5", userHandle);
          if (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS &&
             (Users[userHandle].lastPing !== undefined) && (Users[userHandle].lastPing === 0)) {
 
             // Ping First Time
-            self.log.error("6", userHandle);
             Users[userHandle].ui.pingUserButton.enabled(true);
             Users[userHandle].ui.pingUserButton.text("Ping User");
-            Users[userHandle].ui.pingUserButton.observe(self, "clicked", function () {
-
-               dmz.object.timeStamp(userHandle, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin);
-               sendEmail(userHandle);
-            });
          }
          else if (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS &&
             (Users[userHandle].lastPing !== undefined) &&
             (Users[hil].lastLogin - Users[userHandle].lastPing > SIX_HOURS)) {
 
             // Ping Again
-            self.log.error("8", userHandle);
             Users[userHandle].ui.pingUserButton.enabled(true);
             Users[userHandle].ui.pingUserButton.text("Ping User Again");
-
-            self.log.error("Resseting observer!", userHandle, Users[userHandle].ui.pingUserButton);
-            Users[userHandle].ui.pingUserButton.observe(self, "clicked", function () {
-
-               self.log.error("PING!", userHandle);
-               dmz.time.setTimer(self, function () {
-
-                  self.log.error("11");
-                  dmz.object.timeStamp(userHandle, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin);
-                  sendEmail(userHandle);
-                  self.log.error("22");
-               });
-            });
          }
          else if (Users[hil].lastLogin - Users[userHandle] > THIRTY_SIX_HOURS &&
             (Users[userHandle].lastPing !== undefined) &&
             (Users[hil].lastLogin - Users[userHandle].lastPing > 0) &&
             (Users[hil].lastLogin - Users[userHandle].lastPing < SIX_HOURS)) {
 
-            self.log.error("9", userHandle);
             Users[userHandle].ui.pingUserButton.enabled(false);
             Users[userHandle].ui.pingUserButton.text("Ping User Again");
          }
          else {
 
-            self.log.error("10", userHandle);
             Users[userHandle].ui.pingUserButton.enabled(false);
             Users[userHandle].ui.pingUserButton.text("Ping User")
          }
       }
       else {
 
-         self.log.error("5", userHandle);
          Users[userHandle].ui.pingUserButton.enabled(false);
          Users[userHandle].ui.pingUserButton.text("Ping User");
       }
@@ -244,13 +206,16 @@ setupUserUI = function (userHandle) {
 
    if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].picture) {
 
-      pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(Users[userHandle].picture));
-      if (pic) {
+      if (!beenOpened) {
 
-         pic = pic.scaled(80, 80);
-         if (pic) { Users[userHandle].ui.pictureLabel.pixmap(pic); }
+         pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(Users[userHandle].picture));
+         if (pic) {
+
+            pic = pic.scaled(80, 80);
+            if (pic) { Users[userHandle].ui.pictureLabel.pixmap(pic); }
+         }
+         Users[userHandle].ui.userNameLabel.text("<b>User Name: </b>" + Users[userHandle].displayName);
       }
-      Users[userHandle].ui.userNameLabel.text("<b>User Name: </b>" + Users[userHandle].displayName);
       if (Users[userHandle].lastLogin === 0) {
 
          Users[userHandle].ui.lastLoginLabel.text("<b>Last Login: </b>No previous logins.");
@@ -260,11 +225,37 @@ setupUserUI = function (userHandle) {
          Users[userHandle].ui.lastLoginLabel.text
             ("<b>Last Login: </b>" + toDate(Users[userHandle].lastLogin).toString(dmz.stance.TIME_FORMAT));
       }
+      setupUserButtonText(userHandle);
       if (LoginSkipped) { Users[userHandle].ui.pingUserButton.enabled(false); }
-      setupUserButtonObservers(userHandle);
       contentLayout.insertWidget(0, Users[userHandle].ui.userWidget);
    }
 };
+
+doButtons = function (userHandle) {
+
+   if (!beenOpened) {
+
+      self.log.error("Doing Buttons");
+      Object.keys(Users).forEach(function (key) {
+
+         self.log.error("In loop", Users[key], Users[key].ui, Users[key].pingUserButton);
+         if (Users[key] && Users[key].ui && Users[key].pingUserButton) {
+
+            self.log.error("Creating Callback", key);
+            Users[key].ui.pingUserButton.observe(self, "clicked", function () {
+
+               self.log.error("CALLBACK RUNNING!");
+               dmz.object.timeStamp(key, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin);
+               sendEmail(key);
+            });
+         }
+      });
+   }
+};
+
+_exports.users = Users;
+
+_exports.hil = hil;
 
 _exports.messagerForm = messagerForm;
 
@@ -290,13 +281,20 @@ _exports.openWindow = function () {
                Users[key].ui.userNameLabel = userWidget.lookup("userNameLabel");
                Users[key].ui.lastLoginLabel = userWidget.lookup("lastLoginLabel");
                Users[key].ui.pingUserButton = userWidget.lookup("pingUserButton");
+               self.log.error("CREATING CALLBACK");
+               Users[key].ui.pingUserButton.observe(self, "clicked", function () {
+
+                  self.log.error("CALLBACK RUNNING!", key, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin);
+                  self.log.error(dmz.object.timeStamp(key, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin));
+                  sendEmail(key);
+               });
                setupUserUI(Users[key].handle);
             }
          }
       });
    }
    beenOpened = true;
-};
+};;
 
 _exports.closeWindow = function () {
 
