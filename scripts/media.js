@@ -291,10 +291,8 @@ addMediaButton.observe(self, "clicked", function () {
                errorLabel.text("");
             }
          }
-      } else {
-
-         errorLabel.text("<font color=\"red\"> Invalid Link.</font>");
       }
+      else { errorLabel.text("<font color=\"red\"> Invalid Link.</font>"); }
    }
 });
 
@@ -461,8 +459,7 @@ initiateMediaPostItemUi = function (mediaItem) {
 
          mediaItem.ui.createdByLabel.text(mediaItem.createdBy);
       }
-      else if (mediaItem.createdByHandle &&
-         (mediaItem.createdByPermissions === dmz.stance.ADMIN_PERMISSION) || (mediaItem.createdByPermissions === dmz.stance.TECH_PERMISSION)) {
+      else {
 
          mediaItem.ui.createdByLabel.hide();
          mediaItem.ui.postedByHeaderLabel.hide();
@@ -812,7 +809,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          data.groups.push(subHandle);
          dmz.time.setTimer(self, function () {
 
-            if ((data[supHandle].viewed.indexOf(hil) === -1) && data.active &&
+            if ((data.viewed.indexOf(hil) === -1) && data.active &&
                (data.groups.indexOf(userGroupHandle) !== -1)) {
 
                MainModule.highlight(data.type.UI);
@@ -838,10 +835,10 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          UserViewedTable[subHandle][data.type.type] += 1;
          if ((UserViewedTable[subHandle][dmz.stance.VideoType] >= 3) &&
             (UserViewedTable[subHandle][dmz.stance.NewspaperType] >= 3) &&
-            (UserViewedTable[subHandle][dmz.stance.PDFItemType] >= 3) &&
+            (UserViewedTable[subHandle][dmz.stance.PdfItemType] >= 3) &&
             !dmz.stance.hasAchievement(subHandle, dmz.stance.MediaFrenzyAchievement)) {
 
-            dmz.stance.unlockAchievement(subHandle, dmz.stance.MediaFrenzyAchivement);
+            dmz.stance.unlockAchievement(subHandle, dmz.stance.MediaFrenzyAchievement);
          }
       }
    }
