@@ -49,13 +49,11 @@ var dmz =
 
    // Functions
    , toDate = dmz.util.timeStampToDate
-   , doButtons
    , clearLayout
    , sendEmail
-   , setupUserButtonText
-   , setupUserUI
-   , openWindow
-   , closeWindow
+   , setButtonText
+   , setUIItemLabels
+   , initUIItems
    , init
    ;
 
@@ -77,17 +75,15 @@ clearLayout = function () {
 
 sendEmail = function (userHandle) {
 
-   if (SEND_MAIL && Users[userHandle]) {
+   if (SEND_MAIL && Users[userHandle] && EmailMod) {
 
       if ((dmz.object.scalar(hil, dmz.stance.Permissions) === dmz.stance.ADMIN_PERMISSION) ||
          (dmz.object.scalar(hil, dmz.stance.Permissions) === dmz.stance.TECH_PERMISSION)) {
 
-         self.log.error("Sending email!");
          EmailMod.sendEmail(
             [userHandle],
             "STANCE: Watcher has pinged you. (DO NOT REPLY)",
             "The Watcher has noticed that you have not logged in for over 3 days, please remember that participation is part of your grade.", self);
-         self.log.error("Email sent");
       }
       else if (dmz.object.scalar(hil, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) {
 
@@ -120,77 +116,42 @@ sendEmail = function (userHandle) {
    }
 };
 
-setupUserButtonText = function (userHandle) {
+setButtonText = function (userHandle) {
 
-   var messageText
-     , recipients = []
+   var THIRTY_SIX_HOURS = 129600
+     , SIX_HOURS = 21600
      ;
 
-   if (Users[userHandle] && Users[userHandle].ui && Users[hil] &&
-      Users[hil].lastLogin && Users[userHandle].lastLogin && EmailMod) {
+   if (Users[userHandle] && Users[hil] && Users[userHandle].ui && Users[userHandle].ui.pingUserButton &&
+      (Users[userHandle].lastLogin !== undefined) && (Users[userHandle].lastPing !== undefined) &&
+      (Users[hil].lastLogin !== undefined)) {
 
-      // 129600 = 36Hrs
-      // 21600 = 6Hrs
-      //var THIRTY_SIX_HOURS = 129600
-        //, SIX_HOURS = 21600
-        //;
-      // Testing Values
-      var THIRTY_SIX_HOURS = 120
-        , SIX_HOURS = 120
-        ;
+      self.log.error("1:", (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) ,
+         (Users[userHandle].lastPing === 0));
+      self.log.error("2:", (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) ,
+         (Users[hil].lastLogin - Users[userHandle].lastPing > SIX_HOURS));
+      self.log.error("3:", (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) ,
+         (Users[hil].lastLogin - Users[userHandle].lastPing >= 0) ,
+         (Users[hil].lastLogin - Users[userHandle].lastPing < SIX_HOURS));
 
-      if (dmz.stance.isAllowed(hil, dmz.stance.UnlimitedPingFlag)) {
+      if ((Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
+         (Users[userHandle].lastPing === 0)) {
 
-         self.log.error(Users[hil].lastLogin - Users[userHandle].lastLogin);
-         if ((Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
-            (Users[userHandle].lastPing !== undefined) && (Users[userHandle].lastPing === 0)) {
-
-            // Ping First Time
-            Users[userHandle].ui.pingUserButton.enabled(true);
-            Users[userHandle].ui.pingUserButton.text("Ping User");
-         }
-         else if (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) {
-
-            // Ping Again
-            Users[userHandle].ui.pingUserButton.enabled(true);
-            Users[userHandle].ui.pingUserButton.text("Ping User Again");
-         }
-         else {
-
-            Users[userHandle].ui.pingUserButton.enabled(false);
-            Users[userHandle].ui.pingUserButton.text("Ping User")
-         }
+         Users[userHandle].ui.pingUserButton.enabled(true);
+         Users[userHandle].ui.pingUserButton.text("Ping User");
       }
-      else if (dmz.stance.isAllowed(hil, dmz.stance.LimitedPingFlag)) {
+      else if ((Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
+         (Users[hil].lastLogin - Users[userHandle].lastPing > SIX_HOURS)) {
 
-         if (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS &&
-            (Users[userHandle].lastPing !== undefined) && (Users[userHandle].lastPing === 0)) {
+         Users[userHandle].ui.pingUserButton.enabled(true);
+         Users[userHandle].ui.pingUserButton.text("Ping User Again");
+      }
+      else if ((Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
+         ((Users[hil].lastLogin - Users[userHandle].lastPing >= 0)) &&
+         (Users[hil].lastLogin - Users[userHandle].lastPing < SIX_HOURS)) {
 
-            // Ping First Time
-            Users[userHandle].ui.pingUserButton.enabled(true);
-            Users[userHandle].ui.pingUserButton.text("Ping User");
-         }
-         else if (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS &&
-            (Users[userHandle].lastPing !== undefined) &&
-            (Users[hil].lastLogin - Users[userHandle].lastPing > SIX_HOURS)) {
-
-            // Ping Again
-            Users[userHandle].ui.pingUserButton.enabled(true);
-            Users[userHandle].ui.pingUserButton.text("Ping User Again");
-         }
-         else if (Users[hil].lastLogin - Users[userHandle] > THIRTY_SIX_HOURS &&
-            (Users[userHandle].lastPing !== undefined) &&
-            (Users[hil].lastLogin - Users[userHandle].lastPing > 0) &&
-            (Users[hil].lastLogin - Users[userHandle].lastPing < SIX_HOURS)) {
-
-            Users[userHandle].ui.pingUserButton.enabled(false);
-            Users[userHandle].ui.pingUserButton.text("Ping User Again");
-         }
-         else {
-
-            Users[userHandle].ui.pingUserButton.enabled(false);
-            Users[userHandle].ui.pingUserButton.text("Ping User")
-         }
+         Users[userHandle].ui.pingUserButton.enabled(false);
+         Users[userHandle].ui.pingUserButton.text("Ping User Again");
       }
       else {
 
@@ -200,13 +161,15 @@ setupUserButtonText = function (userHandle) {
    }
 };
 
-setupUserUI = function (userHandle) {
+setUIItemLabels = function (userHandle) {
 
    var pic;
 
-   if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].picture) {
+   if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].ui.widget &&
+      Users[userHandle].ui.userNameLabel && Users[userHandle].ui.pingUserButton &&
+      Users[userHandle].ui.lastLoginLabel && Users[userHandle].ui.pictureLabel) {
 
-      if (!beenOpened) {
+      if (Users[userHandle].picture) {
 
          pic = dmz.ui.graph.createPixmap(dmz.resources.findFile(Users[userHandle].picture));
          if (pic) {
@@ -214,9 +177,8 @@ setupUserUI = function (userHandle) {
             pic = pic.scaled(80, 80);
             if (pic) { Users[userHandle].ui.pictureLabel.pixmap(pic); }
          }
-         Users[userHandle].ui.userNameLabel.text("<b>User Name: </b>" + Users[userHandle].displayName);
       }
-      if (Users[userHandle].lastLogin === 0) {
+      if (Users[userHandle].lastLogin === undefined || Users[userHandle].lastLogin === 0) {
 
          Users[userHandle].ui.lastLoginLabel.text("<b>Last Login: </b>No previous logins.");
       }
@@ -225,37 +187,38 @@ setupUserUI = function (userHandle) {
          Users[userHandle].ui.lastLoginLabel.text
             ("<b>Last Login: </b>" + toDate(Users[userHandle].lastLogin).toString(dmz.stance.TIME_FORMAT));
       }
-      setupUserButtonText(userHandle);
-      if (LoginSkipped) { Users[userHandle].ui.pingUserButton.enabled(false); }
-      contentLayout.insertWidget(0, Users[userHandle].ui.userWidget);
+      if (Users[userHandle].displayName) {
+
+         Users[userHandle].ui.userNameLabel.text("<b>Name:</b> " + Users[userHandle].displayName);
+      }
    }
 };
 
-doButtons = function (userHandle) {
+initUIItems = function () {
 
-   if (!beenOpened) {
+   Object.keys(Users).forEach(function (key) {
 
-      self.log.error("Doing Buttons");
-      Object.keys(Users).forEach(function (key) {
+      if (Users[key] && !Users[key].ui && (Users[key].groupHandle === userGroupHandle) &&
+         Users[key].active && (Users[key].permissions === dmz.stance.STUDENT_PERMISSION)) {
 
-         self.log.error("In loop", Users[key], Users[key].ui, Users[key].pingUserButton);
-         if (Users[key] && Users[key].ui && Users[key].pingUserButton) {
+         Users[key].ui = {};
+         Users[key].ui.widget = dmz.ui.loader.load("PingUserWidget.ui");
+         Users[key].ui.userNameLabel = Users[key].ui.widget.lookup("userNameLabel");
+         Users[key].ui.lastLoginLabel = Users[key].ui.widget.lookup("lastLoginLabel");
+         Users[key].ui.pictureLabel = Users[key].ui.widget.lookup("pictureLabel");
+         Users[key].ui.pingUserButton = Users[key].ui.widget.lookup("pingUserButton");
+         Users[key].ui.pingUserButton.observe(self, "clicked", function () {
 
-            self.log.error("Creating Callback", key);
-            Users[key].ui.pingUserButton.observe(self, "clicked", function () {
-
-               self.log.error("CALLBACK RUNNING!");
-               dmz.object.timeStamp(key, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin);
-               sendEmail(key);
-            });
-         }
-      });
-   }
+            dmz.object.timeStamp(Users[key].handle, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin);
+            sendEmail(Users[key].handle);
+         });
+         setUIItemLabels(Users[key].handle);
+         setButtonText(Users[key].handle);
+         if (LoginSkipped) { Users[key].ui.pingUserButton.enabled(false); }
+         contentLayout.insertWidget(0 , Users[key].ui.widget);
+      }
+   });
 };
-
-_exports.users = Users;
-
-_exports.hil = hil;
 
 _exports.messagerForm = messagerForm;
 
@@ -263,74 +226,43 @@ _exports.openWindow = function () {
 
    if (!beenOpened) {
 
-      Object.keys(Users).forEach(function (key) {
-
-         var userWidget;
-
-         if ((Users[key].groupHandle === userGroupHandle) &&
-            (Users[key].handle !== hil) && Users[key].active &&
-            (Users[key].permissions === dmz.stance.STUDENT_PERMISSION)) {
-
-            if (!Users[key].ui) {
-
-               userWidget = dmz.ui.loader.load("PingUserWidget.ui");
-               userWidget.styleSheet(USER_STYLE);
-               Users[key].ui = {};
-               Users[key].ui.userWidget = userWidget;
-               Users[key].ui.pictureLabel = userWidget.lookup("pictureLabel");
-               Users[key].ui.userNameLabel = userWidget.lookup("userNameLabel");
-               Users[key].ui.lastLoginLabel = userWidget.lookup("lastLoginLabel");
-               Users[key].ui.pingUserButton = userWidget.lookup("pingUserButton");
-               self.log.error("CREATING CALLBACK");
-               Users[key].ui.pingUserButton.observe(self, "clicked", function () {
-
-                  self.log.error("CALLBACK RUNNING!", key, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin);
-                  self.log.error(dmz.object.timeStamp(key, dmz.stance.LastPingTimeHandle, Users[hil].lastLogin));
-                  sendEmail(key);
-               });
-               setupUserUI(Users[key].handle);
-            }
-         }
-      });
+      initUIItems();
    }
    beenOpened = true;
-};;
+};
 
 _exports.closeWindow = function () {
 
 };
+
+dmz.object.create.observe(self, function (objHandle, objType) {
+
+   if (objType.isOfType(dmz.stance.UserType)) {
+
+      Users[objHandle] = { handle: objHandle };
+   }
+});
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
    if (value) {
 
+      hil = objHandle;
       dmz.time.setTimer(self, function () {
 
-         hil = objHandle;
          userGroupHandle = dmz.stance.getUserGroupHandle(hil);
          clearLayout();
-         Object.keys(Users).forEach(function (key) {
-
-            Users[key].ui = false;
-         });
+         Object.keys(Users).forEach(function (key) { Users[key].ui = false; })
          beenOpened = false;
       });
    }
 });
 
-dmz.object.create.observe(self, function (objHandle, objType) {
-
-   if (objType.isOfType(dmz.stance.UserType)) {
-
-      Users[objHandle] = { handle: objHandle }
-   }
-});
-
-dmz.object.scalar.observe(self, dmz.stance.Permissions,
+dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Users[objHandle]) { Users[objHandle].permissions = newVal; }
+   if (Users[objHandle]) { Users[objHandle].active = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.DisplayNameHandle,
@@ -351,16 +283,13 @@ function (objHandle, attrHandle, newVal, oldVal) {
    if (Users[objHandle]) {
 
       Users[objHandle].lastLogin = newVal;
-      if (objHandle === hil && beenOpened) {
+      dmz.time.setTimer(self, function () {
 
-         dmz.time.setTimer(self, function () {
+         Object.keys(Users).forEach(function (key) {
 
-            Object.keys(Users).forEach(function (key) {
-
-               setupUserUI(key);
-            });
+            setButtonText(Users[key].handle);
          });
-      }
+      });
    }
 });
 
@@ -372,15 +301,18 @@ function (objHandle, attrHandle, newVal, oldVal) {
       Users[objHandle].lastPing = newVal;
       dmz.time.setTimer(self, function () {
 
-         if (beenOpened) { setupUserUI(objHandle); }
+         Object.keys(Users).forEach(function (key) {
+
+            setButtonText(Users[key].handle);
+         });
       });
    }
 });
 
-dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
+dmz.object.scalar.observe(self, dmz.stance.Permissions,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (Users[objHandle]) { Users[objHandle].active = newVal; }
+   if (Users[objHandle]) { Users[objHandle].permissions = newVal; }
 });
 
 dmz.object.link.observe(self, dmz.stance.OriginalGroupHandle,
@@ -395,11 +327,6 @@ dmz.module.subscribe(self, "email", function (Mode, module) {
 });
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
-
-dmz.time.setRepeatingTimer(self, 3600, function () {
-
-   dmz.object.flag(hil, dmz.stance.UpdateLastLoginTimeHandle, true);
-});
 
 init = function () {
 

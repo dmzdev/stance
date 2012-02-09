@@ -10,7 +10,7 @@ var dmz =
    , userFilterList = {}
    ;
 
-_exports.sendEmail = function (targets, title, text, self) {
+_exports.sendEmail = function (targets, title, text) {
 
    var userListStr = ""
      , title = (title && title.length) ? title : "No subject."
@@ -18,10 +18,6 @@ _exports.sendEmail = function (targets, title, text, self) {
      , email
      ;
 
-   if (self) {
-
-      self.log.error("in email script:", targets, title, text);
-   };
    if (targets && targets.length) {
 
       targets.forEach(function (userHandle) {
@@ -30,7 +26,6 @@ _exports.sendEmail = function (targets, title, text, self) {
            , name = dmz.object.text(userHandle, dmz.stance.NameHandle)
            ;
 
-         self.log.error("in email script2:", type, name);
          if (type && type.isOfType(dmz.stance.UserType) && !userFilterList[name]) {
 
             userListStr = userListStr.concat(name + ",");
@@ -39,7 +34,6 @@ _exports.sendEmail = function (targets, title, text, self) {
 
       if (userListStr.length) {
 
-         self.log.error("Send List:", userListStr, userListStr.length);
          email = dmz.object.create(dmz.stance.EmailType);
          dmz.object.text(email, dmz.stance.EmailRecipientHandle, userListStr);
          dmz.object.text(email, dmz.stance.TitleHandle, title);
