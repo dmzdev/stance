@@ -21,12 +21,17 @@ var dmz =
           }
        , forumView: require("static-forum-view")
        }
+   // Constants
+   , EFF_COMM_COUNT_1 = 4 // Number of tagged forum posts for achievement
+   , EFF_COMM_COUNT_2 = 6
+   , EFF_COMM_COUNT_3 = 8
 
    // Variables
    , RetData = false
    , LoginSkippedMessage = dmz.message.create("Login_Skipped_Message")
    , LoginSkipped = false
    , MaxMessageLength = 2000
+   , userForumPostTable = {}
    ;
 
 
@@ -69,7 +74,30 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       dmz.object.link.observe(self, dmz.stance.ForumLink, RetData.observers.forumLink);
       dmz.object.link.observe(self, dmz.stance.ParentHandle, RetData.observers.parentLink);
       dmz.object.flag.observe(self, dmz.stance.ActiveHandle, RetData.observers.onActive);
-      dmz.object.data.observe(self, dmz.stance.TagHandle, RetData.observers.tag);
+      dmz.object.data.observe(self, dmz.stance.TagHandle, function (handle, attr, data) {
+
+         var authorHandle
+           , achievement = false
+           , length = 0
+           ;
+         RetData.observers.tag(handle, attr, data);
+         authorHandle = dmz.stance.getAuthorHandle(handle);
+         if (authorHandle) {
+
+            if (userForumPostTable[authorHandle]) { userForumPostTable[authorHandle].push(handle); }
+            else { userForumPostTable[authorHandle] = [handle]; }
+
+            length = userForumPostTable[authorHandle].length;
+            if (length >= EFF_COMM_COUNT_3) { achievement = dmz.stance.EffectiveCommunicatorThreeAchievement; }
+            else if (length >= EFF_COMM_COUNT_2) { achievement = dmz.stance.EffectiveCommunicatorTwoAchievement; }
+            else if (length >= EFF_COMM_COUNT_1) { achievement = dmz.stance.EffectiveCommunicatorOneAchievement; }
+
+            if (achievement && !dmz.stance.hasAchievement(authorHandle, achievement)) {
+
+               dmz.stance.unlockAchievement(authorHandle, achievement);
+            }
+         }
+      });
       dmz.object.state.observe(self, dmz.stance.Permissions, RetData.observers.permissions);
 
       dmz.object.link.observe(self, dmz.stance.GroupMembersHandle,
@@ -110,7 +138,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
                   RetData.hideTagButtons();
                });
             }
-            RetData.updateForUser(objHandle, 0 , LoginSkipped);
+            RetData.updateForUser(objHandle, 0, LoginSkipped);
             RetData.checkHighlight();
          }
       });

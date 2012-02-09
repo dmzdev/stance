@@ -280,7 +280,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Red Items Are Ones You Havn't Seen</string>
+        <string>Red Items Are Ones You Haven't Seen</string>
        </property>
       </widget>
      </item>

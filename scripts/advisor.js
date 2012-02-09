@@ -36,7 +36,13 @@ var dmz =
    , MAX_QUESTION_REPLY_LEN = 500
    , MAX_TASK_STR_LEN = 140
 
-   , SAGE_ADVICE_COUNT = 2 // Number of advisors posted to for achievement
+   , SAGE_ADVICE_COUNT_1 = 2 // Number of advisors posted to for achievement
+   , SAGE_ADVICE_COUNT_2 = 4
+   , SAGE_ADVICE_COUNT_3 = 5
+
+   , EFF_INTERR_COUNT_1 = 4 // Number of tagged questions
+   , EFF_INTERR_COUNT_2 = 6
+   , EFF_INTERR_COUNT_3 = 8
 
    // Variables
    , MainModule
@@ -76,6 +82,7 @@ var dmz =
         , dmz.stance.Advisor4TimeHandle
         ]
     , userForumPostTable = {}
+    , userQuestionTagTable = {}
 
    // Functions
    , createAdvisorWindow
@@ -466,17 +473,27 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 dmz.object.link.observe(self, dmz.stance.QuestionLinkHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var authorHandle;
+   var authorHandle
+     , achievement = false
+     , length = 0
+     ;
    if (master.questions[superHandle]) {
 
       authorHandle = dmz.stance.getAuthorHandle(superHandle);
-      if (userForumPostTable[authorHandle]) { userForumPostTable[authorHandle].push(subHandle); }
-      else { userForumPostTable[authorHandle] = [subHandle]; }
+      if (authorHandle) {
 
-      if ((userForumPostTable[authorHandle].length >= SAGE_ADVICE_COUNT) &&
-         !dmz.stance.hasAchievement(authorHandle, dmz.stance.SageAdviceAchievement)) {
+         if (userForumPostTable[authorHandle]) { userForumPostTable[authorHandle].push(subHandle); }
+         else { userForumPostTable[authorHandle] = [subHandle]; }
 
-         dmz.stance.unlockAchievement(authorHandle, dmz.stance.SageAdviceAchievement);
+         length = userForumPostTable[authorHandle].length;
+         if (length >= SAGE_ADVICE_COUNT_3) { achievement = dmz.stance.SageAdviceThreeAchivement; }
+         else if (length >= SAGE_ADVICE_COUNT_2) { achievement = dmz.stance.SageAdviceTwoAchivement; }
+         else if (length >= SAGE_ADVICE_COUNT_1) { achievement = dmz.stance.SageAdviceOneAchivement; }
+
+         if (achievement && !dmz.stance.hasAchievement(authorHandle, achievement)) {
+
+            dmz.stance.unlockAchievement(authorHandle, achievement);
+         }
       }
    }
 
@@ -490,7 +507,30 @@ dmz.object.scalar.observe(self, dmz.stance.ID, function (handle, attr, value) {
 
 dmz.object.data.observe(self, dmz.stance.TagHandle, function (handle, attr, value) {
 
+   var authorHandle
+     , achievement = false
+     , length = 0
+     ;
    observerLists.tag.forEach(function (fnc) { fnc(handle, attr, value); });
+   if (master.questions[handle]) {
+
+      authorHandle = dmz.stance.getAuthorHandle(handle);
+      if (authorHandle) {
+
+         if (userQuestionTagTable[authorHandle]) { userQuestionTagTable[authorHandle].push(handle); }
+         else { userQuestionTagTable[authorHandle] = [handle]; }
+
+         length = userQuestionTagTable[authorHandle].length;
+         if (length >= EFF_INTERR_COUNT_3) { achievement = dmz.stance.EffectiveInterrogatorThreeAchievement; }
+         else if (length >= EFF_INTERR_COUNT_2) { achievement = dmz.stance.EffectiveInterrogatorTwoAchievement; }
+         else if (length >= EFF_INTERR_COUNT_1) { achievement = dmz.stance.EffectiveInterrogatorOneAchievement; }
+
+         if (achievement && !dmz.stance.hasAchievement(authorHandle, achievement)) {
+
+            dmz.stance.unlockAchievement(authorHandle, achievement);
+         }
+      }
+   }
 });
 
 dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attr, value, prev) {
