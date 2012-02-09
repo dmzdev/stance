@@ -1749,6 +1749,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , votesPassed: []
          , votesFailed: []
          , votesCreated: []
+         , votesApproved: []
          , votedNoOn: []
          , votedYesOn: []
          , memosCreated: []
@@ -2046,21 +2047,24 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Votes[supHandle].advisorHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         var field = false;
+         var fields = false;
          if (Advisors[subHandle]) {
 
             Advisors[subHandle].votes.push(supHandle);
             switch (Votes[supHandle].state) {
 
-               case dmz.stance.VOTE_APPROVAL_PENDING: field = votesPending; break;
-               case dmz.stance.VOTE_APPROVAL_DENIED: field = votesDenied; break;
-               case dmz.stance.VOTE_APPROVAL_ACTIVE: field = votesActive; break;
-               case dmz.stance.VOTE_APPROVAL_YES: field = votesPassed; break;
-               case dmz.stance.VOTE_APPROVAL_NO: field = votesFailed; break;
+               case dmz.stance.VOTE_APPROVAL_PENDING: fields = [ "votesPending" ]; break;
+               case dmz.stance.VOTE_DENIED: fields = [ "votesDenied" ]; break;
+               case dmz.stance.VOTE_ACTIVE: fields = [ "votesActive", "votesApproved" ]; break;
+               case dmz.stance.VOTE_YES: fields = [ "votesPassed", "votesApproved" ]; break;
+               case dmz.stance.VOTE_NO: fields = [ "votesFailed", "votesApproved" ]; break;
                default: break;
             }
 
-            if (field) { Advisors[subHandle][field].push(supHandle); }
+            if (fields) {
+
+               fields.forEach(function (field) { Advisors[subHandle][field].push(supHandle); });
+            }
          }
       });
    }
@@ -2074,20 +2078,23 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Votes[supHandle].groupHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         var field = false;
+         var fields = false;
          if (Groups[subHandle]) {
 
             Groups[subHandle].votes.push(supHandle);
             switch (Votes[supHandle].state) {
 
-               case dmz.stance.VOTE_APPROVAL_PENDING: field = votesPending; break;
-               case dmz.stance.VOTE_APPROVAL_DENIED: field = votesDenied; break;
-               case dmz.stance.VOTE_APPROVAL_ACTIVE: field = votesActive; break;
-               case dmz.stance.VOTE_APPROVAL_YES: field = votesPassed; break;
-               case dmz.stance.VOTE_APPROVAL_NO: field = votesFailed; break;
+               case dmz.stance.VOTE_APPROVAL_PENDING: fields = [ "votesPending" ]; break;
+               case dmz.stance.VOTE_DENIED: fields = [ "votesDenied" ]; break;
+               case dmz.stance.VOTE_ACTIVE: fields = [ "votesActive", "votesApproved" ]; break;
+               case dmz.stance.VOTE_YES: fields = [ "votesPassed", "votesApproved" ]; break;
+               case dmz.stance.VOTE_NO: fields = [ "votesFailed", "votesApproved" ]; break;
                default: break;
             }
-            if (field) { Groups[subHandle][field].push(supHandle); }
+            if (fields) {
+
+               fields.forEach(function (field) { Groups[subHandle][field].push(supHandle); });
+            }
          }
       });
    }
@@ -2117,7 +2124,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       Votes[supHandle].createdByHandle = subHandle;
       dmz.time.setTimer(self, function () {
 
-         var field
+         var fields
            , permissions = dmz.object.scalar(subHandle, dmz.stance.Permissions)
            ;
          if (Users[subHandle] && Users[subHandle].active &&
@@ -2128,15 +2135,18 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
 
             switch (Votes[supHandle].state) {
 
-               case dmz.stance.VOTE_APPROVAL_PENDING: field = votesPending; break;
-               case dmz.stance.VOTE_APPROVAL_DENIED: field = votesDenied; break;
-               case dmz.stance.VOTE_APPROVAL_ACTIVE: field = votesActive; break;
-               case dmz.stance.VOTE_APPROVAL_YES: field = votesPassed; break;
-               case dmz.stance.VOTE_APPROVAL_NO: field = votesFailed; break;
+               case dmz.stance.VOTE_APPROVAL_PENDING: fields = [ "votesPending" ]; break;
+               case dmz.stance.VOTE_DENIED: fields = [ "votesDenied" ]; break;
+               case dmz.stance.VOTE_ACTIVE: fields = [ "votesActive", "votesApproved" ]; break;
+               case dmz.stance.VOTE_YES: fields = [ "votesPassed", "votesApproved" ]; break;
+               case dmz.stance.VOTE_NO: fields = [ "votesFailed", "votesApproved" ]; break;
                default: break;
             }
 
-            if (field) { Users[subHandle][field].push(supHandle); }
+            if (fields) {
+
+               fields.forEach(function (field) { Users[subHandle][field].push(supHandle); });
+            }
          }
       });
    }
