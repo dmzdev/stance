@@ -224,10 +224,7 @@ _exports.messagerForm = messagerForm;
 
 _exports.openWindow = function () {
 
-   if (!beenOpened) {
-
-      initUIItems();
-   }
+   if (!beenOpened) { initUIItems(); }
    beenOpened = true;
 };
 
@@ -237,10 +234,7 @@ _exports.closeWindow = function () {
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
-   if (objType.isOfType(dmz.stance.UserType)) {
-
-      Users[objHandle] = { handle: objHandle };
-   }
+   if (objType.isOfType(dmz.stance.UserType)) { Users[objHandle] = { handle: objHandle }; }
 });
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
@@ -285,10 +279,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
       Users[objHandle].lastLogin = newVal;
       dmz.time.setTimer(self, function () {
 
-         Object.keys(Users).forEach(function (key) {
-
-            setButtonText(Users[key].handle);
-         });
+         Object.keys(Users).forEach(function (key) { setButtonText(Users[key].handle); });
       });
    }
 });
@@ -301,10 +292,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
       Users[objHandle].lastPing = newVal;
       dmz.time.setTimer(self, function () {
 
-         Object.keys(Users).forEach(function (key) {
-
-            setButtonText(Users[key].handle);
-         });
+         Object.keys(Users).forEach(function (key) { setButtonText(Users[key].handle); });
       });
    }
 });
