@@ -126,14 +126,6 @@ setButtonText = function (userHandle) {
       (Users[userHandle].lastLogin !== undefined) && (Users[userHandle].lastPing !== undefined) &&
       (Users[hil].lastLogin !== undefined)) {
 
-      self.log.error("1:", (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) ,
-         (Users[userHandle].lastPing === 0));
-      self.log.error("2:", (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) ,
-         (Users[hil].lastLogin - Users[userHandle].lastPing > SIX_HOURS));
-      self.log.error("3:", (Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) ,
-         (Users[hil].lastLogin - Users[userHandle].lastPing >= 0) ,
-         (Users[hil].lastLogin - Users[userHandle].lastPing < SIX_HOURS));
-
       if ((Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
          (Users[userHandle].lastPing === 0)) {
 
