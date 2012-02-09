@@ -1653,22 +1653,13 @@ createGroupTabs = function () {
 
    byGroups("Votes", "votes", 0, 0);
    byGroups("Denied Votes", "votesDenied", 0, 600);
-   approvedVotesByGroups();
+   byGroups("Approved Votes", "votesApproved", 600, 600);
    byGroups("Failed Votes", "votesFailed", 0, 900);
    byGroups("Passed Votes", "votesPassed", 600, 900);
    byGroups("Posts", "posts", 600, 0);
    byGroups("Comments", "comments", 0, 300);
    byGroups("Questions", "questions", 600, 300);
    tagsByGroups();
-   /*votesByGroups();
-   postsByGroups();
-   commentsByGroups();
-   questionsByGroups();
-   deniedVotesByGroups();
-   approvedVotesByGroups();
-   failedVotesByGroups();
-   passedVotesByGroups();
-   tagsByGroups();*/
 
    Object.keys(Groups).forEach(function (key) {
 
@@ -1720,6 +1711,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , votesPassed: []
          , votesFailed: []
          , votesCreated: []
+         , votesApproved: []
          , memosCreated: []
          , newspapersCreated: []
          , videosCreated: []
@@ -1846,6 +1838,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , votesDenied: []
          , votesPassed: []
          , votesFailed: []
+         , votesApproved: []
          };
    }
 });
@@ -2220,14 +2213,17 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
                else if (Votes[supHandle].state === dmz.stance.VOTE_ACTIVE) {
 
                   Advisors[subHandle].votesActive.push(supHandle);
+                  Advisors[subHandle].votesApproved.push(supHandle);
                }
                else if (Votes[supHandle].state === dmz.stance.VOTE_YES) {
 
                   Advisors[subHandle].votesPassed.push(supHandle);
+                  Advisors[subHandle].votesApproved.push(supHandle);
                }
                else if (Votes[supHandle].state === dmz.stance.VOTE_NO) {
 
                   Advisors[subHandle].votesFailed.push(supHandle);
+                  Advisors[subHandle].votesApproved.push(supHandle);
                }
             }
          }
@@ -2259,14 +2255,17 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
                else if (Votes[supHandle].state === dmz.stance.VOTE_ACTIVE) {
 
                   Groups[subHandle].votesActive.push(supHandle);
+                  Groups[subHandle].votesApproved.push(supHandle);
                }
                else if (Votes[supHandle].state === dmz.stance.VOTE_YES) {
 
                   Groups[subHandle].votesPassed.push(supHandle);
+                  Groups[subHandle].votesApproved.push(supHandle);
                }
                else if (Votes[supHandle].state === dmz.stance.VOTE_NO) {
 
                   Groups[subHandle].votesFailed.push(supHandle);
+                  Groups[subHandle].votesApproved.push(supHandle);
                }
             }
          }
