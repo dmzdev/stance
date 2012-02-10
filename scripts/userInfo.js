@@ -71,21 +71,7 @@ var dmz =
    , postTagsByUser
    , commentTagsByUser
    , questionTagsByUser
-   , votesByAdvisor
-   , questionsByAdvisor
-   , deniedVotesByAdvisor
-   , approvedVotesByAdvisor
-   , passedVotesByAdvisor
-   , failedVotesByAdvisor
-   , votesByGroups
-   , deniedVotesByGroups
-   , approvedVotesByGroups
-   , failedVotesByGroups
-   , passedVotesByGroups
-   , postsByGroups
-   , commentsByGroups
-   , questionsByGroups
-   , mediaSeenByUsers
+   , byAdvisor
    , tagsByGroups
    , byGroups
    , setUserPictureLabel
@@ -740,7 +726,8 @@ questionTagsByUser = function (groupHandle) {
 };
 
 /* advisor graphs */
-votesByAdvisor = function (groupHandle) {
+
+byAdvisor = function (groupHandle, fieldName, field, xPos, yPos) {
 
    var legend = []
      , colorNumber = 765
@@ -760,7 +747,7 @@ votesByAdvisor = function (groupHandle) {
 
             brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
             legend.push(
-               { amt: Advisors[advisorHandle].votes.length
+               { amt: Advisors[advisorHandle][field].length
                , brush: brush
                , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
                });
@@ -769,7 +756,7 @@ votesByAdvisor = function (groupHandle) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
             legend.push(
-               { amt: Advisors[advisorHandle].votes.length
+               { amt: Advisors[advisorHandle][field].length
                , brush: brush
                , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
                });
@@ -778,7 +765,7 @@ votesByAdvisor = function (groupHandle) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
             legend.push(
-               { amt: Advisors[advisorHandle].votes.length
+               { amt: Advisors[advisorHandle][field].length
                , brush: brush
                , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
                });
@@ -787,336 +774,14 @@ votesByAdvisor = function (groupHandle) {
       });
       createPieChart
          ( legend
-         , function (total) { return "Votes By Advisor: (Total Votes: " + total + ")"; }
+         , function (total) { return fieldName + " By Advisor: (Total " + fieldName + ": " + total + ")"; }
          , Groups[groupHandle].ui.advisorGraphicsScene
-         , { x: 0, y: 0 }
-         );
-   }
-};
-
-questionsByAdvisor = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , advisors = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      advisors = Groups[groupHandle].advisors;
-      colorStep = 765 / advisors.length;
-      advisors.forEach(function (advisorHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push(
-               { amt: Advisors[advisorHandle].questions.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push(
-               { amt: Advisors[advisorHandle].questions.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push(
-               { amt: Advisors[advisorHandle].questions.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         currentColor += colorStep;
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Questions By Advisor: (Total Questions: " + total + ")"; }
-         , Groups[groupHandle].ui.advisorGraphicsScene
-         , { x: 600, y: 0 }
-         );
-   }
-};
-
-deniedVotesByAdvisor = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , advisors = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      advisors = Groups[groupHandle].advisors;
-      colorStep = 765 / advisors.length;
-      advisors.forEach(function (advisorHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push(
-               { amt: Advisors[advisorHandle].votesDenied.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push(
-               { amt: Advisors[advisorHandle].votesDenied.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push(
-               { amt: Advisors[advisorHandle].votesDenied.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         currentColor += colorStep;
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Votes Denied By Advisor: (Total Votes Denied: " + total + ")"; }
-         , Groups[groupHandle].ui.advisorGraphicsScene
-         , { x: 0, y: 300 }
-         );
-   }
-};
-
-approvedVotesByAdvisor = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , advisors = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      advisors = Groups[groupHandle].advisors;
-      colorStep = 765 / advisors.length;
-      advisors.forEach(function (advisorHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push(
-               { amt: (Advisors[advisorHandle].votesPassed.length + Advisors[advisorHandle].votesFailed.length)
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push(
-               { amt: (Advisors[advisorHandle].votesPassed.length + Advisors[advisorHandle].votesFailed.length)
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push(
-               { amt: (Advisors[advisorHandle].votesPassed.length + Advisors[advisorHandle].votesFailed.length)
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         currentColor += colorStep;
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Votes Approved By Advisor: (Total Approved Votes: " + total + ")"; }
-         , Groups[groupHandle].ui.advisorGraphicsScene
-         , { x: 600, y: 300 }
-         );
-   }
-};
-
-passedVotesByAdvisor = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , advisors = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      advisors = Groups[groupHandle].advisors;
-      colorStep = 765 / advisors.length;
-      advisors.forEach(function (advisorHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push(
-               { amt: Advisors[advisorHandle].votesPassed.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push(
-               { amt: Advisors[advisorHandle].votesPassed.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push(
-               { amt: Advisors[advisorHandle].votesPassed.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         currentColor += colorStep;
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Votes Passed By Advisor: (Total Votes Passed: " + total + ")"; }
-         , Groups[groupHandle].ui.advisorGraphicsScene
-         , { x: 0, y: 600 }
-         );
-   }
-};
-
-failedVotesByAdvisor = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , advisors = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      advisors = Groups[groupHandle].advisors;
-      colorStep = 765 / advisors.length;
-      advisors.forEach(function (advisorHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push(
-               { amt: Advisors[advisorHandle].votesFailed.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push(
-               { amt: Advisors[advisorHandle].votesFailed.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push(
-               { amt: Advisors[advisorHandle].votesFailed.length
-               , brush: brush
-               , label: (Advisors[advisorHandle].name + " (" + Advisors[advisorHandle].title + ")")
-               });
-         }
-         currentColor += colorStep;
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Votes Failed By Advisor: (Total Votes: " + total + ")"; }
-         , Groups[groupHandle].ui.advisorGraphicsScene
-         , { x: 600, y: 600 }
+         , { x: xPos, y: yPos }
          );
    }
 };
 
 /* all groups graphs */
-
-approvedVotesByGroups = function () {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , brush
-     ;
-
-   if (Groups && AllGroupsTab && AllGroupsTab.ui) {
-
-      colorStep = 765 / Object.keys(Groups).length;
-      Object.keys(Groups).forEach(function (key) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push(
-               { amt: (Groups[key].votesPassed.length + Groups[key].votesFailed.length)
-               , brush: brush
-               , label: Groups[key].name
-               });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push(
-               { amt: (Groups[key].votesPassed.length + Groups[key].votesFailed.length)
-               , brush: brush
-               , label: Groups[key].name
-               });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push(
-               { amt: (Groups[key].votesPassed.length + Groups[key].votesFailed.length)
-               , brush: brush
-               , label: Groups[key].name
-               });
-         }
-         currentColor += colorStep;
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Approved Votes Per Group: (Total Approved Votes: " + total + ")"; }
-         , AllGroupsTab.ui.graphicsScene
-         , {x: 600, y: 600 }
-         );
-   }
-};
 
 tagsByGroups = function () {
 
@@ -1612,12 +1277,12 @@ fillGroupInfoWidget = function (groupHandle) {
       commentTagsByUser(groupHandle);
       questionTagsByUser(groupHandle);
 
-      votesByAdvisor(groupHandle);
-      questionsByAdvisor(groupHandle);
-      deniedVotesByAdvisor(groupHandle);
-      approvedVotesByAdvisor(groupHandle);
-      passedVotesByAdvisor(groupHandle);
-      failedVotesByAdvisor(groupHandle);
+      byAdvisor(groupHandle, "Votes", "votes", 0, 0);
+      byAdvisor(groupHandle, "Questions", "questions", 600, 0);
+      byAdvisor(groupHandle, "Votes Denied", "votesDenied", 0, 300);
+      byAdvisor(groupHandle, "Votes Approved", "votesApproved", 600, 300);
+      byAdvisor(groupHandle, "Votes Passed", "votesPassed", 0, 600);
+      byAdvisor(groupHandle, "Votes Failed", "votesFailed", 600, 600);
    }
 };
 
