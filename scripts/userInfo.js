@@ -71,8 +71,8 @@ var dmz =
    , postTagsByUser
    , commentTagsByUser
    , questionTagsByUser
+   , byUser
    , byAdvisor
-   , tagsByGroups
    , byGroups
    , setUserPictureLabel
    , setVotesSeenLabel
@@ -353,7 +353,7 @@ groupVoteDistribution = function (groupHandle) {
    }
 };
 
-votesSubmittedByUsers = function (groupHandle) {
+byUser = function (groupHandle, fieldName, field, xPos, yPos) {
 
    var legend = []
      , colorNumber = 765
@@ -361,6 +361,7 @@ votesSubmittedByUsers = function (groupHandle) {
      , currentColor = 0
      , users = []
      , brush
+     , amount
      ;
 
    if (Groups[groupHandle] && Groups[groupHandle].ui) {
@@ -369,358 +370,34 @@ votesSubmittedByUsers = function (groupHandle) {
       colorStep = 765 / users.length;
       users.forEach(function (userHandle) {
 
+         if (Users[userHandle][field].length !== undefined) { amount = Users[userHandle][field].length }
+         else if (Users[userHandle][field] !== undefined) { amount = Users[userHandle][field] }
+         else {
+
+            self.log.error("Error Setting Value For", fieldName, "Chart");
+            amount = 0;
+         }
          if (currentColor <= 255) {
 
             brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Users[userHandle].votesCreated.length, brush: brush, label: Users[userHandle].name });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push( { amt: Users[userHandle].votesCreated.length, brush: brush, label: Users[userHandle].name });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Users[userHandle].votesCreated.length, brush: brush, label: Users[userHandle].name });
-         }
-         currentColor += colorStep;
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Votes Created By User: (Total Votes: " + total + ")"; }
-         , Groups[groupHandle].ui.groupGraphicsScene
-         , { x: 600, y: 0 }
-         );
-   }
-};
-
-postsByUsers = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , users = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      users = Groups[groupHandle].members;
-      colorStep = 765 / users.length;
-      users.forEach(function (userHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Users[userHandle].posts.length, brush: brush, label: Users[userHandle].name });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push( { amt: Users[userHandle].posts.length, brush: brush, label: Users[userHandle].name });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Users[userHandle].posts.length, brush: brush, label: Users[userHandle].name });
-         }
-         currentColor += colorStep;
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Posts Created By User: (Total Posts: " + total + ")"; }
-         , Groups[groupHandle].ui.groupGraphicsScene
-         , { x: 0, y: 300 }
-         );
-   }
-};
-
-commentsByUsers = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , users = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      users = Groups[groupHandle].members;
-      colorStep = 765 / users.length;
-      users.forEach(function (userHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Users[userHandle].comments.length, brush: brush, label: Users[userHandle].name });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255)) / 255, b: 0 });
-            legend.push( { amt: Users[userHandle].comments.length, brush: brush, label: Users[userHandle].name });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Users[userHandle].comments.length, brush: brush, label: Users[userHandle].name });
-         }
-         currentColor += colorStep;
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Comments Created By User: (Total Comments: " + total + ")"; }
-         , Groups[groupHandle].ui.groupGraphicsScene
-         , { x: 600, y: 300 }
-         );
-   }
-};
-
-totalTagsByUser = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , users = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      users = Groups[groupHandle].members;
-      colorStep = 765 / users.length;
-      users.forEach(function (userHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Users[userHandle].totalTags, brush: brush, label: Users[userHandle].name });
+            legend.push( { amt: amount, brush: brush, label: Users[userHandle].name });
          }
          else if ((currentColor > 255) && (currentColor <= 510)) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255) / 255), b: 0 });
-            legend.push( { amt: Users[userHandle].totalTags, brush: brush, label: Users[userHandle].name });
+            legend.push( { amt: amount, brush: brush, label: Users[userHandle].name });
          }
          else if (currentColor > 510) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Users[userHandle].totalTags, brush: brush, label: Users[userHandle].name });
+            legend.push( { amt: amount, brush: brush, label: Users[userHandle].name });
          }
       });
       createPieChart
          ( legend
-         , function (total) { return "Total Items Tagged From User: (Total Tags: " + total + ")"; }
+         , function (total) { return fieldName + " From User: (Total " + fieldName + ": " + total + ")"; }
          , Groups[groupHandle].ui.groupGraphicsScene
-         , { x: 0, y: 600 }
-         );
-   }
-};
-
-pdfItemTagsByUser = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , users = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      users = Groups[groupHandle].members;
-      colorStep = 765 / users.length;
-      users.forEach(function (userHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Users[userHandle].pdfItemTags, brush: brush, label: Users[userHandle].name });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255) / 255), b: 0 });
-            legend.push( { amt: Users[userHandle].pdfItemTags, brush: brush, label: Users[userHandle].name });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Users[userHandle].pdfItemTags, brush: brush, label: Users[userHandle].name });
-         }
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Pdf Items Tagged From User: (Total Tags: " + total + ")"; }
-         , Groups[groupHandle].ui.groupGraphicsScene
-         , { x: 600, y: 600 }
-         );
-   }
-};
-
-voteItemTagsByUser = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , users = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      users = Groups[groupHandle].members;
-      colorStep = 765 / users.length;
-      users.forEach(function (userHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Users[userHandle].voteTags, brush: brush, label: Users[userHandle].name });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255) / 255), b: 0 });
-            legend.push( { amt: Users[userHandle].voteTags, brush: brush, label: Users[userHandle].name });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Users[userHandle].voteTags, brush: brush, label: Users[userHandle].name });
-         }
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Votes Tagged From User: (Total Tags: " + total + ")"; }
-         , Groups[groupHandle].ui.groupGraphicsScene
-         , { x: 0, y: 900 }
-         );
-   }
-};
-
-postTagsByUser = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , users = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      users = Groups[groupHandle].members;
-      colorStep = 765 / users.length;
-      users.forEach(function (userHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Users[userHandle].postTags, brush: brush, label: Users[userHandle].name });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255) / 255), b: 0 });
-            legend.push( { amt: Users[userHandle].postTags, brush: brush, label: Users[userHandle].name });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Users[userHandle].postTags, brush: brush, label: Users[userHandle].name });
-         }
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Posts Tagged From User: (Total Tags: " + total + ")"; }
-         , Groups[groupHandle].ui.groupGraphicsScene
-         , { x: 600, y: 900 }
-         );
-   }
-};
-
-commentTagsByUser = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , users = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      users = Groups[groupHandle].members;
-      colorStep = 765 / users.length;
-      users.forEach(function (userHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Users[userHandle].commentTags, brush: brush, label: Users[userHandle].name });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255) / 255), b: 0 });
-            legend.push( { amt: Users[userHandle].commentTags, brush: brush, label: Users[userHandle].name });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Users[userHandle].commentTags, brush: brush, label: Users[userHandle].name });
-         }
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Commets Tagged From User: (Total Tags: " + total + ")"; }
-         , Groups[groupHandle].ui.groupGraphicsScene
-         , { x: 0, y: 1200 }
-         );
-   }
-};
-
-questionTagsByUser = function (groupHandle) {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , users = []
-     , brush
-     ;
-
-   if (Groups[groupHandle] && Groups[groupHandle].ui) {
-
-      users = Groups[groupHandle].members;
-      colorStep = 765 / users.length;
-      users.forEach(function (userHandle) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Users[userHandle].questionTags, brush: brush, label: Users[userHandle].name });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255) / 255), b: 0 });
-            legend.push( { amt: Users[userHandle].questionTags, brush: brush, label: Users[userHandle].name });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Users[userHandle].questionTags, brush: brush, label: Users[userHandle].name });
-         }
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Questions Tagged From User: (Total Tags: " + total + ")"; }
-         , Groups[groupHandle].ui.groupGraphicsScene
-         , { x: 600, y: 1200 }
+         , { x: xPos, y: yPos }
          );
    }
 };
@@ -782,47 +459,6 @@ byAdvisor = function (groupHandle, fieldName, field, xPos, yPos) {
 };
 
 /* all groups graphs */
-
-tagsByGroups = function () {
-
-   var legend = []
-     , colorNumber = 765
-     , colorStep = 0
-     , currentColor = 0
-     , brush
-     ;
-
-   if (Groups && AllGroupsTab && AllGroupsTab.ui) {
-
-      colorStep = 765 / Object.keys(Groups).length;
-      Object.keys(Groups).forEach(function (key) {
-
-         if (currentColor <= 255) {
-
-            brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Groups[key].totalTags, brush: brush, label: Groups[key].name });
-         }
-         else if ((currentColor > 255) && (currentColor <= 510)) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255) / 255), b: 0 });
-            legend.push( { amt: Groups[key].totalTags, brush: brush, label: Groups[key].name });
-         }
-         else if (currentColor > 510) {
-
-            brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Groups[key].totalTags, brush: brush, label: Groups[key].name });
-         }
-         currentColor += colorStep;
-      });
-      createPieChart
-         ( legend
-         , function (total) { return "Tags Per Group: (Total Tags: " + total + ")"; }
-         , AllGroupsTab.ui.graphicsScene
-         , { x: 0, y: 1200 }
-         );
-   }
-};
-
 byGroups = function (fieldName, field, xPos, yPos) {
 
    var legend = []
@@ -830,6 +466,7 @@ byGroups = function (fieldName, field, xPos, yPos) {
      , colorStep = 0
      , currentColor = 0
      , brush
+     , amount
      ;
 
    if (Groups && AllGroupsTab && AllGroupsTab.ui) {
@@ -837,20 +474,24 @@ byGroups = function (fieldName, field, xPos, yPos) {
       colorStep = 765 / Object.keys(Groups).length;
       Object.keys(Groups).forEach(function (key) {
 
+         if (Groups[key][field].length !== undefined) { amount = Groups[key][field].length }
+         else if (Groups[key][field] !== undefined) { amount = Groups[key][field] }
+         else { self.log.error("Error Setting Value For", fieldName, "Chart"); }
+
          if (currentColor <= 255) {
 
             brush = dmz.ui.graph.createBrush({ r: (currentColor / 255), g: 0, b: 0 });
-            legend.push( { amt: Groups[key][field].length, brush: brush, label: Groups[key].name });
+            legend.push( { amt: amount, brush: brush, label: Groups[key].name });
          }
          else if ((currentColor > 255) && (currentColor <= 510)) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: ((currentColor - 255) / 255), b: 0 });
-            legend.push( { amt: Groups[key][field].length, brush: brush, label: Groups[key].name });
+            legend.push( { amt: amount, brush: brush, label: Groups[key].name });
          }
          else if (currentColor > 510) {
 
             brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
-            legend.push( { amt: Groups[key][field].length, brush: brush, label: Groups[key].name });
+            legend.push( { amt: amount, brush: brush, label: Groups[key].name });
          }
          currentColor += colorStep;
       });
@@ -1266,16 +907,17 @@ fillGroupInfoWidget = function (groupHandle) {
       setTotalQuestionsLabel(groupHandle);
       setTotalMediaLabel(groupHandle);
       setMemberCountLabel(groupHandle);
+
       groupVoteDistribution(groupHandle);
-      votesSubmittedByUsers(groupHandle);
-      postsByUsers(groupHandle);
-      commentsByUsers(groupHandle);
-      totalTagsByUser(groupHandle);
-      pdfItemTagsByUser(groupHandle);
-      voteItemTagsByUser(groupHandle);
-      postTagsByUser(groupHandle);
-      commentTagsByUser(groupHandle);
-      questionTagsByUser(groupHandle);
+      byUser(groupHandle, "Votes Created", "votesCreated", 600, 0);
+      byUser(groupHandle, "Posts Created", "posts", 0, 300);
+      byUser(groupHandle, "Comments Created", "comments", 600 , 300);
+      byUser(groupHandle, "Items Tagged", "totalTags", 0, 600);
+      byUser(groupHandle, "Pdf Items Tagged", "pdfItemTags", 600, 600);
+      byUser(groupHandle, "Votes Tagged", "voteTags", 0, 900);
+      byUser(groupHandle, "Posts Tagged", "postTags", 600, 900)
+      byUser(groupHandle, "Comments Tagged", "commentTags", 0, 1200);
+      byUser(groupHandle, "Questions Tagged", "questionTags", 600, 1200);
 
       byAdvisor(groupHandle, "Votes", "votes", 0, 0);
       byAdvisor(groupHandle, "Questions", "questions", 600, 0);
@@ -1324,7 +966,7 @@ createGroupTabs = function () {
    byGroups("Posts", "posts", 600, 0);
    byGroups("Comments", "comments", 0, 300);
    byGroups("Questions", "questions", 600, 300);
-   tagsByGroups();
+   byGroups("Tags", "totalTags", 0, 1200);
 
    Object.keys(Groups).forEach(function (key) {
 
