@@ -62,15 +62,6 @@ var dmz =
    , tagTypes
    , totalTagPercentage
    , groupVoteDistribution
-   , votesSubmittedByUsers
-   , postsByUsers
-   , commentsByUsers
-   , totalTagsByUser
-   , pdfItemTagsByUser
-   , voteItemTagsByUser
-   , postTagsByUser
-   , commentTagsByUser
-   , questionTagsByUser
    , byUser
    , byAdvisor
    , byGroups
