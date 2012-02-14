@@ -371,6 +371,11 @@ updateTags = function (voteHandle) {
          VoteObjects[voteHandle].ui.tagButton.hide();
          VoteObjects[voteHandle].ui.tagsLayout.removeWidget(VoteObjects[voteHandle].ui.tagButton);
       }
+      if (dmz.stance.isAllowed(hil, dmz.stance.DisruptTheForceFlag) && !VoteObjects[voteHandle].dtf) {
+
+         VoteObjects[voteHandle].ui.dtfButton.show();
+      }
+      else { VoteObjects[voteHandle].ui.dtfButton.hide(); }
    }
 };
 
@@ -836,6 +841,38 @@ initiateVoteUI = function (voteHandle) {
 
          setApprovalPendingLabels(voteHandle);
       }
+      voteItem.ui.dtfButton.observe(self, "clicked", function () {
+
+         var numberOfDtfVotes = Groups[userGroupHandle].dtfVotes.length + 1;
+
+         self.log.error(numberOfDtfVotes);
+         if (Groups[userGroupHandle] && Groups[userGroupHandle].dtfVotes) {
+
+            voteItem.ui.dtfButton.hide();
+            if (numberOfDtfVotes >= 1) {
+
+               Groups[userGroupHandle].users.forEach(function (userHandle) {
+
+                  dmz.stance.unlockAchievement(userHandle, dmz.stance.DisruptionInTheForceOneAchievement);
+               });
+            }
+            if (numberOfDtfVotes >= 2) {
+
+               Groups[userGroupHandle].users.forEach(function (userHandle) {
+
+                  dmz.stance.unlockAchievement(userHandle, dmz.stance.DisruptionInTheForceTwoAchievement);
+               });
+            }
+            if (numberOfDtfVotes >= 4) {
+
+               Groups[userGroupHandle].users.forEach(function (userHandle) {
+
+                  dmz.stance.unlockAchievement(userHandle, dmz.stance.DisruptionInTheForceThreeAchievement);
+               });
+            }
+            dmz.object.flag(voteItem.handle, dmz.stance.DisruptionInTheForceHandle, true);
+         }
+      });
    }
 };
 
@@ -1218,7 +1255,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
    if (objType.isOfType(dmz.stance.VoteType)) {
 
-      VoteObjects[objHandle] = { handle: objHandle };
+      VoteObjects[objHandle] = { handle: objHandle, dtf: false };
    }
    if (objType.isOfType(dmz.stance.UserType)) {
 
@@ -1243,6 +1280,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , users: []
          , yesVotes: []
          , noVotes: []
+         , dtfVotes: []
          }
    }
 });
@@ -1253,6 +1291,23 @@ function (objHandle, attrHandle, newVal, oldVal) {
    if (VoteObjects[objHandle]) {
 
       VoteObjects[objHandle].expired = newVal;
+   }
+});
+
+dmz.object.flag.observe(self, dmz.stance.DisruptionInTheForceHandle,
+function (objHandle, attrHandle, newVal, oldVal) {
+
+   if (VoteObjects[objHandle]) {
+
+      VoteObjects[objHandle].dtf = newVal;
+      dmz.time.setTimer(self, function () {
+
+         if (VoteObjects[objHandle].groupHandle && Groups[VoteObjects[objHandle].groupHandle] &&
+            newVal) {
+
+            Groups[VoteObjects[objHandle].groupHandle].dtfVotes.push(objHandle);
+         }
+      });
    }
 });
 

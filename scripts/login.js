@@ -71,7 +71,10 @@ self.shutdown = function () {
 
 _activateUser = function (name) {
 
-   var handle;
+   var handle
+     , logins
+     , consecutiveLogins
+     ;
 
    if (_userName && (name === _userName)) {
 
@@ -82,7 +85,25 @@ _activateUser = function (name) {
          if (dmz.object.flag(handle, dmz.stance.ActiveHandle)) {
 
             dmz.object.flag(handle, dmz.object.HILAttribute, true);
-            dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackAchievement);
+            dmz.object.flag(_userHandle, dmz.stance.UpdateLastLoginTimeHandle, true);
+            dmz.object.timeStamp(_userHandle, dmz.stance.LastPingTimeHandle, 0);
+            logins = dmz.object.scalar(_userHandle, dmz.stance.ActiveHandle) || 0;
+            logins += 1;
+            dmz.object.scalar(_userHandle, dmz.stance.ActiveHandle, logins);
+            if ((logins >= 2) && (logins < 10)) {
+
+               dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackOneAchievement);
+            }
+            if ((logins >= 10) && (logins < 20)) {
+
+               dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackTwoAchievement);
+            }
+            if (logins > 20) {
+
+               dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackThreeAchievement);
+            }
+            consecutiveLogins = dmz.stance.scalar(_userHandle, dmz.stance.ConsecutiveLoginsHandle) || 0;
+            if (consecutiveLogins >= 5) { dmz.stance.unlockAchievement(_userHandle, dmz.stance.FrequentFlyerAchievement); }
          }
          else { disabledDialog.open(self, function () { dmz.sys.requestExit(); }); }
       }
@@ -187,6 +208,7 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
      , unverified = "*"
      , timeStamp
      , groupName
+     , logins
      ;
 
    if (handle === _userHandle) {
@@ -203,8 +225,6 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
       _userHandle = handle;
       name = dmz.stance.getDisplayName(_userHandle);
       _setTitle(_userHandle);
-      dmz.object.flag(_userHandle, dmz.stance.UpdateLastLoginTimeHandle, true);
-      dmz.object.timeStamp(_userHandle, dmz.stance.LastPingTimeHandle, 0);
       self.log.info("User identified: " + name);
    }
 });

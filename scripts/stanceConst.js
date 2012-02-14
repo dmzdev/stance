@@ -73,6 +73,7 @@ var dmz =
         , GroupWikiLinkHandle: dmz.defs.createNamedHandle("wiki_link")
         , ExpiredHandle: dmz.defs.createNamedHandle("expired")
         , DisruptionInTheForceHandle: dmz.defs.createNamedHandle("disruption_in_the_force")
+        , ConsecutiveLoginsHandle: dmz.defs.createNamedHandle("consecutive_logins")
 
         // Link Attr Handles
         , AdvisorGroupHandle: dmz.defs.createNamedHandle("advisor_group")
@@ -210,6 +211,7 @@ var dmz =
         , ChangePermissionsFlag: dmz.defs.lookupState("Change_Permission_Sets")
         , LimitedPingFlag: dmz.defs.lookupState("Limited_Ping")
         , UnlimitedPingFlag: dmz.defs.lookupState("Unlimited_Ping")
+        , DisruptTheForceFlag: dmz.defs.lookupState("Disrupt_The_Force")
         }
 
    , Permissions =
@@ -254,6 +256,7 @@ var dmz =
              , States.SeeTagFlag
              , States.InjectPDFFlag
              , States.UnlimitedPingFlag
+             , States.DisruptTheForceFlag
              ]
         , AdvisorPermissions: // Needs to be customized for each advisor user created
              [
@@ -296,6 +299,7 @@ var dmz =
              , States.InjectPDFFlag
              , States.ChangePermissionsFlag
              , States.UnlimitedPingFlag
+             , States.DisruptTheForceFlag
              ]
         }
    , Messages =

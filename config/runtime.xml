@@ -99,5 +99,6 @@
    <state name="Change_Permission_Sets"/>
    <state name="Limited_Ping"/>
    <state name="Unlimited_Ping"/>
+   <state name="Disrupt_The_Force"/>
 </runtime>
 </dmz>

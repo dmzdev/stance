@@ -767,6 +767,8 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
             dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle));
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.STUDENT_PERMISSION);
+         dmz.object.scalar(user, dmz.stance.ActiveHandle, 0);
+         dmz.object.scalar(user, dmz.stance.ConsecutiveLoginsHandle, 0);
          dmz.object.state(
             user,
             dmz.stance.Permissions,
@@ -808,6 +810,8 @@ editScenarioWidget.observe(self, "createAdminButton", "clicked", function () {
             dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle));
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.ADMIN_PERMISSION);
+         dmz.object.scalar(user, dmz.stance.ActiveHandle, 0);
+         dmz.object.scalar(user, dmz.stance.ConsecutiveLoginsHandle, 0);
          dmz.object.state(
             user,
             dmz.stance.Permissions,
@@ -849,6 +853,8 @@ editScenarioWidget.observe(self, "createObserverButton", "clicked", function () 
             dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle));
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.OBSERVER_PERMISSION);
+         dmz.object.scalar(user, dmz.stance.ActiveHandle, 0);
+         dmz.object.scalar(user, dmz.stance.ConsecutiveLoginsHandle, 0);
          dmz.object.state(
             user,
             dmz.stance.Permissions,
@@ -890,6 +896,8 @@ editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
             dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle));
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.TECH_PERMISSION);
+         dmz.object.scalar(user, dmz.stance.ActiveHandle, 0);
+         dmz.object.scalar(user, dmz.stance.ConsecutiveLoginsHandle, 0);
          dmz.object.state(
             user,
             dmz.stance.Permissions,
@@ -931,6 +939,8 @@ editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
             dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle));
          dmz.object.flag(user, dmz.stance.UpdateLastLoginTimeHandle, false);
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.ADVISOR_PERMISSION);
+         dmz.object.scalar(user, dmz.stance.ActiveHandle, 0);
+         dmz.object.scalar(user, dmz.stance.ConsecutiveLoginsHandle, 0);
          state = dmz.object.state(CurrentGameHandle, dmz.stance.AdvisorPermissionsHandle) || dmz.stance.AdvisorPermissions;
          advisorCB.forEach(function (widget, index) {
 

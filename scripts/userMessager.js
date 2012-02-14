@@ -191,7 +191,8 @@ initUIItems = function () {
    Object.keys(Users).forEach(function (key) {
 
       if (Users[key] && !Users[key].ui && (Users[key].groupHandle === userGroupHandle) &&
-         Users[key].active && (Users[key].permissions === dmz.stance.STUDENT_PERMISSION)) {
+         Users[key].active && (Users[key].permissions === dmz.stance.STUDENT_PERMISSION) &&
+         (Users[key].handle !== hil)) {
 
          Users[key].ui = {};
          Users[key].ui.widget = dmz.ui.loader.load("PingUserWidget.ui");

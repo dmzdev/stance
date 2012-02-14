@@ -13,7 +13,7 @@
          <achievement name="Right_To_Vote_Three" title="Right To Vote III" description="You have voted 9 times." resource="Logged_In_Image" level="3"/>
       </set>
       <set name="Frequency_Flyer">
-         <achievement name="Frequent_Flyer" title="Frequent Flyer I" description="You have logged in for 5 consecutive days." resource="Logged_In_Image" level="3"/>
+         <achievement name="Frequent_Flyer" title="Frequent Flyer" description="You have logged in for 5 consecutive days." resource="Logged_In_Image" level="3"/>
       </set>
       <set name="Media_Frenzy">
          <achievement name="Media_Frenzy" title="Media Frenzy" description="You have seen 3 news articles, 3 videos and 3 PDFs." resource="Logged_In_Image" level="3"/>
