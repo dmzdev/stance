@@ -457,17 +457,6 @@ getAchievementStates = function () {
    return results;
 };
 
-unlockAchievement = function (handle, achievement) {
-
-   var achievements = dmz.object.state(handle, Handles.Achievements) || dmz.mask.create();
-
-   if (handle && achievement && achievements && dmz.mask.isTypeOf(achievement)) {
-
-      achievements = achievements.or(achievement);
-      dmz.object.state(handle, Handles.Achievements, achievements);
-   }
-};
-
 hasAchievement = function (handle, achievement) {
 
    var achievements = dmz.object.state(handle, Handles.Achievements)
@@ -479,6 +468,20 @@ hasAchievement = function (handle, achievement) {
       result = achievements.and(achievement).bool();
    }
    return result;
+};
+
+unlockAchievement = function (handle, achievement) {
+
+   var achievements = dmz.object.state(handle, Handles.Achievements) || dmz.mask.create()
+     , data
+     , achievementName
+     ;
+
+   if (handle && achievement && achievements && dmz.mask.isTypeOf(achievement)) {
+
+      achievements = achievements.or(achievement);
+      dmz.object.state(handle, Handles.Achievements, achievements);
+   }
 };
 
 hasSeenAchievement = function (handle, achievement) {

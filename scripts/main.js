@@ -93,6 +93,7 @@ var dmz =
    , AchievementQueue = []
    , DefaultAchievement = "Logged_In_Image"
    , dialogOpen = false
+   , AchievementsMod = false
    , EmailMod =
         { list: []
         , sendMail: function (a, b, c) { this.list.push([a, b, c]); }
@@ -651,9 +652,9 @@ displayNewAchievements = function () {
    if (AchievementQueue.length && !dialogOpen) {
 
       obj = AchievementQueue.pop();
-      achievementText.text(obj.name);
+      achievementText.text("You have unlocked the " + obj.name + " achievement.");
       file = dmz.resources.findFile(obj.image) || dmz.resources.findFile(DefaultAchievement);
-      achievementPic.pixmap(dmz.ui.graph.createPixmap(file));
+      achievementPic.pixmap(dmz.ui.graph.createPixmap(file).scaled(80, 80));
       dialogOpen = true;
       achievementDialog.open(self, function () {
 
@@ -669,12 +670,17 @@ dmz.stance.ACHIEVEMENT_MESSAGE.subscribe(self, function (data) {
    if (data) {
 
       AchievementQueue.push(
-         { image: data.string(dmz.stance.PictureHandle) || DefaultAchievement
-         , name: data.string(dmz.stance.NameHandle) || "N/A"
+         { image: data.string(dmz.stance.PictureHandle, 0) || DefaultAchievement
+         , name: data.string(dmz.stance.NameHandle, 0) || "N/A"
          });
 
       if (!dialogOpen) { displayNewAchievements(); }
    }
+});
+
+dmz.module.subscribe(self, "achievements", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) { AchievementsMod = module; }
 });
 
 dmz.module.publish(self, _exports);

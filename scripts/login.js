@@ -102,7 +102,7 @@ _activateUser = function (name) {
 
                dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackThreeAchievement);
             }
-            consecutiveLogins = dmz.stance.scalar(_userHandle, dmz.stance.ConsecutiveLoginsHandle) || 0;
+            consecutiveLogins = dmz.object.scalar(_userHandle, dmz.stance.ConsecutiveLoginsHandle) || 0;
             if (consecutiveLogins >= 5) { dmz.stance.unlockAchievement(_userHandle, dmz.stance.FrequentFlyerAchievement); }
          }
          else { disabledDialog.open(self, function () { dmz.sys.requestExit(); }); }

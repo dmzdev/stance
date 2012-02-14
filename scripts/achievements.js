@@ -41,6 +41,7 @@ var dmz =
    , BRONZE = 1
    , Users = {}
    , Achievements = {}
+   , NonLayeredAchievemets = {}
    , UIArray = []
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , beenOpened = false
@@ -57,10 +58,51 @@ checkForNotifications = function () {
 
    if (Users[hil] && Users[hil].achievements) {
 
-      if (!Users[hil].previousAchievements) { MainModule.highlight("Rolodex"); }
+      if (!Users[hil].previousAchievements) {
+
+         MainModule.highlight("Rolodex");
+         Object.keys(NonLayeredAchievemets).forEach(function (key) {
+
+            var data;
+
+            if (NonLayeredAchievemets[key].achievement.and(Users[hil].achievements).bool() &&
+               !NonLayeredAchievemets[key].messageSent) {
+
+               NonLayeredAchievemets[key].messageSent = true;
+               data = dmz.data.create();
+               data.string(dmz.stance.NameHandle, 0, NonLayeredAchievemets[key].title);
+               data.string(dmz.stance.PictureHandle, 0, NonLayeredAchievemets[key].picture);
+               dmz.time.setTimer(self, 2, function () { dmz.stance.ACHIEVEMENT_MESSAGE.send(data); });
+            }
+         });
+      }
       else if (Users[hil].achievements.xor(Users[hil].previousAchievements).bool()) {
 
          MainModule.highlight("Rolodex");
+         Object.keys(NonLayeredAchievemets).forEach(function (key) {
+
+            var isInAchievements = false
+               , isInPreviousAchievements = false
+               , data
+               ;
+
+            if (NonLayeredAchievemets[key].achievement.and(Users[hil].achievements).bool()) {
+
+               isInAchievements = true;
+            }
+            if (NonLayeredAchievemets[key].achievement.and(Users[hil].previousAchievements).bool()) {
+
+               isInPreviousAchievements = true;
+            }
+            if (isInAchievements && !isInPreviousAchievements && !NonLayeredAchievemets[key].messageSent) {
+
+               NonLayeredAchievemets[key].messageSent = true;
+               data = dmz.data.create();
+               data.string(dmz.stance.NameHandle, 0, NonLayeredAchievemets[key].title);
+               data.string(dmz.stance.PictureHandle, 0, NonLayeredAchievemets[key].picture);
+               dmz.time.setTimer(self, 2, function () { dmz.stance.ACHIEVEMENT_MESSAGE.send(data); });
+            }
+         });
       }
    }
 };
@@ -135,6 +177,8 @@ _exports.closeWindow = function () {
 
 _exports.achievementForm = achievementForm;
 
+_exports.Achievements = NonLayeredAchievemets;
+
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
@@ -203,19 +247,36 @@ init = function () {
       };
       setItemList.forEach(function (achievement) {
 
-         var picture = achievement.string("resource");
+         var picture = achievement.string("resource")
+           , pictureString = ""
+           ;
 
-         if (picture) { picture = dmz.resources.findFile(picture); }
+         if (picture) {
+
+            pictureString = picture;
+            picture = dmz.resources.findFile(picture);
+         }
          if (picture) { picture = dmz.ui.graph.createPixmap(picture); }
          if (picture) { picture = picture.scaled(80, 80); }
          Achievements[setItem.string("name")].achievements.push(
             { name: achievement.string("name")
             , title: achievement.string("title")
             , description: achievement.string("description")
+            , picture: pictureString
             , picturePixmap: picture
             , achievement: dmz.defs.lookupState(achievement.string("name"))
             , level: achievement.number("level")
             });
+         NonLayeredAchievemets[achievement.string("name")] =
+            { name: achievement.string("name")
+            , title: achievement.string("title")
+            , description: achievement.string("description")
+            , picture: pictureString
+            , picturePixmap: picture
+            , achievement: dmz.defs.lookupState(achievement.string("name"))
+            , level: achievement.number("level")
+            , messageSent: false
+            };
       });
    });
 };
