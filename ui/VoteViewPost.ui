@@ -324,6 +324,13 @@
          </spacer>
         </item>
         <item>
+         <widget class="QPushButton" name="dtfButton">
+          <property name="text">
+           <string>DTF</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="tagButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">

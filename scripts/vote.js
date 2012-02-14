@@ -41,6 +41,9 @@ var dmz =
    , EmailMod = false
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , VoteObjects = {}
+   , Users = {}
+   , Groups = {}
+   , Advisors = {}
    , PastVotes = []
    , ActiveVotes = []
    , ApprovalVotes = []
@@ -53,6 +56,10 @@ var dmz =
 
    //Functions
    , toDate = dmz.util.timeStampToDate
+   , checkForStrategistAchievement
+   , checkForOnTheBallot
+   , checkForApprovedVotes
+   , checkForVoteAchievement
    , indexOfVote
    , insertIntoVotes
    , removeFromVotes
@@ -80,6 +87,106 @@ var dmz =
    , clearLayout
    , init
    ;
+
+checkForStrategistAchievement = function (groupHandle) {
+
+   if ((Groups[groupHandle].yesVotes.length >= 3) && (Groups[groupHandle].yesVotes.length < 6)) {
+
+      Groups[groupHandle].users.forEach(function (userHandle) {
+
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.StrategistOneAchievement);
+      });
+   }
+   else if ((Groups[groupHandle].yesVotes.length >= 6) && (Groups[groupHandle].yesVotes.length < 9)) {
+
+      Groups[groupHandle].users.forEach(function (userHandle) {
+
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.StrategistTwoAchievement);
+      });
+   }
+   else if (Groups[groupHandle].yesVotes.length >= 9) {
+
+      Groups[groupHandle].users.forEach(function (userHandle) {
+
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.StrategistThreeAchievement);
+      });
+   }
+};
+
+checkForOnTheBallot = function (groupHandle) {
+
+   var allAdvisorsHaveVotes = true;
+
+   Object.keys(Advisors).forEach(function (key) {
+
+      if ((Advisors[key].groupHandle === groupHandle) && !(Advisors[key].approvedVotes.length)) {
+
+         allAdvisorsHaveVotes = false;
+      }
+   });
+   if (allAdvisorsHaveVotes && Groups[groupHandle]) {
+
+      Groups[groupHandle].users.forEach(function (userHandle) {
+
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.OnTheBallotAchievement);
+      });
+   }
+};
+
+checkForApprovedVotes = function (createdByHandle) {
+
+   var approvedVotes = 0;
+
+   if (Users[createdByHandle] && Users[createdByHandle].votesCreated) {
+
+      Users[createdByHandle].votesCreated.forEach(function (voteHandle) {
+
+         if (VoteObjects[voteHandle]) {
+
+            if ((VoteObjects[voteHandle].state === dmz.stance.VOTE_ACTIVE) ||
+               (VoteObjects[voteHandle].state === dmz.stance.VOTE_YES) ||
+               (VoteObjects[voteHandle].state === dmz.stance.VOTE_NO)) {
+
+               approvedVotes += 1;
+            }
+         }
+      });
+   }
+   if ((approvedVotes >= 1) && (approvedVotes < 3)) {
+
+      dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteOneAchievement);
+   }
+   else if ((approvedVotes >= 3) && (approvedVotes < 5)) {
+
+      dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteTwoAchievement);
+   }
+   else if (approvedVotes > 5) {
+
+      dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteThreeAchievement);
+   }
+};
+
+checkForVoteAchievement = function (userHandle) {
+
+   var totalVotes = 0;
+
+   if (Users[userHandle]) {
+
+      totalVotes = Users[userHandle].yesVotes.length + Users[userHandle].noVotes.length;
+      if ((totalVotes < 6) && (totalVotes >= 3)) {
+
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.RightToVoteOneAchievement);
+      }
+      else if ((totalVotes < 9) && (totalVotes >= 6)) {
+
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.RightToVoteTwoAchievement);
+      }
+      else if (totalVotes >= 9) {
+
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.RightToVoteThreeAchievement);
+      }
+   }
+};
 
 updateStateUI = function (voteHandle, pastState) {
 
@@ -422,11 +529,6 @@ setApprovalPendingLabels = function (voteHandle) {
             voteItem.ui.noButton.styleSheet(NO_BUTTON_STYLE);
             voteItem.ui.yesButton.observe(self, "clicked", function () {
 
-               /*var authorHandle = dmz.stance.getAuthorHandle(voteItem.handle);
-               if (authorHandle && !dmz.stance.hasAchievement(authorHandle, dmz.stance.RockTheVoteAchievement)) {
-
-                  dmz.stance.unlockAchievement(authorHandle, dmz.stance.RockTheVoteAchievement);
-               }*/
                voteItem.ui.yesButton.hide();
                voteItem.ui.noButton.hide();
                createDecision(
@@ -530,13 +632,13 @@ setActiveLabels = function (voteHandle) {
             voteItem.ui.noButton.styleSheet(NO_BUTTON_STYLE);
             voteItem.ui.yesButton.observe(self, "clicked", function () {
 
-               userVoted(dmz.object.hil(), voteItem.handle, true);
+               userVoted(hil, voteItem.handle, true);
                voteItem.ui.yesButton.hide();
                voteItem.ui.noButton.hide();
             });
             voteItem.ui.noButton.observe(self, "clicked", function () {
 
-               userVoted(dmz.object.hil(), voteItem.handle, false);
+               userVoted(hil, voteItem.handle, false);
                voteItem.ui.yesButton.hide();
                voteItem.ui.noButton.hide();
             });
@@ -710,6 +812,8 @@ initiateVoteUI = function (voteHandle) {
       voteItem.ui.tagLabel = voteItem.ui.postItem.lookup("tagLabel");
       voteItem.ui.tagButton = voteItem.ui.postItem.lookup("tagButton");
       voteItem.ui.tagButton.styleSheet(dmz.stance.YELLOW_BUTTON);
+      voteItem.ui.dtfButton = voteItem.ui.postItem.lookup("dtfButton");
+      voteItem.ui.dtfButton.styleSheet(dmz.stance.YELLOW_BUTTON);
       voteItem.ui.timeBox = dmz.ui.spinBox.createSpinBox("timeBox");
       voteItem.ui.timeBox.minimum(24);
       voteItem.ui.timeBox.maximum(72);
@@ -925,7 +1029,7 @@ createDecision = function (decisionValue, voteHandle, duration, reason) {
    dmz.object.text(voteHandle, dmz.stance.CommentHandle, reason);
    dmz.object.link(dmz.stance.ApprovedByHandle, voteHandle, dmz.object.hil());
 
-   if (decisionValue) {
+   if (VoteObjects[voteHandle] && VoteObjects[voteHandle].createdByHandle, decisionValue) {
 
       dmz.object.timeStamp(voteHandle, dmz.stance.CreatedAtServerTimeHandle, 0);
       dmz.object.flag(voteHandle, dmz.stance.UpdateStartTimeHandle, true);
@@ -937,6 +1041,12 @@ createDecision = function (decisionValue, voteHandle, duration, reason) {
       //duration *= 1;
       dmz.object.timeStamp(voteHandle, dmz.stance.DurationHandle, duration);
       dmz.object.scalar(voteHandle, dmz.stance.VoteState, dmz.stance.VOTE_ACTIVE);
+      if (Advisors[VoteObjects[voteHandle].advisorHandle]) {
+
+         Advisors[VoteObjects[voteHandle].advisorHandle].approvedVotes.push(voteHandle);
+      }
+      checkForApprovedVotes(VoteObjects[voteHandle].createdByHandle);
+      checkForOnTheBallot(VoteObjects[voteHandle].groupHandle);
    }
    else {
 
@@ -1110,6 +1220,31 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 
       VoteObjects[objHandle] = { handle: objHandle };
    }
+   if (objType.isOfType(dmz.stance.UserType)) {
+
+      Users[objHandle] =
+         { handle: objHandle
+         , yesVotes: []
+         , noVotes: []
+         , votesCreated: []
+         };
+   }
+   if (objType.isOfType(dmz.stance.AdvisorType)) {
+
+      Advisors[objHandle] =
+         { handle: objHandle
+         , approvedVotes: []
+         }
+   }
+   if (objType.isOfType(dmz.stance.GroupType)) {
+
+      Groups[objHandle] =
+         { handle: objHandle
+         , users: []
+         , yesVotes: []
+         , noVotes: []
+         }
+   }
 });
 
 dmz.object.flag.observe(self, dmz.stance.ExpiredHandle,
@@ -1230,6 +1365,25 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          VoteObjects[supHandle].advisorPicture = dmz.object.text(subHandle, dmz.stance.PictureHandle);
          VoteObjects[supHandle].advisorName = dmz.object.text(subHandle, dmz.stance.NameHandle);
          VoteObjects[supHandle].advisorTitle = dmz.object.text(subHandle, dmz.stance.TitleHandle);
+         if (Advisors[subHandle] && (VoteObjects[supHandle].state === dmz.stance.VOTE_ACTIVE) ||
+            (VoteObjects[supHandle].state === dmz.stance.VOTE_YES) ||
+            (VoteObjects[supHandle].state === dmz.stance.VOTE_NO)) {
+
+            Advisors[subHandle].approvedVotes.push(supHandle);
+         }
+      });
+   }
+});
+
+dmz.object.link.observe(self, dmz.stance.OriginalGroupHandle,
+function (linkHandle, attrHandle, supHandle, subHandle) {
+
+   if (Users[supHandle]) {
+
+      Users[supHandle].groupHandle = subHandle;
+      dmz.time.setTimer(self, function () {
+
+         if (Groups[subHandle]) { Groups[subHandle].users.push(supHandle); }
       });
    }
 });
@@ -1244,6 +1398,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
          VoteObjects[supHandle].createdByHandle = subHandle;
          VoteObjects[supHandle].userPicture = dmz.object.text(subHandle, dmz.stance.PictureHandle);
          VoteObjects[supHandle].postedBy = dmz.stance.getDisplayName(subHandle);
+         if (Users[subHandle]) { Users[subHandle].votesCreated.push(supHandle); }
       });
    }
 });
@@ -1273,6 +1428,12 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       VoteObjects[subHandle].noVotes = (VoteObjects[subHandle].noVotes || 0) + 1;
       dmz.time.setTimer(self, function () {
 
+         if (Users[supHandle]) { Users[supHandle].noVotes.push(subHandle); }
+         if (VoteObjects[subHandle].groupHandle && Groups[VoteObjects[subHandle].groupHandle]) {
+
+            Groups[VoteObjects[subHandle].groupHandle].noVotes.push(supHandle);
+         }
+         checkForVoteAchievement(subHandle);
          updateVotes(subHandle);
          isVoteOver(subHandle);
       });
@@ -1287,10 +1448,23 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       VoteObjects[subHandle].yesVotes = (VoteObjects[subHandle].yesVotes || 0) + 1;
       dmz.time.setTimer(self, function () {
 
+         if (Users[supHandle]) { Users[supHandle].yesVotes.push(subHandle); }
+         if (VoteObjects[subHandle].groupHandle && Groups[VoteObjects[subHandle].groupHandle]) {
+
+            Groups[VoteObjects[subHandle].groupHandle].yesVotes.push(supHandle);
+         }
+         checkForVoteAchievement(subHandle);
+         checkForStrategistAchievement(VoteObjects[subHandle].groupHandle);
          updateVotes(subHandle);
          isVoteOver(subHandle);
       });
    }
+});
+
+dmz.object.link.observe(self, dmz.stance.AdvisorGroupHandle,
+function (linkHandle, attrHandle, supHandle, subHandle) {
+
+   if (Advisors[supHandle]) { Advisors[supHandle].groupHandle = subHandle };
 });
 
 LoginSkippedMessage.subscribe(self, function (data) { LoginSkipped = true; });
