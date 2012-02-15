@@ -354,7 +354,6 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          item.item = item.type.list.addItem("N/A", item.handle);
          injectItems[item.handle] = item;
       }
-
    }
 });
 
@@ -769,6 +768,7 @@ editScenarioWidget.observe(self, "createPlayerButton", "clicked", function () {
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.STUDENT_PERMISSION);
          dmz.object.scalar(user, dmz.stance.ActiveHandle, 0);
          dmz.object.scalar(user, dmz.stance.ConsecutiveLoginsHandle, 0);
+         dmz.object.flag(user, dmz.stance.ConsecutiveLoginsHandle, false);
          dmz.object.state(
             user,
             dmz.stance.Permissions,
@@ -812,6 +812,7 @@ editScenarioWidget.observe(self, "createAdminButton", "clicked", function () {
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.ADMIN_PERMISSION);
          dmz.object.scalar(user, dmz.stance.ActiveHandle, 0);
          dmz.object.scalar(user, dmz.stance.ConsecutiveLoginsHandle, 0);
+         dmz.object.flag(user, dmz.stance.ConsecutiveLoginsHandle, false);
          dmz.object.state(
             user,
             dmz.stance.Permissions,
@@ -855,6 +856,7 @@ editScenarioWidget.observe(self, "createObserverButton", "clicked", function () 
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.OBSERVER_PERMISSION);
          dmz.object.scalar(user, dmz.stance.ActiveHandle, 0);
          dmz.object.scalar(user, dmz.stance.ConsecutiveLoginsHandle, 0);
+         dmz.object.flag(user, dmz.stance.ConsecutiveLoginsHandle, false);
          dmz.object.state(
             user,
             dmz.stance.Permissions,
@@ -898,6 +900,7 @@ editScenarioWidget.observe(self, "createTechButton", "clicked", function () {
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.TECH_PERMISSION);
          dmz.object.scalar(user, dmz.stance.ActiveHandle, 0);
          dmz.object.scalar(user, dmz.stance.ConsecutiveLoginsHandle, 0);
+         dmz.object.flag(user, dmz.stance.ConsecutiveLoginsHandle, false);
          dmz.object.state(
             user,
             dmz.stance.Permissions,
@@ -941,6 +944,7 @@ editScenarioWidget.observe(self, "createAdvisorButton", "clicked", function () {
          dmz.object.scalar(user, dmz.stance.Permissions, dmz.stance.ADVISOR_PERMISSION);
          dmz.object.scalar(user, dmz.stance.ActiveHandle, 0);
          dmz.object.scalar(user, dmz.stance.ConsecutiveLoginsHandle, 0);
+         dmz.object.flag(user, dmz.stance.ConsecutiveLoginsHandle, false);
          state = dmz.object.state(CurrentGameHandle, dmz.stance.AdvisorPermissionsHandle) || dmz.stance.AdvisorPermissions;
          advisorCB.forEach(function (widget, index) {
 

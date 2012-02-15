@@ -73,7 +73,6 @@ _activateUser = function (name) {
 
    var handle
      , logins
-     , consecutiveLogins
      ;
 
    if (_userName && (name === _userName)) {
@@ -102,8 +101,7 @@ _activateUser = function (name) {
 
                dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackThreeAchievement);
             }
-            consecutiveLogins = dmz.object.scalar(_userHandle, dmz.stance.ConsecutiveLoginsHandle) || 0;
-            if (consecutiveLogins >= 5) { dmz.stance.unlockAchievement(_userHandle, dmz.stance.FrequentFlyerAchievement); }
+            if (dmz.object.flag(_userHandle, dmz.stance.ConsecutiveLoginsHandle)) { dmz.stance.unlockAchievement(_userHandle, dmz.stance.FrequentFlyerAchievement); }
          }
          else { disabledDialog.open(self, function () { dmz.sys.requestExit(); }); }
       }
