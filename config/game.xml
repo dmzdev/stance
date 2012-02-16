@@ -46,10 +46,10 @@
          <achievement name="Strategist_Two" title="Strategist II" description="Your group has passed 6 votes." resource="Logged_In_Image" level="2"/>
          <achievement name="Strategist_Three" title="Strategist III" description="Your group has passed 9 votes." resource="Logged_In_Image" level="3"/>
       </set>
-      <set name="Disruption_In_The_Force">
-         <achievement name="Disruption_In_The_Force_One" title="Disruption In The Force I" description="Your group has voted for a great transformational agenda." resource="Logged_In_Image" level="1"/>
-         <achievement name="Disruption_In_The_Force_Two" title="Disruption In The Force II" description="Your group has voted for a great transformational agenda twice." resource="Logged_In_Image" level="2"/>
-         <achievement name="Disruption_In_The_Force_Three" title="Disruption In The Force III" description="Your group has voted for a great transformational agenda four times." resource="Logged_In_Image" level="3"/>
+      <set name="Disturbance_In_The_Force">
+         <achievement name="Disturbance_In_The_Force_One" title="Disturbance In The Force I" description="Your group has voted for a great transformational agenda." resource="Logged_In_Image" level="1"/>
+         <achievement name="Disturbance_In_The_Force_Two" title="Disturbance In The Force II" description="Your group has voted for a great transformational agenda twice." resource="Logged_In_Image" level="2"/>
+         <achievement name="Disturbance_In_The_Force_Three" title="Disturbance In The Force III" description="Your group has voted for a great transformational agenda four times." resource="Logged_In_Image" level="3"/>
       </set>
    </achievement-set>
 </achievements>

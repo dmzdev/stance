@@ -61,9 +61,9 @@
    <state name="Strategist_One"/>
    <state name="Strategist_Two"/>
    <state name="Strategist_Three"/>
-   <state name="Disruption_In_The_Force_One"/>
-   <state name="Disruption_In_The_Force_Two"/>
-   <state name="Disruption_In_The_Force_Three"/>
+   <state name="Disturbance_In_The_Force_One"/>
+   <state name="Disturbance_In_The_Force_Two"/>
+   <state name="Disturbance_In_The_Force_Three"/>
 
    <state name="Switch_Group"/>
    <state name="Change_Map"/>

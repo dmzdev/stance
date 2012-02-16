@@ -853,24 +853,24 @@ initiateVoteUI = function (voteHandle) {
 
                Groups[userGroupHandle].users.forEach(function (userHandle) {
 
-                  dmz.stance.unlockAchievement(userHandle, dmz.stance.DisruptionInTheForceOneAchievement);
+                  dmz.stance.unlockAchievement(userHandle, dmz.stance.DisturbanceInTheForceOneAchievement);
                });
             }
             if (numberOfDtfVotes >= 2) {
 
                Groups[userGroupHandle].users.forEach(function (userHandle) {
 
-                  dmz.stance.unlockAchievement(userHandle, dmz.stance.DisruptionInTheForceTwoAchievement);
+                  dmz.stance.unlockAchievement(userHandle, dmz.stance.DisturbanceInTheForceTwoAchievement);
                });
             }
             if (numberOfDtfVotes >= 4) {
 
                Groups[userGroupHandle].users.forEach(function (userHandle) {
 
-                  dmz.stance.unlockAchievement(userHandle, dmz.stance.DisruptionInTheForceThreeAchievement);
+                  dmz.stance.unlockAchievement(userHandle, dmz.stance.DisturbanceInTheForceThreeAchievement);
                });
             }
-            dmz.object.flag(voteItem.handle, dmz.stance.DisruptionInTheForceHandle, true);
+            dmz.object.flag(voteItem.handle, dmz.stance.DisturbanceInTheForceHandle, true);
          }
       });
    }
@@ -1294,7 +1294,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
    }
 });
 
-dmz.object.flag.observe(self, dmz.stance.DisruptionInTheForceHandle,
+dmz.object.flag.observe(self, dmz.stance.DisturbanceInTheForceHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
    if (VoteObjects[objHandle]) {
