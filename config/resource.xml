@@ -59,6 +59,17 @@
    <resource name="Jake" file="jake-50x50.jpg"/>
 <!-- ACHIEVEMENT ICONS -->
    <resource name="Logged_In_Image" file="Logged_In_Image.jpg"/>
+   <resource name="DTF_Achievement" file="STANCE_achievements7_Disturbance_in_the_Force.png"/>
+   <resource name="Eff_Comm_Achievement" file="STANCE_achievements7_Effective_Communicator.png"/>
+   <resource name="Eff_Interr_Achievement" file="STANCE_achievements7_Effective_Interrogator.png"/>
+   <resource name="Frequent_Flyer_Achievement" file="STANCE_achievements7_Frequent_Flyer.png"/>
+   <resource name="Media_Frenzy_Achievement" file="STANCE_achievements7_Media_Frenzy.png"/>
+   <resource name="On_The_Ballot_Achievement" file="STANCE_achievements7_On_the_Ballot.png"/>
+   <resource name="Right_To_Vote_Achievement" file="STANCE_achievements7_Right_to_Vote.png"/>
+   <resource name="Rock_The_Vote_Achievement" file="STANCE_achievements7_Rock_The_Vote.png"/>
+   <resource name="Sage_Advice_Achievement" file="STANCE_achievements7_Sage_Advice.png"/>
+   <resource name="Strategist_Achievement" file="STANCE_achievements7_Strategist.png"/>
+   <resource name="Welcome_Back_Achievement" file="STANCE_achievements7_Welcome_Back.png"/>
 <!-- MAP ICONS -->
    <resource name="Generic" file="GenericMarker-sm.png">
       <webMap file="GenericMarker.png"/>
@@ -244,7 +255,7 @@
       <loc x="0" y="187"/>
    </resource>
    <resource name="Business_exit" file="Business_exit.png">
-      <loc x="222" y="7"/>
+      <loc x="222" y="7"/>`
    </resource>
    <resource name="Business_background" file="Business_full.png">
       <loc x="0" y="0"/>
@@ -691,8 +702,11 @@
    <resource name="CBP_vote" file="CBP_vote.png">
       <loc x="933" y="368"/>
    </resource>
-   <resource name="CBP_background" file="CBP_main.jpeg">
+   <resource name="CBP_background" file="CBP_main.jpg">
       <loc x="0" y="0"/>
+   </resource>
+   <resource name="CBP_rolodex" file="CBP_address.png">
+      <loc x="836" y="487"/>
    </resource>
    <resource name="CBP_adv0_alt" file="CBP_ad01_outreach.png"/>
    <resource name="CBP_adv1_alt" file="CBP_ad02_publicrelations.png"/>
