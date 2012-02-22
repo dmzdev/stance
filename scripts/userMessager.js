@@ -127,20 +127,29 @@ setButtonText = function (userHandle) {
       (Users[hil].lastLogin !== undefined)) {
 
       if ((Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
-         (Users[userHandle].lastPing === 0)) {
+         (Users[userHandle].lastPing === 0) &&
+         ((dmz.stance.isAllowed(hil, dmz.stance.LimitedPingFlag)) || (dmz.stance.isAllowed(hil, dmz.stance.UnlimitedPingFlag)))) {
 
          Users[userHandle].ui.pingUserButton.enabled(true);
          Users[userHandle].ui.pingUserButton.text("Ping User");
       }
       else if ((Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
-         (Users[hil].lastLogin - Users[userHandle].lastPing > SIX_HOURS)) {
+         (Users[hil].lastLogin - Users[userHandle].lastPing > SIX_HOURS) &&
+         dmz.stance.isAllowed(hil, dmz.stance.LimitedPingFlag)) {
+
+         Users[userHandle].ui.pingUserButton.enabled(true);
+         Users[userHandle].ui.pingUserButton.text("Ping User Again");
+      }
+      else if ((Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
+         dmz.stance.isAllowed(hil, dmz.stance.UnlimitedPingFlag)) {
 
          Users[userHandle].ui.pingUserButton.enabled(true);
          Users[userHandle].ui.pingUserButton.text("Ping User Again");
       }
       else if ((Users[hil].lastLogin - Users[userHandle].lastLogin > THIRTY_SIX_HOURS) &&
          ((Users[hil].lastLogin - Users[userHandle].lastPing >= 0)) &&
-         (Users[hil].lastLogin - Users[userHandle].lastPing < SIX_HOURS)) {
+         (Users[hil].lastLogin - Users[userHandle].lastPing < SIX_HOURS) &&
+         dmz.stance.isAllowed(hil, dmz.stance.LimitedPingFlag)) {
 
          Users[userHandle].ui.pingUserButton.enabled(false);
          Users[userHandle].ui.pingUserButton.text("Ping User Again");
@@ -207,7 +216,11 @@ initUIItems = function () {
          });
          setUIItemLabels(Users[key].handle);
          setButtonText(Users[key].handle);
-         if (LoginSkipped) { Users[key].ui.pingUserButton.enabled(false); }
+         if (LoginSkipped ||
+            !(dmz.stance.isAllowed(hil, dmz.stance.UnlimitedPingFlag) || dmz.stance.isAllowed(hil, dmz.stance.LimitedPingFlag))) {
+
+            Users[key].ui.pingUserButton.enabled(false);
+         }
          contentLayout.insertWidget(0 , Users[key].ui.widget);
       }
    });
