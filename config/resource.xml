@@ -565,7 +565,7 @@
       <loc x="1078" y="377"/>
    </resource>
    <resource name="Cartel2_rolodex" file="Cartel2_address.png">
-      <loc x="719" y="526"/>
+      <loc x="715" y="534"/>
    </resource>
    <resource name="Cartel2_adv0_alt" file="Cartel2_ad01_information.png"/>
    <resource name="Cartel2_adv1_alt" file="Cartel2_ad02_enforcement.png"/>
