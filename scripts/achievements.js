@@ -146,7 +146,7 @@ addAchievementItemUI = function (achievementSet) {
 
             achievementSet.ui.notificationLabel.show();
          }
-         else { achievementSet.ui.notificationLabel.hide() }
+         else { achievementSet.ui.notificationLabel.hide(); }
       }
    });
 };
@@ -240,11 +240,11 @@ init = function () {
       var setItemList = setItem.get("achievement");
 
       Achievements[setItem.string("name")] =
-      { ui: false
-      , achievements: []
-      , currentLevel: 0
-      , name: setItem.string("name")
-      };
+         { ui: false
+         , achievements: []
+         , currentLevel: 0
+         , name: setItem.string("name")
+         };
       setItemList.forEach(function (achievement) {
 
          var picture = achievement.string("resource")
