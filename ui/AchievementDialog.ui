@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>126</height>
+    <height>146</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,14 +29,14 @@
       <widget class="QLabel" name="pictureLabel">
        <property name="minimumSize">
         <size>
-         <width>80</width>
-         <height>80</height>
+         <width>100</width>
+         <height>100</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>80</width>
-         <height>80</height>
+         <width>100</width>
+         <height>100</height>
         </size>
        </property>
        <property name="text">
