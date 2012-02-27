@@ -72,7 +72,7 @@ var dmz =
         , TechPermissionsHandle: dmz.defs.createNamedHandle("tech_permissions")
         , GroupWikiLinkHandle: dmz.defs.createNamedHandle("wiki_link")
         , ExpiredHandle: dmz.defs.createNamedHandle("expired")
-        , DisruptionInTheForceHandle: dmz.defs.createNamedHandle("disruption_in_the_force")
+        , DisturbanceInTheForceHandle: dmz.defs.createNamedHandle("Disturbance_in_the_force")
         , ConsecutiveLoginsHandle: dmz.defs.createNamedHandle("consecutive_logins")
 
         // Link Attr Handles
@@ -172,9 +172,9 @@ var dmz =
         , StrategistOneAchievement: dmz.defs.lookupState("Strategist_One")
         , StrategistTwoAchievement: dmz.defs.lookupState("Strategist_Two")
         , StrategistThreeAchievement: dmz.defs.lookupState("Strategist_Three")
-        , DisruptionInTheForceOneAchievement: dmz.defs.lookupState("Disruption_In_The_Force_One")
-        , DisruptionInTheForceTwoAchievement: dmz.defs.lookupState("Disruption_In_The_Force_Two")
-        , DisruptionInTheForceThreeAchievement: dmz.defs.lookupState("Disruption_In_The_Force_Three")
+        , DisturbanceInTheForceOneAchievement: dmz.defs.lookupState("Disturbance_In_The_Force_One")
+        , DisturbanceInTheForceTwoAchievement: dmz.defs.lookupState("Disturbance_In_The_Force_Two")
+        , DisturbanceInTheForceThreeAchievement: dmz.defs.lookupState("Disturbance_In_The_Force_Three")
         }
    , States =
         { SwitchGroupFlag: dmz.defs.lookupState("Switch_Group")

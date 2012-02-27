@@ -97,7 +97,7 @@ _activateUser = function (name) {
 
                dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackTwoAchievement);
             }
-            if (logins > 20) {
+            if (logins >= 20) {
 
                dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackThreeAchievement);
             }
