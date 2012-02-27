@@ -93,7 +93,6 @@ var dmz =
    , AchievementQueue = []
    , DefaultAchievement = "Logged_In_Image"
    , dialogOpen = false
-   , AchievementsMod = false
    , EmailMod =
         { list: []
         , sendMail: function (a, b, c) { this.list.push([a, b, c]); }
@@ -676,11 +675,6 @@ dmz.stance.ACHIEVEMENT_MESSAGE.subscribe(self, function (data) {
 
       if (!dialogOpen) { displayNewAchievements(); }
    }
-});
-
-dmz.module.subscribe(self, "achievements", function (Mode, module) {
-
-   if (Mode === dmz.module.Activate) { AchievementsMod = module; }
 });
 
 dmz.module.publish(self, _exports);

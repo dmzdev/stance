@@ -41,7 +41,7 @@ var dmz =
    , BRONZE = 1
    , Users = {}
    , Achievements = {}
-   , NonLayeredAchievemets = {}
+   , NonLayeredAchievements = {}
    , UIArray = []
    , MainModule = { list: {}, highlight: function (str) { this.list[str] = true; } }
    , beenOpened = false
@@ -61,17 +61,17 @@ checkForNotifications = function () {
       if (!Users[hil].previousAchievements) {
 
          MainModule.highlight("Rolodex");
-         Object.keys(NonLayeredAchievemets).forEach(function (key) {
+         Object.keys(NonLayeredAchievements).forEach(function (key) {
 
             var data;
 
-            if (NonLayeredAchievemets[key].achievement.and(Users[hil].achievements).bool() &&
-               !NonLayeredAchievemets[key].messageSent) {
+            if (NonLayeredAchievements[key].achievement.and(Users[hil].achievements).bool() &&
+               !NonLayeredAchievements[key].messageSent) {
 
-               NonLayeredAchievemets[key].messageSent = true;
+               NonLayeredAchievements[key].messageSent = true;
                data = dmz.data.create();
-               data.string(dmz.stance.NameHandle, 0, NonLayeredAchievemets[key].title);
-               data.string(dmz.stance.PictureHandle, 0, NonLayeredAchievemets[key].picture);
+               data.string(dmz.stance.NameHandle, 0, NonLayeredAchievements[key].title);
+               data.string(dmz.stance.PictureHandle, 0, NonLayeredAchievements[key].picture);
                dmz.time.setTimer(self, 2, function () { dmz.stance.ACHIEVEMENT_MESSAGE.send(data); });
             }
          });
@@ -79,27 +79,27 @@ checkForNotifications = function () {
       else if (Users[hil].achievements.xor(Users[hil].previousAchievements).bool()) {
 
          MainModule.highlight("Rolodex");
-         Object.keys(NonLayeredAchievemets).forEach(function (key) {
+         Object.keys(NonLayeredAchievements).forEach(function (key) {
 
             var isInAchievements = false
                , isInPreviousAchievements = false
                , data
                ;
 
-            if (NonLayeredAchievemets[key].achievement.and(Users[hil].achievements).bool()) {
+            if (NonLayeredAchievements[key].achievement.and(Users[hil].achievements).bool()) {
 
                isInAchievements = true;
             }
-            if (NonLayeredAchievemets[key].achievement.and(Users[hil].previousAchievements).bool()) {
+            if (NonLayeredAchievements[key].achievement.and(Users[hil].previousAchievements).bool()) {
 
                isInPreviousAchievements = true;
             }
-            if (isInAchievements && !isInPreviousAchievements && !NonLayeredAchievemets[key].messageSent) {
+            if (isInAchievements && !isInPreviousAchievements && !NonLayeredAchievements[key].messageSent) {
 
-               NonLayeredAchievemets[key].messageSent = true;
+               NonLayeredAchievements[key].messageSent = true;
                data = dmz.data.create();
-               data.string(dmz.stance.NameHandle, 0, NonLayeredAchievemets[key].title);
-               data.string(dmz.stance.PictureHandle, 0, NonLayeredAchievemets[key].picture);
+               data.string(dmz.stance.NameHandle, 0, NonLayeredAchievements[key].title);
+               data.string(dmz.stance.PictureHandle, 0, NonLayeredAchievements[key].picture);
                dmz.time.setTimer(self, 2, function () { dmz.stance.ACHIEVEMENT_MESSAGE.send(data); });
             }
          });
@@ -177,8 +177,6 @@ _exports.closeWindow = function () {
 
 _exports.achievementForm = achievementForm;
 
-_exports.Achievements = NonLayeredAchievemets;
-
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
@@ -237,17 +235,20 @@ init = function () {
    contentLayout.addStretch(1);
    list.forEach(function (setItem) {
 
-      var setItemList = setItem.get("achievement");
+      var setItemList = setItem.get("achievement")
+        , setItemName = setItem.string("name")
+        ;
 
-      Achievements[setItem.string("name")] =
+      Achievements[setItemName] =
          { ui: false
          , achievements: []
          , currentLevel: 0
-         , name: setItem.string("name")
+         , name: setItemName
          };
       setItemList.forEach(function (achievement) {
 
          var picture = achievement.string("resource")
+           , achievementName = achievement.string("name")
            , pictureString = ""
            ;
 
@@ -258,25 +259,17 @@ init = function () {
          }
          if (picture) { picture = dmz.ui.graph.createPixmap(picture); }
          if (picture) { picture = picture.scaled(100, 100); }
-         Achievements[setItem.string("name")].achievements.push(
-            { name: achievement.string("name")
+         NonLayeredAchievements[achievementName] =
+            { name: achievementName
             , title: achievement.string("title")
             , description: achievement.string("description")
             , picture: pictureString
             , picturePixmap: picture
-            , achievement: dmz.defs.lookupState(achievement.string("name"))
-            , level: achievement.number("level")
-            });
-         NonLayeredAchievemets[achievement.string("name")] =
-            { name: achievement.string("name")
-            , title: achievement.string("title")
-            , description: achievement.string("description")
-            , picture: pictureString
-            , picturePixmap: picture
-            , achievement: dmz.defs.lookupState(achievement.string("name"))
+            , achievement: dmz.defs.lookupState(achievementName)
             , level: achievement.number("level")
             , messageSent: false
             };
+         Achievements[setItemName].achievements.push(NonLayeredAchievements[achievementName]);
       });
    });
 };
