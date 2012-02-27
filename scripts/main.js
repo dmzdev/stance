@@ -654,7 +654,7 @@ displayNewAchievements = function () {
       obj = AchievementQueue.pop();
       achievementText.text("You have unlocked the " + obj.name + " achievement.");
       file = dmz.resources.findFile(obj.image) || dmz.resources.findFile(DefaultAchievement);
-      achievementPic.pixmap(dmz.ui.graph.createPixmap(file).scaled(80, 80));
+      achievementPic.pixmap(dmz.ui.graph.createPixmap(file).scaled(100, 100));
       dialogOpen = true;
       achievementDialog.open(self, function () {
 

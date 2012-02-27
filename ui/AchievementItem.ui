@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>100</height>
+    <height>124</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,14 +18,14 @@
     <widget class="QLabel" name="achievementPictureLabel">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>80</horstretch>
-       <verstretch>80</verstretch>
+       <horstretch>100</horstretch>
+       <verstretch>100</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>80</width>
-       <height>80</height>
+       <width>100</width>
+       <height>100</height>
       </size>
      </property>
      <property name="text">

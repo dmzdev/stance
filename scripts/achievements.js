@@ -126,8 +126,8 @@ addAchievementItemUI = function (achievementSet) {
          (achievementItem.level > achievementSet.currentLevel)) {
 
          if (achievementSet.currentLevel === 0) { contentLayout.insertWidget(0, achievementSet.ui.widget); }
-         achievementSet.ui.achievementTitleLabel.text(achievementItem.title);
-         achievementSet.ui.achievementDescriptionLabel.text(achievementItem.description);
+         achievementSet.ui.achievementTitleLabel.text("<b>Title: </b>" + achievementItem.title);
+         achievementSet.ui.achievementDescriptionLabel.text("<b>Description: </b>" + achievementItem.description);
          achievementSet.ui.achievementPictureLabel.pixmap(achievementItem.picturePixmap);
          achievementSet.currentLevel = achievementItem.level;
          if (achievementItem.level === GOLD) {
@@ -257,7 +257,7 @@ init = function () {
             picture = dmz.resources.findFile(picture);
          }
          if (picture) { picture = dmz.ui.graph.createPixmap(picture); }
-         if (picture) { picture = picture.scaled(80, 80); }
+         if (picture) { picture = picture.scaled(100, 100); }
          Achievements[setItem.string("name")].achievements.push(
             { name: achievement.string("name")
             , title: achievement.string("title")
