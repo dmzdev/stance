@@ -32,10 +32,10 @@ var dmz =
    , formContent = scrollArea.widget()
    , contentLayout = dmz.ui.layout.createVBoxLayout()
    // Variables
-   , ACHIEVEMENT_STYLE = "#Form { background-color: rgb(0, 0, 0); }"
-   , BRONZE_STYLE = "#Form { background-color: rgb(150, 90, 56); }"
-   , SILVER_STYLE = "#Form { background-color: rgb(168, 168, 168); }"
-   , GOLD_STYLE = "#Form { background-color: rgb(217, 164, 65); }"
+   , ACHIEVEMENT_STYLE = "#Form { background-color: rgb(0, 0, 0); color: black; }"
+   , BRONZE_STYLE = "#Form { background-color: rgb(150, 90, 56); color: black; }"
+   , SILVER_STYLE = "#Form { background-color: rgb(168, 168, 168); color: black; }"
+   , GOLD_STYLE = "#Form { background-color: rgb(217, 164, 65); color: black; }"
    , GOLD = 3
    , SILVER = 2
    , BRONZE = 1
