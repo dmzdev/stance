@@ -54,6 +54,8 @@ var dmz =
     , _loginQueue = false
     , _haveSetServerTime = false
     , _haveToggled = false
+    , _hasLoggedIn = false
+    , _loginSkipped = false
     , ToggledMessage = dmz.message.create("ToggledGroupMessage")
 
     // Functions
@@ -86,9 +88,13 @@ _activateUser = function (name) {
             dmz.object.flag(handle, dmz.object.HILAttribute, true);
             dmz.object.flag(_userHandle, dmz.stance.UpdateLastLoginTimeHandle, true);
             dmz.object.timeStamp(_userHandle, dmz.stance.LastPingTimeHandle, 0);
-            logins = dmz.object.scalar(_userHandle, dmz.stance.ActiveHandle) || 0;
-            logins += 1;
-            dmz.object.scalar(_userHandle, dmz.stance.ActiveHandle, logins);
+            if (!_hasLoggedIn && !_loginSkipped) {
+
+               logins = dmz.object.scalar(_userHandle, dmz.stance.ActiveHandle) || 0;
+               logins += 1;
+               dmz.object.scalar(_userHandle, dmz.stance.ActiveHandle, logins);
+               _hasLoggedIn = true;
+            }
             if ((logins >= 2) && (logins < 10)) {
 
                dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackOneAchievement);
@@ -150,6 +156,7 @@ LoginSuccessMessage.subscribe(self, function (data) {
 LoginSkippedMessage.subscribe(self, function () {
 
    var handle = dmz.object.hil();
+   _loginSkipped = true;
    dmz.object.flag(handle, dmz.object.HILAttribute, false);
    dmz.object.flag(handle, dmz.object.HILAttribute, true);
 });
