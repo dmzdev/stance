@@ -1694,11 +1694,15 @@ groupTemplateComboBox.observe(self, "currentIndexChanged", function (index) {
 
 startGameButton.observe(self, "clicked", function () {
 
-   var list = [];
+   var list = []
+     , latestTime = dmz.object.timeStamp(dmz.object.hil(), dmz.stance.LastLoginTimeHandle);
+     ;
+
    dmz.object.flag(CurrentGameHandle, dmz.stance.ActiveHandle, true);
    Object.keys(userItems).forEach(function (key) {
 
       list.push(userItems[key].handle);
+      dmz.object.timeStamp(userItems[key].handle, dmz.stance.LastLoginTimeHandle, latestTime);
    });
    EmailMod.sendEmail(
       list,

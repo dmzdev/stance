@@ -52,6 +52,7 @@ var dmz =
    , clearLayout
    , sendEmail
    , setButtonText
+   , updateLastLoginLabel
    , setUIItemLabels
    , initUIItems
    , init
@@ -159,6 +160,14 @@ setButtonText = function (userHandle) {
          Users[userHandle].ui.pingUserButton.enabled(false);
          Users[userHandle].ui.pingUserButton.text("Ping User");
       }
+   }
+};
+
+updateLastLoginLabel = function (userHandle) {
+
+   if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].ui.lastLoginLabel) {
+
+      Users[userHandle].ui.lastLoginLabel.text("<b>Last Login: </b>" + toDate(Users[userHandle].lastLogin).toString(dmz.stance.TIME_FORMAT));
    }
 };
 
@@ -285,7 +294,11 @@ function (objHandle, attrHandle, newVal, oldVal) {
       Users[objHandle].lastLogin = newVal;
       dmz.time.setTimer(self, function () {
 
-         Object.keys(Users).forEach(function (key) { setButtonText(Users[key].handle); });
+         updateLastLoginLabel(objHandle);
+         Object.keys(Users).forEach(function (key) {
+
+            setButtonText(Users[key].handle);
+         });
       });
    }
 });
