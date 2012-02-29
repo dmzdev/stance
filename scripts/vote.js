@@ -1338,6 +1338,18 @@ function (objHandle, attrHandle, newVal, prevVal) {
       dmz.time.setTimer(self, function () {
 
          if (newVal === dmz.stance.VOTE_EXPIRED) { isVoteOver(objHandle); }
+         else if (newVal === dmz.stance.VOTE_YES &&
+            VoteObjects[objHandle].groupHandle &&
+            Groups[VoteObjects[objHandle].groupHandle]) {
+
+            Groups[VoteObjects[objHandle].groupHandle].yesVotes.push(objHandle);
+         }
+         else if (newVal === dmz.stance.VOTE_NO &&
+            VoteObjects[objHandle].groupHandle &&
+            Groups[VoteObjects[objHandle].groupHandle]) {
+
+            Groups[VoteObjects[objHandle].groupHandle].noVotes.push(objHandle);
+         }
          updateStateUI(objHandle, prevVal);
       });
    }
@@ -1484,10 +1496,6 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       dmz.time.setTimer(self, function () {
 
          if (Users[supHandle]) { Users[supHandle].noVotes.push(subHandle); }
-         if (VoteObjects[subHandle].groupHandle && Groups[VoteObjects[subHandle].groupHandle]) {
-
-            Groups[VoteObjects[subHandle].groupHandle].noVotes.push(supHandle);
-         }
          checkForVoteAchievement(subHandle);
          updateVotes(subHandle);
          isVoteOver(subHandle);
@@ -1504,10 +1512,6 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       dmz.time.setTimer(self, function () {
 
          if (Users[supHandle]) { Users[supHandle].yesVotes.push(subHandle); }
-         if (VoteObjects[subHandle].groupHandle && Groups[VoteObjects[subHandle].groupHandle]) {
-
-            Groups[VoteObjects[subHandle].groupHandle].yesVotes.push(supHandle);
-         }
          checkForVoteAchievement(subHandle);
          checkForStrategistAchievement(VoteObjects[subHandle].groupHandle);
          updateVotes(subHandle);
