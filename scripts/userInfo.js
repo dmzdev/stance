@@ -738,6 +738,8 @@ setMemberCountLabel = function (groupHandle) {
 createUserWidget = function (userHandle) {
 
    var userWidget
+     , achievementsWidget
+     , tempTestWidget = dmz.ui.loader.load("AchievementItem.ui")
      , userItem
      ;
 
@@ -745,7 +747,9 @@ createUserWidget = function (userHandle) {
 
       userItem = Users[userHandle];
       userWidget = dmz.ui.loader.load("UserInfoSubWidget.ui");
-      userItem.ui = { userWidget: userWidget };
+      achievementsWidget = dmz.ui.loader.load("WikiForm.ui");
+
+      userItem.ui = { userWidget: userWidget, achievementsWidget: achievementsWidget };
       userItem.ui.userPictureLabel = userWidget.lookup("userPictureLabel");
       userItem.ui.votesSeenLabel = userWidget.lookup("votesSeenLabel");
       userItem.ui.userNameLabel = userWidget.lookup("userNameLabel");
@@ -757,13 +761,19 @@ createUserWidget = function (userHandle) {
       userItem.ui.pdfItemsSeenLabel = userWidget.lookup("pdfItemsSeenLabel");
       userItem.ui.votedOnLabel = userWidget.lookup("votedOnLabel");
       userItem.ui.showUserStatisticsButton = userWidget.lookup("userStatisticsButton");
+      userItem.ui.showUserAchievementsButton = userWidget.lookup("userAchievementsButton");
       userItem.ui.contentLayout = userWidget.lookup("contentLayout");
+      userItem.ui.achievementContentLayout = achievementsWidget.lookup("wikiLayout");
+      userItem.ui.achievementContentLayout.addWidget(tempTestWidget);
       userItem.ui.graphicsScene = dmz.ui.graph.createScene();
       userItem.ui.graphicsView = dmz.ui.graph.createView(userItem.ui.graphicsScene);
       userItem.ui.graphicsView.alignment(dmz.ui.consts.AlignLeft | dmz.ui.consts.AlignTop);
-      userItem.ui.userStatisticsWidgetOpen = false;
 
       userItem.ui.showUserStatisticsButton.text("Show User Statistics");
+      userItem.ui.showUserAchievementsButton.text("Show User Achievements");
+
+      userItem.ui.userStatisticsWidgetOpen = false;
+      userItem.ui.userAchievementsWidgetOpen = false;
       userItem.ui.showUserStatisticsButton.observe(self, "clicked", function () {
 
          if (userItem.ui.userStatisticsWidgetOpen) {
@@ -774,6 +784,13 @@ createUserWidget = function (userHandle) {
          }
          else {
 
+            if (userItem.ui.userAchievementsWidgetOpen) {
+
+               userItem.ui.achievementsWidget.hide();
+               userItem.ui.contentLayout.removeWidget(userItem.ui.achievementsWidget);
+               userItem.ui.showUserAchievementsButton.text("Show User Achievements");
+               userItem.ui.userAchievementsWidgetOpen = false;
+            }
             userItem.ui.contentLayout.insertWidget(0, userItem.ui.graphicsView);
             userItem.ui.graphicsView.show();
             userItem.ui.graphicsView.fixedHeight(600);
@@ -781,7 +798,29 @@ createUserWidget = function (userHandle) {
          }
          userItem.ui.userStatisticsWidgetOpen = !userItem.ui.userStatisticsWidgetOpen;
       });
+      userItem.ui.showUserAchievementsButton.observe(self, "clicked", function () {
 
+         if (userItem.ui.userAchievementsWidgetOpen) {
+
+            userItem.ui.achievementsWidget.hide();
+            userItem.ui.contentLayout.removeWidget(userItem.ui.achievementsWidget);
+            userItem.ui.showUserAchievementsButton.text("Show User Achievements");
+         }
+         else {
+
+            if (userItem.ui.userStatisticsWidgetOpen) {
+
+               userItem.ui.graphicsView.hide();
+               userItem.ui.contentLayout.removeWidget(userItem.ui.graphicsView);
+               userItem.ui.showUserStatisticsButton.text("Show User Statistics");
+               userItem.ui.userStatisticsWidgetOpen = false;
+            }
+            userItem.ui.contentLayout.insertWidget(0, userItem.ui.achievementsWidget);
+            userItem.ui.achievementsWidget.show();
+            userItem.ui.showUserAchievementsButton.text("Hide User Achievements");
+         }
+         userItem.ui.userAchievementsWidgetOpen = !userItem.ui.userAchievementsWidgetOpen;
+      });
       setUserNameLabel(userItem.handle);
       setLastLoginSeenLabel(userItem.handle);
       setMemosSeenLabel(userItem.handle);
@@ -825,8 +864,8 @@ fillGroupInfoWidget = function (groupHandle) {
       groupItem.ui.memberCountLabel = groupWidget.lookup("votedOnLabel");
       groupItem.ui.showGroupStatisticsButton = groupWidget.lookup("userStatisticsButton");
       groupItem.ui.contentLayout = groupWidget.lookup("contentLayout");
-      groupItem.ui.showAdvisorStatisticsButton = dmz.ui.button.createPushButton("Show Advisor Statistics");
-      groupItem.ui.buttonLayout.addWidget(groupItem.ui.showAdvisorStatisticsButton);
+      groupItem.ui.showAdvisorStatisticsButton = groupWidget.lookup("userAchievementsButton");
+      groupItem.ui.showAdvisorStatisticsButton.text("Show Advisor Statistics");
 
       groupItem.ui.groupGraphicsScene = dmz.ui.graph.createScene();
       groupItem.ui.groupGraphicsView = dmz.ui.graph.createView(groupItem.ui.groupGraphicsScene);
@@ -1358,7 +1397,6 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
                case dmz.stance.VOTE_NO: fields = [ "votesFailed", "votesApproved" ]; break;
                default: break;
             }
-
             if (fields) {
 
                fields.forEach(function (field) { Advisors[subHandle][field].push(supHandle); });

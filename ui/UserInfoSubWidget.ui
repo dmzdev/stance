@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>724</width>
-    <height>175</height>
+    <width>851</width>
+    <height>186</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -114,11 +114,50 @@
     </layout>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="disturbanceInTheForceLabel">
+       <property name="text">
+        <string>disturbanceInTheForceLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="goldAchievementsLabel">
+       <property name="text">
+        <string>goldAchievementsLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="silverAchievementsLabel">
+       <property name="text">
+        <string>silverAchievementsLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="bronzeAchievementsLabel">
+       <property name="text">
+        <string>bronzeAchievementsLabel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="buttonLayout">
      <item>
       <widget class="QPushButton" name="userStatisticsButton">
        <property name="text">
         <string>Show Group Statistics</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="userAchievementsButton">
+       <property name="text">
+        <string>Show Achievements</string>
        </property>
       </widget>
      </item>

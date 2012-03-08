@@ -46,6 +46,7 @@ var dmz =
    , cancelButton = mediaViewer.lookup("cancelButton")
    , addLinkWidget = mediaViewer.lookup("addLinkWidget")
    , addMediaCheckBox = mediaViewer.lookup("addMediaCheckBox")
+   , pdfUrlLineEdit = mediaViewer.lookup("pdfUrlLineEdit")
 
    // Variables
    , hil
@@ -135,24 +136,28 @@ changeState = function (state) {
 
       CurrentMap = PdfItems;
       CurrentArray = PdfArray;
+      pdfUrlLineEdit.show();
       addMediaButton.text("Add PDF Link");
    }
    else if (state === "Memo") {
 
       CurrentMap = Memos;
       CurrentArray = MemosArray;
+      pdfUrlLineEdit.hide();
       addMediaButton.text("Add Memo Link");
    }
    else if (state === "Newspaper") {
 
       CurrentMap = Newspapers;
       CurrentArray = NewspapersArray;
+      pdfUrlLineEdit.hide();
       addMediaButton.text("Add Newspaper Link");
    }
    else if (state === "Video") {
 
       CurrentMap = Videos;
       CurrentArray = VideosArray;
+      pdfUrlLineEdit.hide();
       addMediaButton.text("Add Video Link");
    }
 };
@@ -325,6 +330,7 @@ mouseEvent = function (object, type) {
 
                if ((CurrentType === "PdfItem") && mediaItem.link) {
 
+                  pdfUrlLineEdit.text(mediaItem.link);
                   mediaWebView.setHtml(
                      "<center><iframe src='http://docs.google.com/viewer?" +
                      "url=" + encodeURIComponent(mediaItem.link) +
