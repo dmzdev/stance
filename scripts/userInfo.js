@@ -63,6 +63,7 @@ var dmz =
 
    // Functions
    , toDate = dmz.util.timeStampToDate
+   , initializeAchievementWidgets
    , initializeAchievementUI
    , createPieChart
    , setVoteDistributonPieChart
@@ -135,7 +136,7 @@ initializeAchievementWidgets = function (achievementSet) {
 
 initializeAchievementUI = function () {
 
-   if (LayredAchivements) {
+   if (LayeredAchievements) {
 
       Object.keys(LayeredAchievements).forEach(function (key) {
 
