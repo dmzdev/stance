@@ -44,7 +44,16 @@ var dmz =
    , Questions = {}
    , Advisors = {}
    , AllGroupsTab = {}
+   , LayeredAchievements = false
+   , NonLayeredAchievements = false
    , ShowStudentsMessage = dmz.message.create("showStudentsWindow")
+   , ACHIEVEMENT_STYLE = "#Form { background-color: rgb(0, 0, 0); color: black; }"
+   , BRONZE_STYLE = "#Form { background-color: rgb(150, 90, 56); color: black; }"
+   , SILVER_STYLE = "#Form { background-color: rgb(168, 168, 168); color: black; }"
+   , GOLD_STYLE = "#Form { background-color: rgb(217, 164, 65); color: black; }"
+   , GOLD = 3
+   , SILVER = 2
+   , BRONZE = 1
 
    // UI
    , userInfoWidget = dmz.ui.loader.load("UserInfoWidget.ui")
@@ -54,6 +63,7 @@ var dmz =
 
    // Functions
    , toDate = dmz.util.timeStampToDate
+   , initializeAchievementUI
    , createPieChart
    , setVoteDistributonPieChart
    , votesCast
@@ -85,7 +95,6 @@ var dmz =
    , createUserWidget
    , fillGroupInfoWidget
    , createGroupTabs
-   , init
    ;
 
 ShowStudentsMessage.subscribe(self, function () {
@@ -94,10 +103,46 @@ ShowStudentsMessage.subscribe(self, function () {
 
       previouslyOpened = true;
       createGroupTabs();
+      initializeAchievementUI();
       userInfoWidget.show();
    }
    else if (previouslyOpened) { userInfoWidget.show(); }
 });
+
+initializeAchievementWidgets = function (achievementSet) {
+
+   if (achievementSet) {
+
+      achievementSet.achievements.forEach(function (achievementItem) {
+
+         if (!achievementItem.ui) {
+
+            achievementItem.ui = {};
+            achievementItem.ui.widget = dmz.ui.loader.load("AchievementItem.ui");
+            achievementItem.ui.achievementTitleLabel = achievementItem.ui.widget.lookup("achievementTitleLabel");
+            achievementItem.ui.achievementDescriptionLabel = achievementItem.ui.widget.lookup("achievementDescriptionLabel");
+            achievementItem.ui.achievementPictureLabel = achievementItem.ui.widget.lookup("achievementPictureLabel");
+            achievementItem.ui.achievementTitleLabel.text("<b>Title: </b>" + achievementItem.title);
+            achievementItem.ui.achievementDescriptionLabel.text("<b>Description: </b>" + achievementItem.description);
+            achievementItem.ui.achievementPictureLabel.pixmap(achievementItem.picturePixmap);
+            if (achievementItem.level === GOLD) { achievementItem.ui.widget.styleSheet(GOLD_STYLE); }
+            if (achievementItem.level === SILVER) { achievementItem.ui.widget.styleSheet(SILVER_STYLE); }
+            if (achievementItem.level === BRONZE) { achievementItem.ui.widget.styleSheet(BRONZE_STYLE); }
+         }
+      });
+   }
+};
+
+initializeAchievementUI = function () {
+
+   if (LayredAchivements) {
+
+      Object.keys(LayeredAchievements).forEach(function (key) {
+
+         initializeAchievementWidgets(LayeredAchievements[key]);
+      });
+   }
+};
 
 createPieChart = function (data, labelFnc, scene, zero) {
 
@@ -1025,10 +1070,7 @@ createGroupTabs = function () {
 
             itors[Users[key].groupHandle].itor += 1;
          }
-         else {
-
-            itors[Users[key].groupHandle] = { itor: 1 };
-         }
+         else { itors[Users[key].groupHandle] = { itor: 1 }; }
          Groups[Users[key].groupHandle].ui.usersLayout.insertWidget(
             itors[Users[key].groupHandle].itor, Users[key].ui.userWidget);
       }
@@ -1624,5 +1666,14 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
             Users[supHandle].votedYesOn.push(subHandle);
          }
       });
+   }
+});
+
+dmz.module.subscribe(self, "achievements", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) {
+
+      LayeredAchievements = module.LayeredAchievements;
+      NonLayeredAchievements = module.NonLayeredAchievements;
    }
 });

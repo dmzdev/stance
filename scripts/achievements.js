@@ -130,18 +130,9 @@ addAchievementItemUI = function (achievementSet) {
          achievementSet.ui.achievementDescriptionLabel.text("<b>Description: </b>" + achievementItem.description);
          achievementSet.ui.achievementPictureLabel.pixmap(achievementItem.picturePixmap);
          achievementSet.currentLevel = achievementItem.level;
-         if (achievementItem.level === GOLD) {
-
-            achievementSet.ui.widget.styleSheet(GOLD_STYLE);
-         }
-         else if (achievementItem.level === SILVER) {
-
-            achievementSet.ui.widget.styleSheet(SILVER_STYLE);
-         }
-         else if (achievementItem.level === BRONZE) {
-
-            achievementSet.ui.widget.styleSheet(BRONZE_STYLE);
-         }
+         if (achievementItem.level === GOLD) { achievementSet.ui.widget.styleSheet(GOLD_STYLE); }
+         else if (achievementItem.level === SILVER) { achievementSet.ui.widget.styleSheet(SILVER_STYLE); }
+         else if (achievementItem.level === BRONZE) { achievementSet.ui.widget.styleSheet(BRONZE_STYLE); }
          if (!dmz.stance.hasSeenAchievement(hil, achievementItem.achievement)) {
 
             achievementSet.ui.notificationLabel.show();
@@ -176,6 +167,8 @@ _exports.closeWindow = function () {
 };
 
 _exports.achievementForm = achievementForm;
+_exports.LayeredAchievements = Achievements;
+_exports.NonLayeredAchievements = NonLayeredAchievements;
 
 dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
