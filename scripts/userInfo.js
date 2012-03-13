@@ -84,6 +84,10 @@ var dmz =
    , setLastLoginSeenLabel
    , setUserNameLabel
    , setVotedOnLabel
+   , setDisturbanceInTheForceLabel
+   , setGoldAchievementsLabel
+   , setSilverAchievementsLabel
+   , setBronzeAchievementsLabel
    , setGroupNameLabel
    , setTotalPostsLabel
    , setTotalCommentsLabel
@@ -682,6 +686,46 @@ setVotedOnLabel = function (userHandle) {
    }
 };
 
+setDisturbanceInTheForceLabel = function (userHandle) {
+
+};
+
+setGoldAchievementsLabel = function (userHandle) {
+
+   if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].ui.goldAchievementsLabel) {
+
+      Users[userHandle].ui.goldAchievementsLabel.text(
+         "<b>Gold Achievements: </b>" +
+         Users[userHandle].goldAchievements +
+         "/" +
+         Users[userHandle].totalGoldAchievements);
+   }
+};
+
+setSilverAchievementsLabel = function (userHandle) {
+
+   if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].ui.silverAchievementsLabel) {
+
+      Users[userHandle].ui.silverAchievementsLabel.text(
+         "<b>Silver Achievements: </b>" +
+         Users[userHandle].silverAchievements +
+         "/" +
+         Users[userHandle].totalSilverAchievements);
+   }
+};
+
+setBronzeAchievementsLabel = function (userHandle) {
+
+   if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].ui.bronzeAchievementsLabel) {
+
+      Users[userHandle].ui.bronzeAchievementsLabel.text(
+         "<b>Bronze Achievements: </b>" +
+         Users[userHandle].bronzeAchievements +
+         "/" +
+         Users[userHandle].totalBronzeAchievements);
+   }
+};
+
 setGroupNameLabel = function (groupHandle) {
 
    if (Groups[groupHandle] && Groups[groupHandle].ui) {
@@ -814,6 +858,10 @@ createUserWidget = function (userHandle) {
       userItem.ui.lobbyistsSeenLabel = userWidget.lookup("lobbyistsSeenLabel");
       userItem.ui.pdfItemsSeenLabel = userWidget.lookup("pdfItemsSeenLabel");
       userItem.ui.votedOnLabel = userWidget.lookup("votedOnLabel");
+      userWidget.lookup("disturbanceInTheForceLabel").hide();
+      userItem.ui.goldAchievementsLabel = userWidget.lookup("goldAchievementsLabel");
+      userItem.ui.silverAchievementsLabel = userWidget.lookup("silverAchievementsLabel");
+      userItem.ui.bronzeAchievementsLabel = userWidget.lookup("bronzeAchievementsLabel");
       userItem.ui.showUserStatisticsButton = userWidget.lookup("userStatisticsButton");
       userItem.ui.showUserAchievementsButton = userWidget.lookup("userAchievementsButton");
       userItem.ui.contentLayout = userWidget.lookup("contentLayout");
@@ -874,7 +922,6 @@ createUserWidget = function (userHandle) {
          }
          userItem.ui.userAchievementsWidgetOpen = !userItem.ui.userAchievementsWidgetOpen;
       });
-      //insertAchievementsRecieved(userItem.handle);
       createUserAchievementWidgets(userItem.handle);
       setUserNameLabel(userItem.handle);
       setLastLoginSeenLabel(userItem.handle);
@@ -891,6 +938,9 @@ createUserWidget = function (userHandle) {
       voteAlignment(userItem.handle);
       postsVsComments(userItem.handle);
       tagTypes(userItem.handle);
+      setGoldAchievementsLabel(userItem.handle);
+      setSilverAchievementsLabel(userItem.handle);
+      setBronzeAchievementsLabel(userItem.handle);
    }
 };
 
@@ -916,6 +966,9 @@ fillGroupInfoWidget = function (groupHandle) {
       groupItem.ui.totalQuestionsLabel = groupWidget.lookup("lobbyistsSeenLabel");
       groupItem.ui.totalMediaLabel = groupWidget.lookup("votesSeenLabel");
       groupWidget.lookup("pdfItemsSeenLabel").hide();
+      groupWidget.lookup("goldAchievementsLabel").hide();
+      groupWidget.lookup("silverAchievementsLabel").hide();
+      groupWidget.lookup("bronzeAchievementsLabel").hide();
       groupItem.ui.memberCountLabel = groupWidget.lookup("votedOnLabel");
       groupItem.ui.showGroupStatisticsButton = groupWidget.lookup("userStatisticsButton");
       groupItem.ui.contentLayout = groupWidget.lookup("contentLayout");
@@ -1164,6 +1217,12 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , commentTags: 0
          , questionTags: 0
          , totalTags: 0
+         , bronzeAchievements: 0
+         , totalBronzeAchievements: 0
+         , silverAchievements: 0
+         , totalSilverAchievements: 0
+         , goldAchievements: 0
+         , totalGoldAchievements: 0
          };
       dmz.time.setTimer(self, function () {
 
@@ -1270,7 +1329,31 @@ function (objHandle, attrHandle, newVal, oldVal) {
 dmz.object.state.observe(self, dmz.stance.Achievements,
 function (objHandle, attrHandle, state) {
 
-   if (Users[objHandle]) { Users[objHandle].achievements = state; }
+   if (Users[objHandle]) {
+
+      Users[objHandle].achievements = state;
+      Object.keys(NonLayeredAchievements).forEach(function (key) {
+
+         if (state.and(NonLayeredAchievements[key].achievement).bool()) {
+
+            if (NonLayeredAchievements[key].level === GOLD) {
+
+               Users[objHandle].goldAchievements += 1;
+            }
+            else if (NonLayeredAchievements[key].level === SILVER) {
+
+               Users[objHandle].silverAchievements += 1;
+            }
+            else if (NonLayeredAchievements[key].level === BRONZE) {
+
+               Users[objHandle].bronzeAchievements += 1;
+            }
+         }
+         if (NonLayeredAchievements[key].level === GOLD) { Users[objHandle].totalGoldAchievements += 1; }
+         else if (NonLayeredAchievements[key].level === SILVER) { Users[objHandle].totalSilverAchievements += 1; }
+         else if (NonLayeredAchievements[key].level === BRONZE) { Users[objHandle].totalBronzeAchievements += 1; }
+      });
+   }
 });
 
 dmz.object.text.observe(self, dmz.stance.NameHandle,
