@@ -88,6 +88,7 @@ var dmz =
    , setGoldAchievementsLabel
    , setSilverAchievementsLabel
    , setBronzeAchievementsLabel
+   , setTotalLoginsLabel
    , setGroupNameLabel
    , setTotalPostsLabel
    , setTotalCommentsLabel
@@ -726,6 +727,15 @@ setBronzeAchievementsLabel = function (userHandle) {
    }
 };
 
+setTotalLoginsLabel = function (userHandle) {
+
+   if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].ui.totalLoginsLabel &&
+      (Users[userHandle].totalLogins !== undefined)) {
+
+      Users[userHandle].ui.totalLoginsLabel.text("<b>Total Logins: </b>" + Users[userHandle].totalLogins);
+   }
+};
+
 setGroupNameLabel = function (groupHandle) {
 
    if (Groups[groupHandle] && Groups[groupHandle].ui) {
@@ -858,7 +868,7 @@ createUserWidget = function (userHandle) {
       userItem.ui.lobbyistsSeenLabel = userWidget.lookup("lobbyistsSeenLabel");
       userItem.ui.pdfItemsSeenLabel = userWidget.lookup("pdfItemsSeenLabel");
       userItem.ui.votedOnLabel = userWidget.lookup("votedOnLabel");
-      userWidget.lookup("disturbanceInTheForceLabel").hide();
+      userItem.ui.totalLoginsLabel = userWidget.lookup("disturbanceInTheForceLabel");
       userItem.ui.goldAchievementsLabel = userWidget.lookup("goldAchievementsLabel");
       userItem.ui.silverAchievementsLabel = userWidget.lookup("silverAchievementsLabel");
       userItem.ui.bronzeAchievementsLabel = userWidget.lookup("bronzeAchievementsLabel");
@@ -941,6 +951,7 @@ createUserWidget = function (userHandle) {
       setGoldAchievementsLabel(userItem.handle);
       setSilverAchievementsLabel(userItem.handle);
       setBronzeAchievementsLabel(userItem.handle);
+      setTotalLoginsLabel(userItem.handle);
    }
 };
 
@@ -1425,6 +1436,12 @@ function (objHandle, attrHandle, newVal, oldVal) {
 
    var data = Memos[objHandle] || Newspapers[objHandle] || Videos[objHandle] || Lobbyists[objHandle] || PdfItems[objHandle] || Users[objHandle];
    if (data) { data.active = newVal; }
+});
+
+dmz.object.scalar.observe(self, dmz.stance.ActiveHandle,
+function (objHandle, attrHandle, newVal, oldVal) {
+
+   if (Users[objHandle]) { Users[objHandle].totalLogins = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.NameHandle,
