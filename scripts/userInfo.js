@@ -63,8 +63,6 @@ var dmz =
 
    // Functions
    , toDate = dmz.util.timeStampToDate
-   , initializeAchievementWidgets
-   , initializeAchievementUI
    , createPieChart
    , setVoteDistributonPieChart
    , votesCast
@@ -93,6 +91,7 @@ var dmz =
    , setTotalQuestionsLabel
    , setTotalMediaLabel
    , setMemberCountLabel
+   , createUserAchievementWidgets
    , createUserWidget
    , fillGroupInfoWidget
    , createGroupTabs
@@ -104,46 +103,10 @@ ShowStudentsMessage.subscribe(self, function () {
 
       previouslyOpened = true;
       createGroupTabs();
-      initializeAchievementUI();
       userInfoWidget.show();
    }
    else if (previouslyOpened) { userInfoWidget.show(); }
 });
-
-initializeAchievementWidgets = function (achievementSet) {
-
-   if (achievementSet) {
-
-      achievementSet.achievements.forEach(function (achievementItem) {
-
-         if (!achievementItem.ui) {
-
-            achievementItem.ui = {};
-            achievementItem.ui.widget = dmz.ui.loader.load("AchievementItem.ui");
-            achievementItem.ui.achievementTitleLabel = achievementItem.ui.widget.lookup("achievementTitleLabel");
-            achievementItem.ui.achievementDescriptionLabel = achievementItem.ui.widget.lookup("achievementDescriptionLabel");
-            achievementItem.ui.achievementPictureLabel = achievementItem.ui.widget.lookup("achievementPictureLabel");
-            achievementItem.ui.achievementTitleLabel.text("<b>Title: </b>" + achievementItem.title);
-            achievementItem.ui.achievementDescriptionLabel.text("<b>Description: </b>" + achievementItem.description);
-            achievementItem.ui.achievementPictureLabel.pixmap(achievementItem.picturePixmap);
-            if (achievementItem.level === GOLD) { achievementItem.ui.widget.styleSheet(GOLD_STYLE); }
-            if (achievementItem.level === SILVER) { achievementItem.ui.widget.styleSheet(SILVER_STYLE); }
-            if (achievementItem.level === BRONZE) { achievementItem.ui.widget.styleSheet(BRONZE_STYLE); }
-         }
-      });
-   }
-};
-
-initializeAchievementUI = function () {
-
-   if (LayeredAchievements) {
-
-      Object.keys(LayeredAchievements).forEach(function (key) {
-
-         initializeAchievementWidgets(LayeredAchievements[key]);
-      });
-   }
-};
 
 createPieChart = function (data, labelFnc, scene, zero) {
 
@@ -781,11 +744,56 @@ setMemberCountLabel = function (groupHandle) {
    }
 };
 
+createUserAchievementWidgets = function (userHandle) {
+
+   var achievementWidget
+     , highestAchievement
+     , highestLevel
+     ;
+
+   if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].achievements &&
+      LayeredAchievements) {
+
+      Object.keys(LayeredAchievements).forEach(function (key) {
+
+         highestLevel = 0;
+         LayeredAchievements[key].achievements.forEach(function (achievementItem) {
+
+            if (Users[userHandle].achievements.and(achievementItem.achievement).bool()) {
+
+               highestLevel = achievementItem.level;
+            }
+         });
+         if (highestLevel) {
+
+            highestAchievement = LayeredAchievements[key].achievements[highestLevel - 1];
+            achievementWidget = dmz.ui.loader.load("AchievementItem.ui");
+            achievementWidget.lookup("achievementTitleLabel").text("<b>Title: </b>" + highestAchievement.title);
+            achievementWidget.lookup("achievementDescriptionLabel").text("<b>Description: </b>" + highestAchievement.description);
+            achievementWidget.lookup("achievementPictureLabel").pixmap(highestAchievement.picturePixmap);
+            if (highestAchievement.level === GOLD) {
+
+               achievementWidget.styleSheet(GOLD_STYLE);
+            }
+            else if (highestAchievement.level === SILVER) {
+
+               achievementWidget.styleSheet(SILVER_STYLE);
+            }
+            else if (highestAchievement.level === BRONZE) {
+
+               achievementWidget.styleSheet(BRONZE_STYLE);
+            }
+            Users[userHandle].ui.achievements.push(achievementWidget);
+            Users[userHandle].ui.achievementContentLayout.addWidget(achievementWidget);
+         }
+      });
+   }
+};
+
 createUserWidget = function (userHandle) {
 
    var userWidget
      , achievementsWidget
-     , tempTestWidget = dmz.ui.loader.load("AchievementItem.ui")
      , userItem
      ;
 
@@ -795,7 +803,7 @@ createUserWidget = function (userHandle) {
       userWidget = dmz.ui.loader.load("UserInfoSubWidget.ui");
       achievementsWidget = dmz.ui.loader.load("WikiForm.ui");
 
-      userItem.ui = { userWidget: userWidget, achievementsWidget: achievementsWidget };
+      userItem.ui = { userWidget: userWidget, achievementsWidget: achievementsWidget, achievements: [] };
       userItem.ui.userPictureLabel = userWidget.lookup("userPictureLabel");
       userItem.ui.votesSeenLabel = userWidget.lookup("votesSeenLabel");
       userItem.ui.userNameLabel = userWidget.lookup("userNameLabel");
@@ -810,7 +818,6 @@ createUserWidget = function (userHandle) {
       userItem.ui.showUserAchievementsButton = userWidget.lookup("userAchievementsButton");
       userItem.ui.contentLayout = userWidget.lookup("contentLayout");
       userItem.ui.achievementContentLayout = achievementsWidget.lookup("wikiLayout");
-      userItem.ui.achievementContentLayout.addWidget(tempTestWidget);
       userItem.ui.graphicsScene = dmz.ui.graph.createScene();
       userItem.ui.graphicsView = dmz.ui.graph.createView(userItem.ui.graphicsScene);
       userItem.ui.graphicsView.alignment(dmz.ui.consts.AlignLeft | dmz.ui.consts.AlignTop);
@@ -867,6 +874,8 @@ createUserWidget = function (userHandle) {
          }
          userItem.ui.userAchievementsWidgetOpen = !userItem.ui.userAchievementsWidgetOpen;
       });
+      //insertAchievementsRecieved(userItem.handle);
+      createUserAchievementWidgets(userItem.handle);
       setUserNameLabel(userItem.handle);
       setLastLoginSeenLabel(userItem.handle);
       setMemosSeenLabel(userItem.handle);
@@ -1256,6 +1265,12 @@ function (objHandle, attrHandle, newVal, oldVal) {
          }
       });
    }
+});
+
+dmz.object.state.observe(self, dmz.stance.Achievements,
+function (objHandle, attrHandle, state) {
+
+   if (Users[objHandle]) { Users[objHandle].achievements = state; }
 });
 
 dmz.object.text.observe(self, dmz.stance.NameHandle,

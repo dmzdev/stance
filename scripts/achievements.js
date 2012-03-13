@@ -131,7 +131,7 @@ addAchievementItemUI = function (achievementSet) {
          achievementSet.ui.achievementPictureLabel.pixmap(achievementItem.picturePixmap);
          achievementSet.currentLevel = achievementItem.level;
          if (achievementItem.level === GOLD) { achievementSet.ui.widget.styleSheet(GOLD_STYLE); }
-         else if (achievementItem.level === SILVER) { achievementSet.ui.widget.styleShgeet(SILVER_STYLE); }
+         else if (achievementItem.level === SILVER) { achievementSet.ui.widget.styleSheet(SILVER_STYLE); }
          else if (achievementItem.level === BRONZE) { achievementSet.ui.widget.styleSheet(BRONZE_STYLE); }
          if (!dmz.stance.hasSeenAchievement(hil, achievementItem.achievement)) {
 
