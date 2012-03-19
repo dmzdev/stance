@@ -397,6 +397,7 @@ byUser = function (groupHandle, fieldName, field, xPos, yPos) {
             brush = dmz.ui.graph.createBrush({ r: 1, g: 1, b: ((currentColor - 510) / 255) });
             legend.push( { amt: amount, brush: brush, label: Users[userHandle].name });
          }
+         currentColor += colorStep;
       });
       createPieChart
          ( legend
@@ -481,7 +482,7 @@ byGroups = function (fieldName, field, xPos, yPos) {
 
          if (Groups[key][field].length !== undefined) { amount = Groups[key][field].length }
          else if (Groups[key][field] !== undefined) { amount = Groups[key][field] }
-         else { self.log.error("Error Setting Value For", fieldName, "Chart"); }
+         else { self.log.error("Error Setting Value For", fieldName, "Chart"); amount = 0; }
 
          if (currentColor <= 255) {
 
@@ -798,6 +799,14 @@ setMemberCountLabel = function (groupHandle) {
    }
 };
 
+setDisturbanceInTheForceLabel = function (groupHandle) {
+
+   if (Groups[groupHandle] && Groups[groupHandle].ui) {
+
+      Groups[groupHandle].ui.disturbanceInTheForceLabel.text("<b>Disturbance In The Force Votes: </b>" + Groups[groupHandle].disturbances);
+   }
+};
+
 createUserAchievementWidgets = function (userHandle) {
 
    var achievementWidget
@@ -806,7 +815,7 @@ createUserAchievementWidgets = function (userHandle) {
      ;
 
    if (Users[userHandle] && Users[userHandle].ui && Users[userHandle].achievements &&
-      LayeredAchievements) {
+      Users[userHandle].groupHandle && Groups[Users[userHandle].groupHandle] && LayeredAchievements) {
 
       Object.keys(LayeredAchievements).forEach(function (key) {
 
@@ -980,6 +989,7 @@ fillGroupInfoWidget = function (groupHandle) {
       groupWidget.lookup("goldAchievementsLabel").hide();
       groupWidget.lookup("silverAchievementsLabel").hide();
       groupWidget.lookup("bronzeAchievementsLabel").hide();
+      groupItem.ui.disturbanceInTheForceLabel = groupWidget.lookup("disturbanceInTheForceLabel");
       groupItem.ui.memberCountLabel = groupWidget.lookup("votedOnLabel");
       groupItem.ui.showGroupStatisticsButton = groupWidget.lookup("userStatisticsButton");
       groupItem.ui.contentLayout = groupWidget.lookup("contentLayout");
@@ -1056,6 +1066,7 @@ fillGroupInfoWidget = function (groupHandle) {
       setTotalQuestionsLabel(groupHandle);
       setTotalMediaLabel(groupHandle);
       setMemberCountLabel(groupHandle);
+      setDisturbanceInTheForceLabel(groupHandle);
 
       groupVoteDistribution(groupHandle);
       byUser(groupHandle, "Votes Created", "votesCreated", 600, 0);
@@ -1067,6 +1078,10 @@ fillGroupInfoWidget = function (groupHandle) {
       byUser(groupHandle, "Posts Tagged", "postTags", 600, 900)
       byUser(groupHandle, "Comments Tagged", "commentTags", 0, 1200);
       byUser(groupHandle, "Questions Tagged", "questionTags", 600, 1200);
+      byUser(groupHandle, "Achievement Points", "achievementPoints", 0, 1500);
+      byUser(groupHandle, "Gold Achievements", "goldAchievements", 600, 1500);
+      byUser(groupHandle, "Silver Achievements", "silverAchievements", 0, 1800);
+      byUser(groupHandle, "Bronze Achievements", "bronzeAchievements", 600, 1800);
 
       byAdvisor(groupHandle, "Votes", "votes", 0, 0);
       byAdvisor(groupHandle, "Questions", "questions", 600, 0);
@@ -1116,22 +1131,29 @@ createGroupTabs = function () {
    byGroups("Comments", "comments", 0, 300);
    byGroups("Questions", "questions", 600, 300);
    byGroups("Tags", "totalTags", 0, 1200);
+   byGroups("Achievement Points", "achievementPoints", 600, 1200);
+   byGroups("Gold Achievements", "goldAchievements", 0, 1500);
+   byGroups("Silver Achievements", "silverAchievements", 600, 1500);
+   byGroups("Bronze Achievements", "bronzeAchievements", 0, 1800);
 
    Object.keys(Groups).forEach(function (key) {
 
-      scrollArea = dmz.ui.scrollArea.create();
-      scrollWidget = dmz.ui.widget.create("scrollWidget");
-      usersLayout = dmz.ui.layout.createVBoxLayout();
-      usersLayout.addStretch(1);
-      scrollWidget.layout(usersLayout);
-      scrollArea.widget(scrollWidget);
-      scrollArea.widgetResizable(true);
+      if (Groups[key].members.length) {
 
-      groupTabs.add(scrollArea, Groups[key].name);
-      Groups[key].ui = {};
-      Groups[key].ui.usersLayout = usersLayout;
-      fillGroupInfoWidget(key);
-      Groups[key].ui.usersLayout.insertWidget(0, Groups[key].ui.groupInfoWidget);
+         scrollArea = dmz.ui.scrollArea.create();
+         scrollWidget = dmz.ui.widget.create("scrollWidget");
+         usersLayout = dmz.ui.layout.createVBoxLayout();
+         usersLayout.addStretch(1);
+         scrollWidget.layout(usersLayout);
+         scrollArea.widget(scrollWidget);
+         scrollArea.widgetResizable(true);
+
+         groupTabs.add(scrollArea, Groups[key].name);
+         Groups[key].ui = {};
+         Groups[key].ui.usersLayout = usersLayout;
+         fillGroupInfoWidget(key);
+         Groups[key].ui.usersLayout.insertWidget(0, Groups[key].ui.groupInfoWidget);
+      }
    });
 
    Object.keys(Users).forEach(function (key) {
@@ -1190,6 +1212,11 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , commentTags: 0
          , questionTags: 0
          , totalTags: 0
+         , disturbances: 0
+         , goldAchievements: 0
+         , silverAchievements: 0
+         , bronzeAchievements: 0
+         , achievementPoints: 0
          };
    }
    else if (objType.isOfType(dmz.stance.UserType)) {
@@ -1234,6 +1261,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , totalSilverAchievements: 0
          , goldAchievements: 0
          , totalGoldAchievements: 0
+         , achievementPoints: 0
          };
       dmz.time.setTimer(self, function () {
 
@@ -1269,7 +1297,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
    }
    else if (objType.isOfType(dmz.stance.VoteType)) {
 
-      Votes[objHandle] = { handle: objHandle, tags: 0, tagField: "voteTags" };
+      Votes[objHandle] = { handle: objHandle, tags: 0, tagField: "voteTags" , disturbance: false };
    }
    else if (objType.isOfType(dmz.stance.PostType)) {
 
@@ -1340,29 +1368,58 @@ function (objHandle, attrHandle, newVal, oldVal) {
 dmz.object.state.observe(self, dmz.stance.Achievements,
 function (objHandle, attrHandle, state) {
 
+   var highestLevel = 0;
+
    if (Users[objHandle]) {
 
       Users[objHandle].achievements = state;
-      Object.keys(NonLayeredAchievements).forEach(function (key) {
+      dmz.time.setTimer(self, function () {
 
-         if (state.and(NonLayeredAchievements[key].achievement).bool()) {
+         if (Users[objHandle] && Users[objHandle].groupHandle && Groups[Users[objHandle].groupHandle]) {
 
-            if (NonLayeredAchievements[key].level === GOLD) {
+            Object.keys(LayeredAchievements).forEach(function (key) {
 
-               Users[objHandle].goldAchievements += 1;
-            }
-            else if (NonLayeredAchievements[key].level === SILVER) {
+               highestLevel = 0;
+               LayeredAchievements[key].achievements.forEach(function (achievementItem) {
 
-               Users[objHandle].silverAchievements += 1;
-            }
-            else if (NonLayeredAchievements[key].level === BRONZE) {
+                  if (achievementItem.level === GOLD) {
 
-               Users[objHandle].bronzeAchievements += 1;
-            }
+                     Users[objHandle].totalGoldAchievements += 1;
+                     if (state.and(achievementItem.achievement).bool()) {
+
+                        highestLevel = achievementItem.level;
+                        Users[objHandle].goldAchievements += 1;
+                        Groups[Users[objHandle].groupHandle].goldAchievements += 1;
+                     }
+                  }
+                  else if (achievementItem.level === SILVER) {
+
+                     Users[objHandle].totalSilverAchievements += 1;
+                     if (state.and(achievementItem.achievement).bool()) {
+
+                        highestLevel = achievementItem.level;
+                        Users[objHandle].silverAchievements += 1;
+                        Groups[Users[objHandle].groupHandle].silverAchievements += 1;
+                     }
+                  }
+                  else if (achievementItem.level === BRONZE) {
+
+                     Users[objHandle].totalBronzeAchievements += 1;
+                     if (state.and(achievementItem.achievement).bool()) {
+
+                        highestLevel = achievementItem.level;
+                        Users[objHandle].bronzeAchievements += 1;
+                        Groups[Users[objHandle].groupHandle].bronzeAchievements += 1;
+                     }
+                  }
+               });
+               if (highestLevel) {
+
+                  Users[objHandle].achievementPoints += highestLevel;
+                  Groups[Users[objHandle].groupHandle].achievementPoints += highestLevel;
+               }
+            });
          }
-         if (NonLayeredAchievements[key].level === GOLD) { Users[objHandle].totalGoldAchievements += 1; }
-         else if (NonLayeredAchievements[key].level === SILVER) { Users[objHandle].totalSilverAchievements += 1; }
-         else if (NonLayeredAchievements[key].level === BRONZE) { Users[objHandle].totalBronzeAchievements += 1; }
       });
    }
 });
@@ -1436,6 +1493,19 @@ function (objHandle, attrHandle, newVal, oldVal) {
 
    var data = Memos[objHandle] || Newspapers[objHandle] || Videos[objHandle] || Lobbyists[objHandle] || PdfItems[objHandle] || Users[objHandle];
    if (data) { data.active = newVal; }
+});
+
+dmz.object.flag.observe(self, dmz.stance.DisruptTheForceFlag,
+function (objHandle, attrHandle, newVal, oldVal) {
+
+   if (Votes[objHandle]) { Votes[objHandle].disturbance = true; }
+   dmz.time.setTimer(self, function () {
+
+      if (Groups[Votes[objHandle].groupHandle]) {
+
+         Groups[Votes[objHandle].groupHandle].disturbances += 1;
+      }
+   });
 });
 
 dmz.object.scalar.observe(self, dmz.stance.ActiveHandle,

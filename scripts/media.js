@@ -47,6 +47,7 @@ var dmz =
    , addLinkWidget = mediaViewer.lookup("addLinkWidget")
    , addMediaCheckBox = mediaViewer.lookup("addMediaCheckBox")
    , pdfUrlLineEdit = mediaViewer.lookup("pdfUrlLineEdit")
+   , pdfLinkLabel = mediaViewer.lookup("pdfLinkLabel")
 
    // Variables
    , hil
@@ -136,7 +137,8 @@ changeState = function (state) {
 
       CurrentMap = PdfItems;
       CurrentArray = PdfArray;
-      pdfUrlLineEdit.show();
+      pdfUrlLineEdit.hide();
+      pdfLinkLabel.hide();
       addMediaButton.text("Add PDF Link");
    }
    else if (state === "Memo") {
@@ -144,6 +146,7 @@ changeState = function (state) {
       CurrentMap = Memos;
       CurrentArray = MemosArray;
       pdfUrlLineEdit.hide();
+      pdfLinkLabel.hide();
       addMediaButton.text("Add Memo Link");
    }
    else if (state === "Newspaper") {
@@ -151,6 +154,7 @@ changeState = function (state) {
       CurrentMap = Newspapers;
       CurrentArray = NewspapersArray;
       pdfUrlLineEdit.hide();
+      pdfLinkLabel.hide();
       addMediaButton.text("Add Newspaper Link");
    }
    else if (state === "Video") {
@@ -158,6 +162,7 @@ changeState = function (state) {
       CurrentMap = Videos;
       CurrentArray = VideosArray;
       pdfUrlLineEdit.hide();
+      pdfLinkLabel.hide();
       addMediaButton.text("Add Video Link");
    }
 };
@@ -174,7 +179,10 @@ initialButtonObserve = function () {
       !LoginSkipped) {
 
       isAllowedToPost = true;
-      if (CurrentItem.createdByHandle === hil) { isAllowedToDelete = true; }
+      if (CurrentItem.createdByHandle === hil || (dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag))) {
+
+         isAllowedToDelete = true;
+      }
    }
    else if (dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag) && !LoginSkipped) {
 
@@ -585,6 +593,7 @@ setGroupCheckboxes = function () {
          }
          else { Groups[key].ui.checkBox.setChecked(false); }
       }
+      if (!dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag)) { Groups[key].ui.checkBox.enabled(false); }
    });
 };
 
