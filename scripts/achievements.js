@@ -72,8 +72,7 @@ checkForNotifications = function () {
                data = dmz.data.create();
                data.string(dmz.stance.NameHandle, 0, NonLayeredAchievements[key].title);
                data.string(dmz.stance.PictureHandle, 0, NonLayeredAchievements[key].picture);
-               self.log.error("Sending achievement message");
-               /*dmz.time.setTimer(self, 2, function () {*/ dmz.stance.ACHIEVEMENT_MESSAGE.send(data); //});
+               dmz.stance.ACHIEVEMENT_MESSAGE.send(data);
             }
          });
       }
@@ -101,8 +100,7 @@ checkForNotifications = function () {
                data = dmz.data.create();
                data.string(dmz.stance.NameHandle, 0, NonLayeredAchievements[key].title);
                data.string(dmz.stance.PictureHandle, 0, NonLayeredAchievements[key].picture);
-               self.log.error("Sending achievement message");
-               /*dmz.time.setTimer(self, 2, function () {*/ dmz.stance.ACHIEVEMENT_MESSAGE.send(data); //});
+               dmz.stance.ACHIEVEMENT_MESSAGE.send(data);
             }
          });
       }
@@ -178,7 +176,7 @@ function (objHandle, attrHandle, value) {
    if (value) {
 
       hil = objHandle;
-      dmz.time.setTimer(self, function () { checkForNotifications(); });
+      checkForNotifications();
    }
 });
 
