@@ -328,10 +328,12 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
+      self.log.error("HIL");
       if (loggedInId) {
 
+         self.log.error("DIALOG OPENABLE");
          showAchievementDialog = true;
-         AchievementQueue = [];
+         if (hil !== objHandle) { AchievementQueue = []; self.log.error("CLEARED"); }
       }
       hil = objHandle;
       if (!dmz.stance.isAllowed(objHandle, dmz.stance.SwitchGroupFlag) || HaveToggled) {
@@ -343,6 +345,8 @@ function (objHandle, attrHandle, value) {
 
          if (PageLink[item].highlight) { PageLink[item].highlight.hide(); }
       });
+      self.log.error("DISPLAY NEW ACHIEVEMENTS");
+      displayNewAchievements();
    }
 });
 
