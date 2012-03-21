@@ -469,7 +469,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
          else if (length >= SAGE_ADVICE_COUNT_1) { achievement = dmz.stance.SageAdviceOneAchievement; }
          if (achievement && !dmz.stance.hasAchievement(subHandle, achievement)) {
 
-            dmz.stance.unlockAchievement(subHandle, achievement);
+            dmz.time.setTimer(self, function () { dmz.stance.unlockAchievement(subHandle, achievement); });
          }
       }
    }
@@ -516,7 +516,7 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
          if (achievement && !dmz.stance.hasAchievement(authorHandle, achievement)) {
 
-            dmz.stance.unlockAchievement(authorHandle, achievement);
+            dmz.time.setTimer(self, function () { dmz.stance.unlockAchievement(authorHandle, achievement); });
          }
       }
    }
