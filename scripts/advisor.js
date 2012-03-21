@@ -36,8 +36,8 @@ var dmz =
    , MAX_QUESTION_REPLY_LEN = 500
    , MAX_TASK_STR_LEN = 140
 
-   , SAGE_ADVICE_COUNT_1 = 2 // Number of advisors posted to for achievement
-   , SAGE_ADVICE_COUNT_2 = 4
+   , SAGE_ADVICE_COUNT_1 = 1 // Number of advisors posted to for achievement
+   , SAGE_ADVICE_COUNT_2 = 3
    , SAGE_ADVICE_COUNT_3 = 5
 
    , EFF_INTERR_COUNT_1 = 4 // Number of tagged questions
@@ -451,6 +451,29 @@ dmz.object.flag.observe(self, dmz.stance.ActiveHandle, function (handle, attr, v
 dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
+   var advisorHandle
+     , achievement
+     , length
+     ;
+   if (master.questions[superHandle]) {
+
+      advisorHandle = (dmz.object.subLinks(superHandle, dmz.stance.QuestionLinkHandle) || [])[0];
+      if (advisorHandle) {
+
+         if (!userForumPostTable[subHandle]) { userForumPostTable[subHandle] = {}; }
+         userForumPostTable[subHandle][advisorHandle] = 1;
+
+         length = Object.keys(userForumPostTable[subHandle]).length;
+         if (length >= SAGE_ADVICE_COUNT_3) { achievement = dmz.stance.SageAdviceThreeAchievement; }
+         else if (length >= SAGE_ADVICE_COUNT_2) { achievement = dmz.stance.SageAdviceTwoAchievement; }
+         else if (length >= SAGE_ADVICE_COUNT_1) { achievement = dmz.stance.SageAdviceOneAchievement; }
+         if (achievement && !dmz.stance.hasAchievement(subHandle, achievement)) {
+
+            dmz.stance.unlockAchievement(subHandle, achievement);
+         }
+      }
+   }
+
    observerLists.createdBy.forEach(function (fnc) { fnc(linkObjHandle, attrHandle, superHandle, subHandle); });
 });
 
@@ -483,13 +506,13 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
       authorHandle = dmz.stance.getAuthorHandle(superHandle);
       if (authorHandle) {
 
-         if (userForumPostTable[authorHandle]) { userForumPostTable[authorHandle].push(subHandle); }
-         else { userForumPostTable[authorHandle] = [subHandle]; }
+         if (!userForumPostTable[authorHandle]) { userForumPostTable[authorHandle] = {}; }
+         userForumPostTable[authorHandle][subHandle] = 1;
 
-         length = userForumPostTable[authorHandle].length;
-         if (length >= SAGE_ADVICE_COUNT_3) { achievement = dmz.stance.SageAdviceThreeAchivement; }
-         else if (length >= SAGE_ADVICE_COUNT_2) { achievement = dmz.stance.SageAdviceTwoAchivement; }
-         else if (length >= SAGE_ADVICE_COUNT_1) { achievement = dmz.stance.SageAdviceOneAchivement; }
+         length = Object.keys(userForumPostTable[authorHandle]).length;
+         if (length >= SAGE_ADVICE_COUNT_3) { achievement = dmz.stance.SageAdviceThreeAchievement; }
+         else if (length >= SAGE_ADVICE_COUNT_2) { achievement = dmz.stance.SageAdviceTwoAchievement; }
+         else if (length >= SAGE_ADVICE_COUNT_1) { achievement = dmz.stance.SageAdviceOneAchievement; }
 
          if (achievement && !dmz.stance.hasAchievement(authorHandle, achievement)) {
 
