@@ -88,7 +88,8 @@ var dmz =
         }
    , LoggedIn = false
    , hil
-   , loggedInId
+   , loggedInId = false
+   , showAchievementDialog = false
    , groupAdvisors = {}
    , advisorPicture = {}
    , LastGViewSize = false
@@ -327,9 +328,9 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
-      if (hil && objHandle !== hil) {
+      if (loggedInId) {
 
-         self.log.error("Clearing achievement queue");
+         showAchievementDialog = true;
          AchievementQueue = [];
       }
       hil = objHandle;
@@ -618,20 +619,22 @@ function (objHandle, attrHandle, userHandle, groupHandle) {
 
 LoginSuccessMessage.subscribe(self, function (data) {
 
-   self.log.warn("Login Success, logged in", data.string(dmz.stance.NameHandle));
+   self.log.warn("Login Success, logged in");
    loggedInId = data.string(dmz.stance.NameHandle);
    LoggedIn = true;
 });
 
-LoginFailedMessage.subscribe(self, function () {
+LoginFailedMessage.subscribe(self, function (data) {
 
    self.log.warn("Couldn't connect to the server, logged in");
+   showAchievementDialog = true;
    LoggedIn = true;
 });
 
-LoginSkippedMessage.subscribe(self, function () {
+LoginSkippedMessage.subscribe(self, function (data) {
 
    self.log.warn("Login skipped, logged in");
+   showAchievementDialog = true;
    LoggedIn = true;
    LoginSkipped = true;
 });
@@ -666,9 +669,8 @@ displayNewAchievements = function () {
    var obj
      , file
      ;
-   if (AchievementQueue.length && !dialogOpen) {
+   if (AchievementQueue.length && !dialogOpen && showAchievementDialog) {
 
-      self.log.error("displaying achievements!");
       obj = AchievementQueue.pop();
       achievementText.text("You have unlocked the " + obj.name + " achievement.");
       file = dmz.resources.findFile(obj.image) || dmz.resources.findFile(DefaultAchievement);
