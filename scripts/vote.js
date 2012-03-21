@@ -160,7 +160,7 @@ checkForApprovedVotes = function (createdByHandle) {
 
       dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteTwoAchievement);
    }
-   else if (approvedVotes > 5) {
+   else if (approvedVotes >= 5) {
 
       dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteThreeAchievement);
    }
@@ -170,6 +170,7 @@ checkForVoteAchievement = function (userHandle) {
 
    var totalVotes = 0;
 
+   self.log.error(Users[userHandle]);
    if (Users[userHandle]) {
 
       totalVotes = Users[userHandle].yesVotes.length + Users[userHandle].noVotes.length;
@@ -1496,7 +1497,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       dmz.time.setTimer(self, function () {
 
          if (Users[supHandle]) { Users[supHandle].noVotes.push(subHandle); }
-         checkForVoteAchievement(subHandle);
+         checkForVoteAchievement(supHandle);
          updateVotes(subHandle);
          isVoteOver(subHandle);
       });
@@ -1512,7 +1513,7 @@ function (linkHandle, attrHandle, supHandle, subHandle) {
       dmz.time.setTimer(self, function () {
 
          if (Users[supHandle]) { Users[supHandle].yesVotes.push(subHandle); }
-         checkForVoteAchievement(subHandle);
+         checkForVoteAchievement(supHandle);
          checkForStrategistAchievement(VoteObjects[subHandle].groupHandle);
          updateVotes(subHandle);
          isVoteOver(subHandle);
