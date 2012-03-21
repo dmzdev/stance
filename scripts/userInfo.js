@@ -681,7 +681,8 @@ setVotedOnLabel = function (userHandle) {
          "<b>/</b>" +
             (
             Groups[Users[userHandle].groupHandle].votesPassed.length +
-            Groups[Users[userHandle].groupHandle].votesFailed.length
+            Groups[Users[userHandle].groupHandle].votesFailed.length +
+            Groups[Users[userHandle].groupHandle].votesActive.length
             )
          );
          //Groups[Users[userHandle].groupHandle].votes.length);
@@ -829,6 +830,10 @@ createUserAchievementWidgets = function (userHandle) {
          });
          if (highestLevel) {
 
+            if (highestLevel > LayeredAchievements[key].achievements.length) {
+
+               highestLevel = LayeredAchievements[key].achievements.length;
+            }
             highestAchievement = LayeredAchievements[key].achievements[highestLevel - 1];
             achievementWidget = dmz.ui.loader.load("AchievementItem.ui");
             achievementWidget.lookup("achievementTitleLabel").text("<b>Title: </b>" + highestAchievement.title);

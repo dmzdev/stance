@@ -87,6 +87,8 @@ var dmz =
         , Rolodex: false
         }
    , LoggedIn = false
+   , hil
+   , loggedInId
    , groupAdvisors = {}
    , advisorPicture = {}
    , LastGViewSize = false
@@ -325,6 +327,12 @@ function (objHandle, attrHandle, value) {
 
    if (value) {
 
+      if (hil && objHandle !== hil) {
+
+         self.log.error("Clearing achievement queue");
+         AchievementQueue = [];
+      }
+      hil = objHandle;
       if (!dmz.stance.isAllowed(objHandle, dmz.stance.SwitchGroupFlag) || HaveToggled) {
 
          updateGraphicsForGroup(dmz.stance.getUserGroupHandle(objHandle));
@@ -608,15 +616,25 @@ function (objHandle, attrHandle, userHandle, groupHandle) {
    }
 }());
 
-LoginSuccessMessage.subscribe(self, function () {
+LoginSuccessMessage.subscribe(self, function (data) {
 
-   self.log.warn ("Login Success, logged in");
+   self.log.warn("Login Success, logged in", data.string(dmz.stance.NameHandle));
+   loggedInId = data.string(dmz.stance.NameHandle);
    LoggedIn = true;
 });
 
-LoginFailedMessage.subscribe(self, function () { LoggedIn = true; });
+LoginFailedMessage.subscribe(self, function () {
 
-LoginSkippedMessage.subscribe(self, function () { LoggedIn = true; LoginSkipped = true; });
+   self.log.warn("Couldn't connect to the server, logged in");
+   LoggedIn = true;
+});
+
+LoginSkippedMessage.subscribe(self, function () {
+
+   self.log.warn("Login skipped, logged in");
+   LoggedIn = true;
+   LoginSkipped = true;
+});
 
 dmz.module.subscribe(self, "email", function (Mode, module) {
 
@@ -650,6 +668,7 @@ displayNewAchievements = function () {
      ;
    if (AchievementQueue.length && !dialogOpen) {
 
+      self.log.error("displaying achievements!");
       obj = AchievementQueue.pop();
       achievementText.text("You have unlocked the " + obj.name + " achievement.");
       file = dmz.resources.findFile(obj.image) || dmz.resources.findFile(DefaultAchievement);
