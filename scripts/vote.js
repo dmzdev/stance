@@ -152,15 +152,15 @@ checkForApprovedVotes = function (createdByHandle) {
          }
       });
    }
-   if ((approvedVotes >= 1) && (approvedVotes < 3)) {
+   if (approvedVotes >= 5) {
 
       dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteOneAchievement);
    }
-   else if ((approvedVotes >= 3) && (approvedVotes < 5)) {
+   else if (approvedVotes >= 3) {
 
       dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteTwoAchievement);
    }
-   else if (approvedVotes >= 5) {
+   else if (approvedVotes >= 1) {
 
       dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteThreeAchievement);
    }
@@ -173,15 +173,15 @@ checkForVoteAchievement = function (userHandle) {
    if (Users[userHandle]) {
 
       totalVotes = Users[userHandle].yesVotes.length + Users[userHandle].noVotes.length;
-      if ((totalVotes < 6) && (totalVotes >= 3)) {
+      if (totalVotes >= 9) {
 
          dmz.stance.unlockAchievement(userHandle, dmz.stance.RightToVoteOneAchievement);
       }
-      else if ((totalVotes < 9) && (totalVotes >= 6)) {
+      else if (totalVotes >= 6) {
 
          dmz.stance.unlockAchievement(userHandle, dmz.stance.RightToVoteTwoAchievement);
       }
-      else if (totalVotes >= 9) {
+      else if (totalVotes >= 3) {
 
          dmz.stance.unlockAchievement(userHandle, dmz.stance.RightToVoteThreeAchievement);
       }
