@@ -40,9 +40,9 @@ var dmz =
    , SAGE_ADVICE_COUNT_2 = 3
    , SAGE_ADVICE_COUNT_3 = 5
 
-   , EFF_INTERR_COUNT_1 = 4 // Number of tagged questions
-   , EFF_INTERR_COUNT_2 = 6
-   , EFF_INTERR_COUNT_3 = 8
+   , EFF_INTERR_COUNT_1 = 2 // Number of tagged questions
+   , EFF_INTERR_COUNT_2 = 4
+   , EFF_INTERR_COUNT_3 = 6
 
    // Variables
    , MainModule

@@ -230,7 +230,6 @@ LoginSkippedMessage.subscribe(self, function (data) {
 
 editScenarioWidget.observe(self, "showStudentsButton", "clicked", function () {
 
-   self.log.warn("showStudentsMessage:", showStudentsMessage);
    showStudentsMessage.send();
 });
 
