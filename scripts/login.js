@@ -86,7 +86,7 @@ _activateUser = function (name) {
          if (dmz.object.flag(handle, dmz.stance.ActiveHandle)) {
 
             dmz.object.flag(handle, dmz.object.HILAttribute, true);
-            dmz.object.flag(_userHandle, dmz.stance.UpdateLastLoginTimeHandle, true);
+            //dmz.object.flag(_userHandle, dmz.stance.UpdateLastLoginTimeHandle, true);
             dmz.object.timeStamp(_userHandle, dmz.stance.LastPingTimeHandle, 0);
             if (!_hasLoggedIn && !_loginSkipped) {
 
@@ -133,7 +133,9 @@ function (objHandle, attrHandle, newVal, oldVal) {
 
 _login = function (data) {
 
-   var timeStamp;
+   var timeStamp
+     , hil = dmz.object.hil()
+     ;
 
    if (data && dmz.data.isTypeOf(data)) {
 
@@ -143,6 +145,10 @@ _login = function (data) {
 
          _userName = data.string(dmz.stance.NameHandle);
          _activateUser(_userName);
+         if (hil) {
+
+            dmz.object.timeStamp(hil, dmz.stance.LastLoginTimeHandle, data.number(TimeStampAttr));
+         }
       });
    }
 }

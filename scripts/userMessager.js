@@ -84,35 +84,35 @@ sendEmail = function (userHandle) {
          EmailMod.sendEmail(
             [userHandle],
             "STANCE: Watcher has pinged you. (DO NOT REPLY)",
-            "The Watcher has noticed that you have not logged in for over 3 days, please remember that participation is part of your grade.", self);
+            "The Watcher has noticed that you, " + Users[userHandle].displayName +" , have not logged in for over 36 hours, please remember that participation is part of your grade.", self);
       }
       else if (dmz.object.scalar(hil, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) {
 
          EmailMod.sendEmail(
             [userHandle],
             "STANCE: " + Users[hil].displayName + " has pinged you. (DO NOT REPLY)",
-            Users[hil].displayName + " has noticed that you have not logged in for over 3 days, please remember that participation is part of your grade.");
+            Users[hil].displayName + " has noticed that you, " + Users[userHandle].displayName + ", have not logged in for over 36 hours, your team could use your help in making important decisions.");
       }
       else if (dmz.object.scalar(hil, dmz.stance.Permissions) === dmz.stance.OBSERVER_PERMISSION) {
 
          EmailMod.sendEmail(
             [userHandle],
             "STANCE: An observer has pinged you. (DO NOT REPLY)",
-            "An observer has noticed that you have not logged in for over 3 days, please remember that participation is part of your grade.");
+            "An observer has noticed that you, " + Users[userHandle].displayName + ", have not logged in for over 36 hours, please remember that participation is part of your grade.");
       }
       else if (dmz.object.scalar(hil, dmz.stance.Permissions) === dmz.stance.ADVISOR_PERMISSION) {
 
          EmailMod.sendEmail(
             [userHandle],
             "STANCE: An advisor has pinged you. (DO NOT REPLY)",
-            "An advisor has noticed that you have not logged in for over 3 days, please remember that participation is part of your grade.");
+            "An advisor has noticed that you, " + Users[userHandle].displayName + ", have not logged in for over 36 hours, please remember that participation is part of your grade.");
       }
       else {
 
          EmailMod.sendEmail(
             [userHandle],
             "STANCE: Someone has pinged you. (DO NOT REPLY)",
-            "Someone has noticed that you have not logged in for over 3 days, please remember that participation is part of your grade.");
+            "Someone has noticed that you, " + Users[userHandle].displayName + ", have not logged in for over 36 hours, please remember that participation is part of your grade.");
       }
    }
 };

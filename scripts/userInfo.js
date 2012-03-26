@@ -128,9 +128,12 @@ createPieChart = function (data, labelFnc, scene, zero) {
 
       data.forEach(function (item) {
 
-         if (item.amt !== 0) { everythingZero = false; }
+         if (item.amt !== 0) {
+
+            total += (item.amt || 0);
+            everythingZero = false;
+         }
       });
-      data.forEach(function (item) { total += (item.amt || 0); });
       graphLabel = scene.addText(labelFnc(total));
       graphLabel.pos(20 + x, y);
       startAngle = 0
@@ -138,31 +141,37 @@ createPieChart = function (data, labelFnc, scene, zero) {
 
          var spanAngle = item.amt / total * 360 * 16
            , ellipse = 0
-           , legendBox = dmz.ui.graph.createRectItem(0, 0, 15, 15, graphLabel)
+           , legendBox
            , legendLabel
            ;
 
-         if (!everythingZero) {
+         if (item.amt) {
 
-            ellipse = scene.addEllipse(x + 30, y + 30, 200, 200, startAngle, spanAngle, 0, item.brush);
+            legendBox = dmz.ui.graph.createRectItem(0, 0, 15, 15, graphLabel)
+            if (!everythingZero) {
+
+               ellipse = scene.addEllipse(x + 30, y + 30, 200, 200, startAngle, spanAngle, 0, item.brush);
+            }
+            legendLabel =
+               dmz.ui.graph.createTextItem
+                  ( item.label + " - " + item.amt + " ("+ (Math.round(item.amt / (total || 1) * 10000)/100) + "%)"
+                  , legendBox);
+
+            legendBox.pos(250, index * 20 + 20);
+            legendBox.brush(item.brush);
+            legendLabel.pos(20, -5);
+            items.push(ellipse);
+            items.push(legendLabel);
+            startAngle += spanAngle;
          }
-         legendLabel =
-            dmz.ui.graph.createTextItem
-               ( item.label + " - " + item.amt + " ("+ (Math.round(item.amt / (total || 1) * 10000)/100) + "%)"
-               , legendBox);
 
-         legendBox.pos(250, index * 20 + 20);
-         legendBox.brush(item.brush);
-         legendLabel.pos(20, -5);
-         items.push(ellipse);
-         items.push(legendLabel);
-         startAngle += spanAngle;
       });
       if (everythingZero) {
 
          scene.addEllipse(x + 30, y + 30, 200, 200, 0, 360 * 16, 0);
       }
       items.push(graphLabel);
+
    }
    return items;
 };

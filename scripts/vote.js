@@ -170,7 +170,6 @@ checkForVoteAchievement = function (userHandle) {
 
    var totalVotes = 0;
 
-   self.log.error(Users[userHandle]);
    if (Users[userHandle]) {
 
       totalVotes = Users[userHandle].yesVotes.length + Users[userHandle].noVotes.length;
@@ -846,7 +845,6 @@ initiateVoteUI = function (voteHandle) {
 
          var numberOfDtfVotes = Groups[userGroupHandle].dtfVotes.length + 1;
 
-         self.log.error(numberOfDtfVotes);
          if (Groups[userGroupHandle] && Groups[userGroupHandle].dtfVotes) {
 
             voteItem.ui.dtfButton.hide();
