@@ -477,7 +477,8 @@ unlockAchievement = function (handle, achievement) {
      , achievementName
      ;
 
-   if (handle && achievement && achievements && dmz.mask.isTypeOf(achievement)) {
+   if (handle && achievement && achievements && dmz.mask.isTypeOf(achievement) &&
+      dmz.object.scalar(handle, Handles.Permissions) === Constants.STUDENT_PERMISSION) {
 
       achievements = achievements.or(achievement);
       dmz.object.state(handle, Handles.Achievements, achievements);

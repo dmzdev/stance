@@ -95,17 +95,17 @@ _activateUser = function (name) {
                dmz.object.scalar(_userHandle, dmz.stance.ActiveHandle, logins);
                _hasLoggedIn = true;
             }
-            if ((logins >= 2) && (logins < 10)) {
-
-               dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackOneAchievement);
-            }
-            if ((logins >= 10) && (logins < 20)) {
-
-               dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackTwoAchievement);
-            }
             if (logins >= 20) {
 
                dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackThreeAchievement);
+            }
+            else if (logins >= 10) {
+
+               dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackTwoAchievement);
+            }
+            else if (logins >= 2) {
+
+               dmz.stance.unlockAchievement(_userHandle, dmz.stance.WelcomeBackOneAchievement);
             }
             if (dmz.object.flag(_userHandle, dmz.stance.ConsecutiveLoginsHandle)) { dmz.stance.unlockAchievement(_userHandle, dmz.stance.FrequentFlyerAchievement); }
          }
