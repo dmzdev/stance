@@ -1384,7 +1384,7 @@ function (objHandle, attrHandle, state) {
 
    var highestLevel = 0;
 
-   if (Users[objHandle]) {
+   if (Users[objHandle] && !Users[objHandle].achievements) {
 
       Users[objHandle].achievements = state;
       dmz.time.setTimer(self, function () {
