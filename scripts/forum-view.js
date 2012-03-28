@@ -22,9 +22,9 @@ var dmz =
        , forumView: require("static-forum-view")
        }
    // Constants
-   , EFF_COMM_COUNT_1 = 4 // Number of tagged forum posts for achievement
-   , EFF_COMM_COUNT_2 = 6
-   , EFF_COMM_COUNT_3 = 8
+   , EFF_COMM_COUNT_1 = 2 // Number of tagged forum posts for achievement
+   , EFF_COMM_COUNT_2 = 4
+   , EFF_COMM_COUNT_3 = 6
 
    // Variables
    , RetData = false
@@ -32,6 +32,7 @@ var dmz =
    , LoginSkipped = false
    , MaxMessageLength = 2000
    , userForumPostTable = {}
+   , postList = {}
    ;
 
 
@@ -68,6 +69,15 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          RetData.hideDeleteButtons();
       });
       dmz.object.create.observe(self, RetData.observers.create);
+      dmz.object.create.observe(self, function (handle, type) {
+
+         var obj = { handle: handle };
+         RetData.observers.create(handle, type);
+         if (type.isOfType(dmz.stance.PostType) || type.isOfType(dmz.stance.CommentType)) {
+
+            postList[handle] = obj;
+         }
+      });
       dmz.object.text.observe(self, dmz.stance.TextHandle, RetData.observers.text);
       dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, RetData.observers.createdAt);
       dmz.object.link.observe(self, dmz.stance.CreatedByHandle, RetData.observers.createdBy);
@@ -80,21 +90,25 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
            , achievement = false
            , length = 0
            ;
+
          RetData.observers.tag(handle, attr, data);
-         authorHandle = dmz.stance.getAuthorHandle(handle);
-         if (authorHandle) {
+         if (postList[handle]) {
 
-            if (userForumPostTable[authorHandle]) { userForumPostTable[authorHandle].push(handle); }
-            else { userForumPostTable[authorHandle] = [handle]; }
+            authorHandle = dmz.stance.getAuthorHandle(handle);
+            if (authorHandle) {
 
-            length = userForumPostTable[authorHandle].length;
-            if (length >= EFF_COMM_COUNT_3) { achievement = dmz.stance.EffectiveCommunicatorThreeAchievement; }
-            else if (length >= EFF_COMM_COUNT_2) { achievement = dmz.stance.EffectiveCommunicatorTwoAchievement; }
-            else if (length >= EFF_COMM_COUNT_1) { achievement = dmz.stance.EffectiveCommunicatorOneAchievement; }
+               if (userForumPostTable[authorHandle]) { userForumPostTable[authorHandle].push(handle); }
+               else { userForumPostTable[authorHandle] = [handle]; }
 
-            if (achievement && !dmz.stance.hasAchievement(authorHandle, achievement)) {
+               length = userForumPostTable[authorHandle].length;
+               if (length >= EFF_COMM_COUNT_3) { achievement = dmz.stance.EffectiveCommunicatorThreeAchievement; }
+               else if (length >= EFF_COMM_COUNT_2) { achievement = dmz.stance.EffectiveCommunicatorTwoAchievement; }
+               else if (length >= EFF_COMM_COUNT_1) { achievement = dmz.stance.EffectiveCommunicatorOneAchievement; }
 
-               dmz.stance.unlockAchievement(authorHandle, achievement);
+               if (achievement && !dmz.stance.hasAchievement(authorHandle, achievement)) {
+
+                  dmz.stance.unlockAchievement(authorHandle, achievement);
+               }
             }
          }
       });
