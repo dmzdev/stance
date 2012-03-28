@@ -82,27 +82,24 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
       function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-         var authorHandle
+         var authorHandle = subHandle
            , achievement
            , length
            ;
-         if (postList[superHandle]) {
+         if (postList[superHandle] &&
+            dmz.stance.getTags(dmz.object.data(superHandle, dmz.stance.TagHandle)).length) {
 
-            authorHandle = dmz.stance.getAuthorHandle(superHandle);
-            if (authorHandle && dmz.stance.getTags(dmz.object.data(authorHandle, dmz.stance.TagHandle)).length) {
+            if (!userForumPostTable[authorHandle]) { userForumPostTable[authorHandle] = {}; }
+            userForumPostTable[authorHandle][superHandle] = 1;
 
-               if (!userForumPostTable[authorHandle]) { userForumPostTable[authorHandle] = []; }
-               userForumPostTable[authorHandle].push(superHandle);
+            length = Object.keys(userForumPostTable[authorHandle]).length;
+            if (length >= EFF_COMM_COUNT_3) { achievement = dmz.stance.EffectiveCommunicatorThreeAchievement; }
+            else if (length >= EFF_COMM_COUNT_2) { achievement = dmz.stance.EffectiveCommunicatorTwoAchievement; }
+            else if (length >= EFF_COMM_COUNT_1) { achievement = dmz.stance.EffectiveCommunicatorOneAchievement; }
 
-               length = userForumPostTable[authorHandle].length;
-               if (length >= EFF_COMM_COUNT_3) { achievement = dmz.stance.EffectiveCommunicatorThreeAchievement; }
-               else if (length >= EFF_COMM_COUNT_2) { achievement = dmz.stance.EffectiveCommunicatorTwoAchievement; }
-               else if (length >= EFF_COMM_COUNT_1) { achievement = dmz.stance.EffectiveCommunicatorOneAchievement; }
+            if (achievement && !dmz.stance.hasAchievement(authorHandle, achievement)) {
 
-               if (achievement && !dmz.stance.hasAchievement(authorHandle, achievement)) {
-
-                  dmz.time.setTimer(self, function () { dmz.stance.unlockAchievement(authorHandle, achievement); });
-               }
+               dmz.time.setTimer(self, function () { dmz.stance.unlockAchievement(authorHandle, achievement); });
             }
          }
 
@@ -124,10 +121,10 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             authorHandle = dmz.stance.getAuthorHandle(handle);
             if (authorHandle) {
 
-               if (userForumPostTable[authorHandle]) { userForumPostTable[authorHandle].push(handle); }
-               else { userForumPostTable[authorHandle] = [handle]; }
+               if (!userForumPostTable[authorHandle]) { userForumPostTable[authorHandle] = {}; }
+               userForumPostTable[authorHandle][superHandle] = 1;
 
-               length = userForumPostTable[authorHandle].length;
+               length = Object.keys(userForumPostTable[authorHandle]).length;
                if (length >= EFF_COMM_COUNT_3) { achievement = dmz.stance.EffectiveCommunicatorThreeAchievement; }
                else if (length >= EFF_COMM_COUNT_2) { achievement = dmz.stance.EffectiveCommunicatorTwoAchievement; }
                else if (length >= EFF_COMM_COUNT_1) { achievement = dmz.stance.EffectiveCommunicatorOneAchievement; }
