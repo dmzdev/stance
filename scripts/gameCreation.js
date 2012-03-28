@@ -1772,7 +1772,6 @@ dmz.object.state.observe(self, dmz.stance.Permissions, function (handle, attrHan
 
                   if (!data) {
 
-                     self.log.error ("Adding DATA type");
                      data = dmz.object.create(dmz.stance.DataType);
                      dmz.object.activate(data);
                      if (!linkHandle) {
