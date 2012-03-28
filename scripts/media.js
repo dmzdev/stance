@@ -537,17 +537,19 @@ insertIntoScrollArea = function (mediaItem) {
    if (mediaItem.ui) {
 
       newStartTime = mediaItem.createdAt;
-      if ((newStartTime === 0) || (CurrentArray.length === 0)) {
+      if ((mediaItem.typeKey === CurrentType) &&
+         ((newStartTime === 0) || (CurrentArray.length === 0))) {
 
          inserted = true;
          if (CurrentArray.length === 0) { CurrentArray.push(mediaItem); }
          else { CurrentArray.splice(0, 0, mediaItem); }
+         self.log.error("Insert widget 0");
          mediaContentLayout.insertWidget(0, mediaItem.ui.postItem);
          mediaItem.ui.postItem.show();
       }
       for (itor = 0; itor < CurrentArray.length; itor += 1) {
 
-         if (!inserted) {
+         if (!inserted && (mediaItem.typeKey === CurrentType)) {
 
             insertedStartTime = CurrentArray[itor].createdAt;
             if (newStartTime >= insertedStartTime) {
@@ -555,15 +557,17 @@ insertIntoScrollArea = function (mediaItem) {
                inserted = true;
                if (CurrentArray.length === 0) { CurrentArray.push(mediaItem); }
                else { CurrentArray.splice(itor, 0, mediaItem); }
+               self.log.error("Insert widget 1");
                mediaContentLayout.insertWidget(itor, mediaItem.ui.postItem);
                mediaItem.ui.postItem.show();
             }
          }
       }
-      if (!inserted) {
+      if (!inserted && (mediaItem.typeKey === CurrentType)) {
 
          inserted = true;
          CurrentArray.push(mediaItem);
+         self.log.error("Insert widget 2");
          mediaContentLayout.insertWidget(CurrentArray.length - 1, mediaItem.ui.postItem);
          mediaItem.ui.postItem.show();
       }
@@ -660,6 +664,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , groups: []
          , tags: []
          , type: MediaTypes.PdfItem
+         , typeKey: "PdfItem"
          };
    }
    else if (objType.isOfType(dmz.stance.MemoType)) {
@@ -671,6 +676,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , tags: []
          , type: MediaTypes.Memo
          , createdBy: "Admin"
+         , typeKey: "Memo"
          };
    }
    else if (objType.isOfType(dmz.stance.NewspaperType)) {
@@ -682,6 +688,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , tags: []
          , type: MediaTypes.Newspaper
          , createdBy: "Admin"
+         , typeKey: "Newspaper"
          };
    }
    else if (objType.isOfType(dmz.stance.VideoType)) {
@@ -693,6 +700,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
          , tags: []
          , type: MediaTypes.Video
          , createdBy: "Admin"
+         , typeKey: "Video"
          };
    }
    else if (objType.isOfType(dmz.stance.GroupType)) {
