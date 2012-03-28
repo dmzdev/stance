@@ -47,9 +47,9 @@
          <achievement name="Strategist_Three" title="Strategist III" description="Your group has passed 9 votes." resource="Strategist_Achievement" level="3"/>
       </set>
       <set name="Disturbance_In_The_Force">
-         <achievement name="Disturbance_In_The_Force_One" title="Disturbance In The Force I" description="Your group has voted for a great transformational agenda." resource="DTF_Achievement" level="1"/>
-         <achievement name="Disturbance_In_The_Force_Two" title="Disturbance In The Force II" description="Your group has voted for a great transformational agenda twice." resource="DTF_Achievement" level="2"/>
-         <achievement name="Disturbance_In_The_Force_Three" title="Disturbance In The Force III" description="Your group has voted for a great transformational agenda four times." resource="DTF_Achievement" level="3"/>
+         <achievement name="Disturbance_In_The_Force_One" title="Disturbance In The Force I" description="Your team has voted to disrupt the STANCE ecosystem." resource="DTF_Achievement" level="1"/>
+         <achievement name="Disturbance_In_The_Force_Two" title="Disturbance In The Force II" description="Your strategic choices have transformed the STANCE ecosystem at the system level." resource="DTF_Achievement" level="2"/>
+         <achievement name="Disturbance_In_The_Force_Three" title="Disturbance In The Force III" description="Your disruptions have durably imposed your agenda to the STANCE ecosystem." resource="DTF_Achievement" level="3"/>
       </set>
    </achievement-set>
 </achievements>
