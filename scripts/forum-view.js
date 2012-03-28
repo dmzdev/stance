@@ -68,7 +68,6 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          RetData.hideTagButtons();
          RetData.hideDeleteButtons();
       });
-      dmz.object.create.observe(self, RetData.observers.create);
       dmz.object.create.observe(self, function (handle, type) {
 
          var obj = { handle: handle };
@@ -80,7 +79,35 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
       });
       dmz.object.text.observe(self, dmz.stance.TextHandle, RetData.observers.text);
       dmz.object.timeStamp.observe(self, dmz.stance.CreatedAtServerTimeHandle, RetData.observers.createdAt);
-      dmz.object.link.observe(self, dmz.stance.CreatedByHandle, RetData.observers.createdBy);
+      dmz.object.link.observe(self, dmz.stance.CreatedByHandle,
+      function (linkObjHandle, attrHandle, superHandle, subHandle) {
+
+         var authorHandle
+           , achievement
+           , length
+           ;
+         if (postList[superHandle]) {
+
+            authorHandle = dmz.stance.getAuthorHandle(superHandle);
+            if (authorHandle) {
+
+               if (!userForumPostTable[authorHandle]) { userForumPostTable[authorHandle] = []; }
+               userForumPostTable[authorHandle].push(superHandle);
+
+               length = userForumPostTable[authorHandle].length;
+               if (length >= EFF_COMM_COUNT_3) { achievement = dmz.stance.EffectiveCommunicatorThreeAchievement; }
+               else if (length >= EFF_COMM_COUNT_2) { achievement = dmz.stance.EffectiveCommunicatorTwoAchievement; }
+               else if (length >= EFF_COMM_COUNT_1) { achievement = dmz.stance.EffectiveCommunicatorOneAchievement; }
+
+               if (achievement && !dmz.stance.hasAchievement(authorHandle, achievement)) {
+
+                  dmz.time.setTimer(self, function () { dmz.stance.unlockAchievement(authorHandle, achievement); });
+               }
+            }
+         }
+
+         RetData.observers.createdBy(linkObjHandle, attrHandle, superHandle, subHandle);
+      });
       dmz.object.link.observe(self, dmz.stance.ForumLink, RetData.observers.forumLink);
       dmz.object.link.observe(self, dmz.stance.ParentHandle, RetData.observers.parentLink);
       dmz.object.flag.observe(self, dmz.stance.ActiveHandle, RetData.observers.onActive);
