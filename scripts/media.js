@@ -543,7 +543,6 @@ insertIntoScrollArea = function (mediaItem) {
          inserted = true;
          if (CurrentArray.length === 0) { CurrentArray.push(mediaItem); }
          else { CurrentArray.splice(0, 0, mediaItem); }
-         self.log.error("Insert widget 0");
          mediaContentLayout.insertWidget(0, mediaItem.ui.postItem);
          mediaItem.ui.postItem.show();
       }
@@ -557,7 +556,6 @@ insertIntoScrollArea = function (mediaItem) {
                inserted = true;
                if (CurrentArray.length === 0) { CurrentArray.push(mediaItem); }
                else { CurrentArray.splice(itor, 0, mediaItem); }
-               self.log.error("Insert widget 1");
                mediaContentLayout.insertWidget(itor, mediaItem.ui.postItem);
                mediaItem.ui.postItem.show();
             }
@@ -567,7 +565,6 @@ insertIntoScrollArea = function (mediaItem) {
 
          inserted = true;
          CurrentArray.push(mediaItem);
-         self.log.error("Insert widget 2");
          mediaContentLayout.insertWidget(CurrentArray.length - 1, mediaItem.ui.postItem);
          mediaItem.ui.postItem.show();
       }
