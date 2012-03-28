@@ -90,25 +90,25 @@ var dmz =
 
 checkForStrategistAchievement = function (groupHandle) {
 
-   if ((Groups[groupHandle].yesVotes.length >= 3) && (Groups[groupHandle].yesVotes.length < 6)) {
+   if (Groups[groupHandle].yesVotes.length >= 9) {
 
       Groups[groupHandle].users.forEach(function (userHandle) {
 
-         dmz.stance.unlockAchievement(userHandle, dmz.stance.StrategistOneAchievement);
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.StrategistThreeAchievement);
       });
    }
-   else if ((Groups[groupHandle].yesVotes.length >= 6) && (Groups[groupHandle].yesVotes.length < 9)) {
+   else if (Groups[groupHandle].yesVotes.length >= 6) {
 
       Groups[groupHandle].users.forEach(function (userHandle) {
 
          dmz.stance.unlockAchievement(userHandle, dmz.stance.StrategistTwoAchievement);
       });
    }
-   else if (Groups[groupHandle].yesVotes.length >= 9) {
+   if (Groups[groupHandle].yesVotes.length >= 3) {
 
       Groups[groupHandle].users.forEach(function (userHandle) {
 
-         dmz.stance.unlockAchievement(userHandle, dmz.stance.StrategistThreeAchievement);
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.StrategistOneAchievement);
       });
    }
 };
@@ -154,7 +154,7 @@ checkForApprovedVotes = function (createdByHandle) {
    }
    if (approvedVotes >= 5) {
 
-      dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteOneAchievement);
+      dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteThreeAchievement);
    }
    else if (approvedVotes >= 3) {
 
@@ -162,7 +162,7 @@ checkForApprovedVotes = function (createdByHandle) {
    }
    else if (approvedVotes >= 1) {
 
-      dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteThreeAchievement);
+      dmz.stance.unlockAchievement(createdByHandle, dmz.stance.RockTheVoteOneAchievement);
    }
 };
 
@@ -175,7 +175,7 @@ checkForVoteAchievement = function (userHandle) {
       totalVotes = Users[userHandle].yesVotes.length + Users[userHandle].noVotes.length;
       if (totalVotes >= 9) {
 
-         dmz.stance.unlockAchievement(userHandle, dmz.stance.RightToVoteOneAchievement);
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.RightToVoteThreeAchievement);
       }
       else if (totalVotes >= 6) {
 
@@ -183,7 +183,7 @@ checkForVoteAchievement = function (userHandle) {
       }
       else if (totalVotes >= 3) {
 
-         dmz.stance.unlockAchievement(userHandle, dmz.stance.RightToVoteThreeAchievement);
+         dmz.stance.unlockAchievement(userHandle, dmz.stance.RightToVoteOneAchievement);
       }
    }
 };

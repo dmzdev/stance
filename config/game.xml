@@ -24,9 +24,9 @@
          <achievement name="Rock_The_Vote_Three" title="Rock The Vote III" description="Your vote proposals have successfully been approved for a vote 5 times." resource="Rock_The_Vote_Achievement" level="3"/>
       </set>
       <set name="Effective_Communicator">
-         <achievement name="Effective_Communicator_One" title="Effective Communicator I" description="Four of your posts have been tagged as 'strategic posts'." resource="Eff_Comm_Achievement" level="1"/>
-         <achievement name="Effective_Communicator_Two" title="Effective Communicator II" description="Six of your posts have been tagged as 'strategic posts'." resource="Eff_Comm_Achievement" level="2"/>
-         <achievement name="Effective_Communicator_Three" title="Effective Communicator III" description="Eight of your posts have been tagged as 'strategic posts'." resource="Eff_Comm_Achievement" level="3"/>
+         <achievement name="Effective_Communicator_One" title="Effective Communicator I" description="Two of your posts have been tagged as 'strategic posts'." resource="Eff_Comm_Achievement" level="1"/>
+         <achievement name="Effective_Communicator_Two" title="Effective Communicator II" description="Four of your posts have been tagged as 'strategic posts'." resource="Eff_Comm_Achievement" level="2"/>
+         <achievement name="Effective_Communicator_Three" title="Effective Communicator III" description="Six of your posts have been tagged as 'strategic posts'." resource="Eff_Comm_Achievement" level="3"/>
       </set>
       <set name="Effective_Interrogator">
          <achievement name="Effective_Interrogator_One" title="Effective Interrogator I" description="Two of your questions have been tagged as 'strategic questions'." resource="Eff_Interr_Achievement" level="1"/>
