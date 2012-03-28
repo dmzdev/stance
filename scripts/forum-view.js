@@ -89,7 +89,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          if (postList[superHandle]) {
 
             authorHandle = dmz.stance.getAuthorHandle(superHandle);
-            if (authorHandle) {
+            if (authorHandle && dmz.stance.getTags(dmz.object.data(authorHandle, dmz.stance.TagHandle)).length) {
 
                if (!userForumPostTable[authorHandle]) { userForumPostTable[authorHandle] = []; }
                userForumPostTable[authorHandle].push(superHandle);
