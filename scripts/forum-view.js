@@ -122,7 +122,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
             if (authorHandle) {
 
                if (!userForumPostTable[authorHandle]) { userForumPostTable[authorHandle] = {}; }
-               userForumPostTable[authorHandle][superHandle] = 1;
+               userForumPostTable[authorHandle][handle] = 1;
 
                length = Object.keys(userForumPostTable[authorHandle]).length;
                if (length >= EFF_COMM_COUNT_3) { achievement = dmz.stance.EffectiveCommunicatorThreeAchievement; }
