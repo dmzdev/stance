@@ -104,7 +104,7 @@ checkForStrategistAchievement = function (groupHandle) {
          dmz.stance.unlockAchievement(userHandle, dmz.stance.StrategistTwoAchievement);
       });
    }
-   if (Groups[groupHandle].yesVotes.length >= 3) {
+   else if (Groups[groupHandle].yesVotes.length >= 3) {
 
       Groups[groupHandle].users.forEach(function (userHandle) {
 
@@ -843,10 +843,11 @@ initiateVoteUI = function (voteHandle) {
       }
       voteItem.ui.dtfButton.observe(self, "clicked", function () {
 
-         var numberOfDtfVotes = Groups[userGroupHandle].dtfVotes.length + 1;
+         var numberOfDtfVotes;
 
-         if (Groups[userGroupHandle] && Groups[userGroupHandle].dtfVotes) {
+         if (Groups[userGroupHandle]) {
 
+            numberOfDtfVotes = Groups[userGroupHandle].dtfVotes.length + 1;
             voteItem.ui.dtfButton.hide();
             if (numberOfDtfVotes >= 1) {
 
@@ -1349,6 +1350,7 @@ function (objHandle, attrHandle, newVal, prevVal) {
 
             Groups[VoteObjects[objHandle].groupHandle].noVotes.push(objHandle);
          }
+         checkForStrategistAchievement(VoteObjects[objHandle].groupHandle);
          updateStateUI(objHandle, prevVal);
       });
    }

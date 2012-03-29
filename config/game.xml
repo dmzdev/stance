@@ -19,9 +19,9 @@
          <achievement name="Media_Frenzy" title="Media Frenzy" description="You have seen 3 news articles, 3 videos and 3 PDFs." resource="Media_Frenzy_Achievement" level="3"/>
       </set>
       <set name="Rock_The_Vote">
-         <achievement name="Rock_The_Vote_One" title="Rock The Vote I" description="Your vote proposal has successfully been approved for a vote." resource="Rock_The_Vote_Achievement" level="1"/>
-         <achievement name="Rock_The_Vote_Two" title="Rock The Vote II" description="Your vote proposals have successfully been approved for a vote 3 times." resource="Rock_The_Vote_Achievement" level="2"/>
-         <achievement name="Rock_The_Vote_Three" title="Rock The Vote III" description="Your vote proposals have successfully been approved for a vote 5 times." resource="Rock_The_Vote_Achievement" level="3"/>
+         <achievement name="Rock_The_Vote_One" title="Rock The Vote I" description="Your vote proposal has been approved." resource="Rock_The_Vote_Achievement" level="1"/>
+         <achievement name="Rock_The_Vote_Two" title="Rock The Vote II" description="Three of your vote proposals have been approved." resource="Rock_The_Vote_Achievement" level="2"/>
+         <achievement name="Rock_The_Vote_Three" title="Rock The Vote III" description="Five of your vote proposals have been approved." resource="Rock_The_Vote_Achievement" level="3"/>
       </set>
       <set name="Effective_Communicator">
          <achievement name="Effective_Communicator_One" title="Effective Communicator I" description="Two of your posts have been tagged as 'strategic posts'." resource="Eff_Comm_Achievement" level="1"/>
@@ -50,6 +50,7 @@
          <achievement name="Disturbance_In_The_Force_One" title="Disturbance In The Force I" description="Your team has voted to disrupt the STANCE ecosystem." resource="DTF_Achievement" level="1"/>
          <achievement name="Disturbance_In_The_Force_Two" title="Disturbance In The Force II" description="Your strategic choices have transformed the STANCE ecosystem at the system level." resource="DTF_Achievement" level="2"/>
          <achievement name="Disturbance_In_The_Force_Three" title="Disturbance In The Force III" description="Your disruptions have durably imposed your agenda to the STANCE ecosystem." resource="DTF_Achievement" level="3"/>
+         <!--1, 2, 4-->
       </set>
    </achievement-set>
 </achievements>
