@@ -1288,10 +1288,7 @@ dmz.object.create.observe(self, function (objHandle, objType) {
 dmz.object.flag.observe(self, dmz.stance.ExpiredHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (VoteObjects[objHandle]) {
-
-      VoteObjects[objHandle].expired = newVal;
-   }
+   if (VoteObjects[objHandle]) { VoteObjects[objHandle].expired = newVal; }
 });
 
 dmz.object.flag.observe(self, dmz.stance.DisturbanceInTheForceHandle,
@@ -1314,19 +1311,13 @@ function (objHandle, attrHandle, newVal, oldVal) {
 dmz.object.text.observe(self, dmz.stance.TextHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (VoteObjects[objHandle]) {
-
-      VoteObjects[objHandle].question = newVal;
-   }
+   if (VoteObjects[objHandle]) { VoteObjects[objHandle].question = newVal; }
 });
 
 dmz.object.text.observe(self, dmz.stance.CommentHandle,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (VoteObjects[objHandle]) {
-
-      VoteObjects[objHandle].advisorResponse = newVal;
-   }
+   if (VoteObjects[objHandle]) { VoteObjects[objHandle].advisorResponse = newVal; }
 });
 
 dmz.object.scalar.observe(self, dmz.stance.VoteState,

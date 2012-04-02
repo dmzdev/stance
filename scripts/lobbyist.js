@@ -74,10 +74,7 @@ initialButtonObserve = function () {
    else { tagButton.hide(); }
    if (dmz.stance.isAllowed(hil, dmz.stance.AlterMediaFlag) && !LoginSkipped) {
 
-      deleteButton.observe(self, "clicked", function () {
-
-         clickDelete();
-      });
+      deleteButton.observe(self, "clicked", function () { clickDelete(); });
       cancelButton.hide();
       deleteButton.show();
    }
@@ -94,14 +91,8 @@ clickDelete = function () {
 
       if (dmz.stance.isAllowed(hil, dmz.stance.TagDataFlag)) { tagButton.hide(); }
       cancelButton.show();
-      deleteButton.observe(self, "clicked", function () {
-
-         confirmDelete()
-      });
-      cancelButton.observe(self, "clicked", function () {
-
-         clickCancel()
-      });
+      deleteButton.observe(self, "clicked", function () { confirmDelete(); });
+      cancelButton.observe(self, "clicked", function () { clickCancel(); });
    }
 };
 
@@ -154,10 +145,7 @@ checkNotifications = function () {
 
       LobbyistsArray.forEach(function (lobbyistItem) {
 
-         if (lobbyistItem.viewed.indexOf(hil) === -1) {
-
-            MainModule.highlight("Lobbyist");
-         }
+         if (lobbyistItem.viewed.indexOf(hil) === -1) { MainModule.highlight("Lobbyist"); }
       });
    }
 };
@@ -172,10 +160,7 @@ setLabels = function () {
       currLabel.text(CurrentLobbyistIndex + 1);
       LobbyistsArray.forEach(function (lobbyistItem) {
 
-         if (lobbyistItem.viewed.indexOf(hil) === -1) {
-
-            notSeen += 1;
-         }
+         if (lobbyistItem.viewed.indexOf(hil) === -1) { notSeen += 1; }
       });
       unseenItemsLabel.text("Unseen Items: " + notSeen);
    }

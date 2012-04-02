@@ -146,10 +146,7 @@ _exports.openWindow = function () {
 
    if (!beenOpened) {
 
-      Object.keys(Achievements).forEach(function (key) {
-
-         addAchievementItemUI(Achievements[key]);
-      });
+      Object.keys(Achievements).forEach(function (key) { addAchievementItemUI(Achievements[key]); });
    }
    beenOpened = true;
 };

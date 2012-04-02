@@ -230,8 +230,6 @@ clickDelete = function () {
       cancelButton.show();
       deleteButton.observe(self, "clicked", confirmDelete);
       cancelButton.observe(self, "clicked", clickCancel);
-//      deleteButton.observe(self, "clicked", function () { confirmDelete() });
-//      cancelButton.observe(self, "clicked", function () { clickCancel() });
    }
 };
 
@@ -361,10 +359,7 @@ mouseEvent = function (object, type) {
                         "&width=" + (mediaWebView.page().width() - 20) +"&height=" + (mediaWebView.page().height() - 20));
                   }
                }
-               else if (mediaItem.link) {
-
-                  mediaWebView.page().mainFrame().load(mediaItem.link);
-               }
+               else if (mediaItem.link) { mediaWebView.page().mainFrame().load(mediaItem.link); }
             }
             else {
 
@@ -380,7 +375,7 @@ mouseEvent = function (object, type) {
          }
          else if (CurrentItem && CurrentItem.ui && (CurrentItem.ui.postItem == object)) {
 
-            // Placeholder in case we want to make the hover chnge color for the current PDF
+            // Placeholder in case we want to make the hover change color for the current PDF
          }
          else { // enter seen (greyer)
 

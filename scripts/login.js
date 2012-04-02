@@ -66,10 +66,7 @@ var dmz =
     , _login
     ;
 
-self.shutdown = function () {
-
-   _window.title(_title);
-};
+self.shutdown = function () { _window.title(_title); };
 
 _activateUser = function (name) {
 

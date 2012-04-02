@@ -45,26 +45,14 @@ var dmz =
 
 openWindow = function () {
 
-   if (AchievementsMod) {
-
-      AchievementsMod.openWindow();
-   }
-   if (UserMessagerMod) {
-
-      UserMessagerMod.openWindow();
-   }
+   if (AchievementsMod) { AchievementsMod.openWindow(); }
+   if (UserMessagerMod) { UserMessagerMod.openWindow(); }
 };
 
 closeWindow = function () {
 
-   if (UserMessagerMod) {
-
-      UserMessagerMod.closeWindow();
-   }
-   if (AchievementsMod) {
-
-      AchievementsMod.closeWindow();
-   }
+   if (UserMessagerMod) { UserMessagerMod.closeWindow(); }
+   if (AchievementsMod) { AchievementsMod.closeWindow(); }
 };
 
 dmz.module.subscribe(self, "userMessager", function (Mode, module) {
@@ -93,14 +81,8 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 init = function () {
 
    tabs.clear();
-   if (AchievementsMod) {
-
-      tabs.add(AchievementsMod.achievementForm, "Achievements");
-   }
-   if (UserMessagerMod) {
-
-      tabs.add(UserMessagerMod.messagerForm, "Ping Group Members");
-   }
+   if (AchievementsMod) { tabs.add(AchievementsMod.achievementForm, "Achievements"); }
+   if (UserMessagerMod) { tabs.add(UserMessagerMod.messagerForm, "Ping Group Members"); }
 };
 
 init();

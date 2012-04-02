@@ -166,10 +166,7 @@ createPieChart = function (data, labelFnc, scene, zero) {
          }
 
       });
-      if (everythingZero) {
-
-         scene.addEllipse(x + 30, y + 30, 200, 200, 0, 360 * 16, 0);
-      }
+      if (everythingZero) { scene.addEllipse(x + 30, y + 30, 200, 200, 0, 360 * 16, 0); }
       items.push(graphLabel);
 
    }
@@ -694,7 +691,6 @@ setVotedOnLabel = function (userHandle) {
             Groups[Users[userHandle].groupHandle].votesActive.length
             )
          );
-         //Groups[Users[userHandle].groupHandle].votes.length);
    }
 };
 

@@ -39,10 +39,7 @@ dmz.module.subscribe(self, "email", function (Mode, module) {
 dmz.object.scalar.observe(self, dmz.stance.Permissions,
 function (objHandle, attrHandle, newVal, oldVal) {
 
-   if (newVal === dmz.stance.TECH_PERMISSION) {
-
-      TechList.push(objHandle);
-   }
+   if (newVal === dmz.stance.TECH_PERMISSION) { TechList.push(objHandle); }
 });
 
 dmz.module.subscribe(self, "main", function (Mode, module) {
@@ -142,25 +139,16 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
 
             if (dmz.stance.isAllowed(objHandle, dmz.stance.DeletePostsFlag) && !LoginSkipped) {
 
-               dmz.time.setTimer(self, function () {
-
-                  RetData.showDeleteButtons();
-               });
+               dmz.time.setTimer(self, function () { RetData.showDeleteButtons(); });
             }
             else { RetData.hideDeleteButtons(); }
             if (dmz.stance.isAllowed(objHandle, dmz.stance.TagDataFlag) && !LoginSkipped) {
 
-               dmz.time.setTimer(self, function () {
-
-                  RetData.showTagButtons();
-               });
+               dmz.time.setTimer(self, function () { RetData.showTagButtons(); });
             }
             else {
 
-               dmz.time.setTimer(self, function () {
-
-                  RetData.hideTagButtons();
-               });
+               dmz.time.setTimer(self, function () { RetData.hideTagButtons(); });
             }
             RetData.updateForUser(objHandle);
             RetData.checkHighlight();

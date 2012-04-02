@@ -520,10 +520,7 @@ _exports.highlight = function (name) {
 
 dmz.object.create.observe(self, function (objHandle, objType) {
 
-   if (objType.isOfType(dmz.stance.GameType)) {
-
-      CurrentGameHandle = objHandle;
-   }
+   if (objType.isOfType(dmz.stance.GameType)) { CurrentGameHandle = objHandle; }
 });
 
 dmz.object.flag.observe(self, dmz.stance.ActiveHandle,
@@ -543,10 +540,7 @@ function (objHandle, attrHandle, newVal, oldVal) {
          , dmz.ui.mainWindow.centralWidget()
          ).open (self, function (value, dialog) {
 
-            if (value === dmz.ui.messageBox.Ok) {
-
-               dmz.sys.requestExit();
-            }
+            if (value === dmz.ui.messageBox.Ok) { dmz.sys.requestExit(); }
          });
    }
 });

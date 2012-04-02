@@ -45,10 +45,7 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute,
 function (objHandle, attrHandle, value) {
 
    hil = objHandle;
-   dmz.time.setTimer(self, function () {
-
-      userGroupHandle = dmz.stance.getUserGroupHandle(hil);
-   });
+   dmz.time.setTimer(self, function () { userGroupHandle = dmz.stance.getUserGroupHandle(hil); });
 });
 
 dmz.object.create.observe(self, function (objHandle, objType) {
