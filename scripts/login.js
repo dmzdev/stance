@@ -148,7 +148,7 @@ _login = function (data) {
          }
       });
    }
-}
+};
 
 LoginSuccessMessage.subscribe(self, function (data) {
 
