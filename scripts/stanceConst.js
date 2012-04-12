@@ -207,7 +207,6 @@ var dmz =
         , TagDataFlag: dmz.defs.lookupState("Tag_Data")
         , SeeTagFlag: dmz.defs.lookupState("See_Tags")
         , InjectPDFFlag: dmz.defs.lookupState("Inject_PDF")
-        , ModifyCollabAreaFlag: dmz.defs.lookupState("Modify_Collab_Area")
         , LimitedPingFlag: dmz.defs.lookupState("Limited_Ping")
         , UnlimitedPingFlag: dmz.defs.lookupState("Unlimited_Ping")
         , DisruptTheForceFlag: dmz.defs.lookupState("Disrupt_The_Force")
@@ -225,7 +224,6 @@ var dmz =
              , States.AskAdvisor4Flag
              , States.ForumPostFlag
              , States.AnswerHelpFlag
-             , States.ModifyCollabAreaFlag
              , States.LimitedPingFlag
              ]
         , AdminPermissions:
@@ -293,7 +291,6 @@ var dmz =
              , States.AnswerHelpFlag
              , States.StudentDataFlag
              , States.DeletePostsFlag
-             , States.ModifyCollabAreaFlag
              , States.TagDataFlag
              , States.SeeTagFlag
              , States.InjectPDFFlag

@@ -30,7 +30,6 @@ var dmz =
    // UI Elements
    , wikiWidget = dmz.ui.loader.load("WikiForm.ui")
    , wikiViewer = dmz.ui.webview.create()
-   //, wikiViewer = wikiWidget.lookup("wikiWebView")
 
    // Variables
    , hil

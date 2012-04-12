@@ -1728,8 +1728,8 @@ endGameButton.observe(self, "clicked", function () {
    EmailMod.sendEmail(
       list,
       "Your STANCE game has ended!",
-      "Your STANCE game is now over! Please stay tuned for additional instructions " +
-         "on how to prepare for the AAR.\nThank you for participating!");
+      "Your STANCE game is now over! You can still log in, but you are now in observer mode." +
+         "\nThank you for participating!");
 
 });
 
