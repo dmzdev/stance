@@ -13,7 +13,6 @@ var dmz =
       , graph: require("dmz/ui/graph")
       , crypto: require("dmz/ui/crypto")
       }
-
    , stance: require("stanceConst")
    , data: require("dmz/runtime/data")
    , defs: require("dmz/runtime/definitions")
