@@ -86,4 +86,3 @@ init = function () {
 };
 
 init();
-
