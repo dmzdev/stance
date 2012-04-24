@@ -26,14 +26,14 @@ scp ./changelog.html dmzupdate.chds.us:/home/dmzupdate.chds.us/public/downloads/
 echo "scp $INSTALLER dmzupdate.chds.us:/home/dmzupdate.chds.us/public/downloads"
 scp $INSTALLER dmzupdate.chds.us:/home/dmzupdate.chds.us/public/downloads
 
-echo "ssh dmzupdate.chds.us sudo ln -s /home/dmzupdate.chds.us/public/downloads/$UPDATE.exe /home/dmzupdate.chds.us/public/downloads/$OLD_UPDATE.exe"
-ssh dmzupdate.chds.us sudo ln -s /home/dmzupdate.chds.us/public/downloads/$UPDATE.exe /home/dmzupdate.chds.us/public/downloads/$OLD_UPDATE.exe
+echo "ssh dmzupdate.chds.us ln -s /home/dmzupdate.chds.us/public/downloads/$UPDATE.exe /home/dmzupdate.chds.us/public/downloads/$OLD_UPDATE.exe"
+ssh dmzupdate.chds.us ln -s /home/dmzupdate.chds.us/public/downloads/$UPDATE.exe /home/dmzupdate.chds.us/public/downloads/$OLD_UPDATE.exe
 
-echo "ssh dmzupdate.chds.us sudo chown www-data.admin -R /home/dmzupdate.chds.us/public"
-ssh dmzupdate.chds.us sudo chown www-data.admin -R /home/dmzupdate.chds.us/public
+#echo "ssh dmzupdate.chds.us sudo chown www-data.admin -R /home/dmzupdate.chds.us/public"
+#ssh dmzupdate.chds.us sudo chown www-data.admin -R /home/dmzupdate.chds.us/public
 
-echo "ssh dmzupdate.chds.us sudo chmod -R g+w /home/dmzupdate.chds.us/public"
-ssh dmzupdate.chds.us sudo chmod -R g+w /home/dmzupdate.chds.us/public
+#echo "ssh dmzupdate.chds.us sudo chmod -R g+w /home/dmzupdate.chds.us/public"
+#ssh dmzupdate.chds.us sudo chmod -R g+w /home/dmzupdate.chds.us/public
 
 echo "direct download link: http://dmzupdate.chds.us/downloads/$UPDATE.exe"
 echo "done!"
