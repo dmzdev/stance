@@ -32,5 +32,5 @@ echo "Using Branch: $BRANCH"
 echo "Pushing to channel: $CHANNEL"
 
 git pull $REPO $BRANCH
-./build_win_app.sh
-./publish_win_app.sh $CHANNEL
+./build_win32_app.sh
+./publish_win32_app.sh $CHANNEL
