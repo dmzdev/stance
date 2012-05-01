@@ -51,7 +51,7 @@ dmz.module.subscribe(self, "main", function (Mode, module) {
          , groupLinkHandle: dmz.stance.ForumLink
          , showItemHasBeenTagged: true
          , highlight: function (handle) { module.highlight("Forum"); }
-         , forumLabelText: "Post a Messege:"
+         , forumLabelText: "Post a Message:"
          , canReplyTo: function () { return dmz.stance.isAllowed(dmz.object.hil(), dmz.stance.ForumPostFlag); }
          , postBlocked: function () {
 
