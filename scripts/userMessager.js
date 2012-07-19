@@ -88,7 +88,7 @@ sendEmail = function (userHandle) {
          EmailMod.sendEmail(
             recipients,
             "STANCE: Watcher has pinged you. (DO NOT REPLY)",
-            "The Watcher has noticed that you, " + Users[userHandle].displayName +" , have not logged in for over 36 hours, please remember that participation is part of your grade.", self);
+            "The Watcher has noticed that you, " + Users[userHandle].displayName +" , have not logged in for over 36 hours. Please remember that participation is essential for the success of the exercise.", self);
       }
       else if (dmz.object.scalar(hil, dmz.stance.Permissions) === dmz.stance.STUDENT_PERMISSION) {
 
@@ -102,21 +102,21 @@ sendEmail = function (userHandle) {
          EmailMod.sendEmail(
             recipients,
             "STANCE: An observer has pinged you. (DO NOT REPLY)",
-            "An observer has noticed that you, " + Users[userHandle].displayName + ", have not logged in for over 36 hours, please remember that participation is part of your grade.");
+            "An observer has noticed that you, " + Users[userHandle].displayName + ", have not logged in for over 36 hours. Please remember that participation is essential for the success of the exercise.");
       }
       else if (dmz.object.scalar(hil, dmz.stance.Permissions) === dmz.stance.ADVISOR_PERMISSION) {
 
          EmailMod.sendEmail(
             recipients,
             "STANCE: An advisor has pinged you. (DO NOT REPLY)",
-            "An advisor has noticed that you, " + Users[userHandle].displayName + ", have not logged in for over 36 hours, please remember that participation is part of your grade.");
+            "An advisor has noticed that you, " + Users[userHandle].displayName + ", have not logged in for over 36 hours. Please remember that participation is essential for the success of the exercise.");
       }
       else {
 
          EmailMod.sendEmail(
             recipients,
             "STANCE: Someone has pinged you. (DO NOT REPLY)",
-            "Someone has noticed that you, " + Users[userHandle].displayName + ", have not logged in for over 36 hours, please remember that participation is part of your grade.");
+            "Someone has noticed that you, " + Users[userHandle].displayName + ", have not logged in for over 36 hours. Please remember that participation is essential for the success of the exercise.");
       }
    }
 };
