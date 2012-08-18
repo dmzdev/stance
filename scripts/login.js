@@ -57,6 +57,7 @@ var dmz =
     , _hasLoggedIn = false
     , _loginSkipped = false
     , ToggledMessage = dmz.message.create("ToggledGroupMessage")
+    , lastLogin = 0
 
     // Functions
     , toTimeStamp = dmz.util.dateToTimeStamp
@@ -130,22 +131,15 @@ function (objHandle, attrHandle, newVal, oldVal) {
 
 _login = function (data) {
 
-   var timeStamp
-     , hil = dmz.object.hil()
-     ;
-
    if (data && dmz.data.isTypeOf(data)) {
 
       _window.title(_title);
       _admin = data.boolean("admin");
+      lastLogin = data.number(TimeStampAttr);
       dmz.time.setTimer(self, 2, function () {
 
          _userName = data.string(dmz.stance.NameHandle);
          _activateUser(_userName);
-         if (hil) {
-
-            dmz.object.timeStamp(hil, dmz.stance.LastLoginTimeHandle, data.number(TimeStampAttr));
-         }
       });
    }
 };
@@ -234,6 +228,10 @@ dmz.object.flag.observe(self, dmz.object.HILAttribute, function (handle, attr, v
       name = dmz.stance.getDisplayName(_userHandle);
       _setTitle(_userHandle);
       self.log.info("User identified: " + name);
+      if (lastLogin) {
+      	
+      	dmz.object.timeStamp(handle, dmz.stance.LastLoginTimeHandle, lastLogin);
+      }
    }
 });
 
